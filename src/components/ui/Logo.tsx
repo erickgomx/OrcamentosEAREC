@@ -8,7 +8,7 @@ import { cn } from '../../lib/utils';
 // Isso funciona porque a pasta 'src' é servida publicamente pelo servidor de desenvolvimento.
 // O erro anterior "Invalid URL" ocorria ao tentar usar 'new URL()' com 'import.meta.url'
 // em ambientes que não suportam essa funcionalidade nativamente.
-const logoSrc = '/src/assets/logo.png';
+const logoSrc = './src/assets/logo.png';
 
 interface LogoProps {
   className?: string; // Classes CSS opcionais para ajustar tamanho (ex: w-32, h-auto)
