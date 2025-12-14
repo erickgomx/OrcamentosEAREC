@@ -124,7 +124,6 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, config }) => {
         />
         
         {/* Technical Details */}
-        {/* Adicionado o trigger de Viewport aqui para destacar o botão no rodapé */}
         <motion.section 
           className="py-32 px-6 bg-neutral-950 relative border-t border-white/5"
           onViewportEnter={() => setHighlightCTA(true)}
@@ -189,7 +188,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, config }) => {
         totalPrice={totalPrice} 
         onApprove={() => setIsModalOpen(true)}
         isApproved={isApproved}
-        highlight={highlightCTA} // Passa o estado de destaque
+        highlight={highlightCTA} 
       />
 
       <SignatureModal 

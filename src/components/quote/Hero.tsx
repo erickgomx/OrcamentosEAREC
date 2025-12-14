@@ -13,7 +13,7 @@ interface HeroProps {
  * Componente Hero
  * ---------------
  * A "capa" da proposta. Deve ser impactante.
- * Exibe a imagem de fundo, o logo e a saudação personalizada.
+ * Agora utiliza um vídeo de fundo com filtros para criar o efeito "Red Old Film".
  */
 const Hero: React.FC<HeroProps> = ({ data }) => {
 
@@ -27,24 +27,33 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
   };
 
   return (
-    <section className="relative w-full h-screen overflow-hidden flex items-center justify-center">
+    <section className="relative w-full h-screen overflow-hidden flex items-center justify-center bg-black">
       
-      {/* BACKGROUND CINEMATOGRÁFICO */}
+      {/* BACKGROUND CINEMATOGRÁFICO - VÍDEO OLD FILM */}
       <motion.div 
         variants={scaleIn}
         initial="hidden"
         animate="visible"
         className="absolute inset-0 z-0"
       >
-        {/* Overlay Escuro para garantir leitura do texto */}
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/30 via-neutral-950/70 to-neutral-950 z-10" />
-        
-        {/* Imagem de Fundo */}
-        <img 
-          src="https://picsum.photos/id/42/1920/1080" 
-          alt="Cinematic Background" 
-          className="w-full h-full object-cover opacity-60 grayscale-[30%]"
-        />
+        {/* Vídeo de Ruído/Grain */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-60"
+          style={{ 
+            // Filtros para transformar ruído branco em vermelho e dar aspecto antigo
+            filter: 'sepia(100%) saturate(500%) hue-rotate(-50deg) contrast(120%) brightness(0.6)' 
+          }}
+        >
+          {/* Link direto para um vídeo de "Film Grain/Noise" leve */}
+          <source src="https://cdn.coverr.co/videos/coverr-film-grain-texture-overlay-5675/1080p.mp4" type="video/mp4" />
+        </video>
+
+        {/* Overlay Vignette para focar no centro */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_90%)] z-10" />
       </motion.div>
 
       {/* CONTEÚDO CENTRAL */}

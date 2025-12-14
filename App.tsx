@@ -2,21 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import QuoteView from './src/pages/QuoteView';
 import WelcomeView from './src/pages/WelcomeView';
+import IntroView from './src/pages/IntroView';
 import AdminDashboard from './src/pages/AdminDashboard';
 import Loading from './src/components/ui/Loading';
 import { ClientData, QuoteData } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
 
-type ViewState = 'welcome' | 'quote' | 'admin';
+// Adicionado 'intro' ao tipo
+type ViewState = 'intro' | 'welcome' | 'quote' | 'admin';
 
 const App: React.FC = () => {
-  const [view, setView] = useState<ViewState>('welcome');
+  // Estado inicial alterado para 'intro'
+  const [view, setView] = useState<ViewState>('intro');
   const [clientData, setClientData] = useState<ClientData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
   // Estado Global da Configuração (Preços, etc).
-  // Inicializado com o mock, mas pode ser alterado pelo Admin.
   const [config, setConfig] = useState<QuoteData>(mockQuote);
 
   const handleStart = async (data: ClientData) => {
@@ -46,6 +48,11 @@ const App: React.FC = () => {
       {/* Gerenciamento de Visualização */}
       {!isLoading && (
         <>
+          {/* Nova Tela de Introdução */}
+          {view === 'intro' && (
+             <IntroView onContinue={() => setView('welcome')} />
+          )}
+
           {view === 'welcome' && (
             <WelcomeView 
               onStart={handleStart} 

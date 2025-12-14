@@ -81,7 +81,8 @@ const StickyFooter: React.FC<StickyFooterProps> = ({ totalPrice, onApprove, isAp
                   key="success-msg"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 text-green-500 px-8 py-3 bg-green-500/10 rounded-full border border-green-500/20"
+                  // Adicionado pr-6 e mr-4 para evitar que encoste na borda em telas menores
+                  className="flex items-center gap-2 text-green-500 px-8 py-3 bg-green-500/10 rounded-full border border-green-500/20 mr-4 md:mr-0"
                 >
                   <span className="relative flex h-3 w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
