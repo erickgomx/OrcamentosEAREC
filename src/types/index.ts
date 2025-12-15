@@ -1,7 +1,8 @@
+
 // Definições de Entidades do Sistema
 
 export type LocationType = 'studio' | 'external';
-export type OccasionType = 'institutional' | 'social' | 'advertising' | 'fashion';
+export type OccasionType = 'institutional' | 'social' | 'advertising' | 'custom';
 
 export interface ServiceItem {
   id: string;
@@ -30,6 +31,7 @@ export interface QuoteData {
   studioFee: number; // Taxa extra se for estúdio
   photoUnitPrice: number;
   videoUnitPrice: number;
+  pricePerKm: number; // Preço por Km rodado (Logística)
   items: ServiceItem[]; // Itens fixos descritivos (ex: Roteiro)
   moodboardImages: string[];
 }

@@ -1,74 +1,88 @@
-# EAREC Orçamentos - High-End Proposal System
+# 🎥 EAREC | Sistema de Orçamentos Cinematográficos
 
-Bem-vindo ao código-fonte do sistema de orçamentos da EAREC. Este projeto foi desenvolvido com foco em **Experiência do Usuário (UX)**, **Animações Fluidas** e **Design Cinematográfico**.
+Bem-vindo à documentação oficial do sistema de orçamentos da **EAREC**. 
 
-## 📋 Funcionalidades Principais
-
-1.  **Welcome Screen (Capa):** Coleta dados do cliente (Nome, Local, Data) para personalizar a proposta.
-2.  **Orçamento Dinâmico:**
-    *   **Configurador:** O cliente escolhe a ocasião (Institucional, Publicidade, etc).
-    *   **Localização:** Alterna entre Estúdio (com custo extra) e Externo.
-    *   **Quantitativo:** Seleciona quantidade de fotos e vídeos, atualizando o preço em tempo real.
-3.  **Moodboard:** Galeria de inspiração visual.
-4.  **Assinatura Digital:** O cliente assina a proposta na tela (funciona em Mobile e Desktop).
-5.  **Geração de Valor:** Itens inclusos (Roteiro, Equipe) são mostrados como cortesia premium.
+Este projeto foi desenvolvido para oferecer uma experiência de venda **High-End**, onde o cliente não apenas vê preços, mas sente o valor da produção audiovisual através de uma interface imersiva, animada e responsiva.
 
 ---
 
-## 🚀 Como Rodar o Projeto Corretamente
+## 🚀 Tecnologias Utilizadas
 
-### Pré-requisitos
-*   Node.js instalado (versão 18 ou superior recomendada).
+O projeto foi construído sobre uma stack moderna para garantir performance e facilidade de manutenção:
 
-### Passo a Passo
+*   **React 18+**: Biblioteca principal para construção da interface.
+*   **TypeScript**: Adiciona tipagem estática, reduzindo erros e facilitando o entendimento dos dados (ex: `QuoteData`, `ClientData`).
+*   **Tailwind CSS**: Framework de estilização "utility-first" para design rápido e responsivo.
+*   **Framer Motion**: Biblioteca poderosa para as animações complexas (entradas, saídas, modais).
+*   **Lucide React**: Ícones leves e modernos.
 
-1.  **Instale as dependências:**
-    Abra o terminal na pasta do projeto e rode:
-    ```bash
-    npm install
-    ```
+---
 
-2.  **Adicione a Logo:**
-    *   Crie uma pasta chamada `assets` dentro da pasta `src` (`src/assets`).
-    *   Cole sua imagem de logo lá com o nome exato: `logo.png`.
+## 📂 Estrutura do Projeto
 
-3.  **Rode o servidor de desenvolvimento:**
-    ```bash
-    npm run dev
-    ```
-    O terminal mostrará um link (geralmente `http://localhost:5173`). Clique para abrir.
+Para facilitar a navegação, o código está organizado da seguinte forma:
+
+```
+src/
+├── components/       # Blocos de construção da interface
+│   ├── quote/        # Componentes específicos do Orçamento (Hero, Moodboard, Configurador)
+│   └── ui/           # Componentes genéricos (Botões, Inputs, Loading, Logo)
+├── data/             # Dados estáticos e regras de negócio
+│   └── mock.ts       # ⚠️ AQUI VOCÊ EDITA PREÇOS E TEXTOS PADRÃO
+├── lib/              # Funções utilitárias
+│   ├── animations.ts # Configurações de animação (FadeIn, SlideUp)
+│   └── utils.ts      # Formatadores de moeda e classes CSS
+├── pages/            # As telas principais da aplicação
+│   ├── IntroView     # Tela inicial (Escolha de caminho)
+│   ├── WelcomeView   # Formulário de captação de dados
+│   ├── QuoteView     # A tela principal do orçamento (Cálculos)
+│   └── SuccessView   # Tela final de agradecimento
+└── types/            # Definições de Tipos (TypeScript Interfaces)
+```
 
 ---
 
 ## 🛠 Como Personalizar (Guia Rápido)
 
-### 1. Alterar Preços Base
-Vá em `src/data/mock.ts`.
-*   `basePrice`: Valor inicial da equipe.
-*   `studioFee`: Valor adicionado se o cliente escolher "Estúdio".
-*   `photoUnitPrice`: Preço de cada foto extra.
+### 1. Alterar Preços e Valores Base
+Todo o controle financeiro está centralizado em um único arquivo.
+*   **Arquivo:** `src/data/mock.ts`
+*   **O que editar:**
+    *   `basePrice`: Valor mínimo para mobilização da equipe.
+    *   `photoUnitPrice`: Valor por foto extra (atualmente R$ 25,00).
+    *   `videoUnitPrice`: Valor por vídeo extra (atualmente R$ 600,00).
+    *   `pricePerKm`: Custo de logística por KM.
 
-### 2. Alterar Cores e Marca
-O sistema usa **TailwindCSS**.
-*   A cor vermelha principal é definida como `brand-DEFAULT`.
-*   Para mudar globalmente, procure e substitua `#DC2626` nos arquivos ou configure no `tailwind.config` (se estivesse separado, mas aqui está injetado no HTML para simplicidade).
+### 2. Alterar a Logo
+*   Substitua o componente `src/components/ui/Logo.tsx` ou edite o SVG dentro dele para alterar a marca visual.
 
-### 3. Alterar Textos "Cinematográficos"
-*   **Hero (Texto de entrada):** `src/components/quote/Hero.tsx`
-*   **Lista de Serviços:** `src/components/quote/UpsellList.tsx`
+### 3. Ajustar Textos e Títulos
+*   Os textos "Cinematográficos" (ex: frases de efeito no Hero) estão dentro dos componentes em `src/components/quote/`.
 
 ---
 
-## 🐛 Solução de Problemas Comuns
+## 📦 Instalação e Execução
 
-*   **A assinatura não desenha ou o traço sai longe do dedo:**
-    *   Isso acontece se o navegador redimensionar. O código já possui um `resizeObserver`, mas se persistir, recarregue a página.
-*   **A imagem da logo não carrega:**
-    *   Verifique se o nome do arquivo é exatamente `logo.png` e se está em `src/assets/`.
+Se você é um desenvolvedor e baixou este código:
 
-## 📦 Estrutura de Pastas
+1.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
 
-*   `src/components`: Blocos visuais (Botões, Listas, Modais).
-*   `src/pages`: As telas principais (Welcome e QuoteView).
-*   `src/data`: Onde ficam os preços e textos padrão.
-*   `src/lib`: Utilitários de animação e formatação de moeda.
+2.  **Rode o servidor local:**
+    ```bash
+    npm run dev
+    ```
+
+3.  **Build para Produção:**
+    ```bash
+    npm run build
+    ```
+
+---
+
+## 💡 Dicas de Desenvolvimento
+
+*   **Comentários:** O código está amplamente comentado em português para facilitar o entendimento da lógica.
+*   **Performance:** Imagens externas (Moodboard) devem ser otimizadas. No código atual, usamos links diretos (`ibb.co`), mas recomenda-se hospedar localmente ou em um CDN próprio.

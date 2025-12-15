@@ -1,17 +1,21 @@
+
 import { QuoteData } from '../types';
 
 /**
  * ARQUIVO DE DADOS (MOCK)
  * -----------------------
- * Aqui você define os valores padrão, preços e itens que aparecem no orçamento.
- * Altere este arquivo para ajustar a precificação do seu negócio.
+ * Este arquivo funciona como um "Banco de Dados Local".
+ * É aqui que definimos os valores padrão, preços unitários e itens inclusos.
+ * 
+ * DICA: Altere os valores abaixo para ajustar a precificação do negócio sem mexer na lógica.
  */
 
 export const mockQuote: QuoteData = {
-  // ID interno do orçamento (pode ser gerado dinamicamente no futuro)
+  // ID interno do orçamento (pode ser gerado dinamicamente no futuro ou vir de um backend)
   id: "EAREC-2024-X92",
   
-  // Dados padrão do cliente (serão sobrescritos pelo formulário da tela inicial)
+  // Dados padrão do cliente (estes dados são apenas placeholders, 
+  // pois serão substituídos pelo que o usuário digitar na WelcomeView)
   client: {
     name: "Cliente VIP",
     company: "Empresa Parceira",
@@ -21,31 +25,31 @@ export const mockQuote: QuoteData = {
     contact: "(11) 99999-9999"
   },
   
-  // Datas automáticas
+  // Definição de datas de validade da proposta (Ex: válida por 7 dias)
   date: new Date().toISOString(),
   validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   
   // ========================================================================
-  // 💰 PRECIFICAÇÃO (ALTERE AQUI OS VALORES)
+  // 💰 PRECIFICAÇÃO (REGRA DE NEGÓCIO)
   // ========================================================================
   
-  basePrice: 5000,       // Preço Mínimo: Custo base para tirar a equipe de casa (Mobilização)
-  studioFee: 2500,       // Taxa de Estúdio: Somada apenas se o cliente escolher "Estúdio"
-  photoUnitPrice: 150,   // Valor Unitário: Preço por cada foto selecionada no contador
-  videoUnitPrice: 1200,  // Valor Unitário: Preço por cada vídeo (1 min) selecionado
+  basePrice: 200,        // Preço Mínimo
+  studioFee: 250,        // Taxa de Estúdio
+  photoUnitPrice: 25,    // Valor Unitário: Preço por cada foto
+  videoUnitPrice: 600,   // Valor Unitário: Preço por cada vídeo (1 min)
+  pricePerKm: 1.50,      // Logística: Valor alterado para R$ 1,50/km
   
   // ========================================================================
 
-  // Lista de itens que compõem o serviço
+  // Lista de itens descritivos que compõem o serviço.
+  // Usamos isso para mostrar valor agregado ao cliente ("O que está incluso?").
   items: [
-    // ITENS INCLUSOS (CORTESIAS PREMIUM)
-    // Deixe price: 0 e isIncluded: true para gerar valor percebido
     {
       id: "1",
       title: "Direção Criativa & Roteiro",
       description: "Desenvolvimento completo do conceito, storyboard e narrativa visual.",
       price: 0,
-      isIncluded: true,
+      isIncluded: true, // Item cortesia/incluso
       type: 'fixed'
     },
     {
@@ -66,7 +70,8 @@ export const mockQuote: QuoteData = {
     }
   ],
 
-  // Imagens do Moodboard (Galeria de Inspiração)
+  // URLs das imagens que aparecem no Moodboard (Galeria)
+  // Substitua essas URLs por imagens do portfólio real da EAREC.
   moodboardImages: [
     "https://i.ibb.co/7dDRV17v/img1.jpg",
     "https://i.ibb.co/Y7J8K2fn/img2.jpg",

@@ -2,12 +2,13 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
 import AnimatedPrice from '../ui/AnimatedPrice';
+import { ArrowRight } from 'lucide-react';
 
 interface StickyFooterProps {
   totalPrice: number;
   onApprove: () => void;
   isApproved: boolean;
-  highlight?: boolean; // Nova prop para incentivar o clique
+  highlight?: boolean;
 }
 
 const StickyFooter: React.FC<StickyFooterProps> = ({ totalPrice, onApprove, isApproved, highlight = false }) => {
@@ -15,7 +16,8 @@ const StickyFooter: React.FC<StickyFooterProps> = ({ totalPrice, onApprove, isAp
     <motion.div 
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      transition={{ delay: 2, duration: 0.8, type: "spring" }}
+      exit={{ y: 100 }}
+      transition={{ duration: 0.5, type: "spring", damping: 20 }}
       className="fixed bottom-0 left-0 right-0 z-40"
     >
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none h-32 -top-32" />
@@ -71,9 +73,9 @@ const StickyFooter: React.FC<StickyFooterProps> = ({ totalPrice, onApprove, isAp
                     variant="primary" 
                     size="lg" 
                     onClick={onApprove}
-                    className="min-w-[200px]"
+                    className="min-w-[200px] flex items-center gap-2"
                   >
-                    Aprovar Proposta
+                    Revisar Contrato <ArrowRight size={18} />
                   </Button>
                 </motion.div>
               ) : (
@@ -81,7 +83,6 @@ const StickyFooter: React.FC<StickyFooterProps> = ({ totalPrice, onApprove, isAp
                   key="success-msg"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  // Adicionado pr-6 e mr-4 para evitar que encoste na borda em telas menores
                   className="flex items-center gap-2 text-green-500 px-8 py-3 bg-green-500/10 rounded-full border border-green-500/20 mr-4 md:mr-0"
                 >
                   <span className="relative flex h-3 w-3">
