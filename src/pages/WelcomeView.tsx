@@ -227,7 +227,9 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
                       formData.contact.length > 5;
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center bg-neutral-950 relative overflow-hidden px-6">
+    // FIX: Uso de min-h-[100dvh] para garantir que em mobile browsers a altura seja respeitada corretamente
+    // Adicionado py-12 para garantir que o conteúdo não toque as bordas em telas baixas (landscape)
+    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center bg-neutral-950 relative overflow-hidden px-6 py-12">
       
       {/* Background Decorativo */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black z-0" />
@@ -251,24 +253,24 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
         animate="visible"
         className="relative z-10 w-full max-w-md"
       >
-        <motion.div variants={logoVariant} className="flex justify-center mb-10">
-          <Logo className="w-64 md:w-80" animate />
+        <motion.div variants={logoVariant} className="flex justify-center mb-8 md:mb-10">
+          <Logo className="w-56 md:w-80" animate />
         </motion.div>
 
         <motion.form 
           variants={formVariant}
           onSubmit={handleSubmit}
-          className="space-y-8 bg-white/5 p-8 rounded-2xl border border-white/5 backdrop-blur-md shadow-2xl relative"
+          className="space-y-6 md:space-y-8 bg-white/5 p-6 md:p-8 rounded-2xl border border-white/5 backdrop-blur-md shadow-2xl relative"
         >
           <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
           {/* Cabeçalho Ajustado com Restrição de Largura */}
           <div className="flex flex-col items-center mb-6">
-            <h2 className="text-xl text-white font-medium">Novo Orçamento</h2>
+            <h2 className="text-lg md:text-xl text-white font-medium">Novo Orçamento</h2>
             <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-medium mt-1 w-full text-center">(Preencha corretamente)</p>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4 md:space-y-5">
             <SmartInput 
               icon={User}
               name="name"
@@ -334,14 +336,14 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
                 size="lg"
                 disabled={!isFormValid}
               >
-                <span className="mr-2">Visualizar Orçamento</span>
+                <span className="mr-2 text-sm md:text-base">Visualizar Orçamento</span>
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Button>
             </motion.div>
           </motion.div>
         </motion.form>
 
-        <motion.p variants={formVariant} className="text-center text-neutral-600 text-sm mt-8">
+        <motion.p variants={formVariant} className="text-center text-neutral-600 text-xs md:text-sm mt-8">
           Experiência Audiovisual High-End
         </motion.p>
       </motion.div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { cn } from '../../lib/utils';
@@ -55,13 +56,13 @@ const Logo: React.FC<LogoProps> = ({ className, animate = false }) => {
         EA
       </text>
 
-      {/* Ponto Central - Vermelho Marca - Animação de Pulse (REC Effect) */}
+      {/* Ponto Central - Vermelho Marca - Aumentado r=16. Ajustado CY para 30 (centralizado com o texto) */}
       <motion.circle 
         cx="105" 
-        cy="36" 
-        r="13" 
+        cy="33" 
+        r="16" 
         fill="#DC2626" 
-        className="drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]"
+        className="drop-shadow-[0_0_10px_rgba(220,38,38,0.9)]"
         animate={{ opacity: [1, 0.6, 1] }}
         transition={{ 
           duration: 3, 
@@ -72,7 +73,7 @@ const Logo: React.FC<LogoProps> = ({ className, animate = false }) => {
 
       {/* Texto REC - Vermelho Marca */}
       <text 
-        x="128" 
+        x="132" 
         y="52" 
         fontFamily="'Inter', sans-serif" 
         fontWeight="800" 

@@ -20,6 +20,7 @@ interface SuccessViewProps {
       photoQty: number;
       videoQty: number;
       distance: number;
+      paymentMethod?: string;
   };
 }
 
@@ -55,8 +56,11 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
       // 3. Logística
       const distanciaStr = `${quoteDetails.distance}km (Ida)`;
       const freteStr = quoteDetails.location === 'studio' ? "Grátis (Estúdio)" : "Incluso no total";
+      
+      // 4. Pagamento
+      const pagamentoStr = quoteDetails.paymentMethod || "A combinar";
 
-      // 4. Montagem do Texto
+      // 5. Montagem do Texto
       message = `
 *🔔 NOVA PROPOSTA APROVADA*
 
@@ -78,6 +82,7 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
 *💰 FINANCEIRO*
 
 *Valor Total:* ${formatCurrency(totalPrice)}
+*Pagamento:* ${pagamentoStr}
 *Status:* Aprovado no Sistema
 ──────────────
 *🔗 PRÓXIMOS PASSOS*

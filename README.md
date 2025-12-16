@@ -1,88 +1,92 @@
-# 🎥 EAREC | Sistema de Orçamentos Cinematográficos
 
-Bem-vindo à documentação oficial do sistema de orçamentos da **EAREC**. 
+# 🎬 EAREC | Cinematic Proposals System
 
-Este projeto foi desenvolvido para oferecer uma experiência de venda **High-End**, onde o cliente não apenas vê preços, mas sente o valor da produção audiovisual através de uma interface imersiva, animada e responsiva.
+[![React](https://img.shields.io/badge/React-19.0-blue?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-black?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
 
----
-
-## 🚀 Tecnologias Utilizadas
-
-O projeto foi construído sobre uma stack moderna para garantir performance e facilidade de manutenção:
-
-*   **React 18+**: Biblioteca principal para construção da interface.
-*   **TypeScript**: Adiciona tipagem estática, reduzindo erros e facilitando o entendimento dos dados (ex: `QuoteData`, `ClientData`).
-*   **Tailwind CSS**: Framework de estilização "utility-first" para design rápido e responsivo.
-*   **Framer Motion**: Biblioteca poderosa para as animações complexas (entradas, saídas, modais).
-*   **Lucide React**: Ícones leves e modernos.
+> **High-End Audiovisual Experience**
+>
+> Uma plataforma de orçamentos projetada para encantar clientes premium. Não é apenas sobre calcular preços, é sobre vender uma experiência visual desde o primeiro contato.
 
 ---
 
-## 📂 Estrutura do Projeto
+## ✨ Features Principais
 
-Para facilitar a navegação, o código está organizado da seguinte forma:
+*   **Cinematic UX:** Animações fluidas, transições de estado e feedback visual rico.
+*   **Precificação Dinâmica:** Cálculo em tempo real considerando tipo de evento, horas, quantidade de mídia e adicionais.
+*   **Logística Inteligente:** Integração com OpenStreetMap para cálculo automático de frete baseado na distância.
+*   **Fluxo Seguro:** Painel administrativo protegido por senha para ajuste de preços base.
+*   **Fechamento WhatsApp:** Geração automática de mensagem formatada para conversão imediata.
 
-```
+---
+
+## 🏗 Arquitetura do Sistema
+
+O projeto segue uma arquitetura **SPA (Single Page Application)** leve, gerenciada por uma máquina de estados finita no componente raiz (`App.tsx`).
+
+### 🔄 Fluxo de Dados
+
+1.  **Entrada (`IntroView`):** Landing page minimalista.
+2.  **Captura (`WelcomeView`):** Validação de datas (API Calendar) e input de dados.
+3.  **Configuração (`QuoteView`):** O coração da aplicação.
+    *   *Categorização:* Social, Comercial, Estúdio, Produção.
+    *   *Upsell:* Sugestão de adicionais (Drone, RealTime).
+4.  **Revisão (`SummaryView`):** Edição final e seleção de pagamento (Pix, Cartão, Espécie).
+5.  **Conversão (`SuccessView`):** Link direto para negociação.
+
+---
+
+## 📂 Estrutura de Código
+
+```bash
 src/
-├── components/       # Blocos de construção da interface
-│   ├── quote/        # Componentes específicos do Orçamento (Hero, Moodboard, Configurador)
-│   └── ui/           # Componentes genéricos (Botões, Inputs, Loading, Logo)
-├── data/             # Dados estáticos e regras de negócio
-│   └── mock.ts       # ⚠️ AQUI VOCÊ EDITA PREÇOS E TEXTOS PADRÃO
-├── lib/              # Funções utilitárias
-│   ├── animations.ts # Configurações de animação (FadeIn, SlideUp)
-│   └── utils.ts      # Formatadores de moeda e classes CSS
-├── pages/            # As telas principais da aplicação
-│   ├── IntroView     # Tela inicial (Escolha de caminho)
-│   ├── WelcomeView   # Formulário de captação de dados
-│   ├── QuoteView     # A tela principal do orçamento (Cálculos)
-│   └── SuccessView   # Tela final de agradecimento
-└── types/            # Definições de Tipos (TypeScript Interfaces)
+├── components/           # UI Blocks
+│   ├── quote/            # Lógica de Negócio (UpsellList, Pricing)
+│   └── ui/               # Design System (Buttons, Logos, Inputs)
+│
+├── data/                 # Configurações Estáticas
+│   └── mock.ts           # ⚠️ PREÇOS BASE E API KEYS
+│
+├── lib/                  # Helpers & Logic
+│   ├── maps.ts           # Cálculo Geográfico (Haversine)
+│   ├── calendar.ts       # Validação de Agenda
+│   └── security.ts       # Autenticação Admin
+│
+├── pages/                # Views da Aplicação
+│   ├── QuoteView.tsx     # 🧠 Motor de Cálculo de Preço
+│   └── ...
 ```
 
 ---
 
-## 🛠 Como Personalizar (Guia Rápido)
+## 🚀 Como Manter e Editar
 
-### 1. Alterar Preços e Valores Base
-Todo o controle financeiro está centralizado em um único arquivo.
-*   **Arquivo:** `src/data/mock.ts`
-*   **O que editar:**
-    *   `basePrice`: Valor mínimo para mobilização da equipe.
-    *   `photoUnitPrice`: Valor por foto extra (atualmente R$ 25,00).
-    *   `videoUnitPrice`: Valor por vídeo extra (atualmente R$ 600,00).
-    *   `pricePerKm`: Custo de logística por KM.
+### 1. Alterar Tabela de Preços
+O sistema possui dois níveis de configuração:
+1.  **Valores Base (Km, Taxa Fixa):** Editáveis visualmente no `/admin` (Senha: XINGU) ou no arquivo `src/data/mock.ts`.
+2.  **Regras de Negócio:** A lógica de composição (ex: Combo = Vídeo + Fotos) reside no hook `useMemo` dentro de `src/pages/QuoteView.tsx`.
 
-### 2. Alterar a Logo
-*   Substitua o componente `src/components/ui/Logo.tsx` ou edite o SVG dentro dele para alterar a marca visual.
+### 2. Personalizar Serviços
+Para adicionar um novo tipo de serviço (ex: "Podcast"), edite:
+1.  `src/types/index.ts`: Adicione o ID ao tipo `ServiceId`.
+2.  `src/pages/QuoteView.tsx`: Adicione a entrada na `PRICING_TABLE` e a lógica no `totalPrice`.
+3.  `src/components/quote/UpsellList.tsx`: Adicione o Card visual na renderização.
 
-### 3. Ajustar Textos e Títulos
-*   Os textos "Cinematográficos" (ex: frases de efeito no Hero) estão dentro dos componentes em `src/components/quote/`.
-
----
-
-## 📦 Instalação e Execução
-
-Se você é um desenvolvedor e baixou este código:
-
-1.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-
-2.  **Rode o servidor local:**
-    ```bash
-    npm run dev
-    ```
-
-3.  **Build para Produção:**
-    ```bash
-    npm run build
-    ```
+### 3. Integrações (Maps & Calendar)
+As chaves de API e configurações externas ficam centralizadas em `src/data/mock.ts`.
+*   **Mapas:** Usa Nominatim (OpenSource), não requer chave.
+*   **Calendar:** Requer Google API Key válida para funcionar em produção (Fallback automático para simulação em dev).
 
 ---
 
-## 💡 Dicas de Desenvolvimento
+## 🎨 Design Guidelines
 
-*   **Comentários:** O código está amplamente comentado em português para facilitar o entendimento da lógica.
-*   **Performance:** Imagens externas (Moodboard) devem ser otimizadas. No código atual, usamos links diretos (`ibb.co`), mas recomenda-se hospedar localmente ou em um CDN próprio.
+*   **Tipografia:** `Playfair Display` para elegância (Títulos) e `Inter` para legibilidade (UI).
+*   **Cores:** Fundo `Neutral-950` (Deep Black) com acentos em `Brand-Red (#DC2626)`.
+*   **Interação:** Tudo deve reagir ao cursor. Botões têm hover states, cards expandem, números rolam (slot machine effect).
+
+---
+
+*Desenvolvido com excelência para EAREC Mídia.*

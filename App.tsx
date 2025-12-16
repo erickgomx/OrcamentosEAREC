@@ -10,41 +10,54 @@ import { ClientData, QuoteData } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
 
-// Definição dos possíveis estados da tela (Roteamento simples sem biblioteca externa)
+// Definição dos estados possíveis da aplicação (State Machine simples)
+// Isso evita a necessidade de um Router complexo para um app linear.
 type ViewState = 'intro' | 'welcome' | 'quote' | 'admin';
 
 const App: React.FC = () => {
-  // 'view' controla qual tela está sendo exibida no momento
+  // --- GERENCIAMENTO DE ESTADO GLOBAL ---
+
+  // Controla qual "Página" está visível para o usuário
   const [view, setView] = useState<ViewState>('intro');
   
-  // 'clientData' armazena as informações preenchidas pelo usuário (Nome, Local, etc)
+  // Armazena os dados do cliente capturados na WelcomeView
+  // Esses dados são passados para a QuoteView para personalizar a oferta e calcular logística
   const [clientData, setClientData] = useState<ClientData | null>(null);
   
-  // Estado para controlar a exibição do loading screen
+  // Controla a exibição da tela de carregamento "cinematográfica" entre transições
   const [isLoading, setIsLoading] = useState(false);
   
-  // 'config' armazena os preços e regras de negócio. Inicia com o mock, mas pode ser alterado no painel Admin.
+  // Configuração global de preços e regras.
+  // Inicia com os dados do arquivo 'mock.ts', mas pode ser atualizado via AdminDashboard em tempo de execução.
   const [config, setConfig] = useState<QuoteData>(mockQuote);
 
   /**
-   * Função chamada quando o usuário termina de preencher o formulário na WelcomeView.
-   * Ela simula um carregamento e transiciona para a tela de Orçamento (QuoteView).
+   * Handler: Início do Processo
+   * Acionado quando o usuário termina de preencher o formulário inicial.
+   * Realiza uma transição suave com loading artificial para gerar expectativa.
    */
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     
-    // Ativa a tela de loading para dar um feedback visual e criar expectativa ("Cinematic Feel")
+    // Ativa o Loading Overlay
     setIsLoading(true);
-    await delay(2000); // Aguarda 2 segundos
+    
+    // Pequeno delay artificial (UX) para o usuário sentir que algo complexo está sendo processado
+    await delay(2000); 
+    
     setIsLoading(false);
     
-    // Troca para a visualização do orçamento e rola para o topo
+    // Transição de estado: Vai para a tela de Orçamento
     setView('quote');
+    
+    // Garante que a nova tela comece do topo
     window.scrollTo(0, 0);
   };
 
   /**
-   * Função para atualizar as configurações vindas do AdminDashboard
+   * Handler: Atualização Administrativa
+   * Permite que o painel Admin altere os preços base (ex: preço por Km, preço base)
+   * sem precisar recarregar a página ou alterar código.
    */
   const handleAdminUpdate = (newConfig: QuoteData) => {
     setConfig(newConfig);
@@ -54,22 +67,22 @@ const App: React.FC = () => {
     <main className="w-full min-h-screen bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans">
       
       {/* 
-        AnimatePresence permite animar componentes quando eles são removidos da árvore DOM (unmount).
-        Usado aqui para fazer o Loading desaparecer suavemente.
+        AnimatePresence: Gerencia a saída (unmount) de componentes animados.
+        Fundamental para que a tela de Loading faça o fade-out antes de sumir.
       */}
       <AnimatePresence>
         {isLoading && <Loading key="loader" />}
       </AnimatePresence>
 
-      {/* Renderização Condicional das Telas */}
+      {/* RENDERIZAÇÃO CONDICIONAL DAS VIEWS */}
       {!isLoading && (
         <>
-          {/* 1. Tela de Introdução (Escolha entre Instagram ou Orçamento) */}
+          {/* 1. View: Intro (Escolha de Caminho) */}
           {view === 'intro' && (
              <IntroView onContinue={() => setView('welcome')} />
           )}
 
-          {/* 2. Tela de Boas-vindas (Formulário) */}
+          {/* 2. View: Welcome (Formulário de Dados) */}
           {view === 'welcome' && (
             <WelcomeView 
               onStart={handleStart} 
@@ -77,15 +90,17 @@ const App: React.FC = () => {
             />
           )}
 
-          {/* 3. Tela Principal de Orçamento (Cálculos e Configuração) */}
+          {/* 3. View: Quote (Configurador Principal) */}
+          {/* Só renderiza se tivermos os dados do cliente garantidos */}
           {view === 'quote' && clientData && (
             <QuoteView 
               clientData={clientData} 
+              onUpdateClientData={setClientData}
               config={config} 
             />
           )}
 
-          {/* 4. Painel Administrativo (Senha protegida) */}
+          {/* 4. View: Admin (Painel Protegido) */}
           {view === 'admin' && (
             <AdminDashboard 
               currentConfig={config}
