@@ -1,10 +1,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, CheckCircle, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, Settings2, User, Phone, Edit2, Save, X, Banknote, QrCode, FileText, Check } from 'lucide-react';
+import { Calendar, CheckCircle, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, Settings2, User, Phone, Edit2, Save, X, Banknote, QrCode, FileText, Check, Map as MapIcon } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import AnimatedPrice from '../components/ui/AnimatedPrice';
+import LocationMapModal from '../components/ui/LocationMapModal';
 import { QuoteData, ClientData } from '../types';
 import { cn } from '../lib/utils';
 import { fadeInUp, staggerContainer } from '../lib/animations';
@@ -51,9 +52,15 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   // Estado que controla se os campos estão em modo de edição
   const [isEditing, setIsEditing] = useState(false);
   
+  // Controle do Modal de Mapa
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  
   // Estado temporário (Buffer) para armazenar as mudanças durante a edição.
   // Só é comitado para o estado principal se o usuário clicar em "Salvar".
   const [tempData, setTempData] = useState<ClientData>(clientData);
+
+  // Data mínima para o input (Hoje)
+  const today = new Date().toISOString().split('T')[0];
 
   // Sincroniza estado local se clientData mudar externamente
   useEffect(() => {
@@ -85,15 +92,27 @@ const SummaryView: React.FC<SummaryViewProps> = ({
     setTempData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleLocationSelect = (address: string) => {
+      setTempData(prev => ({ ...prev, location: address }));
+  };
+
   // Helper para mostrar datas de forma amigável
   const formatDateSafe = (dateString: string) => {
     if (!dateString) return 'A definir';
     try {
-        const date = new Date(`${dateString}T12:00:00`);
+        // Tenta lidar tanto com YYYY-MM-DD quanto ISO completo
+        const datePart = dateString.includes('T') ? dateString.split('T')[0] : dateString;
+        const date = new Date(`${datePart}T12:00:00`);
         return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
     } catch (e) {
         return dateString;
     }
+  };
+
+  // Helper para formatar valor do input date (YYYY-MM-DD)
+  const getInputDateValue = (dateString: string) => {
+      if (!dateString) return '';
+      return dateString.includes('T') ? dateString.split('T')[0] : dateString;
   };
 
   return (
@@ -207,7 +226,11 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                     <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Data do Evento</label>
                                     {isEditing ? (
                                         <input 
-                                            name="date" type="date" value={tempData.date} onChange={handleChange}
+                                            name="date" 
+                                            type="date" 
+                                            min={today}
+                                            value={getInputDateValue(tempData.date)} 
+                                            onChange={handleChange}
                                             className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert"
                                         />
                                     ) : (
@@ -221,10 +244,19 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 <div className="space-y-1">
                                     <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Localização</label>
                                     {isEditing ? (
-                                        <input 
-                                            name="location" value={tempData.location} onChange={handleChange}
-                                            className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 focus:outline-none"
-                                        />
+                                        <div className="relative">
+                                            <input 
+                                                name="location" value={tempData.location} onChange={handleChange}
+                                                className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 pr-10 focus:outline-none"
+                                            />
+                                            <button 
+                                                onClick={() => setIsMapOpen(true)}
+                                                className="absolute right-0 top-0 text-neutral-400 hover:text-brand-DEFAULT p-1"
+                                                title="Abrir Mapa para Precisão"
+                                            >
+                                                <MapIcon size={16} />
+                                            </button>
+                                        </div>
                                     ) : (
                                         <p className="text-white font-medium flex items-center gap-2">
                                             <MapPin size={12} className="text-neutral-500" />
@@ -389,6 +421,14 @@ const SummaryView: React.FC<SummaryViewProps> = ({
              </motion.div>
         </motion.div>
       )}
+
+      {/* Modal de Mapa (Acessível no Modo de Edição) */}
+      <LocationMapModal 
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        onSelectLocation={handleLocationSelect}
+        initialAddress={tempData.location}
+      />
     </div>
   );
 };
