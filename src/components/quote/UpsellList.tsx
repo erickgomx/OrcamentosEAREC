@@ -483,7 +483,8 @@ const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details,
                             animate={active ? { scale: [1, 1.2, 1] } : { scale: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <Icon size={24} className={cn("mb-2", active ? "text-brand-DEFAULT" : "text-neutral-400")} />
+                            {/* Ícone agora sempre com a cor da marca (brand-DEFAULT) para destaque */}
+                            <Icon size={24} className="mb-2 text-brand-DEFAULT" />
                         </motion.div>
                     )}
                     
