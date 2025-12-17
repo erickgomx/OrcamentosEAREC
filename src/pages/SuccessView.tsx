@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, Clock, MessageCircle, ArrowDown } from 'lucide-react';
+import { CheckCircle, MessageCircle, ArrowDown } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import { fadeInUp, staggerContainer } from '../lib/animations';
@@ -23,6 +23,37 @@ interface SuccessViewProps {
       paymentMethod?: string;
   };
 }
+
+/**
+ * Componente: AnimatedClock
+ * Renderiza um ícone SVG com ponteiros ancorados corretamente no centro.
+ */
+const AnimatedClock = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-500">
+    <circle cx="12" cy="12" r="10" />
+    
+    {/* Ponteiro das Horas (Curto) */}
+    {/* x1/y1 = Centro (12, 12). x2/y2 = Ponta (12, 6). Comprimento 6px */}
+    <motion.line
+      x1="12" y1="12" x2="12" y2="7"
+      initial={{ rotate: 0 }}
+      animate={{ rotate: 360 }}
+      transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+      // originX: 0.5 (centro horizontal da linha), originY: 1 (base da linha, que é o y1=12)
+      style={{ originX: 0.5, originY: 1 }}
+    />
+    
+    {/* Ponteiro dos Minutos (Longo) */}
+    {/* x1/y1 = Centro (12, 12). x2/y2 = Ponta (12, 3). Comprimento 9px */}
+    <motion.line
+      x1="12" y1="12" x2="12" y2="3"
+      initial={{ rotate: 0 }}
+      animate={{ rotate: 360 }}
+      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+      style={{ originX: 0.5, originY: 1 }}
+    />
+  </svg>
+);
 
 /**
  * SuccessView
@@ -60,43 +91,45 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
       // 4. Pagamento
       const pagamentoStr = quoteDetails.paymentMethod || "A combinar";
 
-      // 5. Montagem do Texto
-      message = `
-*🔔 NOVA PROPOSTA APROVADA*
+      // 5. Sanitização de moeda (Remove espaços não quebráveis que bugam no WhatsApp)
+      const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
 
-*👤 DADOS DO CLIENTE*
+      // 6. Montagem do Texto (Emojis fora dos asteriscos para evitar problemas de formatação)
+      message = `
+🔔 *NOVA PROPOSTA APROVADA*
+
+👤 *DADOS DO CLIENTE*
 *Nome:* ${clientData.name}
 *Local:* ${clientData.location}
 
-*🎬 DETALHES DO SERVIÇO*
-
+🎬 *DETALHES DO SERVIÇO*
 *Ocasião:* ${quoteDetails.customOccasionText}
 *Ambiente:* ${ambiente}
 *Escopo:* ${escopo}
 
-*🚚 LOGÍSTICA*
-
+🚚 *LOGÍSTICA*
 *Distância:* ${distanciaStr}
 *Frete:* ${freteStr}
 
-*💰 FINANCEIRO*
-
-*Valor Total:* ${formatCurrency(totalPrice)}
+💰 *FINANCEIRO*
+*Valor Total:* ${formattedPrice}
 *Pagamento:* ${pagamentoStr}
 *Status:* Aprovado no Sistema
 ──────────────
-*🔗 PRÓXIMOS PASSOS*
+🔗 *PRÓXIMOS PASSOS*
 Aguardando emissão do contrato.
 `.trim();
   }
 
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  // Usa api.whatsapp.com que é mais robusto para strings longas e codificadas
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center bg-neutral-950 relative overflow-hidden px-6">
+    // REMOVIDO: bg-neutral-950
+    <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-6">
       
-      {/* Background Decorativo e Gradientes */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black z-0" />
+      {/* Background Decorativo e Gradientes (Com transparência para o fundo global) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900/50 via-neutral-950/80 to-black z-0" />
       <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-brand-DEFAULT/10 to-transparent pointer-events-none" />
 
       <motion.div 
@@ -158,7 +191,7 @@ Aguardando emissão do contrato.
         >
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-500/10 rounded-full text-yellow-500">
-                    <Clock size={18} />
+                    <AnimatedClock />
                 </div>
                 <div className="text-left">
                     <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Status</p>

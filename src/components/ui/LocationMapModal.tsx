@@ -35,8 +35,9 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
 
             const map = L.map(mapContainerRef.current).setView([initialLat, initialLng], 13);
             
-            // 2. Adiciona TileLayer (Tema Escuro - CartoDB Dark Matter)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            // 2. Adiciona TileLayer (Tema CLARO - CartoDB Positron)
+            // Alterado de 'dark_all' para 'light_all' conforme solicitado
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
                 subdomains: 'abcd',
                 maxZoom: 19

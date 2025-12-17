@@ -203,8 +203,6 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
   const dateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // CORREÇÃO DATA MOBILE: Calcula a data local (Brazil) para o atributo 'min'.
-  // toISOString() usa UTC, o que à noite no Brasil já pode ser "amanhã", 
-  // mas 'en-CA' (YYYY-MM-DD) respeita o timezone local do browser.
   const today = new Date().toLocaleDateString('en-CA');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,11 +210,10 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
 
     // Lógica Específica para Data
     if (name === 'date') {
-        // CORREÇÃO: Bloqueia imediatamente seleção de data passada se o browser permitir
         if (value && value < today) {
             setDateStatus('error');
             setDateMessage("A data não pode ser anterior a hoje.");
-            setFormData({ ...formData, [name]: value }); // Atualiza para o usuário ver o erro
+            setFormData({ ...formData, [name]: value });
             return;
         }
 
@@ -256,16 +253,15 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
     }
   };
 
-  // Validação geral do formulário
   const isFormValid = formData.name.length > 2 && 
                       formData.location.length > 3 && 
                       formData.date.length > 0 && 
-                      dateStatus === 'valid' && // Bloqueia se a data não foi validada ou deu erro
+                      dateStatus === 'valid' &&
                       formData.contact.length > 5;
 
   return (
-    // FIX: Uso de min-h-[100dvh] para garantir que em mobile browsers a altura seja respeitada corretamente
-    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center bg-neutral-950 relative overflow-hidden px-6 py-12">
+    // REMOVIDO: bg-neutral-950
+    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-6 py-12">
       
       {/* Botão de Admin Discreto */}
       {onAdminClick && (
@@ -278,8 +274,8 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
         </button>
       )}
 
-      {/* Background Decorativo */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black z-0" />
+      {/* Background Decorativo - Gradiente transparente */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-950/60 to-black z-0" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-DEFAULT/5 rounded-full blur-[150px] pointer-events-none" />
 
       <motion.div 
@@ -295,7 +291,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
         <motion.form 
           variants={formVariant}
           onSubmit={handleSubmit}
-          className="space-y-6 md:space-y-8 bg-white/5 p-6 md:p-8 rounded-2xl border border-white/5 backdrop-blur-md shadow-2xl relative"
+          className="space-y-6 md:space-y-8 bg-black/40 p-6 md:p-8 rounded-2xl border border-white/5 backdrop-blur-md shadow-2xl relative"
         >
           <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
@@ -322,7 +318,6 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
               value={formData.location}
               onChange={handleChange}
               minLength={4}
-              // Botão de Mapa integrado ao Input
               rightElement={
                 <button 
                   type="button"
@@ -343,9 +338,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick }) => {
               placeholder=""
               value={formData.date}
               onChange={handleChange}
-              // Passa a data mínima calculada localmente
               min={today}
-              // Passa o controle de status para o componente pai (WelcomeView) gerenciar a API
               externalStatus={!formData.date ? 'idle' : dateStatus}
               errorMessage={dateMessage}
               className="[&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:cursor-pointer"

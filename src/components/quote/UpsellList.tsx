@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Camera, Video, MapPin, Gift, Crown, GraduationCap, Heart, 
-  Store, Building2, Aperture, Plane, Clock, Zap, Minus, Plus, Route, Star, Info, X, MessageCircle, MousePointerClick
+  Camera, Video, Gift, Crown, GraduationCap, Heart, 
+  Store, Aperture, Plane, Clock, Zap, Minus, Plus, Route, Star, CircleHelp, X, MessageCircle, Hand
 } from 'lucide-react';
 import { formatCurrency, cn } from '../../lib/utils';
 import { fadeInUp, staggerContainer } from '../../lib/animations';
 import { ServiceCategory, ServiceId } from '../../types';
-import Button from '../ui/Button';
+import AnimatedNumber from '../ui/AnimatedNumber';
 
 interface UpsellListProps {
   category: ServiceCategory;
@@ -29,13 +29,32 @@ interface UpsellListProps {
 }
 
 /**
- * Componente: UpsellList (O Configurador Visual)
- * ----------------------------------------------
- * Este é o componente mais complexo visualmente. Ele gerencia:
- * 1. As abas de navegação (Categorias).
- * 2. A grade de cards de serviço (Produtos).
- * 3. Os controles de quantidade/horas (Inputs).
+ * Componente Visual de Dica de Clique (Mãozinha + Ripple)
  */
+const ClickHint = ({ delay = 0, className }: { delay?: number, className?: string }) => (
+    <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        className={cn("absolute z-50 pointer-events-none flex items-center justify-center", className)}
+    >
+        {/* Onda (Ripple) */}
+        <motion.div
+            animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: delay }}
+            className="absolute w-8 h-8 bg-white/30 rounded-full"
+        />
+        {/* Mãozinha */}
+        <motion.div
+            animate={{ y: [0, -10, 0], scale: [1, 0.9, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: delay }}
+        >
+            <Hand className="text-white fill-white/20 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] rotate-[-15deg]" size={32} />
+        </motion.div>
+    </motion.div>
+);
+
 const UpsellList: React.FC<UpsellListProps> = ({ 
   category, setCategory,
   serviceId, setServiceId,
@@ -48,7 +67,6 @@ const UpsellList: React.FC<UpsellListProps> = ({
   locationClient
 }) => {
 
-  // Definição estática das categorias para gerar as abas
   const categories = [
     { id: 'social', label: 'Eventos Sociais', icon: Crown },
     { id: 'commercial', label: 'Comercial', icon: Store },
@@ -57,59 +75,70 @@ const UpsellList: React.FC<UpsellListProps> = ({
     { id: 'custom', label: 'Personalizado', icon: Star, highlight: true },
   ];
 
-  // LÓGICA DE NEGÓCIO: Cálculo de Frete
   const isNoTravelCost = category === 'studio' || category === 'custom';
   const travelCost = isNoTravelCost ? 0 : distance * 2 * pricePerKm;
-
   const whatsappNumber = "5584981048857";
 
-  // Estado para controlar a exibição do indicador de clique (tutorial)
-  // Inicia true, mas vai para false assim que houver qualquer clique
-  const [showIndicator, setShowIndicator] = useState(true);
+  // Estado que controla se as dicas visuais devem aparecer
+  const [showTutorial, setShowTutorial] = useState(true);
 
-  // Effect: Remove indicador se usuário trocar de aba manualmente
-  useEffect(() => {
-      if (category !== 'social') setShowIndicator(false);
-  }, [category]);
-
-  // Handler simples para clique no serviço
-  const handleServiceClick = (id: ServiceId) => {
-      setServiceId(id);
-      // Remove o indicador imediatamente ao clicar em qualquer serviço
-      setShowIndicator(false); 
+  // Função centralizada para desligar o tutorial em QUALQUER interação
+  const handleInteraction = () => {
+    if (showTutorial) setShowTutorial(false);
   };
 
+  // Garante que o tutorial suma se a categoria mudar (mesmo que programaticamente)
+  useEffect(() => {
+    if (category !== 'social') setShowTutorial(false);
+  }, [category]);
+
+  // Lógica para mostrar o controle de horas
+  // Exibe se for (Social E Aniversário/15anos) OU (Estúdio E Vídeo)
+  const showHoursControl = (
+    (category === 'social' && (serviceId === 'birthday' || serviceId === 'fifteen')) || 
+    (category === 'studio' && serviceId === 'studio_video')
+  );
+
   return (
-    <section id="configurator" className="pt-4 pb-12 px-4 md:px-8 bg-neutral-900/30 min-h-screen">
+    <section id="configurator" className="pt-4 pb-12 px-4 md:px-8 bg-neutral-900/30 min-h-screen" onClick={handleInteraction}>
       <div className="max-w-5xl mx-auto space-y-8">
         
         {/* === 1. NAVEGAÇÃO POR ABAS (TABS) === */}
         <div className="relative z-20 text-center">
             <p className="text-xs text-neutral-500 uppercase tracking-widest mb-4">Qual a ocasião do serviço?</p>
             
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4 relative">
                 {categories.map((cat) => {
                     const isActive = category === cat.id;
                     const Icon = cat.icon;
                     return (
-                        <button
-                            key={cat.id}
-                            onClick={() => setCategory(cat.id as ServiceCategory)}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-2 md:px-4 md:py-3 rounded-lg transition-all text-sm md:text-base font-medium flex-1 md:flex-none justify-center whitespace-nowrap",
-                                isActive 
-                                    ? cn(
-                                        "bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20",
-                                        cat.id !== 'custom' && "border-2 border-white"
-                                    ) 
-                                    : "text-neutral-400 hover:text-white hover:bg-white/5",
-                                cat.highlight && !isActive && "text-brand-DEFAULT hover:bg-brand-DEFAULT/10 border border-brand-DEFAULT/20"
-                            )}
-                        >
-                            <Icon size={18} className="shrink-0" />
-                            <span className="hidden sm:inline">{cat.label}</span>
-                            <span className="sm:hidden">{cat.label.split(' ')[0]}</span>
-                        </button>
+                        <div key={cat.id} className="relative">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Evita bubble duplicado
+                                    setCategory(cat.id as ServiceCategory);
+                                    handleInteraction();
+                                }}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-2 md:px-4 md:py-3 rounded-lg transition-all text-sm md:text-base font-medium flex-1 md:flex-none justify-center whitespace-nowrap relative z-10",
+                                    isActive 
+                                        ? cn("bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20", cat.id !== 'custom' && "border-2 border-white") 
+                                        : "text-neutral-400 hover:text-white hover:bg-white/5",
+                                    cat.highlight && !isActive && "text-brand-DEFAULT hover:bg-brand-DEFAULT/10 border border-brand-DEFAULT/20"
+                                )}
+                            >
+                                <Icon size={18} className="shrink-0" />
+                                <span className="hidden sm:inline">{cat.label}</span>
+                                <span className="sm:hidden">{cat.label.split(' ')[0]}</span>
+                            </button>
+
+                            {/* HINT 1: Incentivo ao toque no MENU (Sobre a aba 'Comercial' para sugerir troca) */}
+                            <AnimatePresence>
+                                {showTutorial && category === 'social' && cat.id === 'commercial' && (
+                                    <ClickHint className="-top-1 left-1/2 -translate-x-1/2" />
+                                )}
+                            </AnimatePresence>
+                        </div>
                     )
                 })}
             </div>
@@ -129,55 +158,68 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {/* CATEGORIA: SOCIAL */}
             {category === 'social' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                    <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'birthday'} onClick={() => handleServiceClick('birthday')}
-                        icon={Gift} title="Aniversário / Chá" price="R$ 400 (2h)"
-                        desc="Cobertura completa dos parabéns e decoração."
-                        details="Inclui 2 horas de cobertura fotográfica. Todas as fotos tratadas entregues via link. Valor de hora extra aplicável. Ideal para Chá Revelação, Mesversário e Aniversários intimistas."
-                        // Só mostra o indicador se showIndicator for true E estivermos nesse card
-                        clickIndicator={showIndicator} 
-                    /></motion.div>
-                    <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'fifteen'} onClick={() => handleServiceClick('fifteen')}
-                        icon={Crown} title="15 Anos" price="R$ 400 (2h)"
-                        desc="Registro especial do debut."
-                        details="Foco na debutante, recepção e valsa. Inclui 2 horas de cobertura base. Fotos ilimitadas durante o período contratado com tratamento de cor profissional."
-                    /></motion.div>
-                    <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'graduation'} onClick={() => handleServiceClick('graduation')}
-                        icon={GraduationCap} title="Formatura" price="R$ 800 (Fixo)"
-                        details="Cobertura do evento de colação ou baile. Valor fechado para o evento (sem limite rígido de horas, cobrindo os momentos principais). Entrega digital em alta resolução."
-                    /></motion.div>
-                    <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'wedding_base'} onClick={() => handleServiceClick('wedding_base')}
-                        icon={Heart} title="Casamento (Base)" price="R$ 650"
-                        desc="Cerimônia + Decoração + Convidados"
-                        details="Cobertura essencial do casamento. Inclui fotos protocolares, decoração, cerimônia religiosa/civil e fotos com padrinhos e convidados."
-                    /></motion.div>
+                    <motion.div variants={fadeInUp}>
+                        <ServiceCard 
+                            active={serviceId === 'birthday'} 
+                            onClick={() => { setServiceId('birthday'); handleInteraction(); }}
+                            icon={Gift} title="Aniversário / Chá" price="R$ 400 (2h)"
+                            desc="Cobertura completa dos parabéns e decoração."
+                            details="Inclui 2 horas de cobertura fotográfica. Todas as fotos tratadas entregues via link. Ideal para Chá Revelação e Mesversário."
+                        />
+                    </motion.div>
+                    
+                    <motion.div variants={fadeInUp} className="relative">
+                        <ServiceCard 
+                            active={serviceId === 'fifteen'} 
+                            onClick={() => { setServiceId('fifteen'); handleInteraction(); }}
+                            icon={Crown} title="15 Anos" price="R$ 400 (2h)"
+                            desc="Registro especial do debut."
+                            details="Foco na debutante, recepção e valsa. Inclui 2 horas de cobertura base. Fotos ilimitadas durante o período contratado."
+                        />
+                        {/* REMOVIDO: Hint sobre o card de 15 anos/aniversário */}
+                    </motion.div>
+
+                    <motion.div variants={fadeInUp}>
+                        <ServiceCard 
+                            active={serviceId === 'graduation'} 
+                            onClick={() => { setServiceId('graduation'); handleInteraction(); }}
+                            icon={GraduationCap} title="Formatura" price="R$ 800 (Fixo)"
+                            details="Cobertura do evento de colação ou baile. Valor fechado para o evento."
+                        />
+                    </motion.div>
+                    <motion.div variants={fadeInUp}>
+                        <ServiceCard 
+                            active={serviceId === 'wedding_base'} 
+                            onClick={() => { setServiceId('wedding_base'); handleInteraction(); }}
+                            icon={Heart} title="Casamento (Base)" price="R$ 650"
+                            desc="Cerimônia + Decoração + Convidados"
+                            details="Cobertura essencial do casamento. Inclui fotos protocolares e cerimônia."
+                        />
+                    </motion.div>
                     
                     {/* Sub-seção: Pacotes Especiais */}
                     <motion.div variants={fadeInUp} className="md:col-span-2 pt-4">
                         <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3 ml-1">Pacotes de Casamento</p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                             <ServiceCard 
-                                active={serviceId === 'wedding_classic'} onClick={() => handleServiceClick('wedding_classic')}
+                                active={serviceId === 'wedding_classic'} onClick={() => { setServiceId('wedding_classic'); handleInteraction(); }}
                                 title="Clássico" price="R$ 900"
                                 desc="Pré-Wedding + Casamento"
-                                details="O pacote essencial. Inclui ensaio Pré-Wedding (externo) e a cobertura completa do evento de Casamento (Cerimônia e Recepção)."
+                                details="O pacote essencial. Inclui ensaio Pré-Wedding (externo) e a cobertura completa do evento."
                                 highlight
                             />
                             <ServiceCard 
-                                active={serviceId === 'wedding_romance'} onClick={() => handleServiceClick('wedding_romance')}
+                                active={serviceId === 'wedding_romance'} onClick={() => { setServiceId('wedding_romance'); handleInteraction(); }}
                                 title="Romance" price="R$ 1.150"
                                 desc="Pré + Making Off + Casamento"
-                                details="Pacote intermediário. Acrescenta a cobertura do Making Of da noiva/noivo, capturando a emoção da preparação, além do Pré-Wedding e Casamento."
+                                details="Pacote intermediário. Acrescenta a cobertura do Making Of da noiva/noivo."
                                 highlight
                             />
                             <ServiceCard 
-                                active={serviceId === 'wedding_essence'} onClick={() => handleServiceClick('wedding_essence')}
+                                active={serviceId === 'wedding_essence'} onClick={() => { setServiceId('wedding_essence'); handleInteraction(); }}
                                 title="Essência" price="R$ 1.750"
                                 desc="Pré + MkOff + Casamento + Vídeo"
-                                details="A experiência completa EAREC. Tudo do pacote Romance + cobertura de VÍDEO cinematográfico do grande dia (Highlight/Melhores Momentos)."
+                                details="A experiência completa EAREC. Tudo do pacote Romance + cobertura de VÍDEO cinematográfico."
                                 highlight
                             />
                         </div>
@@ -189,22 +231,22 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'commercial' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'comm_photo'} onClick={() => handleServiceClick('comm_photo')}
+                        active={serviceId === 'comm_photo'} onClick={() => setServiceId('comm_photo')}
                         icon={Camera} title="Fotografia" price="R$ 20 / foto"
                         desc="Para lojas e gastronomia."
                         details="Valor por foto tratada. Ideal para e-commerce, cardápios e lookbooks."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'comm_video'} onClick={() => handleServiceClick('comm_video')}
+                        active={serviceId === 'comm_video'} onClick={() => setServiceId('comm_video')}
                         icon={Video} title="Vídeo" price="R$ 500"
                         desc="Captação + Edição (até 1min)."
                         details="Produção de vídeo institucional ou promocional (Reels/TikTok) de até 1 minuto."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'comm_combo'} onClick={() => handleServiceClick('comm_combo')}
+                        active={serviceId === 'comm_combo'} onClick={() => setServiceId('comm_combo')}
                         icon={Zap} title="Combo Visual" price="Vídeo + Fotos"
                         desc="Foto + Vídeo (até 1min)"
-                        details="O pacote completo para redes sociais. Inclui a produção do vídeo comercial E as fotos dos produtos/espaço. Selecione a quantidade de fotos desejada abaixo."
+                        details="O pacote completo para redes sociais. Inclui a produção do vídeo comercial E as fotos."
                         highlight
                     /></motion.div>
                 </div>
@@ -214,14 +256,16 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'studio' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'studio_photo'} onClick={() => handleServiceClick('studio_photo')}
-                        icon={Camera} title="Ensaio em Estúdio" price="R$ 25 / foto"
-                        details="Sessão fotográfica em ambiente controlado. Iluminação profissional. Valor por foto escolhida e tratada (Skin retouch incluso)."
+                        active={serviceId === 'studio_photo'} onClick={() => setServiceId('studio_photo')}
+                        icon={Camera} 
+                        title="Ensaio em Estúdio (Imagens Tratadas)" 
+                        price="R$ 25 / foto"
+                        details="Sessão fotográfica em ambiente controlado. Iluminação profissional."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'studio_video'} onClick={() => handleServiceClick('studio_video')}
+                        active={serviceId === 'studio_video'} onClick={() => setServiceId('studio_video')}
                         icon={Video} title="Vídeo em Estúdio" price="R$ 350 (2h)"
-                        details="Gravação de conteúdo em estúdio (ex: Cursos, Youtube, Entrevistas). Valor referente a diária de 2 horas de estúdio com operador."
+                        details="Gravação de conteúdo em estúdio (ex: Cursos, Youtube, Entrevistas)."
                     /></motion.div>
                 </div>
             )}
@@ -230,24 +274,24 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'video_production' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'edit_only'} onClick={() => handleServiceClick('edit_only')}
+                        active={serviceId === 'edit_only'} onClick={() => setServiceId('edit_only')}
                         icon={Zap} title="Apenas Edição" price="R$ 250 / vídeo"
-                        details="Você envia o material bruto, nós editamos. Cortes, transições, correção de cor e sound design."
+                        details="Você envia o material bruto, nós editamos. Cortes, transições, correção de cor."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'cam_cap'} onClick={() => handleServiceClick('cam_cap')}
+                        active={serviceId === 'cam_cap'} onClick={() => setServiceId('cam_cap')}
                         icon={Video} title="Captação Câmera" price="R$ 350"
-                        details="Operador de câmera profissional com equipamento de cinema (4K). Valor por serviço/diária (até 6h)."
+                        details="Operador de câmera profissional com equipamento de cinema (4K)."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'mobile_cap'} onClick={() => handleServiceClick('mobile_cap')}
+                        active={serviceId === 'mobile_cap'} onClick={() => setServiceId('mobile_cap')}
                         icon={SmartphoneIcon} title="Captação Celular" price="R$ 250"
-                        details="Captação ágil com iPhone de última geração. Ideal para bastidores e conteúdo nativo para Stories/TikTok."
+                        details="Captação ágil com iPhone de última geração."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'drone'} onClick={() => handleServiceClick('drone')}
+                        active={serviceId === 'drone'} onClick={() => setServiceId('drone')}
                         icon={Plane} title="Drone" price="R$ 250"
-                        details="Imagens aéreas em 4K. Inclui 2 baterias de voo. Operador licenciado."
+                        details="Imagens aéreas em 4K. Operador licenciado."
                     /></motion.div>
                 </div>
             )}
@@ -256,17 +300,22 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'custom' && (
                 <motion.div variants={fadeInUp} className="bg-white/5 border border-white/10 p-8 rounded-xl text-center group transition-colors hover:border-white/20">
                     <motion.div
-                        animate={{ scale: [1, 1.2, 1], opacity: [1, 0.8, 1] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        animate={{ 
+                            scale: [1, 1.1, 1], 
+                            opacity: [0.7, 1, 0.7] 
+                        }}
+                        transition={{ 
+                            duration: 4, 
+                            repeat: Infinity, 
+                            ease: "easeInOut" 
+                        }}
                     >
                         <Star size={48} className="text-red-600 mx-auto mb-4 fill-red-600/20" />
                     </motion.div>
-                    
                     <h3 className="text-2xl font-serif text-neutral-200 mb-2">Orçamento Personalizado</h3>
                     <p className="text-neutral-500 mb-6 max-w-lg mx-auto text-sm">
-                        Projetos únicos exigem soluções sob medida. Fale diretamente com nossa equipe criativa.
+                        Projetos únicos exigem soluções sob medida.
                     </p>
-                    
                     <a 
                         href={`https://wa.me/${whatsappNumber}?text=Olá, gostaria de um orçamento personalizado.`}
                         target="_blank"
@@ -282,7 +331,7 @@ const UpsellList: React.FC<UpsellListProps> = ({
 
             {/* === 3. CONTROLES QUANTITATIVOS (CONDICIONAIS) === */}
             
-            {(serviceId === 'birthday' || serviceId === 'fifteen') && category === 'social' && (
+            {showHoursControl && (
                 <motion.div variants={fadeInUp} className="bg-white/5 p-8 rounded-xl border border-white/10 flex flex-col items-center">
                     <div className="flex items-center gap-2 text-white mb-6">
                         <Clock className="text-brand-DEFAULT" />
@@ -290,16 +339,16 @@ const UpsellList: React.FC<UpsellListProps> = ({
                     </div>
                     
                     <span className="text-7xl font-sans font-bold text-white mb-2 tracking-tighter">
-                        {hours}<span className="text-2xl text-neutral-500 ml-1 font-normal">h</span>
+                        <AnimatedNumber value={hours} /><span className="text-2xl text-neutral-500 ml-1 font-normal">h</span>
                     </span>
                     <p className="text-sm text-neutral-400 mb-8">Tempo total de cobertura</p>
 
                     <div className="flex items-center gap-6 w-full max-w-xs justify-center">
-                        <button onClick={() => setHours(Math.max(2, hours - 1))} className="p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Minus size={24} /></button>
+                        <button onClick={() => { setHours(Math.max(2, hours - 1)); handleInteraction(); }} className="p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Minus size={24} /></button>
                         <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden min-w-[50px]">
                             <div className="h-full bg-brand-DEFAULT transition-all" style={{ width: `${(hours / 10) * 100}%` }} />
                         </div>
-                        <button onClick={() => setHours(hours + 1)} className="p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Plus size={24} /></button>
+                        <button onClick={() => { setHours(hours + 1); handleInteraction(); }} className="p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors"><Plus size={24} /></button>
                     </div>
                     <p className="text-xs text-neutral-500 mt-6 bg-black/30 px-3 py-1 rounded-full text-center">Incluso 2h base. +R$ 250/h extra.</p>
                 </motion.div>
@@ -318,14 +367,22 @@ const UpsellList: React.FC<UpsellListProps> = ({
                     
                     <div className="relative mb-8">
                         <span className="text-8xl font-sans font-bold text-white tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                            {qty}
+                            <AnimatedNumber value={qty} />
                         </span>
                         <span className="absolute -right-8 top-2 text-lg text-neutral-500 font-medium">und</span>
                     </div>
 
                     <div className="flex items-center gap-4 sm:gap-8 w-full max-w-sm justify-center">
                         <button 
-                            onClick={() => setQty(Math.max(1, qty - 5))} 
+                            onClick={() => {
+                                // Lógica Condicional: Se for Produção (edit_only), step é 1. Se não, 5.
+                                const step = category === 'video_production' ? 1 : 5;
+                                // ATUALIZADO: Mínimo de 10 para Estúdio (studio_photo)
+                                const minLimit = serviceId === 'studio_photo' ? 10 : 1;
+                                
+                                setQty(Math.max(minLimit, qty - step));
+                                handleInteraction();
+                            }} 
                             className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white/5 border border-white/10 rounded-full hover:bg-brand-DEFAULT hover:border-brand-DEFAULT transition-all group shrink-0"
                         >
                             <Minus size={24} className="text-neutral-400 group-hover:text-white" />
@@ -340,13 +397,20 @@ const UpsellList: React.FC<UpsellListProps> = ({
                         </div>
 
                         <button 
-                            onClick={() => setQty(qty + 5)} 
+                            onClick={() => {
+                                // Lógica Condicional: Se for Produção (edit_only), step é 1. Se não, 5.
+                                const step = category === 'video_production' ? 1 : 5;
+                                setQty(qty + step);
+                                handleInteraction();
+                            }} 
                             className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-white/5 border border-white/10 rounded-full hover:bg-brand-DEFAULT hover:border-brand-DEFAULT transition-all group shrink-0"
                         >
                             <Plus size={24} className="text-neutral-400 group-hover:text-white" />
                         </button>
                     </div>
-                    <p className="text-xs text-neutral-500 mt-6">Ajuste de 5 em 5 unidades.</p>
+                    <p className="text-xs text-neutral-500 mt-6">
+                        {category === 'video_production' ? "Ajuste unitário." : "Ajuste de 5 em 5 unidades."}
+                    </p>
                 </motion.div>
             )}
 
@@ -354,7 +418,7 @@ const UpsellList: React.FC<UpsellListProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <motion.div 
                         variants={fadeInUp}
-                        onClick={() => setAddRealTime(!addRealTime)}
+                        onClick={() => { setAddRealTime(!addRealTime); handleInteraction(); }}
                         className={cn("cursor-pointer p-4 rounded-lg border flex items-center gap-4 transition-all", addRealTime ? "bg-brand-DEFAULT/20 border-brand-DEFAULT" : "bg-white/5 border-white/10")}
                     >
                         <div className={cn("w-6 h-6 rounded border flex items-center justify-center shrink-0", addRealTime ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/50")}>
@@ -368,7 +432,7 @@ const UpsellList: React.FC<UpsellListProps> = ({
 
                     <motion.div 
                         variants={fadeInUp}
-                        onClick={() => setAddDrone(!addDrone)}
+                        onClick={() => { setAddDrone(!addDrone); handleInteraction(); }}
                         className={cn("cursor-pointer p-4 rounded-lg border flex items-center gap-4 transition-all", addDrone ? "bg-brand-DEFAULT/20 border-brand-DEFAULT" : "bg-white/5 border-white/10")}
                     >
                         <div className={cn("w-6 h-6 rounded border flex items-center justify-center shrink-0", addDrone ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/50")}>
@@ -414,12 +478,14 @@ const UpsellList: React.FC<UpsellListProps> = ({
 };
 
 // Componente Auxiliar: ServiceCard
-const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details, highlight, clickIndicator }: any) => {
+const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details, highlight }: any) => {
     const [showDetails, setShowDetails] = useState(false);
 
     return (
         <div 
-            onClick={onClick}
+            onClick={(e) => {
+                if(onClick) onClick(e);
+            }}
             className={cn(
                 "cursor-pointer p-5 rounded-xl border transition-all duration-300 relative overflow-hidden group flex flex-col justify-between h-full", 
                 active 
@@ -430,51 +496,20 @@ const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details,
         >
             {active && <div className="absolute top-0 right-0 w-16 h-16 bg-brand-DEFAULT/20 blur-xl rounded-full -mr-8 -mt-8 pointer-events-none" />}
             
-            {/* INDICADOR DE CLIQUE DENTRO DO CARD (SE HABILITADO) */}
-            <AnimatePresence>
-                {clickIndicator && (
-                    <motion.div
-                        className="absolute right-4 bottom-4 z-20 pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        animate={{ 
-                            opacity: 1, 
-                            scale: [1, 0.9, 1],
-                            rotate: [0, -10, 0] 
-                        }}
-                        transition={{ 
-                            duration: 2, 
-                            repeat: Infinity, 
-                            ease: "easeInOut" 
-                        }}
-                        exit={{ opacity: 0 }}
-                    >
-                         <MousePointerClick 
-                            size={28}
-                            className="text-white fill-white/20 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" 
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
             <div>
-                {/* 
-                   HEADER DO CARD 
-                   Justify-between garante que o ícone fique na esquerda
-                   e o bloco de ações (Info + Dot) fique sempre na extrema DIREITA.
-                */}
-                <div className="flex items-start justify-between mb-3">
-                    {Icon && (
+                {/* Header do Card - CORRIGIDO: Ícones de info sempre à direita */}
+                <div className="flex items-start mb-3 w-full">
+                    {Icon ? (
                         <motion.div
                             animate={active ? { scale: [1, 1.2, 1] } : { scale: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            {/* Ícone agora sempre com a cor da marca (brand-DEFAULT) para destaque (Vermelho) */}
                             <Icon size={24} className="mb-2 text-brand-DEFAULT" />
                         </motion.div>
-                    )}
+                    ) : null}
                     
-                    {/* Bloco Direita: Info + Indicador Ativo */}
-                    <div className="flex items-center gap-2">
+                    {/* ml-auto força este container para a direita, independente de ter ícone à esquerda ou não */}
+                    <div className="flex items-center gap-2 ml-auto">
                         {details && (
                             <button 
                                 onClick={(e) => {
@@ -484,10 +519,9 @@ const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details,
                                 className="text-neutral-500 hover:text-white transition-colors p-1 z-10"
                                 title="Ver detalhes"
                             >
-                                <Info size={16} />
+                                <CircleHelp size={16} />
                             </button>
                         )}
-                        {/* Dot indicador de seleção */}
                         {active && <div className="w-2 h-2 bg-brand-DEFAULT rounded-full" />}
                     </div>
                 </div>
@@ -520,7 +554,7 @@ const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details,
     );
 };
 
-// Ícone auxiliar SVG (substituto caso Lucide não tenha um específico desejado)
+// Ícone auxiliar SVG
 const SmartphoneIcon = ({ size, className }: any) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
 );

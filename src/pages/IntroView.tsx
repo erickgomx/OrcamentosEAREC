@@ -32,11 +32,11 @@ const itemVariants: Variants = {
 
 const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center bg-neutral-950 relative overflow-hidden px-6">
+    // REMOVIDO: bg-neutral-950 para permitir que BackgroundFilmStrips apareça
+    <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden px-6">
       
-      {/* Background Decorativo */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black z-0" />
-      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-brand-DEFAULT/5 to-transparent pointer-events-none" />
+      {/* Background Decorativo Local (Sutil) - Mantém legibilidade sem cobrir o filme */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-950/50 to-neutral-950/80 z-0 pointer-events-none" />
 
       <motion.div 
         variants={containerVariants}
@@ -60,7 +60,7 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
                     rel="noopener noreferrer"
                     className="group block w-full"
                 >
-                    <Button variant="glass" className="w-full justify-center hover:border-brand-DEFAULT/50 transition-colors gap-4 py-6">
+                    <Button variant="glass" className="w-full justify-center hover:border-brand-DEFAULT/50 transition-colors gap-4 py-6 bg-black/40 backdrop-blur-sm">
                         <span className="flex items-center gap-3">
                             <Instagram size={20} className="text-brand-DEFAULT" />
                             <span className="font-serif italic text-lg">Você não conhece a EAREC?</span>
@@ -79,56 +79,63 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
                 <div className="h-px bg-white flex-1" />
             </motion.div>
 
-            {/* Opção 2: Orçamento */}
+            {/* Opção 2: Orçamento (Animação Aprimorada) */}
             <motion.div variants={itemVariants}>
                  <p className="text-neutral-400 text-sm uppercase tracking-widest mb-3">Já sabe o que quer?</p>
                  <div onClick={onContinue} className="cursor-pointer relative group/btn">
+                    
+                    {/* Animação de Pulso/Halo Atrás do Botão */}
                     <motion.div
-                        className="rounded-full relative z-10"
+                        className="absolute inset-0 rounded-full bg-brand-DEFAULT/20"
                         animate={{
-                            boxShadow: [
-                            "0 0 0px rgba(220, 38, 38, 0)",
-                            "0 0 20px rgba(220, 38, 38, 0.3)",
-                            "0 0 0px rgba(220, 38, 38, 0)"
-                            ]
+                            scale: [1, 1.05, 1],
+                            opacity: [0.5, 0, 0.5]
                         }}
                         transition={{
-                            duration: 3,
+                            duration: 2,
                             repeat: Infinity,
                             ease: "easeInOut"
                         }}
-                    >
-                        <Button variant="primary" className="w-full justify-center items-center gap-4 py-6 group relative overflow-hidden">
-                            <span className="font-serif italic text-lg text-center">Faça seu orçamento gratuitamente!</span>
-                            
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-bold text-white flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                                    CLIQUE AQUI <ArrowRight size={14} />
-                                </span>
+                    />
 
-                                {/* ANIMAÇÃO AGORA DENTRO DO BOTÃO, AO LADO DIREITO */}
-                                <motion.div
-                                    initial={{ opacity: 0, x: 5 }}
-                                    animate={{ 
-                                        opacity: 1, 
-                                        x: 0,
-                                        scale: [1, 0.92, 1] 
-                                    }}
-                                    transition={{ 
-                                        delay: 0.5,
-                                        duration: 2.5, 
-                                        repeat: Infinity, 
-                                        ease: "easeInOut" 
-                                    }}
-                                >
-                                    <MousePointerClick 
-                                        size={24}
-                                        className="text-white fill-white/20 drop-shadow-md" 
-                                    />
-                                </motion.div>
-                            </div>
-                        </Button>
-                    </motion.div>
+                    <Button variant="primary" className="w-full justify-center items-center gap-4 py-6 group relative overflow-hidden z-10 shadow-[0_0_20px_rgba(220,38,38,0.4)]">
+                        <span className="font-serif italic text-lg text-center">Faça seu orçamento gratuitamente!</span>
+                        
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold text-white flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                                CLIQUE AQUI <ArrowRight size={14} />
+                            </span>
+
+                            {/* ANIMAÇÃO DE CLIQUE APERFEIÇOADA */}
+                            <motion.div
+                                className="relative"
+                                initial={{ opacity: 0, x: 10, y: 10 }}
+                                animate={{ 
+                                    opacity: [0, 1, 1, 0], 
+                                    x: [10, 0, 0, 10],
+                                    y: [10, 0, 0, 10],
+                                    scale: [1, 0.9, 0.9, 1]
+                                }}
+                                transition={{ 
+                                    duration: 1.5, 
+                                    repeat: Infinity, 
+                                    ease: "easeInOut",
+                                    repeatDelay: 0.5
+                                }}
+                            >
+                                <MousePointerClick 
+                                    size={24}
+                                    className="text-white fill-white/20 drop-shadow-lg rotate-[-12deg]" 
+                                />
+                                {/* Onda de clique (Ripple) saindo da ponta do mouse */}
+                                <motion.div 
+                                    className="absolute top-0 left-0 w-6 h-6 rounded-full border border-white/50"
+                                    animate={{ scale: [0, 2], opacity: [1, 0] }}
+                                    transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
+                                />
+                            </motion.div>
+                        </div>
+                    </Button>
                  </div>
             </motion.div>
 

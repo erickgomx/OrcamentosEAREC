@@ -8,12 +8,12 @@ import LandingView from './src/pages/LandingView';
 import AdminDashboard from './src/pages/AdminDashboard';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
+import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips'; // Importação do novo componente
 import { ClientData, QuoteData } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
 
 // Definição dos estados possíveis da aplicação
-// Estrutura Lógica: Landing -> Intro (Escolha) -> Welcome (Dados) -> Quote (Orçamento)
 type ViewState = 'landing' | 'intro' | 'welcome' | 'quote' | 'admin';
 
 const App: React.FC = () => {
@@ -23,7 +23,6 @@ const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
 
   // Controla qual "Página" está visível para o usuário
-  // INICIALIZAÇÃO: Começa estritamente em 'landing' após a splash
   const [view, setView] = useState<ViewState>('landing');
   
   // Armazena os dados do cliente capturados na WelcomeView
@@ -69,8 +68,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="w-full min-h-screen bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans">
+    <main className="w-full min-h-screen bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
       
+      {/* 
+         BACKGROUND PERSISTENTE GLOBAL 
+         Fica atrás de todas as views (z-0).
+      */}
+      <BackgroundFilmStrips />
+
       {/* 
         SPLASH SCREEN (Abertura)
       */}
@@ -115,46 +120,48 @@ const App: React.FC = () => {
       </AnimatePresence>
 
       {/* RENDERIZAÇÃO CONDICIONAL DAS VIEWS */}
-      {!showSplash && !isLoading && (
-        <>
-          {/* 1. View: Landing (Tela Inicial com Botão Continuar) */}
-          {/* Esta é a tela que precede a IntroView conforme solicitado */}
-          {view === 'landing' && (
-             <LandingView onNext={() => setView('intro')} />
-          )}
+      {/* Wrapper relativo com z-10 para ficar acima do background */}
+      <div className="relative z-10">
+        {!showSplash && !isLoading && (
+            <>
+            {/* 1. View: Landing (Tela Inicial com Botão Continuar) */}
+            {view === 'landing' && (
+                <LandingView onNext={() => setView('intro')} />
+            )}
 
-          {/* 2. View: Intro (Escolha: Conhecer EAREC ou Orçamento) */}
-          {view === 'intro' && (
-             <IntroView onContinue={() => setView('welcome')} />
-          )}
+            {/* 2. View: Intro (Escolha: Conhecer EAREC ou Orçamento) */}
+            {view === 'intro' && (
+                <IntroView onContinue={() => setView('welcome')} />
+            )}
 
-          {/* 3. View: Welcome (Formulário de Dados) */}
-          {view === 'welcome' && (
-            <WelcomeView 
-              onStart={handleStart} 
-              onAdminClick={() => setView('admin')} 
-            />
-          )}
+            {/* 3. View: Welcome (Formulário de Dados) */}
+            {view === 'welcome' && (
+                <WelcomeView 
+                onStart={handleStart} 
+                onAdminClick={() => setView('admin')} 
+                />
+            )}
 
-          {/* 4. View: Quote (Configurador Principal) */}
-          {view === 'quote' && clientData && (
-            <QuoteView 
-              clientData={clientData} 
-              onUpdateClientData={setClientData}
-              config={config} 
-            />
-          )}
+            {/* 4. View: Quote (Configurador Principal) */}
+            {view === 'quote' && clientData && (
+                <QuoteView 
+                clientData={clientData} 
+                onUpdateClientData={setClientData}
+                config={config} 
+                />
+            )}
 
-          {/* 5. View: Admin (Painel Protegido) */}
-          {view === 'admin' && (
-            <AdminDashboard 
-              currentConfig={config}
-              onUpdateConfig={handleAdminUpdate}
-              onExit={() => setView('welcome')}
-            />
-          )}
-        </>
-      )}
+            {/* 5. View: Admin (Painel Protegido) */}
+            {view === 'admin' && (
+                <AdminDashboard 
+                currentConfig={config}
+                onUpdateConfig={handleAdminUpdate}
+                onExit={() => setView('welcome')}
+                />
+            )}
+            </>
+        )}
+      </div>
     </main>
   );
 };

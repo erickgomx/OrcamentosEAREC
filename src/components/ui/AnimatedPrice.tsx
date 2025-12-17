@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
 import { formatCurrency } from '../../lib/utils';
@@ -12,7 +13,14 @@ interface AnimatedPriceProps {
  * Cria o efeito de "rolagem" de números de cassino/banco.
  */
 const AnimatedPrice: React.FC<AnimatedPriceProps> = ({ value, className }) => {
-  const spring = useSpring(value, { mass: 0.8, stiffness: 75, damping: 15 });
+  // Física ajustada para VELOCIDADE (Snappy/Responsive)
+  // Mass 0.5 (Leve) + Stiffness 250 (Alta tensão) = Mudança rápida
+  const spring = useSpring(value, { 
+    mass: 0.5, 
+    stiffness: 250, 
+    damping: 25 
+  });
+  
   const display = useTransform(spring, (current) => formatCurrency(current));
 
   useEffect(() => {

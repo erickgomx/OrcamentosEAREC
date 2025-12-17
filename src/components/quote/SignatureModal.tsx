@@ -30,8 +30,6 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
   // CORREÇÃO DE PROPORÇÃO & RESIZE:
-  // Usa offsetWidth/Height para pegar o tamanho exato interno, garantindo
-  // que o traço do mouse corresponda exatamente ao desenho.
   useEffect(() => {
     if (isOpen && containerRef.current) {
       const updateSize = () => {
@@ -43,7 +41,6 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
         }
       };
 
-      // Pequeno delay e chamado imediato para garantir renderização correta após animação
       updateSize();
       const timer = setTimeout(updateSize, 100);
 
@@ -83,12 +80,12 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Fundo Escuro (Backdrop) */}
+          {/* Fundo Escuro com BLUR INTENSO para desfocar o filme no background global */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-neutral-950/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-neutral-950/80 backdrop-blur-md"
             onClick={onClose}
           />
 
@@ -101,41 +98,40 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
             className="relative bg-neutral-900 border border-white/10 rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
             <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
+              {/* Header com textos centralizados */}
+              <div className="relative mb-6 text-center">
                 <h3 className="font-serif text-2xl text-white">Aprovar Proposta</h3>
-                <button onClick={onClose} className="text-neutral-400 hover:text-white transition-colors">
+                <button 
+                  onClick={onClose} 
+                  className="absolute right-0 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition-colors"
+                >
                   <X size={24} />
                 </button>
               </div>
 
-              <div className="mb-6 space-y-2">
+              {/* Valor e Disclaimer Centralizados */}
+              <div className="mb-6 space-y-2 text-center">
                 <p className="text-sm text-neutral-400">Ao assinar, você concorda com o valor total de:</p>
                 <p className="text-3xl text-white font-sans font-medium">{totalValue}</p>
               </div>
 
-              {/* Aviso de Privacidade */}
-              <div className="flex items-center gap-2 mb-2">
+              {/* Aviso de Privacidade Centralizado */}
+              <div className="flex items-center justify-center gap-2 mb-2">
                 <ShieldCheck size={14} className="text-green-500" />
                 <p className="text-xs text-neutral-500 font-medium uppercase tracking-wide">
                     Não guardamos sua assinatura
                 </p>
               </div>
 
-              {/* 
-                 Container do Canvas 
-                 Removemos 'border' daqui para não afetar o cálculo de width/height interno do canvas.
-                 A borda vai no wrapper externo ou via ring.
-              */}
+              {/* Container do Canvas */}
               <div 
                 ref={containerRef}
                 className="relative rounded-lg bg-white/5 overflow-hidden mb-4 h-48 ring-1 ring-white/20"
               >
-                {/* O Canvas só renderiza quando temos o tamanho calculado > 0 */}
                 {canvasSize.width > 0 && (
                   <SignatureCanvas 
                     ref={sigPad}
                     {...({ penColor: "white" } as any)}
-                    // Passamos width e height explícitos para garantir resolução correta
                     canvasProps={{
                       width: canvasSize.width,
                       height: canvasSize.height,
@@ -145,7 +141,6 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
                   />
                 )}
                 
-                {/* Botão Limpar */}
                 {!isEmpty && (
                   <button 
                     onClick={clear}
@@ -155,7 +150,6 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
                   </button>
                 )}
                 
-                {/* Texto "Assine aqui" de fundo */}
                 {isEmpty && (
                   <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-white/10 select-none">
                     <span className="font-serif italic text-2xl">Assine aqui</span>
@@ -186,7 +180,6 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
               </div>
             </div>
             
-            {/* Linha decorativa inferior */}
             <div className="h-1 w-full bg-gradient-to-r from-neutral-900 via-brand-DEFAULT to-neutral-900" />
           </motion.div>
         </div>

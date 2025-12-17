@@ -44,7 +44,8 @@ const PRICING_TABLE = {
     },
     studio: {
         photo: { unit: 25, label: "Estúdio (Fotos)" },
-        video: { fixed: 350, label: "Estúdio (Vídeo 2h)" },
+        // ATUALIZADO: Agora suporta base de horas + hora extra
+        video: { base: 350, hoursIncluded: 2, hourPrice: 250, label: "Estúdio (Vídeo)" },
     },
     video_production: {
         edit: { unit: 250, label: "Apenas Edição" },
@@ -172,7 +173,14 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
     }
     else if (category === 'studio') {
         if (serviceId === 'studio_photo') total += qty * PRICING_TABLE.studio.photo.unit;
-        if (serviceId === 'studio_video') total += PRICING_TABLE.studio.video.fixed;
+        // ATUALIZADO: Cálculo de Vídeo em Estúdio (Base + Horas Extras)
+        if (serviceId === 'studio_video') {
+             const sVideo = PRICING_TABLE.studio.video;
+             total += sVideo.base;
+             if (hours > sVideo.hoursIncluded) {
+                 total += (hours - sVideo.hoursIncluded) * sVideo.hourPrice;
+             }
+        }
     }
     else if (category === 'video_production') {
         if (serviceId === 'edit_only') total += qty * PRICING_TABLE.video_production.edit.unit;
@@ -211,7 +219,14 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
       
       // Reseta valores numéricos
       setHours(2);
-      setQty(10);
+
+      // CORREÇÃO: Se for Produção (vídeos), começa em 1. Comercial/Estúdio (Fotos) começa em 10.
+      if (category === 'video_production') {
+        setQty(1);
+      } else {
+        setQty(10);
+      }
+      
       setAddRealTime(false);
   }, [category]);
 
@@ -247,6 +262,9 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
     metricLabel = `${qty} Fotos`;
   } else if (category === 'studio' && serviceId === 'studio_photo') {
     metricLabel = `${qty} Fotos`;
+  } else if (category === 'studio' && serviceId === 'studio_video') {
+    // ATUALIZADO: Label para Vídeo em Estúdio
+    metricLabel = `${hours} Horas de Gravação`;
   } else if (category === 'video_production' && serviceId === 'edit_only') {
     metricLabel = `${qty} Vídeos`;
   } else if (category === 'custom') {
