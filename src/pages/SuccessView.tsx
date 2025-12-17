@@ -34,6 +34,15 @@ const AnimatedClock = () => (
 const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPrice, quoteDetails }) => {
 
   const whatsappNumber = "5584981048857";
+  
+  // Helper para formatar data de YYYY-MM-DD para DD/MM/YYYY
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return 'A definir';
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  };
+
   let message = "";
 
   if (quoteDetails) {
@@ -49,16 +58,17 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
       }
 
       const ambiente = quoteDetails.location === 'studio' ? "Estúdio Controlado" : "Externo / In Loco";
-      const distanciaStr = `${quoteDetails.distance}km (Ida)`;
+      const distanciaStr = `${quoteDetails.distance}km (Origem: Goianinha)`;
       const freteStr = quoteDetails.location === 'studio' ? "Grátis (Estúdio)" : "Incluso no total";
       const pagamentoStr = quoteDetails.paymentMethod || "A combinar";
       const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
 
       message = `
-🔔 *NOVA PROPOSTA APROVADA*
+🔔 *NOVA PROPOSTA APROVADA - EAREC*
 
 👤 *DADOS DO CLIENTE*
 *Nome:* ${clientData.name}
+*Data do Evento:* ${formatDate(clientData.date)}
 *Contato:* ${clientData.contact}
 *Local:* ${clientData.location}
 
@@ -74,7 +84,7 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
 💰 *FINANCEIRO*
 *Valor Total:* ${formattedPrice}
 *Pagamento:* ${pagamentoStr}
-*Status:* Aprovado no Sistema
+*Status:* Aprovado via Plataforma Digital
 `.trim();
   }
 
@@ -104,7 +114,7 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
 
         <motion.div variants={fadeInUp} className="mb-8">
              <motion.p animate={{ y: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="text-brand-DEFAULT font-medium text-sm flex items-center justify-center gap-2">
-                Enviar orçamento clicando no botão abaixo
+                Enviar orçamento para o WhatsApp
                 <ArrowDown size={14} />
              </motion.p>
         </motion.div>
@@ -113,11 +123,11 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
                 <Button variant="primary" size="md" className="w-full flex items-center gap-2 justify-center bg-green-600 border-green-600 hover:bg-green-700 shadow-green-900/20 py-4 text-base font-bold tracking-wide">
                     <MessageCircle size={20} />
-                    ENVIAR AGORA
+                    ENVIAR PARA PRODUÇÃO
                 </Button>
             </a>
             <Button onClick={onReset} size="md" variant="secondary" className="w-full py-3 text-sm border-transparent hover:bg-white/5 text-neutral-500 hover:text-white">
-                Voltar ao Início
+                Fazer novo orçamento
             </Button>
         </motion.div>
 
@@ -125,8 +135,8 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-500/10 rounded-full text-yellow-500"><AnimatedClock /></div>
                 <div className="text-left">
-                    <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Status</p>
-                    <p className="text-white text-sm font-medium">Esperando sua mensagem!</p>
+                    <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Próximo Passo</p>
+                    <p className="text-white text-sm font-medium">Aguardando seu contato!</p>
                 </div>
             </div>
             <div className="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse" />
