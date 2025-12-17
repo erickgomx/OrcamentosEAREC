@@ -48,7 +48,8 @@ const App: React.FC = () => {
       history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
-    const timer = setTimeout(() => setShowSplash(false), 3500); 
+    // Tempo total de splash reduzido para 1800ms para ser mais direto
+    const timer = setTimeout(() => setShowSplash(false), 1800); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -76,27 +77,27 @@ const App: React.FC = () => {
             key="splash"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 1.0, ease: "easeInOut" }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
                  initial={{ scale: 0.8, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
-                 transition={{ duration: 1.2, ease: "easeOut" }}
-                 className="mb-4" // Reduzido de mb-8 para subir o texto abaixo
+                 transition={{ duration: 0.6, ease: "easeOut" }}
+                 className="mb-4"
                >
                   <Logo className="w-64 md:w-96" animate={true} />
                </motion.div>
 
                <motion.div
-                  initial={{ opacity: 0, y: 10 }} // y reduzido para efeito mais "alto"
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2, duration: 0.8 }}
+                  transition={{ delay: 0.4, duration: 0.3 }} // Delay e duração reduzidos conforme solicitado
                   className="flex flex-col items-center"
                >
                   <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest">Orçamento Facilitado</p>
+                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest text-center">Orçamento Facilitado</p>
                </motion.div>
              </div>
           </motion.div>

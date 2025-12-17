@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plane, Timer, Check, X, ArrowRight, Sparkles, Zap } from 'lucide-react';
+import { Plane, Timer, Check, ArrowRight, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 import { cn, formatCurrency } from '../../lib/utils';
 import { modalVariants } from '../../lib/animations';
@@ -27,12 +27,12 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+            className="absolute inset-0 bg-black/80 backdrop-blur-2xl"
             onClick={onClose}
           />
 
@@ -41,113 +41,107 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative bg-neutral-900 border border-white/10 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden"
+            className="relative bg-neutral-950 border border-white/10 rounded-2xl shadow-2xl w-full max-w-[340px] md:max-w-md overflow-hidden"
           >
-            {/* Faixa Superior Decorativa */}
-            <div className="h-2 w-full bg-gradient-to-r from-brand-DEFAULT via-red-500 to-brand-DEFAULT" />
+            {/* Faixa Superior sutil */}
+            <div className="h-1 w-full bg-brand-DEFAULT shadow-[0_0_10px_#DC2626]" />
 
-            <div className="p-8 md:p-12">
-              <div className="text-center mb-10">
+            <div className="p-4 md:p-6">
+              <div className="text-center mb-4 md:mb-6">
                 <motion.div 
                     initial={{ scale: 0 }} 
                     animate={{ scale: 1 }} 
                     transition={{ type: 'spring', delay: 0.2 }}
-                    className="inline-flex p-3 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT mb-4"
+                    className="inline-flex p-1.5 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT mb-2"
                 >
-                    <Sparkles size={28} />
+                    <Sparkles size={16} />
                 </motion.div>
-                <h2 className="font-serif text-3xl md:text-4xl text-white mb-3">Eleve seu Projeto</h2>
-                <p className="text-neutral-400 max-w-md mx-auto text-sm md:text-base">
-                  Deseja adicionar estes recursos exclusivos para uma experiência audiovisual completa?
+                <h2 className="font-serif text-xl md:text-2xl text-white mb-1">Eleve seu Projeto</h2>
+                <p className="text-neutral-500 max-w-[240px] mx-auto text-[10px] md:text-xs">
+                  Recursos exclusivos para uma experiência audiovisual completa.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                {/* Cartão Drone */}
+              <div className="flex flex-col gap-3 mb-6">
+                {/* Cartão Drone - Compacto */}
                 <motion.div 
-                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setAddDrone(!addDrone)}
                   className={cn(
-                    "cursor-pointer p-6 rounded-2xl border-2 transition-all relative overflow-hidden group",
+                    "cursor-pointer p-3 rounded-xl border transition-all relative group flex items-center gap-3",
                     addDrone 
-                      ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)]" 
-                      : "bg-white/5 border-white/5 hover:border-white/20"
+                      ? "bg-brand-DEFAULT/5 border-brand-DEFAULT/40" 
+                      : "bg-white/5 border-white/5"
                   )}
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className={cn(
-                        "p-3 rounded-xl",
-                        addDrone ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-400"
-                    )}>
-                        <Plane size={24} />
-                    </div>
-                    {addDrone && (
-                        <div className="bg-brand-DEFAULT text-white p-1 rounded-full">
-                            <Check size={14} />
-                        </div>
-                    )}
+                  <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
+                      addDrone ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-500"
+                  )}>
+                      <Plane size={20} />
                   </div>
-                  <h3 className="text-white font-medium text-lg mb-1">Drone (Aéreo)</h3>
-                  <p className="text-neutral-500 text-xs leading-relaxed mb-4">
-                    Imagens aéreas cinematográficas em 4K para perspectivas épicas.
-                  </p>
-                  <p className="text-brand-DEFAULT font-bold text-sm">+ {formatCurrency(250)}</p>
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium text-xs">Drone (Aéreo)</h3>
+                    <p className="text-brand-DEFAULT font-bold text-[10px]">+ {formatCurrency(250)}</p>
+                  </div>
+                  {addDrone && (
+                      <div className="bg-brand-DEFAULT text-white p-0.5 rounded-full">
+                          <Check size={10} />
+                      </div>
+                  )}
                 </motion.div>
 
-                {/* Cartão Tempo Real */}
+                {/* Cartão Tempo Real - Compacto */}
                 <motion.div 
-                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setAddRealTime(!addRealTime)}
                   className={cn(
-                    "cursor-pointer p-6 rounded-2xl border-2 transition-all relative overflow-hidden group",
+                    "cursor-pointer p-3 rounded-xl border transition-all relative group flex items-center gap-3",
                     addRealTime 
-                      ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)]" 
-                      : "bg-white/5 border-white/5 hover:border-white/20"
+                      ? "bg-brand-DEFAULT/5 border-brand-DEFAULT/40" 
+                      : "bg-white/5 border-white/5"
                   )}
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className={cn(
-                        "p-3 rounded-xl",
-                        addRealTime ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-400"
-                    )}>
-                        <Timer size={24} />
-                    </div>
-                    {addRealTime && (
-                        <div className="bg-brand-DEFAULT text-white p-1 rounded-full">
-                            <Check size={14} />
-                        </div>
-                    )}
+                  <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
+                      addRealTime ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-500"
+                  )}>
+                      <Timer size={20} />
                   </div>
-                  <h3 className="text-white font-medium text-lg mb-1">Tempo Real</h3>
-                  <p className="text-neutral-500 text-xs leading-relaxed mb-4">
-                    Fotos tratadas e enviadas instantaneamente durante o evento.
-                  </p>
-                  <p className="text-brand-DEFAULT font-bold text-sm">+ {formatCurrency(600)}</p>
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium text-xs">Fotos em Tempo Real</h3>
+                    <p className="text-brand-DEFAULT font-bold text-[10px]">+ {formatCurrency(600)}</p>
+                  </div>
+                  {addRealTime && (
+                      <div className="bg-brand-DEFAULT text-white p-0.5 rounded-full">
+                          <Check size={10} />
+                      </div>
+                  )}
                 </motion.div>
               </div>
 
-              <div className="flex flex-col items-center gap-6">
+              <div className="flex flex-col items-center gap-4">
                 <div className="text-center">
-                    <p className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] mb-1">Novo Total Estimado</p>
-                    <div className="text-3xl text-white font-serif">
+                    <p className="text-[9px] text-neutral-500 uppercase tracking-widest mb-1">Total Estimado</p>
+                    <div className="text-xl text-white font-serif">
                         <AnimatedPrice value={totalPrice} />
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="flex flex-col gap-2 w-full">
+                    <Button 
+                        onClick={onConfirm}
+                        className="w-full py-3 text-xs font-bold shadow-lg shadow-brand-DEFAULT/10"
+                    >
+                        CONFIRMAR
+                        <ArrowRight size={14} className="ml-2" />
+                    </Button>
                     <button 
                         onClick={onConfirm}
-                        className="flex-1 px-8 py-4 bg-transparent border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 rounded-full transition-all text-sm font-medium uppercase tracking-widest"
+                        className="w-full py-2 text-neutral-500 hover:text-white transition-colors text-[9px] uppercase tracking-widest"
                     >
                         Pular e Ver Resumo
                     </button>
-                    <Button 
-                        onClick={onConfirm}
-                        className="flex-1 py-4 text-sm font-bold shadow-[0_0_30px_rgba(220,38,38,0.4)]"
-                    >
-                        CONFIRMAR E CONTINUAR
-                        <ArrowRight size={18} className="ml-2" />
-                    </Button>
                 </div>
               </div>
             </div>

@@ -18,7 +18,7 @@ const introContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.4, delayChildren: 0.2 }
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 } // Reduzido stagger de 0.4 para 0.15
   }
 };
 
@@ -26,7 +26,7 @@ const logoVariant: Variants = {
   hidden: { opacity: 0, y: 180, scale: 1.1 },
   visible: { 
     opacity: 1, y: 0, scale: 1,
-    transition: { duration: 1.5, ease: [0.25, 0.1, 0.25, 1.0] } 
+    transition: { duration: 1.0, ease: [0.25, 0.1, 0.25, 1.0] } // Reduzido de 1.5 para 1.0
   }
 };
 
@@ -34,7 +34,7 @@ const formVariant: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: { 
     opacity: 1, y: 0,
-    transition: { duration: 1.0, ease: "easeOut" } 
+    transition: { duration: 0.6, ease: "easeOut" } // Reduzido de 1.0 para 0.6
   }
 };
 
@@ -61,8 +61,8 @@ const SmartInput = ({
       setTimeout(() => {
         if (value.length >= minLength) setInternalStatus('valid');
         else setInternalStatus('idle');
-      }, 800);
-    }, 1000); 
+      }, 500); // Reduzido de 800 para 500
+    }, 600); // Reduzido de 1000 para 600
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, [value, minLength, externalStatus]);
 
@@ -158,7 +158,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                 setDateStatus('error');
                 setDateMessage(result.message || "Data indisponível");
             }
-        }, 800);
+        }, 500); // Reduzido de 800 para 500
     }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
