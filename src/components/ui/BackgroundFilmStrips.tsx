@@ -36,8 +36,6 @@ const FilmStripTexture = ({ className, speed = 2, direction = 1 }: { className?:
     {/* 
         ANIMAÇÃO DE ROLAGEM (Rolling Effect)
         O rect preenchido com o padrão move-se de 0 a -60 (altura do padrão).
-        Como o padrão repete, isso cria um loop infinito perfeito.
-        Height aumentado para 1000 para cobrir o deslocamento.
     */}
     <motion.rect 
       x="0"
@@ -59,16 +57,16 @@ const BackgroundFilmStrips: React.FC = () => {
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen">
       {/* 
         === FILME DE CÂMERA VERMELHO (GLOBAL) === 
-        Opacidade reduzida para 0.5 (50%) na animação para garantir suavidade.
+        Opacidade reduzida em 30% (de 1.0 para 0.7) para maior sutileza.
       */}
       
       {/* Tira Superior Direita */}
       <motion.div
         initial={{ opacity: 0, x: 100, rotate: -35 }}
         animate={{ 
-            opacity: 0.5, // FIX: Reduzido de 1 para 0.5 (50%)
+            opacity: 0.7, // Reduzido de 1.0 para 0.7
             x: 0,
-            y: [0, -20, 0] // Flutuação lenta do container
+            y: [0, -20, 0] 
         }}
         transition={{ 
             opacity: { duration: 1.5 },
@@ -76,7 +74,6 @@ const BackgroundFilmStrips: React.FC = () => {
         }}
         className="absolute -top-20 -right-20 md:right-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT"
       >
-         {/* Speed 45s por loop = Movimento de "deriva" muito lento */}
          <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" speed={45} direction={1} />
       </motion.div>
 
@@ -84,9 +81,9 @@ const BackgroundFilmStrips: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, x: -100, rotate: -35 }}
         animate={{ 
-            opacity: 0.5, // FIX: Reduzido de 1 para 0.5 (50%)
+            opacity: 0.7, // Reduzido de 1.0 para 0.7
             x: 0,
-            y: [0, 20, 0] // Flutuação lenta inversa
+            y: [0, 20, 0] 
         }}
         transition={{ 
             opacity: { duration: 1.5 },
@@ -94,11 +91,10 @@ const BackgroundFilmStrips: React.FC = () => {
         }}
         className="absolute -bottom-20 -left-20 md:left-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT"
       >
-         {/* Speed 60s por loop = Movimento quase estático/ambiente */}
          <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" speed={60} direction={-1} />
       </motion.div>
 
-      {/* CAMADA DE ESCURECIMENTO (30% OPACIDADE) */}
+      {/* CAMADA DE ESCURECIMENTO */}
       <div className="absolute inset-0 bg-black/30 pointer-events-none" />
     </div>
   );

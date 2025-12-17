@@ -16,33 +16,27 @@ import { delay } from './src/lib/utils';
 type ViewState = 'intro' | 'welcome' | 'quote' | 'admin';
 
 const App: React.FC = () => {
-  // --- GERENCIAMENTO DE ESTADO GLOBAL ---
-
   const [showSplash, setShowSplash] = useState(true);
   const [view, setView] = useState<ViewState>('intro');
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<QuoteData>(mockQuote);
-
-  // Estado para controlar se o orçamento foi concluído (tela de sucesso)
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
 
-  // PERSISTÊNCIA DE DADOS (Evitar perda ao recarregar)
   const [clientData, setClientData] = useState<ClientData | null>(() => {
     const saved = localStorage.getItem('earec_client_data');
     return saved ? JSON.parse(saved) : null;
   });
 
-  // ESTADO ELEVADO DO ORÇAMENTO (Para manter seleções ao voltar)
   const [quoteState, setQuoteState] = useState<QuoteState>({
     category: 'wedding',
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
     addDrone: false,
-    addRealTime: false
+    addRealTime: false,
+    selectionMode: 'duration'
   });
 
-  // Salva no localStorage sempre que mudar
   useEffect(() => {
     if (clientData) {
       localStorage.setItem('earec_client_data', JSON.stringify(clientData));
@@ -61,7 +55,6 @@ const App: React.FC = () => {
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
-    // Reset estado de sucesso ao iniciar novo fluxo
     setIsQuoteSuccess(false);
     await delay(2000); 
     setIsLoading(false);
@@ -75,11 +68,6 @@ const App: React.FC = () => {
 
   return (
     <main className="w-full min-h-screen bg-black text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
-      {/* 
-          CONDICIONAL: FilmStrips aparecem nas telas iniciais ('intro', 'welcome')
-          OU na tela final de sucesso (isQuoteSuccess).
-          Eles SOMEM durante a configuração do orçamento (view === 'quote' && !isQuoteSuccess)
-      */}
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
 
       <AnimatePresence mode="wait">
@@ -96,13 +84,13 @@ const App: React.FC = () => {
                  initial={{ scale: 0.8, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
                  transition={{ duration: 1.2, ease: "easeOut" }}
-                 className="mb-8"
+                 className="mb-4" // Reduzido de mb-8 para subir o texto abaixo
                >
                   <Logo className="w-64 md:w-96" animate={true} />
                </motion.div>
 
                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }} // y reduzido para efeito mais "alto"
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.2, duration: 0.8 }}
                   className="flex flex-col items-center"

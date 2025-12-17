@@ -12,37 +12,31 @@ import { ClientData, QuoteData, QuoteState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
 
-// Definição dos estados possíveis da aplicação (Landing removido)
+// Definição dos estados possíveis da aplicação
 type ViewState = 'intro' | 'welcome' | 'quote' | 'admin';
 
 const App: React.FC = () => {
-  // --- GERENCIAMENTO DE ESTADO GLOBAL ---
-
   const [showSplash, setShowSplash] = useState(true);
-  const [view, setView] = useState<ViewState>('intro'); // Estado inicial agora é 'intro'
+  const [view, setView] = useState<ViewState>('intro');
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<QuoteData>(mockQuote);
-
-  // Estado para controlar se o orçamento foi concluído (tela de sucesso)
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
 
-  // PERSISTÊNCIA DE DADOS (Evitar perda ao recarregar)
   const [clientData, setClientData] = useState<ClientData | null>(() => {
     const saved = localStorage.getItem('earec_client_data');
     return saved ? JSON.parse(saved) : null;
   });
 
-  // ESTADO ELEVADO DO ORÇAMENTO (Para manter seleções ao voltar)
   const [quoteState, setQuoteState] = useState<QuoteState>({
     category: 'wedding',
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
     addDrone: false,
-    addRealTime: false
+    addRealTime: false,
+    selectionMode: 'duration'
   });
 
-  // Salva no localStorage sempre que mudar
   useEffect(() => {
     if (clientData) {
       localStorage.setItem('earec_client_data', JSON.stringify(clientData));
@@ -54,14 +48,14 @@ const App: React.FC = () => {
       history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
-    const timer = setTimeout(() => setShowSplash(false), 3500); 
+    // Tempo total de splash reduzido de 3500ms para 2200ms
+    const timer = setTimeout(() => setShowSplash(false), 2200); 
     return () => clearTimeout(timer);
   }, []);
 
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
-    // Reset estado de sucesso ao iniciar novo fluxo
     setIsQuoteSuccess(false);
     await delay(2000); 
     setIsLoading(false);
@@ -75,11 +69,6 @@ const App: React.FC = () => {
 
   return (
     <main className="w-full min-h-screen bg-black text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
-      {/* 
-          CONDICIONAL: FilmStrips aparecem nas telas iniciais ('intro', 'welcome')
-          OU na tela final de sucesso (isQuoteSuccess).
-          Eles SOMEM durante a configuração do orçamento (view === 'quote' && !isQuoteSuccess)
-      */}
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
 
       <AnimatePresence mode="wait">
@@ -88,23 +77,23 @@ const App: React.FC = () => {
             key="splash"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 1.0, ease: "easeInOut" }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
                  initial={{ scale: 0.8, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
-                 transition={{ duration: 1.2, ease: "easeOut" }}
-                 className="mb-8"
+                 transition={{ duration: 0.8, ease: "easeOut" }} // Reduzido de 1.2s para 0.8s
+                 className="mb-4"
                >
                   <Logo className="w-64 md:w-96" animate={true} />
                </motion.div>
 
                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.2, duration: 0.8 }}
+                  transition={{ delay: 0.7, duration: 0.5 }} // Delay reduzido de 1.2s para 0.7s
                   className="flex flex-col items-center"
                >
                   <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
@@ -122,12 +111,9 @@ const App: React.FC = () => {
       <div className="relative z-10">
         {!showSplash && !isLoading && (
             <>
-            {/* LandingView foi removido daqui */}
-
             {view === 'intro' && (
                 <IntroView 
                     onContinue={() => setView('welcome')} 
-                    // onBack removido pois é a tela inicial
                 />
             )}
 

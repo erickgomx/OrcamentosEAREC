@@ -12,7 +12,6 @@ export type OccasionType = 'institutional' | 'advertising' | 'social' | 'wedding
 export type ServiceCategory = 'wedding' | 'social' | 'commercial' | 'studio' | 'video_production' | 'custom';
 
 // IDs únicos para cada "Produto" vendável no sistema
-// Isso garante tipagem forte e evita erros de digitação ("magic strings") no código.
 export type ServiceId = 
   | 'birthday' | 'fifteen' | 'graduation' 
   | 'wedding_base' | 'wedding_classic' | 'wedding_romance' | 'wedding_essence'
@@ -29,6 +28,7 @@ export interface QuoteState {
   qty: number;
   addDrone: boolean;
   addRealTime: boolean;
+  selectionMode: 'duration' | 'quantity'; // Novo: Define se cobra por tempo ou por entrega
 }
 
 // Estrutura de um item individual dentro de um orçamento
@@ -52,7 +52,6 @@ export interface ClientData {
 }
 
 // Objeto Mestre de Configuração do Orçamento
-// Contém tanto os dados do cliente quanto as regras de preço globais.
 export interface QuoteData {
   id: string;
   client: ClientData;
@@ -60,11 +59,11 @@ export interface QuoteData {
   validUntil: string;
   
   // Regras de Preço (Editáveis via Admin)
-  basePrice: number;       // Custo de mobilização mínima
-  studioFee: number;       // Taxa de uso do estúdio
-  photoUnitPrice: number;  // Custo por foto extra
-  videoUnitPrice: number;  // Custo por vídeo extra
-  pricePerKm: number;      // Custo de combustível/desgaste por Km
+  basePrice: number;       
+  studioFee: number;       
+  photoUnitPrice: number;  
+  videoUnitPrice: number;  
+  pricePerKm: number;      
   
   items: ServiceItem[];
   moodboardImages: string[];

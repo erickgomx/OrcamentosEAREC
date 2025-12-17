@@ -42,12 +42,12 @@ const Logo: React.FC<LogoProps> = ({ className, animate = false }) => {
       className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]"
       aria-label="EAREC Logo"
     >
-      {/* Texto EA - Cinza Claro/Branco */}
+      {/* Texto EA - Cinza Claro/Branco - Ajustado para Negrito Extra (900) */}
       <text 
         x="10" 
         y="52" 
         fontFamily="'Inter', sans-serif" 
-        fontWeight="800" 
+        fontWeight="900" 
         fontSize="55" 
         fill="#E5E5E5" 
         letterSpacing="-3"
@@ -56,7 +56,7 @@ const Logo: React.FC<LogoProps> = ({ className, animate = false }) => {
         EA
       </text>
 
-      {/* Ponto Central - Vermelho Marca - Aumentado r=16. Ajustado CY para 30 (centralizado com o texto) */}
+      {/* Ponto Central - Vermelho Marca */}
       <motion.circle 
         cx="105" 
         cy="33" 
@@ -71,12 +71,12 @@ const Logo: React.FC<LogoProps> = ({ className, animate = false }) => {
         }}
       />
 
-      {/* Texto REC - Vermelho Marca */}
+      {/* Texto REC - Vermelho Marca - Ajustado para Negrito Extra (900) */}
       <text 
         x="132" 
         y="52" 
         fontFamily="'Inter', sans-serif" 
-        fontWeight="800" 
+        fontWeight="900" 
         fontSize="55" 
         fill="#DC2626" 
         letterSpacing="-3"

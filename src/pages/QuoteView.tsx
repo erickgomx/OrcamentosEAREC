@@ -5,6 +5,7 @@ import UpsellList from '../components/quote/UpsellList';
 import StickyFooter from '../components/quote/StickyFooter';
 import SignatureModal from '../components/quote/SignatureModal';
 import LocationMapModal from '../components/ui/LocationMapModal';
+import AddonUpsellModal from '../components/quote/AddonUpsellModal';
 import SummaryView from './SummaryView';
 import SuccessView from './SuccessView';
 import { formatCurrency } from '../lib/utils';
@@ -41,8 +42,8 @@ const PRICING_TABLE = {
     },
     commercial: {
         photo: { unit: 20, label: "Comércio (Fotos)" },
-        video: { fixed: 500, label: "Comércio (Vídeo)" },
-        combo: { videoBase: 500, photoUnit: 20, label: "Comércio (Foto + Vídeo)" }
+        video: { unit: 500, label: "Comércio (Vídeo)" },
+        combo: { videoBase: 800, label: "Comércio (Foto + Vídeo)" } // Sob consulta na UI, mas base definida internamente
     },
     studio: {
         photo: { unit: 25, label: "Estúdio (Fotos)" },
@@ -64,6 +65,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
     quoteState, setQuoteState, onSuccess 
 }) => {
   const [viewState, setViewState] = useState<ViewState>('config');
+  const [showUpsell, setShowUpsell] = useState(false);
   
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
@@ -91,7 +93,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   const [isMapOpen, setIsMapOpen] = useState(false); 
   const [isApproved, setIsApproved] = useState(false);
 
-  const { category, serviceId, hours, qty, addDrone, addRealTime } = quoteState;
+  const { category, serviceId, hours, qty, addDrone, addRealTime, selectionMode } = quoteState;
 
   const setCategory = (c: ServiceCategory) => setQuoteState(prev => ({ ...prev, category: c }));
   const setServiceId = (s: ServiceId) => setQuoteState(prev => ({ ...prev, serviceId: s }));
@@ -99,6 +101,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   const setQty = (q: number) => setQuoteState(prev => ({ ...prev, qty: q }));
   const setAddDrone = (b: boolean) => setQuoteState(prev => ({ ...prev, addDrone: b }));
   const setAddRealTime = (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b }));
+  const setSelectionMode = (mode: 'duration' | 'quantity') => setQuoteState(prev => ({ ...prev, selectionMode: mode }));
 
   useEffect(() => {
     let isMounted = true;
@@ -115,6 +118,14 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   const handleUpdateLocation = (address: string) => {
       onUpdateClientData({ ...clientData, location: address });
   };
+
+  useEffect(() => {
+    if (category === 'wedding') setSelectionMode('duration');
+    if (category === 'commercial') setSelectionMode('quantity');
+    if (category === 'studio' && serviceId === 'studio_photo') setSelectionMode('quantity');
+    if (category === 'studio' && serviceId === 'studio_video') setSelectionMode('duration');
+    if (category === 'social' && serviceId === 'graduation') setSelectionMode('duration');
+  }, [category, serviceId]);
 
   const { totalPrice, priceBreakdown } = useMemo(() => {
     let total = 0;
@@ -133,6 +144,13 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         }
         total += baseVal;
         breakdown.push({ label: baseLabel, value: baseVal, type: 'base' });
+        
+        if (selectionMode === 'duration' && hours > 2) {
+             const extraHoursVal = (hours - 2) * 250;
+             total += extraHoursVal;
+             breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraHoursVal, type: 'addon' });
+        }
+
         if (addRealTime) {
             total += s.realtime.fixed;
             breakdown.push({ label: s.realtime.label, value: s.realtime.fixed, type: 'addon' });
@@ -142,12 +160,19 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         const s = PRICING_TABLE.social;
         if (serviceId === 'birthday' || serviceId === 'fifteen') {
             const ref = serviceId === 'birthday' ? s.birthday : s.fifteen;
-            total += ref.base;
-            breakdown.push({ label: `${ref.label} (2h)`, value: ref.base, type: 'base' });
-            if (hours > ref.hoursIncluded) {
-                const extraHoursVal = (hours - ref.hoursIncluded) * ref.hourPrice;
-                total += extraHoursVal;
-                breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
+            
+            if (selectionMode === 'duration') {
+                total += ref.base;
+                breakdown.push({ label: `${ref.label} (Base 2h)`, value: ref.base, type: 'base' });
+                if (hours > ref.hoursIncluded) {
+                    const extraHoursVal = (hours - ref.hoursIncluded) * ref.hourPrice;
+                    total += extraHoursVal;
+                    breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
+                }
+            } else {
+                const val = qty * config.photoUnitPrice;
+                total += val;
+                breakdown.push({ label: `${ref.label} (${qty} Fotos)`, value: val, type: 'base' });
             }
         } else if (serviceId === 'graduation') {
              total += s.graduation.base;
@@ -160,36 +185,44 @@ const QuoteView: React.FC<QuoteViewProps> = ({
     } 
     else if (category === 'commercial') {
         const s = PRICING_TABLE.commercial;
+        
         if (serviceId === 'comm_photo') {
             const val = qty * s.photo.unit;
             total += val;
             breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
         }
         if (serviceId === 'comm_video') {
-            total += s.video.fixed;
-            breakdown.push({ label: s.video.label, value: s.video.fixed, type: 'base' });
+            const val = qty * s.video.unit; // Inicia em 1 e acrescenta 500 por unidade
+            total += val;
+            breakdown.push({ label: `${s.video.label} (${qty}x)`, value: val, type: 'base' });
         }
         if (serviceId === 'comm_combo') {
-            const val = s.combo.videoBase + (qty * s.combo.photoUnit);
+            const val = s.combo.videoBase; // Fixo no combo
             total += val;
-            breakdown.push({ label: `${s.combo.label} (${qty} fotos)`, value: val, type: 'base' });
+            breakdown.push({ label: s.combo.label, value: val, type: 'base' });
         }
     }
     else if (category === 'studio') {
         const s = PRICING_TABLE.studio;
-        if (serviceId === 'studio_photo') {
-            const val = qty * s.photo.unit;
-            total += val;
-            breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
-        }
-        if (serviceId === 'studio_video') {
-            total += s.video.base;
-            breakdown.push({ label: `${s.video.label} (2h)`, value: s.video.base, type: 'base' });
-             if (hours > s.video.hoursIncluded) {
-                 const extraHoursVal = (hours - s.video.hoursIncluded) * s.video.hourPrice;
-                 total += extraHoursVal;
-                 breakdown.push({ label: `Horas Extras (+${hours - s.video.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
-             }
+        
+        if (selectionMode === 'quantity') {
+            if (serviceId === 'studio_photo') {
+                const val = qty * s.photo.unit;
+                total += val;
+                breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
+            } else {
+                 total += s.video.base;
+                 breakdown.push({ label: s.video.label, value: s.video.base, type: 'base' });
+            }
+        } else {
+            const baseHour = 350;
+            total += baseHour;
+            breakdown.push({ label: `Sessão Estúdio (2h)`, value: baseHour, type: 'base' });
+            if (hours > 2) {
+                const extraVal = (hours - 2) * 200;
+                total += extraVal;
+                breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
+            }
         }
     }
     else if (category === 'video_production') {
@@ -208,7 +241,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         breakdown.push({ label: "Projeto Personalizado", value: 0, type: 'base' });
     }
 
-    if (addDrone && category !== 'video_production' && category !== 'custom') { 
+    if (addDrone && (category === 'wedding' || category === 'social' || category === 'commercial')) { 
          const dronePrice = PRICING_TABLE.video_production.drone.fixed;
          total += dronePrice; 
          breakdown.push({ label: "Drone (Imagens Aéreas)", value: dronePrice, type: 'addon' });
@@ -225,7 +258,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         }
     }
     return { totalPrice: total, priceBreakdown: breakdown };
-  }, [category, serviceId, hours, qty, addDrone, addRealTime, distance, quoteData.pricePerKm]);
+  }, [category, serviceId, hours, qty, addDrone, addRealTime, distance, quoteData.pricePerKm, selectionMode, config.photoUnitPrice]);
 
   useEffect(() => {
       const currentCategoryGroup = Object.keys(PRICING_TABLE[category as keyof typeof PRICING_TABLE]);
@@ -238,7 +271,16 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         if (category === 'video_production') setServiceId('edit_only');
         if (category === 'custom') setServiceId('custom_project');
         setHours(2);
-        if (category === 'video_production') setQty(1); else setQty(10);
+        
+        // Lógica de quantidade padrão
+        if (category === 'commercial') {
+            if (serviceId === 'comm_photo') setQty(5);
+            else if (serviceId === 'comm_video') setQty(1);
+        } else if (category === 'video_production') {
+            setQty(1);
+        } else {
+            setQty(10);
+        }
       }
   }, [category]);
 
@@ -252,13 +294,26 @@ const QuoteView: React.FC<QuoteViewProps> = ({
 
   const handleReset = () => { window.location.reload(); };
 
-  // FIX: Função de remoção aprimorada para permitir o reset de Horas Extras e remoção de Drone/Tempo Real.
-  // Deslocamento (freight) não é removido aqui para cumprir a regra de segurança.
   const handleRemoveAddon = (addonName: string) => {
       const name = addonName.toLowerCase();
       if (name.includes('drone')) setAddDrone(false);
       if (name.includes('tempo real')) setAddRealTime(false);
-      if (name.includes('horas extras')) setHours(2); // Reseta para a carga horária base incluída (2h)
+      if (name.includes('horas extras')) setHours(2); 
+  };
+
+  const handleStartApproval = () => {
+    const canShowUpsell = (category === 'wedding' || category === 'social') && (!addDrone || !addRealTime);
+    
+    if (canShowUpsell) {
+        setShowUpsell(true);
+    } else {
+        setViewState('summary');
+    }
+  };
+
+  const handleConfirmUpsell = () => {
+    setShowUpsell(false);
+    setViewState('summary');
   };
 
   let label = 'Serviço Personalizado';
@@ -272,18 +327,17 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   if (category === 'video_production') label = PRICING_TABLE.video_production[serviceId as keyof typeof PRICING_TABLE.video_production]?.label || label;
 
   let metricLabel = '';
-  if (category === 'wedding') metricLabel = 'Pacote Completo';
-  else if (category === 'social' && (serviceId === 'birthday' || serviceId === 'fifteen')) metricLabel = `${hours} Horas de Cobertura`;
-  else if (category === 'commercial' && serviceId === 'comm_combo') metricLabel = `Vídeo + ${qty} Fotos`;
-  else if (category === 'commercial' && serviceId === 'comm_photo') metricLabel = `${qty} Fotos`;
-  else if (category === 'studio' && serviceId === 'studio_photo') metricLabel = `${qty} Fotos`;
-  else if (category === 'studio' && serviceId === 'studio_video') metricLabel = `${hours} Horas de Gravação`;
-  else if (category === 'video_production' && serviceId === 'edit_only') metricLabel = `${qty} Vídeos`;
-  else if (category === 'custom') metricLabel = 'Sob medida';
-  else metricLabel = 'Taxa Fixa / Diária';
+  if (selectionMode === 'duration') {
+       metricLabel = `${hours}h de Cobertura (Ilimitado)`;
+  } else {
+       metricLabel = `${qty} Unidades Entregues`;
+  }
+  
+  if (category === 'wedding' && selectionMode === 'duration' && hours === 2) metricLabel = "Pacote Completo";
+  if (category === 'custom') metricLabel = 'Sob medida';
 
   const activeAddons = [];
-  if (addDrone && category !== 'video_production') activeAddons.push('Drone (Aéreo)');
+  if (addDrone && (category === 'wedding' || category === 'social' || category === 'commercial')) activeAddons.push('Drone (Aéreo)');
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
 
   const summaryDetails = {
@@ -297,9 +351,9 @@ const QuoteView: React.FC<QuoteViewProps> = ({
     occasion: category === 'custom' ? 'custom' : (category as any),
     customOccasionText: label,
     location: (category === 'studio' ? 'studio' : 'external'),
-    photoQty: (category === 'studio' || (category === 'commercial' && serviceId === 'comm_photo') || (category === 'commercial' && serviceId === 'comm_combo')) ? qty : 0,
+    photoQty: selectionMode === 'quantity' ? qty : (category === 'commercial' && serviceId === 'comm_photo' ? qty : 0),
     videoQty: (category === 'video_production' && serviceId === 'edit_only') ? qty : 
-              ((category === 'commercial' && (serviceId === 'comm_video' || serviceId === 'comm_combo'))) ? 1 : 0,
+              ((category === 'commercial' && (serviceId === 'comm_video' || serviceId === 'comm_combo'))) ? qty : 0,
     distance,
     paymentMethod 
   };
@@ -352,6 +406,8 @@ const QuoteView: React.FC<QuoteViewProps> = ({
               pricePerKm={quoteData.pricePerKm}
               locationClient={clientData.location}
               onOpenMap={() => setIsMapOpen(true)}
+              selectionMode={selectionMode}
+              setSelectionMode={setSelectionMode}
             />
           </div>
 
@@ -378,7 +434,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
             {showFooter && (
                 <StickyFooter 
                     totalPrice={totalPrice} 
-                    onApprove={() => setViewState('summary')} 
+                    onApprove={handleStartApproval} 
                     isApproved={isApproved}
                     highlight={true} 
                 />
@@ -403,6 +459,17 @@ const QuoteView: React.FC<QuoteViewProps> = ({
             />
          )}
       </AnimatePresence>
+
+      <AddonUpsellModal 
+        isOpen={showUpsell}
+        onClose={() => setShowUpsell(false)}
+        onConfirm={handleConfirmUpsell}
+        addDrone={addDrone}
+        setAddDrone={setAddDrone}
+        addRealTime={addRealTime}
+        setAddRealTime={setAddRealTime}
+        totalPrice={totalPrice}
+      />
 
       <SignatureModal 
         isOpen={isModalOpen}

@@ -107,7 +107,7 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
                         
                         <div className="flex items-center gap-3">
                             <span className="text-xs font-bold text-white flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                                CLIQUE AQUI <ArrowRight size={14} />
+                                CLIQUE AQUI <ArrowRight size={28} /> {/* Aumentado de 24 para 28 */}
                             </span>
 
                             {/* ANIMAÇÃO DE CLIQUE APERFEIÇOADA */}
