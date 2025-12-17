@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Check, Loader2 } from 'lucide-react';
+import { X, MapPin, Check, Loader2, Info } from 'lucide-react';
 import Button from './Button';
 import { modalVariants } from '../../lib/animations';
 import L from 'leaflet';
@@ -36,19 +36,18 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
             const map = L.map(mapContainerRef.current).setView([initialLat, initialLng], 13);
             
             // 2. Adiciona TileLayer (Tema CLARO - CartoDB Positron)
-            // Alterado de 'dark_all' para 'light_all' conforme solicitado
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
                 subdomains: 'abcd',
                 maxZoom: 19
             }).addTo(map);
 
-            // 3. Ícone Personalizado (Vermelho da Marca)
+            // 3. Ícone Personalizado
             const customIcon = L.divIcon({
                 className: 'bg-transparent',
                 html: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#DC2626" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin drop-shadow-lg"><path d="M20 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>`,
                 iconSize: [36, 36],
-                iconAnchor: [18, 36], // Ponta do pino no local exato
+                iconAnchor: [18, 36],
             });
 
             // 4. Cria o Marcador Arrastável
@@ -67,10 +66,10 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
                         const { latitude, longitude } = pos.coords;
                         map.setView([latitude, longitude], 15);
                         marker.setLatLng([latitude, longitude]);
-                        fetchAddress(latitude, longitude); // Busca endereço inicial
+                        fetchAddress(latitude, longitude); 
                     },
                     () => {
-                        fetchAddress(initialLat, initialLng); // Fallback
+                        fetchAddress(initialLat, initialLng); 
                     }
                 );
             } else {
@@ -105,25 +104,14 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
   const fetchAddress = async (lat: number, lng: number) => {
       setIsLoading(true);
       try {
-          // Usa Nominatim (OpenStreetMap)
-          // Headers adicionados para melhor aceitação da API
           const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-              {
-                  headers: {
-                      'Accept-Language': 'pt-BR'
-                  }
-              }
+              { headers: { 'Accept-Language': 'pt-BR' } }
           );
-          
-          if (!response.ok) {
-              throw new Error(`Nominatim error: ${response.status}`);
-          }
-
+          if (!response.ok) throw new Error(`Nominatim error: ${response.status}`);
           const data = await response.json();
           
           if (data && data.address) {
-              // Formata endereço amigável
               const street = data.address.road || data.address.pedestrian || "";
               const number = data.address.house_number || "";
               const district = data.address.suburb || data.address.neighbourhood || "";
@@ -139,7 +127,6 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
               setCurrentAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
           }
       } catch (error) {
-          // Falha silenciosa para evitar erros no console (fallback para coordenadas)
           setCurrentAddress(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
       } finally {
           setIsLoading(false);
@@ -175,9 +162,12 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
                 <div>
                     <h3 className="text-white font-medium flex items-center gap-2">
                         <MapPin size={18} className="text-brand-DEFAULT" />
-                        Selecione o Local do Projeto
+                        Local do Serviço
                     </h3>
-                    <p className="text-xs text-neutral-500">Arraste o pino vermelho para o local exato.</p>
+                    <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
+                       <Info size={12} />
+                       Arraste o pino vermelho ou clique no mapa.
+                    </p>
                 </div>
                 <button onClick={onClose} className="text-neutral-400 hover:text-white p-2">
                     <X size={20} />

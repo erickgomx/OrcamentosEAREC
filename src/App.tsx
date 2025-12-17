@@ -8,8 +8,8 @@ import LandingView from './src/pages/LandingView';
 import AdminDashboard from './src/pages/AdminDashboard';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
-import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips'; // Importação do novo componente
-import { ClientData, QuoteData } from './src/types';
+import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
+import { ClientData, QuoteData, QuoteState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
 
@@ -19,38 +19,43 @@ type ViewState = 'landing' | 'intro' | 'welcome' | 'quote' | 'admin';
 const App: React.FC = () => {
   // --- GERENCIAMENTO DE ESTADO GLOBAL ---
 
-  // Controla a Splash Screen Inicial
   const [showSplash, setShowSplash] = useState(true);
-
-  // Controla qual "Página" está visível para o usuário
   const [view, setView] = useState<ViewState>('landing');
-  
-  // Armazena os dados do cliente capturados na WelcomeView
-  const [clientData, setClientData] = useState<ClientData | null>(null);
-  
-  // Controla a exibição da tela de carregamento "cinematográfica"
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Configuração global de preços e regras.
   const [config, setConfig] = useState<QuoteData>(mockQuote);
 
-  // Efeito para remover a Splash Screen após alguns segundos
+  // PERSISTÊNCIA DE DADOS (Evitar perda ao recarregar)
+  const [clientData, setClientData] = useState<ClientData | null>(() => {
+    const saved = localStorage.getItem('earec_client_data');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // ESTADO ELEVADO DO ORÇAMENTO (Para manter seleções ao voltar)
+  const [quoteState, setQuoteState] = useState<QuoteState>({
+    category: 'wedding',
+    serviceId: 'wedding_base',
+    hours: 2,
+    qty: 10,
+    addDrone: false,
+    addRealTime: false
+  });
+
+  // Salva no localStorage sempre que mudar
+  useEffect(() => {
+    if (clientData) {
+      localStorage.setItem('earec_client_data', JSON.stringify(clientData));
+    }
+  }, [clientData]);
+
   useEffect(() => {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
-    
-    // Tempo de exibição da tela inicial (3.5 segundos)
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3500); 
+    const timer = setTimeout(() => setShowSplash(false), 3500); 
     return () => clearTimeout(timer);
   }, []);
 
-  /**
-   * Handler: Início do Processo
-   */
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
@@ -60,25 +65,14 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  /**
-   * Handler: Atualização Administrativa
-   */
   const handleAdminUpdate = (newConfig: QuoteData) => {
     setConfig(newConfig);
   };
 
   return (
-    <main className="w-full min-h-screen bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
-      
-      {/* 
-         BACKGROUND PERSISTENTE GLOBAL 
-         Fica atrás de todas as views (z-0).
-      */}
+    <main className="w-full min-h-screen bg-[#020202] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
       <BackgroundFilmStrips />
 
-      {/* 
-        SPLASH SCREEN (Abertura)
-      */}
       <AnimatePresence mode="wait">
         {showSplash && (
           <motion.div 
@@ -112,51 +106,48 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 
-        Loading Overlay
-      */}
       <AnimatePresence>
         {isLoading && <Loading key="loader" />}
       </AnimatePresence>
 
-      {/* RENDERIZAÇÃO CONDICIONAL DAS VIEWS */}
-      {/* Wrapper relativo com z-10 para ficar acima do background */}
       <div className="relative z-10">
         {!showSplash && !isLoading && (
             <>
-            {/* 1. View: Landing (Tela Inicial com Botão Continuar) */}
             {view === 'landing' && (
                 <LandingView onNext={() => setView('intro')} />
             )}
 
-            {/* 2. View: Intro (Escolha: Conhecer EAREC ou Orçamento) */}
             {view === 'intro' && (
-                <IntroView onContinue={() => setView('welcome')} />
+                <IntroView 
+                    onContinue={() => setView('welcome')} 
+                    onBack={() => setView('landing')} 
+                />
             )}
 
-            {/* 3. View: Welcome (Formulário de Dados) */}
             {view === 'welcome' && (
                 <WelcomeView 
-                onStart={handleStart} 
-                onAdminClick={() => setView('admin')} 
+                  onStart={handleStart} 
+                  onAdminClick={() => setView('admin')}
+                  onBack={() => setView('intro')} 
                 />
             )}
 
-            {/* 4. View: Quote (Configurador Principal) */}
             {view === 'quote' && clientData && (
                 <QuoteView 
-                clientData={clientData} 
-                onUpdateClientData={setClientData}
-                config={config} 
+                  clientData={clientData} 
+                  onUpdateClientData={setClientData}
+                  config={config}
+                  onBack={() => setView('welcome')}
+                  quoteState={quoteState}
+                  setQuoteState={setQuoteState}
                 />
             )}
 
-            {/* 5. View: Admin (Painel Protegido) */}
             {view === 'admin' && (
                 <AdminDashboard 
-                currentConfig={config}
-                onUpdateConfig={handleAdminUpdate}
-                onExit={() => setView('welcome')}
+                  currentConfig={config}
+                  onUpdateConfig={handleAdminUpdate}
+                  onExit={() => setView('welcome')}
                 />
             )}
             </>

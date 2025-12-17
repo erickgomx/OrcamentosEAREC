@@ -6,10 +6,10 @@
 export type LocationType = 'studio' | 'external';
 
 // Tipos de Ocasião (Usados para categorização na mensagem final)
-export type OccasionType = 'institutional' | 'advertising' | 'social' | 'custom';
+export type OccasionType = 'institutional' | 'advertising' | 'social' | 'wedding' | 'custom';
 
 // Categorias principais de Serviço (Abas do Configurador)
-export type ServiceCategory = 'social' | 'commercial' | 'studio' | 'video_production' | 'custom';
+export type ServiceCategory = 'wedding' | 'social' | 'commercial' | 'studio' | 'video_production' | 'custom';
 
 // IDs únicos para cada "Produto" vendável no sistema
 // Isso garante tipagem forte e evita erros de digitação ("magic strings") no código.
@@ -20,6 +20,16 @@ export type ServiceId =
   | 'studio_photo' | 'studio_video'
   | 'edit_only' | 'cam_cap' | 'mobile_cap' | 'drone'
   | 'custom_project';
+
+// Estado persistente da tela de Orçamento
+export interface QuoteState {
+  category: ServiceCategory;
+  serviceId: ServiceId;
+  hours: number;
+  qty: number;
+  addDrone: boolean;
+  addRealTime: boolean;
+}
 
 // Estrutura de um item individual dentro de um orçamento
 export interface ServiceItem {

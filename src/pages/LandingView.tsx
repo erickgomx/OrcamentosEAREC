@@ -12,11 +12,10 @@ interface LandingViewProps {
 
 const LandingView: React.FC<LandingViewProps> = ({ onNext }) => {
   return (
-    // REMOVIDO: bg-neutral-950
     <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden px-6">
       
-      {/* Background Decorativo Base (Mantido o gradiente local, mas com transparência para o fundo global) */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900/50 via-neutral-950/80 to-black z-0" />
+      {/* Background Decorativo Base - Usando pretos mais profundos e transparência */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/20 via-black/80 to-black z-0" />
       
       {/* CONTEÚDO PRINCIPAL */}
       <motion.div 

@@ -43,7 +43,7 @@ const BackgroundFilmStrips: React.FC = () => {
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen">
       {/* 
         === FILME DE CÂMERA VERMELHO (GLOBAL) === 
-        Opacidade ajustada e sem mix-blend para garantir que o vermelho apareça no fundo preto.
+        Opacidade ajustada para manter visibilidade em fundo preto.
       */}
       
       {/* Tira Superior Direita */}
@@ -58,9 +58,10 @@ const BackgroundFilmStrips: React.FC = () => {
             opacity: { duration: 1.5 },
             y: { duration: 8, repeat: Infinity, ease: "easeInOut" }
         }}
-        className="absolute -top-20 -right-20 md:right-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT opacity-20"
+        // Opacidade aumentada para 25% para melhor contraste no preto
+        className="absolute -top-20 -right-20 md:right-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT opacity-25"
       >
-         <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.4)]" />
+         <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.3)]" />
       </motion.div>
 
       {/* Tira Inferior Esquerda */}
@@ -75,14 +76,15 @@ const BackgroundFilmStrips: React.FC = () => {
             opacity: { duration: 1.5 },
             y: { duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1 }
         }}
-        className="absolute -bottom-20 -left-20 md:left-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT opacity-20"
+        // Opacidade aumentada para 25%
+        className="absolute -bottom-20 -left-20 md:left-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT opacity-25"
       >
-         <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.4)]" />
+         <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.3)]" />
       </motion.div>
 
-      {/* Elemento de brilho central global */}
+      {/* Elemento de brilho central global - Reduzido para não "lavar" o preto */}
       <motion.div 
-        animate={{ opacity: [0.05, 0.15, 0.05] }}
+        animate={{ opacity: [0.02, 0.08, 0.02] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vh] bg-brand-DEFAULT/5 rounded-full blur-[120px] pointer-events-none" 
       />

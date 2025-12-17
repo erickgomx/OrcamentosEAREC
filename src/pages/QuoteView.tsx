@@ -4,38 +4,44 @@ import Hero from '../components/quote/Hero';
 import UpsellList from '../components/quote/UpsellList';
 import StickyFooter from '../components/quote/StickyFooter';
 import SignatureModal from '../components/quote/SignatureModal';
+import LocationMapModal from '../components/ui/LocationMapModal';
 import SummaryView from './SummaryView';
 import SuccessView from './SuccessView';
 import { formatCurrency } from '../lib/utils';
 import { calculateDistance } from '../lib/maps';
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
-import { ClientData, QuoteData, ServiceCategory, ServiceId } from '../types';
-import { ChevronDown, ChevronsDown } from 'lucide-react';
+import { ClientData, QuoteData, ServiceCategory, ServiceId, QuoteState } from '../types';
+import { ChevronDown, ChevronsDown, ArrowLeft } from 'lucide-react';
 
 interface QuoteViewProps {
-  clientData: ClientData; // Dados vindos do formulário (Nome, Local)
-  onUpdateClientData: (data: ClientData) => void; // Função para atualizar dados do cliente
-  config: QuoteData;      // Configurações globais de preço (Preço por Km, Base)
+  clientData: ClientData; 
+  onUpdateClientData: (data: ClientData) => void; 
+  config: QuoteData;      
+  onBack: () => void;
+  quoteState: QuoteState;
+  setQuoteState: React.Dispatch<React.SetStateAction<QuoteState>>;
 }
 
 type ViewState = 'config' | 'summary' | 'success';
 
 /**
  * TABELA DE PREÇOS (Hardcoded Logic)
- * ----------------------------------
- * Define a estrutura base de custos para cada serviço.
- * Separar isso do componente ajuda na manutenção.
  */
 const PRICING_TABLE = {
+    // Nova Categoria: Casamento
+    wedding: {
+        wedding_base: { base: 650, label: "Casamento (Base)" },
+        wedding_classic: { base: 900, label: "Pacote Clássico" },
+        wedding_romance: { base: 1150, label: "Pacote Romance" },
+        wedding_essence: { base: 1750, label: "Pacote Essência" },
+        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
+    },
+    // Categoria Social
     social: {
         birthday: { base: 400, hoursIncluded: 2, hourPrice: 250, label: "Chá Revelação / Aniversário" },
-        fifteen: { base: 400, hoursIncluded: 2, hourPrice: 250, label: "15 Anos" },
+        fifteen: { base: 450, hoursIncluded: 2, hourPrice: 250, label: "15 Anos" }, 
         graduation: { base: 800, label: "Formatura" },
-        wedding_base: { base: 650, label: "Casamento (Base)" },
-        wedding_classic: { base: 900, label: "Pacote Clássico (Pre + Casamento)" },
-        wedding_romance: { base: 1150, label: "Pacote Romance (Pre + MkOff + Casamento)" },
-        wedding_essence: { base: 1750, label: "Pacote Essência (Completo + Vídeo)" },
-        realtime: { fixed: 600, label: "Fotos Real Time" }
+        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
     },
     commercial: {
         photo: { unit: 20, label: "Comércio (Fotos)" },
@@ -44,7 +50,6 @@ const PRICING_TABLE = {
     },
     studio: {
         photo: { unit: 25, label: "Estúdio (Fotos)" },
-        // ATUALIZADO: Agora suporta base de horas + hora extra
         video: { base: 350, hoursIncluded: 2, hourPrice: 250, label: "Estúdio (Vídeo)" },
     },
     video_production: {
@@ -54,31 +59,21 @@ const PRICING_TABLE = {
         drone: { fixed: 250, label: "Drone (Imagens Aéreas)" }
     },
     custom: {
-        custom_project: { base: 0, label: "Projeto Personalizado" } // Preço sob consulta (Zero inicial)
+        custom_project: { base: 0, label: "Projeto Personalizado" } 
     }
 };
 
-/**
- * Componente: QuoteView
- * ---------------------
- * O "Cérebro" da aplicação. Responsável por:
- * 1. Calcular distância geográfica.
- * 2. Gerenciar estado da seleção do usuário.
- * 3. Calcular preço em tempo real (useMemo).
- * 4. Orquestrar fluxo de assinatura e sucesso.
- */
-const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, config }) => {
-  // Controle de Navegação Interna (Configurador -> Resumo -> Sucesso)
+const QuoteView: React.FC<QuoteViewProps> = ({ 
+    clientData, onUpdateClientData, config, onBack, 
+    quoteState, setQuoteState 
+}) => {
   const [viewState, setViewState] = useState<ViewState>('config');
   
-  // --- FRAMER MOTION: Barra de Progresso de Scroll ---
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
   
-  // Controle do indicador de rolagem (Scroll Incentive)
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
 
-  // Monitora o scroll para esconder o indicador quando chegar perto do fim
   useEffect(() => {
     return scrollYProgress.on('change', (latest) => {
       if (latest > 0.9) setShowScrollIndicator(false);
@@ -86,42 +81,35 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
     });
   }, [scrollYProgress]);
   
-  // Controle de visibilidade do footer
   const [showFooter, setShowFooter] = useState(true);
 
-  // Memoização dos dados combinados (Cliente + Config)
   const quoteData: QuoteData = useMemo(() => ({
     ...config,
     client: { ...config.client, ...clientData, projectTitle: `Project: ${clientData.name}` }
   }), [clientData, config]);
 
-  // --- ESTADOS DO SELETOR DE SERVIÇOS ---
-  const [category, setCategory] = useState<ServiceCategory>('social');
-  const [serviceId, setServiceId] = useState<ServiceId>('birthday');
-  
-  // Variáveis Quantitativas (Horas ou Unidades)
-  const [hours, setHours] = useState<number>(2);
-  const [qty, setQty] = useState<number>(10);
-  
-  // Adicionais (Checkboxes)
-  const [addDrone, setAddDrone] = useState(false);
-  const [addRealTime, setAddRealTime] = useState(false);
-
-  // --- ESTADO DE PAGAMENTO ---
-  // Elevado para QuoteView para persistir entre as telas de resumo e sucesso
   const [paymentMethod, setPaymentMethod] = useState<string>('Pix');
 
-  // --- LÓGICA DE GEOLOCALIZAÇÃO ---
   const [distance, setDistance] = useState<number>(0); 
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal de Assinatura
-  const [isApproved, setIsApproved] = useState(false);   // Estado de Aprovação
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false); // Estado para o modal do mapa
+  const [isApproved, setIsApproved] = useState(false);
 
-  // Effect: Calcula distância assim que a tela carrega (ou se o local mudar)
+  // Destruturando o estado vindo do App.tsx
+  const { category, serviceId, hours, qty, addDrone, addRealTime } = quoteState;
+
+  // Helpers para atualizar o estado global
+  const setCategory = (c: ServiceCategory) => setQuoteState(prev => ({ ...prev, category: c }));
+  const setServiceId = (s: ServiceId) => setQuoteState(prev => ({ ...prev, serviceId: s }));
+  const setHours = (h: number) => setQuoteState(prev => ({ ...prev, hours: h }));
+  const setQty = (q: number) => setQuoteState(prev => ({ ...prev, qty: q }));
+  const setAddDrone = (b: boolean) => setQuoteState(prev => ({ ...prev, addDrone: b }));
+  const setAddRealTime = (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b }));
+
   useEffect(() => {
     let isMounted = true;
     const updateDistance = async () => {
         if (clientData.location) {
-            // Chama a API de Mapas (lib/maps.ts)
             const dist = await calculateDistance(clientData.location);
             if (isMounted) setDistance(dist);
         }
@@ -130,120 +118,189 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
     return () => { isMounted = false; };
   }, [clientData.location]);
 
+  const handleUpdateLocation = (address: string) => {
+      onUpdateClientData({ ...clientData, location: address });
+  };
+
   /**
-   * 🔄 MOTOR DE CÁLCULO DE PREÇO (PRICING ENGINE)
-   * ---------------------------------------------
-   * Utiliza useMemo para recalcular o total apenas quando as dependências mudam.
-   * A lógica segue 3 etapas:
-   * 1. Preço Base do Serviço Selecionado.
-   * 2. Adicionais Globais (Drone, etc).
-   * 3. Logística (Frete por KM).
+   * CÁLCULO DE PREÇO & BREAKDOWN
    */
-  const totalPrice = useMemo(() => {
+  const { totalPrice, priceBreakdown } = useMemo(() => {
     let total = 0;
+    let breakdown: { label: string; value: number; type: 'base' | 'addon' | 'freight' }[] = [];
 
     // ETAPA 1: Cálculo do Serviço Principal
-    if (category === 'social') {
-        const s = PRICING_TABLE.social;
+    if (category === 'wedding') {
+        const s = PRICING_TABLE.wedding;
+        let baseVal = 0;
+        let baseLabel = "";
+
         switch (serviceId) {
-            case 'birthday':
-            case 'fifteen':
-                // Regra: Preço Base + (Horas Extras * Valor Hora)
-                total += s.birthday.base;
-                if (hours > s.birthday.hoursIncluded) {
-                    total += (hours - s.birthday.hoursIncluded) * s.birthday.hourPrice;
-                }
+            case 'wedding_base': 
+                baseVal = s.wedding_base.base; 
+                baseLabel = s.wedding_base.label;
                 break;
-            case 'graduation': total += s.graduation.base; break;
-            case 'wedding_base': total += s.wedding_base.base; break;
-            case 'wedding_classic': total += s.wedding_classic.base; break;
-            case 'wedding_romance': total += s.wedding_romance.base; break;
-            case 'wedding_essence': total += s.wedding_essence.base; break;
+            case 'wedding_classic': 
+                baseVal = s.wedding_classic.base; 
+                baseLabel = s.wedding_classic.label;
+                break;
+            case 'wedding_romance': 
+                baseVal = s.wedding_romance.base; 
+                baseLabel = s.wedding_romance.label;
+                break;
+            case 'wedding_essence': 
+                baseVal = s.wedding_essence.base; 
+                baseLabel = s.wedding_essence.label;
+                break;
         }
-        // Adicional específico de Social
-        if (addRealTime) total += s.realtime.fixed;
+        total += baseVal;
+        breakdown.push({ label: baseLabel, value: baseVal, type: 'base' });
+
+        if (addRealTime) {
+            total += s.realtime.fixed;
+            breakdown.push({ label: s.realtime.label, value: s.realtime.fixed, type: 'addon' });
+        }
+    }
+    else if (category === 'social') {
+        const s = PRICING_TABLE.social;
+        if (serviceId === 'birthday' || serviceId === 'fifteen') {
+            const ref = serviceId === 'birthday' ? s.birthday : s.fifteen;
+            total += ref.base;
+            breakdown.push({ label: `${ref.label} (2h)`, value: ref.base, type: 'base' });
+            
+            if (hours > ref.hoursIncluded) {
+                const extraHoursVal = (hours - ref.hoursIncluded) * ref.hourPrice;
+                total += extraHoursVal;
+                breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
+            }
+        } else if (serviceId === 'graduation') {
+             total += s.graduation.base;
+             breakdown.push({ label: s.graduation.label, value: s.graduation.base, type: 'base' });
+        }
+
+        if (addRealTime) {
+            total += s.realtime.fixed;
+            breakdown.push({ label: s.realtime.label, value: s.realtime.fixed, type: 'addon' });
+        }
     } 
     else if (category === 'commercial') {
-        if (serviceId === 'comm_photo') total += qty * PRICING_TABLE.commercial.photo.unit;
-        if (serviceId === 'comm_video') total += PRICING_TABLE.commercial.video.fixed;
+        const s = PRICING_TABLE.commercial;
+        if (serviceId === 'comm_photo') {
+            const val = qty * s.photo.unit;
+            total += val;
+            breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
+        }
+        if (serviceId === 'comm_video') {
+            total += s.video.fixed;
+            breakdown.push({ label: s.video.label, value: s.video.fixed, type: 'base' });
+        }
         if (serviceId === 'comm_combo') {
-            // Regra Combo: Preço Vídeo + (Qtd Fotos * Valor Foto)
-            total += PRICING_TABLE.commercial.combo.videoBase + (qty * PRICING_TABLE.commercial.combo.photoUnit);
+            const val = s.combo.videoBase + (qty * s.combo.photoUnit);
+            total += val;
+            breakdown.push({ label: `${s.combo.label} (${qty} fotos)`, value: val, type: 'base' });
         }
     }
     else if (category === 'studio') {
-        if (serviceId === 'studio_photo') total += qty * PRICING_TABLE.studio.photo.unit;
-        // ATUALIZADO: Cálculo de Vídeo em Estúdio (Base + Horas Extras)
+        const s = PRICING_TABLE.studio;
+        if (serviceId === 'studio_photo') {
+            const val = qty * s.photo.unit;
+            total += val;
+            breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
+        }
         if (serviceId === 'studio_video') {
-             const sVideo = PRICING_TABLE.studio.video;
-             total += sVideo.base;
-             if (hours > sVideo.hoursIncluded) {
-                 total += (hours - sVideo.hoursIncluded) * sVideo.hourPrice;
+            total += s.video.base;
+            breakdown.push({ label: `${s.video.label} (2h)`, value: s.video.base, type: 'base' });
+             if (hours > s.video.hoursIncluded) {
+                 const extraHoursVal = (hours - s.video.hoursIncluded) * s.video.hourPrice;
+                 total += extraHoursVal;
+                 breakdown.push({ label: `Horas Extras (+${hours - s.video.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
              }
         }
     }
     else if (category === 'video_production') {
-        if (serviceId === 'edit_only') total += qty * PRICING_TABLE.video_production.edit.unit;
-        if (serviceId === 'cam_cap') total += PRICING_TABLE.video_production.cam_cap.fixed;
-        if (serviceId === 'mobile_cap') total += PRICING_TABLE.video_production.mobile_cap.fixed;
-        if (serviceId === 'drone') total += PRICING_TABLE.video_production.drone.fixed;
+        const s = PRICING_TABLE.video_production;
+        if (serviceId === 'edit_only') {
+             const val = qty * s.edit.unit;
+             total += val;
+             breakdown.push({ label: `${s.edit.label} (${qty}x)`, value: val, type: 'base' });
+        }
+        if (serviceId === 'cam_cap') { total += s.cam_cap.fixed; breakdown.push({ label: s.cam_cap.label, value: s.cam_cap.fixed, type: 'base' }); }
+        if (serviceId === 'mobile_cap') { total += s.mobile_cap.fixed; breakdown.push({ label: s.mobile_cap.label, value: s.mobile_cap.fixed, type: 'base' }); }
+        if (serviceId === 'drone') { total += s.drone.fixed; breakdown.push({ label: s.drone.label, value: s.drone.fixed, type: 'base' }); }
     }
     else if (category === 'custom') {
         total += PRICING_TABLE.custom.custom_project.base;
+        breakdown.push({ label: "Projeto Personalizado", value: 0, type: 'base' });
     }
 
-    // ETAPA 2: Adicionais Globais
-    // Drone é cobrado extra se não for a categoria 'video_production' (onde já é um item principal)
+    // ETAPA 2: Adicionais Globais (Drone)
     if (addDrone && category !== 'video_production' && category !== 'custom') { 
-         total += PRICING_TABLE.video_production.drone.fixed; 
+         const dronePrice = PRICING_TABLE.video_production.drone.fixed;
+         total += dronePrice; 
+         breakdown.push({ label: "Drone (Imagens Aéreas)", value: dronePrice, type: 'addon' });
     }
 
     // ETAPA 3: Logística (Frete)
-    // REGRA DE NEGÓCIO: Estúdio e Custom não cobram deslocamento automático.
-    if (distance > 0 && category !== 'studio' && category !== 'custom') {
-        // Fórmula: Distância (Ida) * 2 (Volta) * Preço/Km
-        total += (distance * 2 * quoteData.pricePerKm);
+    const isExemptFromTravel = 
+        category === 'studio' || 
+        category === 'custom' || 
+        serviceId === 'edit_only';
+
+    if (!isExemptFromTravel) {
+        if (distance > 0) {
+            const freight = (distance * 2 * quoteData.pricePerKm);
+            total += freight;
+            breakdown.push({ label: `Deslocamento (${distance}km)`, value: freight, type: 'freight' });
+        } else {
+             breakdown.push({ label: "Deslocamento", value: 0, type: 'freight' });
+        }
     }
 
-    return total;
+    return { totalPrice: total, priceBreakdown: breakdown };
   }, [category, serviceId, hours, qty, addDrone, addRealTime, distance, quoteData.pricePerKm]);
 
-  // Effect: Resetar inputs quantitativos ao trocar de categoria para evitar estados inconsistentes
+  // Effect: Resetar inputs quantitativos ao trocar de categoria
   useEffect(() => {
-      // Defaults inteligentes por categoria
-      if (category === 'social') setServiceId('birthday');
-      if (category === 'commercial') setServiceId('comm_photo');
-      if (category === 'studio') setServiceId('studio_photo');
-      if (category === 'video_production') setServiceId('edit_only');
-      if (category === 'custom') setServiceId('custom_project');
-      
-      // Reseta valores numéricos
-      setHours(2);
+      // Se trocarmos de categoria, resetamos para o padrão daquela categoria
+      // Mas verificamos se o serviceId atual pertence à categoria nova, senão resetamos
+      const currentCategoryGroup = Object.keys(PRICING_TABLE[category as keyof typeof PRICING_TABLE]);
+      const isIdValid = currentCategoryGroup.some(key => key === serviceId);
 
-      // CORREÇÃO: Se for Produção (vídeos), começa em 1. Comercial/Estúdio (Fotos) começa em 10.
-      if (category === 'video_production') {
-        setQty(1);
-      } else {
-        setQty(10);
+      if (!isIdValid) {
+        if (category === 'wedding') setServiceId('wedding_base');
+        if (category === 'social') setServiceId('birthday');
+        if (category === 'commercial') setServiceId('comm_photo');
+        if (category === 'studio') setServiceId('studio_photo');
+        if (category === 'video_production') setServiceId('edit_only');
+        if (category === 'custom') setServiceId('custom_project');
+        
+        setHours(2);
+        if (category === 'video_production') {
+            setQty(1);
+        } else {
+            setQty(10);
+        }
       }
-      
-      setAddRealTime(false);
   }, [category]);
 
-  // Handler: Assinatura realizada com sucesso
   const handleSignatureSuccess = (signatureData: string) => {
     setIsModalOpen(false);
     setIsApproved(true);
-    setViewState('success'); // Muda para tela final
+    setViewState('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleReset = () => { window.location.reload(); };
 
-  // --- PREPARAÇÃO DE DADOS PARA TELAS (SUMMARY E SUCCESS) ---
+  const handleRemoveAddon = (addonName: string) => {
+      if (addonName.includes('Drone')) setAddDrone(false);
+      if (addonName.includes('Tempo Real')) setAddRealTime(false);
+  };
+
+  // --- PREPARAÇÃO DE DADOS PARA TELAS ---
   
-  // 1. Obtém o label legível do serviço atual
   let label = 'Serviço Personalizado';
+  if (category === 'wedding') label = PRICING_TABLE.wedding[serviceId as keyof typeof PRICING_TABLE.wedding]?.label || label;
   if (category === 'social') label = PRICING_TABLE.social[serviceId as keyof typeof PRICING_TABLE.social]?.label || label;
   if (category === 'commercial') {
       if (serviceId === 'comm_combo') label = PRICING_TABLE.commercial.combo.label;
@@ -252,9 +309,10 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
   if (category === 'studio') label = PRICING_TABLE.studio[serviceId as keyof typeof PRICING_TABLE.studio]?.label || label;
   if (category === 'video_production') label = PRICING_TABLE.video_production[serviceId as keyof typeof PRICING_TABLE.video_production]?.label || label;
 
-  // 2. Define a métrica principal (Horas ou Quantidade) para exibição
   let metricLabel = '';
-  if (category === 'social' && (serviceId === 'birthday' || serviceId === 'fifteen')) {
+  if (category === 'wedding') {
+      metricLabel = 'Pacote Completo';
+  } else if (category === 'social' && (serviceId === 'birthday' || serviceId === 'fifteen')) {
     metricLabel = `${hours} Horas de Cobertura`;
   } else if (category === 'commercial' && serviceId === 'comm_combo') {
     metricLabel = `Vídeo + ${qty} Fotos`;
@@ -263,7 +321,6 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
   } else if (category === 'studio' && serviceId === 'studio_photo') {
     metricLabel = `${qty} Fotos`;
   } else if (category === 'studio' && serviceId === 'studio_video') {
-    // ATUALIZADO: Label para Vídeo em Estúdio
     metricLabel = `${hours} Horas de Gravação`;
   } else if (category === 'video_production' && serviceId === 'edit_only') {
     metricLabel = `${qty} Vídeos`;
@@ -273,20 +330,17 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
     metricLabel = 'Taxa Fixa / Diária';
   }
 
-  // 3. Lista de Adicionais Ativos
   const activeAddons = [];
   if (addDrone && category !== 'video_production') activeAddons.push('Drone (Aéreo)');
-  if (addRealTime) activeAddons.push('Fotos Real Time');
+  if (addRealTime) activeAddons.push('Fotos em Tempo Real');
 
-  // Objeto de Detalhes para o SummaryView
   const summaryDetails = {
     serviceName: label,
-    categoryLabel: category === 'social' ? 'Social' : category === 'commercial' ? 'Comercial' : category === 'studio' ? 'Estúdio' : 'Produção',
+    categoryLabel: category === 'wedding' ? 'Casamento' : category === 'social' ? 'Social' : category === 'commercial' ? 'Comercial' : category === 'studio' ? 'Estúdio' : 'Produção',
     metricLabel,
     addons: activeAddons
   };
 
-  // Objeto de Detalhes para o SuccessView (mantendo compatibilidade)
   const quoteDetails = {
     occasion: category === 'custom' ? 'custom' : (category as any),
     customOccasionText: label,
@@ -298,8 +352,6 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
     paymentMethod 
   };
 
-  // --- RENDERIZAÇÃO CONDICIONAL DE VIEW ---
-  
   if (viewState === 'success') {
       return (
         <SuccessView 
@@ -314,16 +366,23 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
   return (
     <div className="relative">
       <div className="block pb-40">
-          {/* Barra de Progresso Vermelha no Topo */}
           <motion.div
             className="fixed top-0 left-0 right-0 h-1 bg-brand-DEFAULT z-50 origin-left shadow-[0_0_15px_#DC2626]"
             style={{ scaleX }}
           />
+          
+          {/* Botão Voltar */}
+          <button 
+            onClick={onBack}
+            className="fixed top-6 left-6 z-[60] text-neutral-400 hover:text-white flex items-center gap-2 transition-colors text-sm uppercase tracking-wider bg-black/20 p-2 rounded-lg backdrop-blur-sm hover:bg-black/50 shadow-lg border border-white/5"
+            title="Voltar ao Início"
+          >
+             <ArrowLeft size={18} /> Voltar
+          </button>
 
           <Hero data={quoteData} />
           
           <div className="relative z-10">
-            {/* Componente que contém os Cards de Serviço e Controles */}
             <UpsellList 
               category={category} setCategory={setCategory}
               serviceId={serviceId} setServiceId={setServiceId}
@@ -334,18 +393,16 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
               distance={distance}
               pricePerKm={quoteData.pricePerKm}
               locationClient={clientData.location}
+              onOpenMap={() => setIsMapOpen(true)}
             />
           </div>
 
-          {/* INDICADOR DE ROLAGEM (Scroll Incentive) */}
           <AnimatePresence>
             {showScrollIndicator && (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                // Ajustado Z-Index para 50 para ficar acima do footer (z-40)
-                // Alterada cor para branco e adicionado drop-shadow para melhor contraste
                 className="fixed bottom-36 md:bottom-36 left-1/2 -translate-x-1/2 z-50 pointer-events-none text-white drop-shadow-md"
               >
                  <motion.div
@@ -380,9 +437,11 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
                 totalPrice={totalPrice}
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
-                summaryDetails={summaryDetails} // Passando o resumo
+                summaryDetails={summaryDetails}
+                priceBreakdown={priceBreakdown}
                 onBack={() => setViewState('config')}
                 onProceedToSign={() => setIsModalOpen(true)}
+                onRemoveAddon={handleRemoveAddon}
             />
          )}
       </AnimatePresence>
@@ -392,6 +451,13 @@ const QuoteView: React.FC<QuoteViewProps> = ({ clientData, onUpdateClientData, c
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleSignatureSuccess}
         totalValue={formatCurrency(totalPrice)}
+      />
+
+      <LocationMapModal 
+        isOpen={isMapOpen}
+        onClose={() => setIsMapOpen(false)}
+        onSelectLocation={handleUpdateLocation}
+        initialAddress={clientData.location}
       />
     </div>
   );

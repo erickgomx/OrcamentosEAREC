@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, Video, Gift, Crown, GraduationCap, Heart, 
-  Store, Aperture, Plane, Clock, Zap, Minus, Plus, Route, Star, CircleHelp, X, MessageCircle, Hand
+  Store, Aperture, Plane, Clock, Zap, Minus, Plus, Route, Star, CircleHelp, X, MessageCircle, Hand, CheckCircle2, HeartHandshake, Sparkles, Gem, Timer, Edit
 } from 'lucide-react';
 import { formatCurrency, cn } from '../../lib/utils';
 import { fadeInUp, staggerContainer } from '../../lib/animations';
@@ -26,34 +26,8 @@ interface UpsellListProps {
   distance: number;
   pricePerKm: number;
   locationClient: string;
+  onOpenMap?: () => void;
 }
-
-/**
- * Componente Visual de Dica de Clique (Mãozinha + Ripple)
- */
-const ClickHint = ({ delay = 0, className }: { delay?: number, className?: string }) => (
-    <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-        className={cn("absolute z-50 pointer-events-none flex items-center justify-center", className)}
-    >
-        {/* Onda (Ripple) */}
-        <motion.div
-            animate={{ scale: [1, 2], opacity: [0.5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: delay }}
-            className="absolute w-8 h-8 bg-white/30 rounded-full"
-        />
-        {/* Mãozinha */}
-        <motion.div
-            animate={{ y: [0, -10, 0], scale: [1, 0.9, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: delay }}
-        >
-            <Hand className="text-white fill-white/20 drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] rotate-[-15deg]" size={32} />
-        </motion.div>
-    </motion.div>
-);
 
 const UpsellList: React.FC<UpsellListProps> = ({ 
   category, setCategory,
@@ -64,36 +38,55 @@ const UpsellList: React.FC<UpsellListProps> = ({
   addRealTime, setAddRealTime,
   distance,
   pricePerKm,
-  locationClient
+  locationClient,
+  onOpenMap
 }) => {
 
+  // Atualização das Categorias: Casamento separado de Social
   const categories = [
-    { id: 'social', label: 'Eventos Sociais', icon: Crown },
+    { id: 'wedding', label: 'Casamento', icon: Heart },
+    { id: 'social', label: 'Social', icon: Gift },
     { id: 'commercial', label: 'Comercial', icon: Store },
     { id: 'studio', label: 'Estúdio', icon: Aperture },
     { id: 'video_production', label: 'Produção', icon: Video },
     { id: 'custom', label: 'Personalizado', icon: Star, highlight: true },
   ];
 
-  const isNoTravelCost = category === 'studio' || category === 'custom';
+  // Descrições explicativas para cada categoria
+  const categoryDescriptions: Record<string, string> = {
+      wedding: "Cobertura cinematográfica para eternizar o dia mais importante da sua vida.",
+      social: "Registros vibrantes e emocionantes para 15 anos, aniversários e formaturas.",
+      commercial: "Valorize sua marca com fotos e vídeos profissionais de alta conversão.",
+      studio: "Ambiente controlado e iluminação perfeita para ensaios e produções de alto nível.",
+      video_production: "Equipe técnica, edição especializada e captação aérea com drone.",
+      custom: "Soluções audiovisuais sob medida para demandas específicas e projetos únicos."
+  };
+
+  const isNoTravelCost = category === 'studio' || category === 'custom' || serviceId === 'edit_only';
   const travelCost = isNoTravelCost ? 0 : distance * 2 * pricePerKm;
   const whatsappNumber = "5584981048857";
-
-  // Estado que controla se as dicas visuais devem aparecer
   const [showTutorial, setShowTutorial] = useState(true);
 
-  // Função centralizada para desligar o tutorial em QUALQUER interação
   const handleInteraction = () => {
     if (showTutorial) setShowTutorial(false);
   };
 
-  // Garante que o tutorial suma se a categoria mudar (mesmo que programaticamente)
+  const handleServiceSelect = (id: ServiceId) => {
+    setServiceId(id);
+    handleInteraction();
+    
+    // Auto-scroll para duração do evento se for 15 anos
+    if (id === 'fifteen') {
+        setTimeout(() => {
+            document.getElementById('duration-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+    }
+  };
+
   useEffect(() => {
-    if (category !== 'social') setShowTutorial(false);
+    if (category !== 'social' && category !== 'wedding') setShowTutorial(false);
   }, [category]);
 
-  // Lógica para mostrar o controle de horas
-  // Exibe se for (Social E Aniversário/15anos) OU (Estúdio E Vídeo)
   const showHoursControl = (
     (category === 'social' && (serviceId === 'birthday' || serviceId === 'fifteen')) || 
     (category === 'studio' && serviceId === 'studio_video')
@@ -103,11 +96,10 @@ const UpsellList: React.FC<UpsellListProps> = ({
     <section id="configurator" className="pt-4 pb-12 px-4 md:px-8 bg-neutral-900/30 min-h-screen" onClick={handleInteraction}>
       <div className="max-w-5xl mx-auto space-y-8">
         
-        {/* === 1. NAVEGAÇÃO POR ABAS (TABS) === */}
+        {/* === 1. NAVEGAÇÃO POR ABAS === */}
         <div className="relative z-20 text-center">
             <p className="text-xs text-neutral-500 uppercase tracking-widest mb-4">Qual a ocasião do serviço?</p>
-            
-            <div className="flex flex-wrap justify-center gap-2 md:gap-4 relative">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4 relative mb-6">
                 {categories.map((cat) => {
                     const isActive = category === cat.id;
                     const Icon = cat.icon;
@@ -115,7 +107,7 @@ const UpsellList: React.FC<UpsellListProps> = ({
                         <div key={cat.id} className="relative">
                             <button
                                 onClick={(e) => {
-                                    e.stopPropagation(); // Evita bubble duplicado
+                                    e.stopPropagation(); 
                                     setCategory(cat.id as ServiceCategory);
                                     handleInteraction();
                                 }}
@@ -131,17 +123,23 @@ const UpsellList: React.FC<UpsellListProps> = ({
                                 <span className="hidden sm:inline">{cat.label}</span>
                                 <span className="sm:hidden">{cat.label.split(' ')[0]}</span>
                             </button>
-
-                            {/* HINT 1: Incentivo ao toque no MENU (Sobre a aba 'Comercial' para sugerir troca) */}
-                            <AnimatePresence>
-                                {showTutorial && category === 'social' && cat.id === 'commercial' && (
-                                    <ClickHint className="-top-1 left-1/2 -translate-x-1/2" />
-                                )}
-                            </AnimatePresence>
                         </div>
                     )
                 })}
             </div>
+
+            {/* Explicação da Categoria Selecionada */}
+            <motion.div
+                key={category} // Força animação na troca
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="max-w-2xl mx-auto"
+            >
+                <p className="text-neutral-400 font-serif italic text-base md:text-lg">
+                    "{categoryDescriptions[category]}"
+                </p>
+            </motion.div>
         </div>
 
         {/* Container dos Cards */}
@@ -155,74 +153,83 @@ const UpsellList: React.FC<UpsellListProps> = ({
             
             {/* === 2. GRID DE SERVIÇOS === */}
             
-            {/* CATEGORIA: SOCIAL */}
-            {category === 'social' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                    <motion.div variants={fadeInUp}>
-                        <ServiceCard 
-                            active={serviceId === 'birthday'} 
-                            onClick={() => { setServiceId('birthday'); handleInteraction(); }}
-                            icon={Gift} title="Aniversário / Chá" price="R$ 400 (2h)"
-                            desc="Cobertura completa dos parabéns e decoração."
-                            details="Inclui 2 horas de cobertura fotográfica. Todas as fotos tratadas entregues via link. Ideal para Chá Revelação e Mesversário."
-                        />
-                    </motion.div>
-                    
-                    <motion.div variants={fadeInUp} className="relative">
-                        <ServiceCard 
-                            active={serviceId === 'fifteen'} 
-                            onClick={() => { setServiceId('fifteen'); handleInteraction(); }}
-                            icon={Crown} title="15 Anos" price="R$ 400 (2h)"
-                            desc="Registro especial do debut."
-                            details="Foco na debutante, recepção e valsa. Inclui 2 horas de cobertura base. Fotos ilimitadas durante o período contratado."
-                        />
-                        {/* REMOVIDO: Hint sobre o card de 15 anos/aniversário */}
-                    </motion.div>
-
-                    <motion.div variants={fadeInUp}>
-                        <ServiceCard 
-                            active={serviceId === 'graduation'} 
-                            onClick={() => { setServiceId('graduation'); handleInteraction(); }}
-                            icon={GraduationCap} title="Formatura" price="R$ 800 (Fixo)"
-                            details="Cobertura do evento de colação ou baile. Valor fechado para o evento."
-                        />
-                    </motion.div>
-                    <motion.div variants={fadeInUp}>
+            {/* CATEGORIA: CASAMENTO */}
+            {category === 'wedding' && (
+                <>
+                {/* 1. Casamento Base - Centralizado */}
+                <div className="flex justify-center w-full">
+                    <motion.div variants={fadeInUp} className="w-full max-w-md">
                         <ServiceCard 
                             active={serviceId === 'wedding_base'} 
-                            onClick={() => { setServiceId('wedding_base'); handleInteraction(); }}
+                            onClick={() => handleServiceSelect('wedding_base')}
                             icon={Heart} title="Casamento (Base)" price="R$ 650"
-                            desc="Cerimônia + Decoração + Convidados"
+                            desc="Cerimônia + Decoração"
                             details="Cobertura essencial do casamento. Inclui fotos protocolares e cerimônia."
                         />
                     </motion.div>
-                    
-                    {/* Sub-seção: Pacotes Especiais */}
-                    <motion.div variants={fadeInUp} className="md:col-span-2 pt-4">
-                        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3 ml-1">Pacotes de Casamento</p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-                            <ServiceCard 
-                                active={serviceId === 'wedding_classic'} onClick={() => { setServiceId('wedding_classic'); handleInteraction(); }}
-                                title="Clássico" price="R$ 900"
-                                desc="Pré-Wedding + Casamento"
-                                details="O pacote essencial. Inclui ensaio Pré-Wedding (externo) e a cobertura completa do evento."
-                                highlight
-                            />
-                            <ServiceCard 
-                                active={serviceId === 'wedding_romance'} onClick={() => { setServiceId('wedding_romance'); handleInteraction(); }}
-                                title="Romance" price="R$ 1.150"
-                                desc="Pré + Making Off + Casamento"
-                                details="Pacote intermediário. Acrescenta a cobertura do Making Of da noiva/noivo."
-                                highlight
-                            />
-                            <ServiceCard 
-                                active={serviceId === 'wedding_essence'} onClick={() => { setServiceId('wedding_essence'); handleInteraction(); }}
-                                title="Essência" price="R$ 1.750"
-                                desc="Pré + MkOff + Casamento + Vídeo"
-                                details="A experiência completa EAREC. Tudo do pacote Romance + cobertura de VÍDEO cinematográfico."
-                                highlight
-                            />
-                        </div>
+                </div>
+
+                {/* 2. Pacotes Especiais - Grid */}
+                <motion.div variants={fadeInUp} className="pt-2">
+                    <p className="text-xs uppercase tracking-widest text-neutral-500 mb-3 text-center">Pacotes Completos</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                        <ServiceCard 
+                            active={serviceId === 'wedding_classic'} onClick={() => handleServiceSelect('wedding_classic')}
+                            icon={Sparkles} // Ícone Trocado
+                            title="Clássico" price="R$ 900"
+                            desc="Pré-Wedding + Casamento"
+                            details="O pacote essencial. Inclui ensaio Pré-Wedding (externo) e a cobertura completa do evento."
+                            highlight
+                        />
+                        <ServiceCard 
+                            active={serviceId === 'wedding_romance'} onClick={() => handleServiceSelect('wedding_romance')}
+                            icon={HeartHandshake} // Ícone Trocado
+                            title="Romance" price="R$ 1.150"
+                            desc="Pré + Making Off + Casamento"
+                            details="Pacote intermediário. Acrescenta a cobertura do Making Of da noiva/noivo."
+                            highlight
+                        />
+                        <ServiceCard 
+                            active={serviceId === 'wedding_essence'} onClick={() => handleServiceSelect('wedding_essence')}
+                            icon={Gem}
+                            title="Essência" price="R$ 1.750"
+                            desc="Pré + MkOff + Casamento + Vídeo"
+                            details="A experiência completa EAREC. Tudo do pacote Romance + cobertura de VÍDEO cinematográfico."
+                            highlight
+                        />
+                    </div>
+                </motion.div>
+                </>
+            )}
+
+            {/* CATEGORIA: SOCIAL (Aniversários e Formaturas) */}
+            {category === 'social' && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <motion.div variants={fadeInUp}>
+                        <ServiceCard 
+                            active={serviceId === 'fifteen'} 
+                            onClick={() => handleServiceSelect('fifteen')}
+                            icon={Crown} title="15 Anos" price="R$ 450 (2h)"
+                            desc="Registro especial do debut."
+                            details="Foco na debutante, recepção e valsa. Inclui 2 horas de cobertura base. Fotos ilimitadas durante o período contratado."
+                        />
+                    </motion.div>
+                    <motion.div variants={fadeInUp}>
+                        <ServiceCard 
+                            active={serviceId === 'birthday'} 
+                            onClick={() => handleServiceSelect('birthday')}
+                            icon={Gift} title="Aniversário / Chá" price="R$ 400 (2h)"
+                            desc="Cobertura completa dos parabéns."
+                            details="Inclui 2 horas de cobertura fotográfica. Todas as fotos tratadas entregues via link."
+                        />
+                    </motion.div>
+                    <motion.div variants={fadeInUp}>
+                        <ServiceCard 
+                            active={serviceId === 'graduation'} 
+                            onClick={() => handleServiceSelect('graduation')}
+                            icon={GraduationCap} title="Formatura" price="R$ 800 (Fixo)"
+                            details="Cobertura do evento de colação ou baile. Valor fechado para o evento."
+                        />
                     </motion.div>
                 </div>
             )}
@@ -231,19 +238,19 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'commercial' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'comm_photo'} onClick={() => setServiceId('comm_photo')}
+                        active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo')}
                         icon={Camera} title="Fotografia" price="R$ 20 / foto"
                         desc="Para lojas e gastronomia."
                         details="Valor por foto tratada. Ideal para e-commerce, cardápios e lookbooks."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'comm_video'} onClick={() => setServiceId('comm_video')}
+                        active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video')}
                         icon={Video} title="Vídeo" price="R$ 500"
                         desc="Captação + Edição (até 1min)."
                         details="Produção de vídeo institucional ou promocional (Reels/TikTok) de até 1 minuto."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'comm_combo'} onClick={() => setServiceId('comm_combo')}
+                        active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo')}
                         icon={Zap} title="Combo Visual" price="Vídeo + Fotos"
                         desc="Foto + Vídeo (até 1min)"
                         details="O pacote completo para redes sociais. Inclui a produção do vídeo comercial E as fotos."
@@ -256,14 +263,14 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'studio' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'studio_photo'} onClick={() => setServiceId('studio_photo')}
+                        active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo')}
                         icon={Camera} 
                         title="Ensaio em Estúdio (Imagens Tratadas)" 
                         price="R$ 25 / foto"
                         details="Sessão fotográfica em ambiente controlado. Iluminação profissional."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'studio_video'} onClick={() => setServiceId('studio_video')}
+                        active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video')}
                         icon={Video} title="Vídeo em Estúdio" price="R$ 350 (2h)"
                         details="Gravação de conteúdo em estúdio (ex: Cursos, Youtube, Entrevistas)."
                     /></motion.div>
@@ -274,22 +281,22 @@ const UpsellList: React.FC<UpsellListProps> = ({
             {category === 'video_production' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'edit_only'} onClick={() => setServiceId('edit_only')}
+                        active={serviceId === 'edit_only'} onClick={() => handleServiceSelect('edit_only')}
                         icon={Zap} title="Apenas Edição" price="R$ 250 / vídeo"
                         details="Você envia o material bruto, nós editamos. Cortes, transições, correção de cor."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'cam_cap'} onClick={() => setServiceId('cam_cap')}
+                        active={serviceId === 'cam_cap'} onClick={() => handleServiceSelect('cam_cap')}
                         icon={Video} title="Captação Câmera" price="R$ 350"
                         details="Operador de câmera profissional com equipamento de cinema (4K)."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'mobile_cap'} onClick={() => setServiceId('mobile_cap')}
+                        active={serviceId === 'mobile_cap'} onClick={() => handleServiceSelect('mobile_cap')}
                         icon={SmartphoneIcon} title="Captação Celular" price="R$ 250"
                         details="Captação ágil com iPhone de última geração."
                     /></motion.div>
                     <motion.div variants={fadeInUp}><ServiceCard 
-                        active={serviceId === 'drone'} onClick={() => setServiceId('drone')}
+                        active={serviceId === 'drone'} onClick={() => handleServiceSelect('drone')}
                         icon={Plane} title="Drone" price="R$ 250"
                         details="Imagens aéreas em 4K. Operador licenciado."
                     /></motion.div>
@@ -329,10 +336,14 @@ const UpsellList: React.FC<UpsellListProps> = ({
             )}
 
 
-            {/* === 3. CONTROLES QUANTITATIVOS (CONDICIONAIS) === */}
+            {/* === 3. CONTROLES QUANTITATIVOS === */}
             
             {showHoursControl && (
-                <motion.div variants={fadeInUp} className="bg-white/5 p-8 rounded-xl border border-white/10 flex flex-col items-center">
+                <motion.div 
+                    id="duration-card"
+                    variants={fadeInUp} 
+                    className="bg-neutral-900/40 p-8 rounded-xl border border-white/10 flex flex-col items-center backdrop-blur-sm"
+                >
                     <div className="flex items-center gap-2 text-white mb-6">
                         <Clock className="text-brand-DEFAULT" />
                         <span className="font-serif text-xl">Duração do Evento</span>
@@ -359,7 +370,7 @@ const UpsellList: React.FC<UpsellListProps> = ({
                 serviceId === 'studio_photo' || 
                 serviceId === 'edit_only'
              ) && (
-                <motion.div variants={fadeInUp} className="bg-white/5 p-8 rounded-xl border border-white/10 flex flex-col items-center shadow-2xl">
+                <motion.div variants={fadeInUp} className="bg-neutral-900/40 p-8 rounded-xl border border-white/10 flex flex-col items-center shadow-2xl backdrop-blur-sm">
                     <div className="flex items-center gap-2 text-white mb-6">
                         <Camera className="text-brand-DEFAULT" />
                         <span className="font-serif text-xl">Quantidade de {serviceId === 'edit_only' ? 'Vídeos' : 'Fotos'}</span>
@@ -375,11 +386,8 @@ const UpsellList: React.FC<UpsellListProps> = ({
                     <div className="flex items-center gap-4 sm:gap-8 w-full max-w-sm justify-center">
                         <button 
                             onClick={() => {
-                                // Lógica Condicional: Se for Produção (edit_only), step é 1. Se não, 5.
                                 const step = category === 'video_production' ? 1 : 5;
-                                // ATUALIZADO: Mínimo de 10 para Estúdio (studio_photo)
                                 const minLimit = serviceId === 'studio_photo' ? 10 : 1;
-                                
                                 setQty(Math.max(minLimit, qty - step));
                                 handleInteraction();
                             }} 
@@ -398,7 +406,6 @@ const UpsellList: React.FC<UpsellListProps> = ({
 
                         <button 
                             onClick={() => {
-                                // Lógica Condicional: Se for Produção (edit_only), step é 1. Se não, 5.
                                 const step = category === 'video_production' ? 1 : 5;
                                 setQty(qty + step);
                                 handleInteraction();
@@ -414,47 +421,58 @@ const UpsellList: React.FC<UpsellListProps> = ({
                 </motion.div>
             )}
 
-            {category === 'social' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <motion.div 
-                        variants={fadeInUp}
-                        onClick={() => { setAddRealTime(!addRealTime); handleInteraction(); }}
-                        className={cn("cursor-pointer p-4 rounded-lg border flex items-center gap-4 transition-all", addRealTime ? "bg-brand-DEFAULT/20 border-brand-DEFAULT" : "bg-white/5 border-white/10")}
-                    >
-                        <div className={cn("w-6 h-6 rounded border flex items-center justify-center shrink-0", addRealTime ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/50")}>
-                           {addRealTime && <div className="w-2 h-2 bg-white rounded-full" />}
-                        </div>
-                        <div>
-                            <p className="text-white font-medium">Fotos Real Time (+ R$ 600)</p>
-                            <p className="text-xs text-neutral-400">Entrega imediata durante o evento.</p>
-                        </div>
-                    </motion.div>
+            {/* Extras com Check Verde - Visível apenas em Social e Wedding */}
+            {(category === 'social' || category === 'wedding') && (
+                <motion.div variants={fadeInUp} className="pt-4 border-t border-white/5 mt-4">
+                    <p className="text-xs uppercase tracking-widest text-neutral-500 mb-4 text-center">Itens Opcionais</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <motion.div 
+                            variants={fadeInUp}
+                            onClick={() => { setAddRealTime(!addRealTime); handleInteraction(); }}
+                            className={cn("cursor-pointer p-4 rounded-lg border flex items-center gap-4 transition-all bg-neutral-900/40", addRealTime ? "bg-brand-DEFAULT/10 border-green-500" : "bg-white/5 border-white/10")}
+                        >
+                            <div className={cn("w-10 h-10 rounded-full border flex items-center justify-center shrink-0 transition-all", addRealTime ? "bg-green-500 border-green-500" : "border-white/20 bg-white/5")}>
+                            {addRealTime ? <CheckCircle2 size={24} className="text-white" /> : <Timer size={24} className="text-neutral-400" />}
+                            </div>
+                            <div>
+                                <p className={cn("font-medium", addRealTime ? "text-green-400" : "text-white")}>Fotos em Tempo Real (+ R$ 600)</p>
+                                <p className="text-xs text-neutral-400">Entrega imediata durante o evento.</p>
+                            </div>
+                        </motion.div>
 
-                    <motion.div 
-                        variants={fadeInUp}
-                        onClick={() => { setAddDrone(!addDrone); handleInteraction(); }}
-                        className={cn("cursor-pointer p-4 rounded-lg border flex items-center gap-4 transition-all", addDrone ? "bg-brand-DEFAULT/20 border-brand-DEFAULT" : "bg-white/5 border-white/10")}
-                    >
-                        <div className={cn("w-6 h-6 rounded border flex items-center justify-center shrink-0", addDrone ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/50")}>
-                           {addDrone && <div className="w-2 h-2 bg-white rounded-full" />}
-                        </div>
-                        <div>
-                            <p className="text-white font-medium">Imagens de Drone (+ R$ 250)</p>
-                            <p className="text-xs text-neutral-400">Perspectivas aéreas cinematográficas.</p>
-                        </div>
-                    </motion.div>
-                </div>
+                        <motion.div 
+                            variants={fadeInUp}
+                            onClick={() => { setAddDrone(!addDrone); handleInteraction(); }}
+                            className={cn("cursor-pointer p-4 rounded-lg border flex items-center gap-4 transition-all bg-neutral-900/40", addDrone ? "bg-brand-DEFAULT/10 border-green-500" : "bg-white/5 border-white/10")}
+                        >
+                            <div className={cn("w-10 h-10 rounded-full border flex items-center justify-center shrink-0 transition-all", addDrone ? "bg-green-500 border-green-500" : "border-white/20 bg-white/5")}>
+                            {addDrone ? <CheckCircle2 size={24} className="text-white" /> : <Plane size={24} className="text-neutral-400" />}
+                            </div>
+                            <div>
+                                <p className={cn("font-medium", addDrone ? "text-green-400" : "text-white")}>Imagens de Drone (+ R$ 250)</p>
+                                <p className="text-xs text-neutral-400">Perspectivas aéreas cinematográficas.</p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </motion.div>
             )}
         </motion.div>
 
-        {/* LOGÍSTICA (Compacta) */}
+        {/* LOGÍSTICA (Compacta e Clicável) */}
         {!isNoTravelCost && (
-            <motion.div variants={fadeInUp} className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <motion.div 
+                variants={fadeInUp} 
+                onClick={onOpenMap}
+                className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 cursor-pointer group"
+                title="Clique para alterar o local"
+            >
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-white/5 rounded-full"><Route size={20} className="text-brand-DEFAULT" /></div>
+                    <div className="p-3 bg-white/5 rounded-full group-hover:bg-brand-DEFAULT/20 transition-colors"><Route size={20} className="text-brand-DEFAULT" /></div>
                     <div>
-                        <p className="text-xs text-neutral-500 uppercase">Destino</p>
-                        <p className="text-white font-medium">{locationClient} <span className="text-neutral-500 text-sm">({distance} km)</span></p>
+                        <p className="text-xs text-neutral-500 uppercase flex items-center gap-2">
+                             Destino <Edit size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </p>
+                        <p className="text-white font-medium group-hover:text-brand-DEFAULT transition-colors">{locationClient} <span className="text-neutral-500 text-sm">({distance} km)</span></p>
                     </div>
                 </div>
                 <div className="text-right">
@@ -467,7 +485,7 @@ const UpsellList: React.FC<UpsellListProps> = ({
         {isNoTravelCost && category !== 'custom' && (
              <motion.div variants={fadeInUp} className="border-t border-white/10 pt-8 text-center">
                 <span className="text-xs text-green-500 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
-                    Deslocamento Gratuito (Estúdio)
+                    {serviceId === 'edit_only' ? 'Serviço Digital (Sem Deslocamento)' : 'Deslocamento Gratuito (Estúdio)'}
                 </span>
              </motion.div>
         )}
@@ -477,17 +495,14 @@ const UpsellList: React.FC<UpsellListProps> = ({
   );
 };
 
-// Componente Auxiliar: ServiceCard
 const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details, highlight }: any) => {
     const [showDetails, setShowDetails] = useState(false);
 
     return (
         <div 
-            onClick={(e) => {
-                if(onClick) onClick(e);
-            }}
+            onClick={(e) => { if(onClick) onClick(e); }}
             className={cn(
-                "cursor-pointer p-5 rounded-xl border transition-all duration-300 relative overflow-hidden group flex flex-col justify-between h-full", 
+                "cursor-pointer p-5 rounded-xl border transition-all duration-300 relative overflow-hidden group flex flex-col items-center text-center justify-between h-full", 
                 active 
                     ? "bg-gradient-to-br from-neutral-800 to-neutral-900 border-brand-DEFAULT shadow-lg shadow-brand-DEFAULT/10" 
                     : "bg-white/5 border-white/10 hover:bg-white/10",
@@ -496,51 +511,39 @@ const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details,
         >
             {active && <div className="absolute top-0 right-0 w-16 h-16 bg-brand-DEFAULT/20 blur-xl rounded-full -mr-8 -mt-8 pointer-events-none" />}
             
-            <div>
-                {/* Header do Card - CORRIGIDO: Ícones de info sempre à direita */}
-                <div className="flex items-start mb-3 w-full">
-                    {Icon ? (
-                        <motion.div
-                            animate={active ? { scale: [1, 1.2, 1] } : { scale: 1 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <Icon size={24} className="mb-2 text-brand-DEFAULT" />
-                        </motion.div>
-                    ) : null}
-                    
-                    {/* ml-auto força este container para a direita, independente de ter ícone à esquerda ou não */}
-                    <div className="flex items-center gap-2 ml-auto">
-                        {details && (
-                            <button 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowDetails(!showDetails);
-                                }}
-                                className="text-neutral-500 hover:text-white transition-colors p-1 z-10"
-                                title="Ver detalhes"
-                            >
-                                <CircleHelp size={16} />
-                            </button>
-                        )}
-                        {active && <div className="w-2 h-2 bg-brand-DEFAULT rounded-full" />}
-                    </div>
-                </div>
-                <h4 className={cn("font-serif text-lg leading-tight mb-1", active ? "text-white" : "text-neutral-300")}>{title}</h4>
-                {desc && <p className="text-xs text-neutral-500 mb-2">{desc}</p>}
+            {details && (
+                <button 
+                    onClick={(e) => { e.stopPropagation(); setShowDetails(!showDetails); }}
+                    className="absolute top-3 right-3 text-neutral-500 hover:text-white transition-colors p-1 z-10"
+                    title="Ver detalhes"
+                >
+                    <CircleHelp size={16} />
+                </button>
+            )}
+
+            <div className="w-full flex flex-col items-center">
+                {Icon ? (
+                    <motion.div animate={active ? { scale: [1, 1.2, 1] } : { scale: 1 }} transition={{ duration: 0.5 }}>
+                        <Icon size={28} className={cn("mb-4", active ? "text-brand-DEFAULT" : "text-neutral-400")} />
+                    </motion.div>
+                ) : null}
+                
+                <h4 className={cn("font-serif text-lg leading-tight mb-2", active ? "text-white" : "text-neutral-300")}>{title}</h4>
+                {desc && <p className="text-xs text-neutral-500 mb-3 max-w-[90%] mx-auto">{desc}</p>}
             </div>
 
-            <p className={cn("text-sm font-medium mt-2", active ? "text-brand-DEFAULT" : "text-white/60")}>{price}</p>
+            <div className="mt-2 w-full flex flex-col items-center">
+                <p className={cn("text-sm font-medium", active ? "text-brand-DEFAULT" : "text-white/60")}>{price}</p>
+                {active && <div className="w-1.5 h-1.5 bg-brand-DEFAULT rounded-full mt-3" />}
+            </div>
 
-            {/* Painel de Detalhes Expandível */}
             <AnimatePresence>
                 {showDetails && (
                     <motion.div 
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
+                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden w-full text-left"
                     >
-                        <div className="pt-3 mt-3 border-t border-white/10 text-xs text-neutral-300 leading-relaxed bg-black/20 -mx-5 -mb-5 p-5">
+                        <div className="pt-3 mt-3 border-t border-white/10 text-xs text-neutral-300 leading-relaxed bg-black/20 -mx-5 -mb-5 p-5 relative">
                              <div className="flex justify-between items-center mb-2">
                                 <span className="font-bold text-white uppercase tracking-wider text-[10px]">O que está incluso:</span>
                                 <button onClick={(e) => { e.stopPropagation(); setShowDetails(false); }}><X size={12} /></button>
@@ -554,7 +557,6 @@ const ServiceCard = ({ active, onClick, icon: Icon, title, price, desc, details,
     );
 };
 
-// Ícone auxiliar SVG
 const SmartphoneIcon = ({ size, className }: any) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
 );

@@ -1,12 +1,13 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ArrowRight, Instagram, MousePointerClick } from 'lucide-react';
+import { ArrowRight, Instagram, MousePointerClick, ArrowLeft } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 
 interface IntroViewProps {
   onContinue: () => void;
+  onBack?: () => void;
 }
 
 // Reutilizando variantes para consistência visual
@@ -30,13 +31,21 @@ const itemVariants: Variants = {
   }
 };
 
-const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
+const IntroView: React.FC<IntroViewProps> = ({ onContinue, onBack }) => {
   return (
-    // REMOVIDO: bg-neutral-950 para permitir que BackgroundFilmStrips apareça
     <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden px-6">
       
-      {/* Background Decorativo Local (Sutil) - Mantém legibilidade sem cobrir o filme */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-950/50 to-neutral-950/80 z-0 pointer-events-none" />
+      {onBack && (
+          <button 
+            onClick={onBack}
+            className="fixed top-6 left-6 z-[60] text-neutral-400 hover:text-white flex items-center gap-2 transition-colors text-sm uppercase tracking-wider bg-black/20 p-2 rounded-lg backdrop-blur-sm hover:bg-black/50"
+          >
+             <ArrowLeft size={18} /> Voltar
+          </button>
+      )}
+
+      {/* Background Decorativo Local (Sutil) - Escurecido */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black z-0 pointer-events-none" />
 
       <motion.div 
         variants={containerVariants}
