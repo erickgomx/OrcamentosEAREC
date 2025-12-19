@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud } from 'lucide-react';
+import { Calendar, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import AnimatedPrice from '../components/ui/AnimatedPrice';
@@ -46,6 +46,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [tempData, setTempData] = useState<ClientData>(clientData);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [hasScrolled, setHasScrolled] = useState(false);
   
   const today = new Date().toISOString().split('T')[0];
 
@@ -118,7 +119,10 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-neutral-950 overflow-y-auto">
+    <div 
+        className="fixed inset-0 z-50 bg-neutral-950 overflow-y-auto"
+        onScroll={(e) => setHasScrolled(e.currentTarget.scrollTop > 50)}
+    >
       <AnimatePresence>
         {!showContent && (
           <motion.div
@@ -132,6 +136,32 @@ const SummaryView: React.FC<SummaryViewProps> = ({
               <Logo className="w-64" animate />
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* INDICADOR DE ROLAGEM */}
+      <AnimatePresence>
+        {showContent && !hasScrolled && (
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="fixed bottom-8 left-0 right-0 z-50 pointer-events-none flex justify-center"
+            >
+                <motion.div
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="flex flex-col items-center gap-2"
+                >
+                    <span className="text-[9px] uppercase tracking-[0.25em] text-neutral-500 font-medium bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/5 shadow-lg">
+                        Conferir Detalhes
+                    </span>
+                    <div className="p-2 bg-brand-DEFAULT/10 rounded-full border border-brand-DEFAULT/20 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.3)]">
+                        <ChevronDown size={20} />
+                    </div>
+                </motion.div>
+            </motion.div>
         )}
       </AnimatePresence>
 

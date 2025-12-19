@@ -306,9 +306,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 )}
             </AnimatePresence>
 
-            {/* 2. ADDONS (Drone / RealTime) */}
+            {/* 2. ADDONS (Drone / RealTime) - Layout Centralizado */}
             {(category === 'wedding' || category === 'social' || category === 'commercial') && (
-                <motion.div variants={fadeInUp} className="w-full max-w-lg grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <motion.div variants={fadeInUp} className="w-full max-w-lg grid grid-cols-2 gap-4">
                     <AddonCard 
                         label="Drone (Aéreo)" 
                         price={250} 
@@ -472,21 +472,26 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick }: any) => (
     <div 
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex items-center justify-between p-4 rounded-xl border transition-all select-none",
-            active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT/50" : "bg-white/5 border-white/5 hover:bg-white/10"
+            "cursor-pointer flex flex-col items-center justify-center p-6 rounded-2xl border transition-all select-none relative gap-3 h-full", 
+            active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)]" : "bg-neutral-900/40 border-white/5 hover:bg-white/5"
         )}
     >
-        <div className="flex items-center gap-3">
-             <div className={cn("p-2 rounded-lg", active ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-500")}>
-                <Icon size={18} />
-             </div>
-             <div>
-                 <p className={cn("text-xs font-medium", active ? "text-white" : "text-neutral-300")}>{label}</p>
-                 <p className="text-[10px] text-brand-DEFAULT font-bold">+ {formatCurrency(price)}</p>
-             </div>
-        </div>
-        <div className={cn("w-5 h-5 rounded-full border flex items-center justify-center", active ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/20")}>
+        <div className={cn(
+            "absolute top-3 right-3 w-5 h-5 rounded-full border flex items-center justify-center transition-all", 
+            active ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/10 bg-black/20"
+        )}>
             {active && <Check size={12} className="text-white" />}
+        </div>
+
+        <div className={cn("p-3 rounded-full mb-1 transition-colors", active ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-400")}>
+           <Icon size={24} />
+        </div>
+        
+        <div className="space-y-1 text-center">
+            <p className={cn("text-sm font-medium", active ? "text-white" : "text-neutral-300")}>{label}</p>
+            <p className="text-xs text-brand-DEFAULT font-bold bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block">
+                + {formatCurrency(price)}
+            </p>
         </div>
     </div>
 );
