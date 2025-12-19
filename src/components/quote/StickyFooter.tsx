@@ -26,9 +26,9 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
       className="fixed bottom-0 left-0 right-0 z-40"
     >
       {/* 
-         GRADIENTE REDUZIDO
+         GRADIENTE REDUZIDO - Mais sutil e menor altura
       */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none h-24 -top-24" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none h-12 -top-12" />
       
       <div className="bg-neutral-950 border-t border-white/10 pb-8 pt-4 px-6 md:pb-8 md:px-12 relative z-10">
         <div className={cn(

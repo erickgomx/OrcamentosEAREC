@@ -61,6 +61,12 @@ export class AppConfig {
             composition: "Making-of + Cerimônia + Protocolos",
             description: "A escolha mais popular. Inclui a cobertura do Making-of dos noivos, a cerimônia completa e as fotos protocolares com padrinhos e família logo após o altar." 
         },
+        wedding_romance: {
+            base: 1400,
+            label: "Pacote Romance",
+            composition: "Cerimônia + Recepção (Sem Making-of)",
+            description: "Para casais que querem focar na festa. Cobrimos a cerimônia religiosa/civil e a recepção completa, garantindo os melhores momentos da celebração."
+        },
         wedding_essence: { 
             base: 1750, 
             label: "Pacote Essência",

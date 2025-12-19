@@ -301,7 +301,8 @@ const QuoteView: React.FC<QuoteViewProps> = ({
       </div>
 
       {/* MAIN CONTENT: WIZARD STEP */}
-      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 pb-32 flex flex-col justify-center">
+      {/* AUMENTADO PADDING BOTTOM PARA pb-48 */}
+      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 pb-48 flex flex-col justify-center">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             {viewState === 'config' && (
                 <motion.div 
