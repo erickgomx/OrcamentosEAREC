@@ -1,22 +1,21 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { ArrowRight, Instagram, MousePointerClick } from 'lucide-react';
+import { ArrowRight, Instagram, Zap, Play } from 'lucide-react';
 import Logo from '../components/ui/Logo';
-import Button from '../components/ui/Button';
 
 interface IntroViewProps {
   onContinue: () => void;
+  onQuickStart: () => void;
 }
 
-// Reutilizando variantes para consistência visual
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.12, // Reduzido de 0.3 para 0.12
-      delayChildren: 0.1     // Reduzido de 0.2 para 0.1
+      staggerChildren: 0.12,
+      delayChildren: 0.1
     }
   }
 };
@@ -26,19 +25,14 @@ const itemVariants: Variants = {
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" } // Reduzido de 0.8 para 0.5
+    transition: { duration: 0.5, ease: "easeOut" }
   }
 };
 
-const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
+const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden px-6">
+    <div className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
       
-      {/* 
-        REMOVIDO: Vignette/Overlays 
-        Fundo transparente para mostrar o bg-black e filmstrips do App.tsx 
-      */}
-
       <motion.div 
         variants={containerVariants}
         initial="hidden"
@@ -46,107 +40,115 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue }) => {
         className="relative z-10 w-full max-w-lg text-center"
       >
         {/* Logo Animada */}
-        <motion.div variants={itemVariants} className="flex justify-center mb-16">
-          <Logo className="w-72 md:w-96" animate />
+        <motion.div variants={itemVariants} className="flex justify-center mb-10 md:mb-12">
+          <Logo className="w-64 md:w-96" animate />
         </motion.div>
 
         <div className="flex flex-col gap-6">
             
-            {/* Opção 1: Instagram */}
+            {/* Opção 1: Instagram (Botão com Animação Reforçada) */}
             <motion.div variants={itemVariants}>
-                <p className="text-neutral-400 text-sm uppercase tracking-widest mb-3">Primeira vez aqui?</p>
-                <a 
+                <p className="text-neutral-500 text-[10px] uppercase tracking-widest mb-2">Conheça nosso trabalho</p>
+                <motion.a 
                     href="https://www.instagram.com/earecmidia/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="group block w-full"
+                    className="relative group block w-full rounded-full overflow-hidden border border-white/20 hover:border-brand-DEFAULT/60 transition-colors duration-500"
+                    whileHover="hover"
+                    whileTap="tap"
+                    initial="idle"
                 >
-                    <Button variant="glass" className="w-full justify-center hover:border-brand-DEFAULT/50 transition-colors gap-4 py-6 bg-black/40 backdrop-blur-sm">
-                        <span className="flex items-center gap-3">
-                            <Instagram size={20} className="text-brand-DEFAULT" />
-                            <span className="font-serif italic text-lg">Conheça a EAREC</span>
-                        </span>
-                        <span className="text-xs font-bold text-white group-hover:text-brand-DEFAULT transition-colors flex items-center gap-2">
-                            CLIQUE AQUI <ArrowRight size={14} />
-                        </span>
-                    </Button>
-                </a>
-            </motion.div>
-
-            {/* Divisor */}
-            <motion.div variants={itemVariants} className="flex items-center gap-4 opacity-30">
-                <div className="h-px bg-white flex-1" />
-                <span className="text-xs">OU</span>
-                <div className="h-px bg-white flex-1" />
-            </motion.div>
-
-            {/* Opção 2: Orçamento (Animação Aprimorada) */}
-            <motion.div variants={itemVariants}>
-                 <p className="text-neutral-400 text-sm uppercase tracking-widest mb-3">Já sabe o que quer?</p>
-                 <div onClick={onContinue} className="cursor-pointer relative group/btn">
+                    {/* Background Glass Darker */}
+                    <div className="absolute inset-0 bg-neutral-900/90 backdrop-blur-md z-0" />
                     
-                    {/* Animação de Pulso/Halo Atrás do Botão */}
+                    {/* Efeito de Brilho Contínuo (Shimmer) - Mais visível */}
                     <motion.div
-                        className="absolute inset-0 rounded-full bg-brand-DEFAULT/20"
-                        animate={{
-                            scale: [1, 1.05, 1],
-                            opacity: [0.5, 0, 0.5]
-                        }}
-                        transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
+                        className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-12"
+                        variants={{
+                            idle: { x: '-150%' },
+                            hover: { 
+                                x: '150%', 
+                                transition: { duration: 1.2, ease: "easeInOut", repeat: Infinity } 
+                            }
                         }}
                     />
 
-                    <Button 
-                        variant="primary" 
-                        className="w-full justify-center items-center gap-4 py-6 group relative overflow-hidden z-10 shadow-[0_0_20px_rgba(220,38,38,0.4)] bg-brand-DEFAULT/80 backdrop-blur-sm"
+                    {/* Conteúdo do Botão */}
+                    <motion.div 
+                        className="relative z-20 w-full flex items-center justify-center gap-3 py-4"
+                        variants={{
+                            tap: { scale: 0.96 }
+                        }}
                     >
-                        <span className="font-serif italic text-lg text-center">Faça seu orçamento gratuitamente!</span>
-                        
-                        <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold text-white flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                                CLIQUE AQUI <ArrowRight size={28} /> {/* Aumentado de 24 para 28 */}
-                            </span>
+                        <Instagram size={20} className="text-brand-DEFAULT transition-transform duration-300 group-hover:scale-110 group-hover:text-white" />
+                        <span className="font-serif italic text-lg text-white group-hover:text-brand-DEFAULT transition-colors">Instagram EAREC</span>
+                        <ArrowRight size={16} className="ml-auto opacity-50 text-white group-hover:opacity-100 group-hover:translate-x-1 transition-all mr-6 absolute right-0" />
+                    </motion.div>
 
-                            {/* ANIMAÇÃO DE CLIQUE APERFEIÇOADA */}
-                            <motion.div
-                                className="relative"
-                                initial={{ opacity: 0, x: 10, y: 10 }}
-                                animate={{ 
-                                    opacity: [0, 1, 1, 0], 
-                                    x: [10, 0, 0, 10],
-                                    y: [10, 0, 0, 10],
-                                    scale: [1, 0.9, 0.9, 1]
-                                }}
-                                transition={{ 
-                                    duration: 1.5, 
-                                    repeat: Infinity, 
-                                    ease: "easeInOut",
-                                    repeatDelay: 0.5
-                                }}
-                            >
-                                <MousePointerClick 
-                                    size={24}
-                                    className="text-white fill-white/20 drop-shadow-lg rotate-[-12deg]" 
-                                />
-                                {/* Onda de clique (Ripple) saindo da ponta do mouse */}
-                                <motion.div 
-                                    className="absolute top-0 left-0 w-6 h-6 rounded-full border border-white/50"
-                                    animate={{ scale: [0, 2], opacity: [1, 0] }}
-                                    transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
-                                />
-                            </motion.div>
+                    {/* Flash de Luz Branco ao Clicar (Feedback Tátil) */}
+                    <motion.div 
+                        className="absolute inset-0 z-30 bg-white pointer-events-none"
+                        variants={{
+                            idle: { opacity: 0 },
+                            tap: { opacity: 0.25, transition: { duration: 0.05 } }
+                        }}
+                    />
+                </motion.a>
+            </motion.div>
+
+            {/* Divisor */}
+            <motion.div variants={itemVariants} className="flex items-center gap-4 opacity-20 my-2">
+                <div className="h-px bg-white flex-1" />
+                <span className="text-[10px] tracking-widest">INICIAR ORÇAMENTO</span>
+                <div className="h-px bg-white flex-1" />
+            </motion.div>
+
+            {/* Grid de Opções de Orçamento - Lado a Lado no Mobile (grid-cols-2) */}
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 md:gap-4">
+                 
+                 {/* Opção 2: Personalizado (Esquerda) */}
+                 <div onClick={onContinue} className="cursor-pointer group relative h-48 md:h-56">
+                    <motion.div
+                        className="absolute inset-0 rounded-2xl bg-brand-DEFAULT/20"
+                        animate={{ opacity: [0.2, 0.4, 0.2] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                    />
+                    <div className="bg-brand-DEFAULT/80 hover:bg-brand-DEFAULT border border-brand-DEFAULT/50 rounded-2xl p-4 md:p-6 text-left transition-all h-full flex flex-col justify-between backdrop-blur-sm shadow-[0_0_20px_rgba(220,38,38,0.15)] hover:scale-[1.02] active:scale-[0.98]">
+                        <div className="mb-2 p-2.5 bg-white/20 w-fit rounded-xl text-white">
+                             <Play size={24} fill="currentColor" className="ml-0.5" />
                         </div>
-                    </Button>
+                        <div>
+                            <h3 className="font-serif text-xl md:text-2xl text-white mb-1 leading-none">Personalizado</h3>
+                            <p className="text-[11px] md:text-xs text-white/90 leading-tight font-medium opacity-90">Vamos Começar</p>
+                            <p className="text-[9px] text-white/70 mt-1 leading-tight hidden md:block">Experiência guiada passo a passo.</p>
+                        </div>
+                    </div>
                  </div>
+
+                 {/* Opção 3: Rápido (Direita) */}
+                 <div onClick={onQuickStart} className="cursor-pointer group h-48 md:h-56">
+                    <div className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-brand-DEFAULT/50 rounded-2xl p-4 md:p-6 text-left transition-all h-full flex flex-col justify-between relative overflow-hidden hover:scale-[1.02] active:scale-[0.98]">
+                        <div className="absolute -top-4 -right-4 p-4 opacity-[0.05] group-hover:opacity-10 transition-opacity rotate-12">
+                            <Zap size={80} />
+                        </div>
+                        
+                        <div className="mb-2 p-2.5 bg-yellow-500/10 border border-yellow-500/20 w-fit rounded-xl text-yellow-500">
+                             <Zap size={24} fill="currentColor" />
+                        </div>
+                        <div>
+                            <h3 className="font-serif text-xl md:text-2xl text-white mb-1 leading-none">Rápido</h3>
+                            <p className="text-[11px] md:text-xs text-neutral-400 leading-tight font-medium">Orçamento Flash</p>
+                            <p className="text-[9px] text-neutral-600 mt-1 leading-tight hidden md:block">Pule a apresentação e vá direto aos valores.</p>
+                        </div>
+                    </div>
+                 </div>
+
             </motion.div>
 
         </div>
 
-        <motion.p variants={itemVariants} className="mt-12 text-neutral-600 text-xs tracking-[0.2em]">
-            CINEMATIC EXPERIENCE
+        <motion.p variants={itemVariants} className="mt-12 md:mt-16 text-neutral-600 text-[10px] tracking-[0.4em] uppercase font-medium">
+            Experiência de Cinema
         </motion.p>
 
       </motion.div>

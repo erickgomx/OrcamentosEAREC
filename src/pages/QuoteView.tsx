@@ -1,18 +1,21 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import Hero from '../components/quote/Hero';
 import UpsellList from '../components/quote/UpsellList';
 import StickyFooter from '../components/quote/StickyFooter';
 import SignatureModal from '../components/quote/SignatureModal';
 import LocationMapModal from '../components/ui/LocationMapModal';
-import AddonUpsellModal from '../components/quote/AddonUpsellModal';
 import SummaryView from './SummaryView';
 import SuccessView from './SuccessView';
 import { formatCurrency } from '../lib/utils';
-import { calculateDistance } from '../lib/maps';
-import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
-import { ClientData, QuoteData, ServiceCategory, ServiceId, QuoteState } from '../types';
-import { ChevronDown, ChevronsDown, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { ClientData, QuoteData, ServiceCategory, ServiceId, QuoteState, PricingContext } from '../types';
+import { ArrowLeft } from 'lucide-react';
+import Logo from '../components/ui/Logo';
+
+// === POO INTEGRATION ===
+import { PricingEngine } from '../core/PricingEngine';
+import { AppConfig } from '../config/AppConfig';
+import { LocationService } from '../services/LocationService';
 
 interface QuoteViewProps {
   clientData: ClientData; 
@@ -21,65 +24,60 @@ interface QuoteViewProps {
   onBack: () => void;
   quoteState: QuoteState;
   setQuoteState: React.Dispatch<React.SetStateAction<QuoteState>>;
-  onSuccess: () => void; 
+  onSuccess: () => void;
+  isQuickMode?: boolean;
+  onRequestForm?: () => void; // Callback para pedir o formulário completo
 }
 
 type ViewState = 'config' | 'summary' | 'success';
 
-const PRICING_TABLE = {
-    wedding: {
-        wedding_base: { base: 650, label: "Casamento (Base)" },
-        wedding_classic: { base: 900, label: "Pacote Clássico" },
-        wedding_romance: { base: 1150, label: "Pacote Romance" },
-        wedding_essence: { base: 1750, label: "Pacote Essência" },
-        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
-    },
-    social: {
-        birthday: { base: 400, hoursIncluded: 2, hourPrice: 250, label: "Chá Revelação / Aniversário" },
-        fifteen: { base: 450, hoursIncluded: 2, hourPrice: 250, label: "15 Anos" }, 
-        graduation: { base: 800, label: "Formatura" },
-        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
-    },
-    commercial: {
-        photo: { unit: 20, label: "Comércio (Fotos)" },
-        video: { unit: 500, label: "Comércio (Vídeo)" },
-        combo: { videoBase: 800, label: "Comércio (Foto + Vídeo)" } // Sob consulta na UI, mas base definida internamente
-    },
-    studio: {
-        photo: { unit: 25, label: "Estúdio (Fotos)" },
-        video: { base: 350, hoursIncluded: 2, hourPrice: 250, label: "Estúdio (Vídeo)" },
-    },
-    video_production: {
-        edit: { unit: 250, label: "Apenas Edição" },
-        cam_cap: { fixed: 350, label: "Captação Câmera" },
-        mobile_cap: { fixed: 250, label: "Captação Celular" },
-        drone: { fixed: 250, label: "Drone (Imagens Aéreas)" }
-    },
-    custom: {
-        custom_project: { base: 0, label: "Projeto Personalizado" } 
+// Variantes de Animação para o Wizard (Slide Lateral)
+const stepVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 50 : -50,
+    opacity: 0,
+    filter: 'blur(10px)',
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    filter: 'blur(0px)',
+    transition: {
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1]
     }
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 50 : -50,
+    opacity: 0,
+    filter: 'blur(10px)',
+    transition: {
+        duration: 0.4,
+        ease: "easeIn"
+    }
+  })
 };
 
 const QuoteView: React.FC<QuoteViewProps> = ({ 
     clientData, onUpdateClientData, config, onBack, 
-    quoteState, setQuoteState, onSuccess 
+    quoteState, setQuoteState, onSuccess, isQuickMode = false, onRequestForm
 }) => {
   const [viewState, setViewState] = useState<ViewState>('config');
-  const [showUpsell, setShowUpsell] = useState(false);
   
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  
-  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  // === WIZARD STATE ===
+  const [currentStep, setCurrentStep] = useState(0);
+  const [direction, setDirection] = useState(0);
 
-  useEffect(() => {
-    return scrollYProgress.on('change', (latest) => {
-      if (latest > 0.9) setShowScrollIndicator(false);
-      else setShowScrollIndicator(true);
-    });
-  }, [scrollYProgress]);
-  
-  const [showFooter, setShowFooter] = useState(true);
+  // Definição das Etapas
+  const steps = [
+      { id: 'categories', title: 'Qual a ocasião?' },
+      { id: 'services', title: 'Escolha o pacote ideal' },
+      { id: 'config', title: 'Personalize os detalhes' }
+  ];
+
+  const currentStepId = steps[currentStep].id as 'categories' | 'services' | 'config';
 
   const quoteData: QuoteData = useMemo(() => ({
     ...config,
@@ -87,14 +85,15 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   }), [clientData, config]);
 
   const [paymentMethod, setPaymentMethod] = useState<string>('Pix');
-
   const [distance, setDistance] = useState<number>(0); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false); 
   const [isApproved, setIsApproved] = useState(false);
 
+  // Destructuring do State
   const { category, serviceId, hours, qty, addDrone, addRealTime, selectionMode } = quoteState;
 
+  // Setters Helpers
   const setCategory = (c: ServiceCategory) => setQuoteState(prev => ({ ...prev, category: c }));
   const setServiceId = (s: ServiceId) => setQuoteState(prev => ({ ...prev, serviceId: s }));
   const setHours = (h: number) => setQuoteState(prev => ({ ...prev, hours: h }));
@@ -103,15 +102,21 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   const setAddRealTime = (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b }));
   const setSelectionMode = (mode: 'duration' | 'quantity') => setQuoteState(prev => ({ ...prev, selectionMode: mode }));
 
+  // --- LOGIC: LOCATION SERVICE ---
+  // CORREÇÃO: Removemos a condicional !isQuickMode. Se tiver local, calcula.
   useEffect(() => {
     let isMounted = true;
     const updateDistance = async () => {
-        if (clientData.location) {
-            const dist = await calculateDistance(clientData.location);
+        if (clientData.location && clientData.location.length > 3) {
+            const dist = await LocationService.calculateDistance(clientData.location);
             if (isMounted) setDistance(dist);
+        } else {
+            if (isMounted) setDistance(0);
         }
     };
+    
     updateDistance();
+    
     return () => { isMounted = false; };
   }, [clientData.location]);
 
@@ -119,6 +124,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
       onUpdateClientData({ ...clientData, location: address });
   };
 
+  // --- LOGIC: SELECTION DEFAULTS ---
   useEffect(() => {
     if (category === 'wedding') setSelectionMode('duration');
     if (category === 'commercial') setSelectionMode('quantity');
@@ -127,142 +133,25 @@ const QuoteView: React.FC<QuoteViewProps> = ({
     if (category === 'social' && serviceId === 'graduation') setSelectionMode('duration');
   }, [category, serviceId]);
 
+  // --- LOGIC: PRICING ENGINE ---
   const { totalPrice, priceBreakdown } = useMemo(() => {
-    let total = 0;
-    let breakdown: { label: string; value: number; type: 'base' | 'addon' | 'freight' }[] = [];
+    const context: PricingContext = {
+        pricePerKm: config.pricePerKm,
+        photoUnitPrice: config.photoUnitPrice,
+        videoUnitPrice: config.videoUnitPrice,
+        distance: distance,
+        isQuickMode: isQuickMode // Flag passada para o motor
+    };
+    const result = PricingEngine.calculate(quoteState, context);
+    return { totalPrice: result.totalPrice, priceBreakdown: result.breakdown };
+  }, [quoteState, config, distance, isQuickMode]);
 
-    if (category === 'wedding') {
-        const s = PRICING_TABLE.wedding;
-        let baseVal = 0;
-        let baseLabel = "";
-
-        switch (serviceId) {
-            case 'wedding_base': baseVal = s.wedding_base.base; baseLabel = s.wedding_base.label; break;
-            case 'wedding_classic': baseVal = s.wedding_classic.base; baseLabel = s.wedding_classic.label; break;
-            case 'wedding_romance': baseVal = s.wedding_romance.base; baseLabel = s.wedding_romance.label; break;
-            case 'wedding_essence': baseVal = s.wedding_essence.base; baseLabel = s.wedding_essence.label; break;
-        }
-        total += baseVal;
-        breakdown.push({ label: baseLabel, value: baseVal, type: 'base' });
-        
-        if (selectionMode === 'duration' && hours > 2) {
-             const extraHoursVal = (hours - 2) * 250;
-             total += extraHoursVal;
-             breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraHoursVal, type: 'addon' });
-        }
-
-        if (addRealTime) {
-            total += s.realtime.fixed;
-            breakdown.push({ label: s.realtime.label, value: s.realtime.fixed, type: 'addon' });
-        }
-    }
-    else if (category === 'social') {
-        const s = PRICING_TABLE.social;
-        if (serviceId === 'birthday' || serviceId === 'fifteen') {
-            const ref = serviceId === 'birthday' ? s.birthday : s.fifteen;
-            
-            if (selectionMode === 'duration') {
-                total += ref.base;
-                breakdown.push({ label: `${ref.label} (Base 2h)`, value: ref.base, type: 'base' });
-                if (hours > ref.hoursIncluded) {
-                    const extraHoursVal = (hours - ref.hoursIncluded) * ref.hourPrice;
-                    total += extraHoursVal;
-                    breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
-                }
-            } else {
-                const val = qty * config.photoUnitPrice;
-                total += val;
-                breakdown.push({ label: `${ref.label} (${qty} Fotos)`, value: val, type: 'base' });
-            }
-        } else if (serviceId === 'graduation') {
-             total += s.graduation.base;
-             breakdown.push({ label: s.graduation.label, value: s.graduation.base, type: 'base' });
-        }
-        if (addRealTime) {
-            total += s.realtime.fixed;
-            breakdown.push({ label: s.realtime.label, value: s.realtime.fixed, type: 'addon' });
-        }
-    } 
-    else if (category === 'commercial') {
-        const s = PRICING_TABLE.commercial;
-        
-        if (serviceId === 'comm_photo') {
-            const val = qty * s.photo.unit;
-            total += val;
-            breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
-        }
-        if (serviceId === 'comm_video') {
-            const val = qty * s.video.unit; // Inicia em 1 e acrescenta 500 por unidade
-            total += val;
-            breakdown.push({ label: `${s.video.label} (${qty}x)`, value: val, type: 'base' });
-        }
-        if (serviceId === 'comm_combo') {
-            const val = s.combo.videoBase; // Fixo no combo
-            total += val;
-            breakdown.push({ label: s.combo.label, value: val, type: 'base' });
-        }
-    }
-    else if (category === 'studio') {
-        const s = PRICING_TABLE.studio;
-        
-        if (selectionMode === 'quantity') {
-            if (serviceId === 'studio_photo') {
-                const val = qty * s.photo.unit;
-                total += val;
-                breakdown.push({ label: `${s.photo.label} (${qty}x)`, value: val, type: 'base' });
-            } else {
-                 total += s.video.base;
-                 breakdown.push({ label: s.video.label, value: s.video.base, type: 'base' });
-            }
-        } else {
-            const baseHour = 350;
-            total += baseHour;
-            breakdown.push({ label: `Sessão Estúdio (2h)`, value: baseHour, type: 'base' });
-            if (hours > 2) {
-                const extraVal = (hours - 2) * 200;
-                total += extraVal;
-                breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
-            }
-        }
-    }
-    else if (category === 'video_production') {
-        const s = PRICING_TABLE.video_production;
-        if (serviceId === 'edit_only') {
-             const val = qty * s.edit.unit;
-             total += val;
-             breakdown.push({ label: `${s.edit.label} (${qty}x)`, value: val, type: 'base' });
-        }
-        if (serviceId === 'cam_cap') { total += s.cam_cap.fixed; breakdown.push({ label: s.cam_cap.label, value: s.cam_cap.fixed, type: 'base' }); }
-        if (serviceId === 'mobile_cap') { total += s.mobile_cap.fixed; breakdown.push({ label: s.mobile_cap.label, value: s.mobile_cap.fixed, type: 'base' }); }
-        if (serviceId === 'drone') { total += s.drone.fixed; breakdown.push({ label: s.drone.label, value: s.drone.fixed, type: 'base' }); }
-    }
-    else if (category === 'custom') {
-        total += PRICING_TABLE.custom.custom_project.base;
-        breakdown.push({ label: "Projeto Personalizado", value: 0, type: 'base' });
-    }
-
-    if (addDrone && (category === 'wedding' || category === 'social' || category === 'commercial')) { 
-         const dronePrice = PRICING_TABLE.video_production.drone.fixed;
-         total += dronePrice; 
-         breakdown.push({ label: "Drone (Imagens Aéreas)", value: dronePrice, type: 'addon' });
-    }
-
-    const isExemptFromTravel = category === 'studio' || category === 'custom' || serviceId === 'edit_only';
-    if (!isExemptFromTravel) {
-        if (distance > 0) {
-            const freight = (distance * 2 * quoteData.pricePerKm);
-            total += freight;
-            breakdown.push({ label: `Deslocamento (${distance}km)`, value: freight, type: 'freight' });
-        } else {
-             breakdown.push({ label: "Deslocamento", value: 0, type: 'freight' });
-        }
-    }
-    return { totalPrice: total, priceBreakdown: breakdown };
-  }, [category, serviceId, hours, qty, addDrone, addRealTime, distance, quoteData.pricePerKm, selectionMode, config.photoUnitPrice]);
-
+  // --- LOGIC: RESET WHEN CHANGING CATEGORY ---
   useEffect(() => {
-      const currentCategoryGroup = Object.keys(PRICING_TABLE[category as keyof typeof PRICING_TABLE]);
-      const isIdValid = currentCategoryGroup.some(key => key === serviceId);
+      const table = AppConfig.PRICING_TABLE;
+      const currentCategoryGroup = table[category as keyof typeof table];
+      const isIdValid = currentCategoryGroup && Object.keys(currentCategoryGroup).some(key => key === serviceId);
+      
       if (!isIdValid) {
         if (category === 'wedding') setServiceId('wedding_base');
         if (category === 'social') setServiceId('birthday');
@@ -270,12 +159,13 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         if (category === 'studio') setServiceId('studio_photo');
         if (category === 'video_production') setServiceId('edit_only');
         if (category === 'custom') setServiceId('custom_project');
-        setHours(2);
         
-        // Lógica de quantidade padrão
+        setHours(2);
         if (category === 'commercial') {
-            if (serviceId === 'comm_photo') setQty(5);
+            if (serviceId === 'comm_photo') setQty(20);
             else if (serviceId === 'comm_video') setQty(1);
+        } else if (category === 'studio' && serviceId === 'studio_photo') {
+            setQty(8);
         } else if (category === 'video_production') {
             setQty(1);
         } else {
@@ -301,38 +191,44 @@ const QuoteView: React.FC<QuoteViewProps> = ({
       if (name.includes('horas extras')) setHours(2); 
   };
 
-  const handleStartApproval = () => {
-    const canShowUpsell = (category === 'wedding' || category === 'social') && (!addDrone || !addRealTime);
-    
-    if (canShowUpsell) {
-        setShowUpsell(true);
-    } else {
-        setViewState('summary');
-    }
+  // --- WIZARD NAVIGATION HANDLERS ---
+  const handleNextStep = () => {
+      if (currentStep < steps.length - 1) {
+          setDirection(1);
+          setCurrentStep(prev => prev + 1);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+          // Final Step - Lógica de Modo Rápido vs Normal
+          
+          if (category === 'custom') {
+              // SE FOR "OUTROS" (CUSTOM), PULA O RESUMO E VAI DIRETO PARA O FINAL
+              onSuccess(); // Notifica App.tsx para esconder background se necessário
+              setViewState('success');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+              // Fluxo normal: vai para Resumo
+              setViewState('summary');
+          }
+      }
   };
 
-  const handleConfirmUpsell = () => {
-    setShowUpsell(false);
-    setViewState('summary');
+  const handlePrevStep = () => {
+      if (currentStep > 0) {
+          setDirection(-1);
+          setCurrentStep(prev => prev - 1);
+      } else {
+          onBack();
+      }
   };
 
-  let label = 'Serviço Personalizado';
-  if (category === 'wedding') label = PRICING_TABLE.wedding[serviceId as keyof typeof PRICING_TABLE.wedding]?.label || label;
-  if (category === 'social') label = PRICING_TABLE.social[serviceId as keyof typeof PRICING_TABLE.social]?.label || label;
-  if (category === 'commercial') {
-      if (serviceId === 'comm_combo') label = PRICING_TABLE.commercial.combo.label;
-      else label = PRICING_TABLE.commercial[serviceId as keyof typeof PRICING_TABLE.commercial]?.label || label;
-  }
-  if (category === 'studio') label = PRICING_TABLE.studio[serviceId as keyof typeof PRICING_TABLE.studio]?.label || label;
-  if (category === 'video_production') label = PRICING_TABLE.video_production[serviceId as keyof typeof PRICING_TABLE.video_production]?.label || label;
-
+  // Label Resolution
+  const serviceLabel = AppConfig.getServiceLabel(category, serviceId);
   let metricLabel = '';
   if (selectionMode === 'duration') {
-       metricLabel = `${hours}h de Cobertura (Ilimitado)`;
+       metricLabel = `${hours}h de Cobertura`;
   } else {
-       metricLabel = `${qty} Unidades Entregues`;
+       metricLabel = `${qty} Unidades`;
   }
-  
   if (category === 'wedding' && selectionMode === 'duration' && hours === 2) metricLabel = "Pacote Completo";
   if (category === 'custom') metricLabel = 'Sob medida';
 
@@ -341,7 +237,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
 
   const summaryDetails = {
-    serviceName: label,
+    serviceName: serviceLabel,
     categoryLabel: category === 'wedding' ? 'Casamento' : category === 'social' ? 'Social' : category === 'commercial' ? 'Comercial' : category === 'studio' ? 'Estúdio' : 'Produção',
     metricLabel,
     addons: activeAddons
@@ -349,7 +245,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
 
   const quoteDetails = {
     occasion: category === 'custom' ? 'custom' : (category as any),
-    customOccasionText: label,
+    customOccasionText: serviceLabel,
     location: (category === 'studio' ? 'studio' : 'external'),
     photoQty: selectionMode === 'quantity' ? qty : (category === 'commercial' && serviceId === 'comm_photo' ? qty : 0),
     videoQty: (category === 'video_production' && serviceId === 'edit_only') ? qty : 
@@ -370,78 +266,87 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   }
 
   return (
-    <div className="relative">
-      <div className="block pb-40">
-          <motion.div
-            className="fixed top-0 left-0 right-0 h-1 bg-brand-DEFAULT z-50 origin-left shadow-[0_0_15px_#DC2626]"
-            style={{ scaleX }}
-          />
-          
-          <AnimatePresence>
-              {viewState === 'config' && (
-                  <motion.button 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    onClick={onBack}
-                    className="fixed top-6 left-6 z-[60] text-neutral-400 hover:text-white flex items-center gap-2 transition-colors text-sm uppercase tracking-wider bg-black/20 p-2 rounded-lg backdrop-blur-sm hover:bg-black/50 shadow-lg border border-white/5"
-                    title="Voltar ao Cadastro"
-                  >
-                     <ArrowLeft size={18} /> Voltar
-                  </motion.button>
-              )}
-          </AnimatePresence>
+    <div className="relative min-h-screen bg-black/80 flex flex-col">
+      
+      {/* Background sutil para dar profundidade */}
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-black to-black -z-10" />
 
-          <Hero data={quoteData} />
-          
-          <div className="relative z-10">
-            <UpsellList 
-              category={category} setCategory={setCategory}
-              serviceId={serviceId} setServiceId={setServiceId}
-              hours={hours} setHours={setHours}
-              qty={qty} setQty={setQty}
-              addDrone={addDrone} setAddDrone={setAddDrone}
-              addRealTime={addRealTime} setAddRealTime={setAddRealTime}
-              distance={distance}
-              pricePerKm={quoteData.pricePerKm}
-              locationClient={clientData.location}
-              onOpenMap={() => setIsMapOpen(true)}
-              selectionMode={selectionMode}
-              setSelectionMode={setSelectionMode}
-            />
+      {/* HEADER: PROGRESS & NAV */}
+      <div className="pt-8 px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20">
+          <div className="w-full flex justify-between items-center mb-6">
+               <button onClick={handlePrevStep} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
+                   <ArrowLeft size={20} />
+               </button>
+               {/* LOGO AUMENTADA E ANIMATION FIX */}
+               <Logo className="w-56 opacity-80" />
+               <div className="w-10" /> {/* Spacer para centralizar logo */}
           </div>
 
-          <AnimatePresence>
-            {showScrollIndicator && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed bottom-36 md:bottom-36 left-1/2 -translate-x-1/2 z-50 pointer-events-none text-white drop-shadow-md"
-              >
-                 <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="flex flex-col items-center"
-                 >
-                    <ChevronsDown size={28} className="animate-pulse" />
-                 </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Progress Bar */}
+          <div className="flex items-center gap-2 w-full max-w-xs mb-2">
+            {steps.map((_, idx) => (
+                <div key={idx} className="h-1 flex-1 rounded-full overflow-hidden bg-white/10">
+                    <motion.div 
+                        className="h-full bg-brand-DEFAULT"
+                        initial={{ width: "0%" }}
+                        animate={{ width: idx <= currentStep ? "100%" : "0%" }}
+                        transition={{ duration: 0.3 }}
+                    />
+                </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest">
+                Passo {currentStep + 1}: {steps[currentStep].title}
+          </p>
+      </div>
 
-          <AnimatePresence>
-            {showFooter && (
-                <StickyFooter 
-                    totalPrice={totalPrice} 
-                    onApprove={handleStartApproval} 
-                    isApproved={isApproved}
-                    highlight={true} 
-                />
+      {/* MAIN CONTENT: WIZARD STEP */}
+      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 pb-32 flex flex-col justify-center">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            {viewState === 'config' && (
+                <motion.div 
+                    key={currentStep}
+                    custom={direction}
+                    variants={stepVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="w-full flex justify-center"
+                >
+                   <UpsellList 
+                      viewMode={currentStepId} // Controla o que é renderizado
+                      category={category} setCategory={setCategory}
+                      serviceId={serviceId} setServiceId={setServiceId}
+                      hours={hours} setHours={setHours}
+                      qty={qty} setQty={setQty}
+                      addDrone={addDrone} setAddDrone={setAddDrone}
+                      addRealTime={addRealTime} setAddRealTime={setAddRealTime}
+                      distance={distance}
+                      pricePerKm={quoteData.pricePerKm}
+                      locationClient={clientData.location}
+                      onOpenMap={() => setIsMapOpen(true)}
+                      selectionMode={selectionMode}
+                      setSelectionMode={setSelectionMode}
+                      isQuickMode={isQuickMode} // Passando prop para visualização
+                    />
+                </motion.div>
             )}
           </AnimatePresence>
       </div>
 
+      {/* FOOTER NAVIGATION */}
+      {viewState === 'config' && (
+        <StickyFooter 
+            totalPrice={totalPrice} 
+            onApprove={handleNextStep} 
+            isApproved={false}
+            highlight={true}
+            // Oculta o preço se estiver na etapa de categorias (indice 0)
+            showPrice={currentStep !== 0} 
+        />
+      )}
+
+      {/* SUMMARY MODAL/VIEW */}
       <AnimatePresence>
          {viewState === 'summary' && (
             <SummaryView 
@@ -459,18 +364,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
             />
          )}
       </AnimatePresence>
-
-      <AddonUpsellModal 
-        isOpen={showUpsell}
-        onClose={() => setShowUpsell(false)}
-        onConfirm={handleConfirmUpsell}
-        addDrone={addDrone}
-        setAddDrone={setAddDrone}
-        addRealTime={addRealTime}
-        setAddRealTime={setAddRealTime}
-        totalPrice={totalPrice}
-      />
-
+      
       <SignatureModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

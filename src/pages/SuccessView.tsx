@@ -58,34 +58,74 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
       }
 
       const ambiente = quoteDetails.location === 'studio' ? "Estúdio Controlado" : "Externo / In Loco";
-      const distanciaStr = `${quoteDetails.distance}km (Origem: Goianinha)`;
-      const freteStr = quoteDetails.location === 'studio' ? "Grátis (Estúdio)" : "Incluso no total";
+      const distanciaStr = `${quoteDetails.distance}km (Ref. Goianinha)`;
+      const freteStr = quoteDetails.location === 'studio' ? "Isento (Estúdio)" : "Calculado no total";
       const pagamentoStr = quoteDetails.paymentMethod || "A combinar";
       const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
 
-      message = `
-🔔 *NOVA PROPOSTA APROVADA - EAREC*
+      // LÓGICA CONDICIONAL DE MENSAGEM
+      if (quoteDetails.occasion === 'custom') {
+          // --- MENSAGEM ESPECÍFICA PARA "OUTROS/CUSTOM" ---
+          message = `
+✨ *SOLICITAÇÃO DE PROJETO PERSONALIZADO* ✨
+
+Olá, equipe EAREC! Gostaria de um orçamento sob medida.
+
+──────────────────────
+
+🗓️ *DATA PREVISTA:* ${formatDate(clientData.date)}
 
 👤 *DADOS DO CLIENTE*
-*Nome:* ${clientData.name}
-*Data do Evento:* ${formatDate(clientData.date)}
-*Contato:* ${clientData.contact}
-*Local:* ${clientData.location}
+▪️ Nome: *${clientData.name}*
+▪️ Contato: ${clientData.contact}
+▪️ Local: ${clientData.location}
 
-🎬 *DETALHES DO SERVIÇO*
-*Ocasião:* ${quoteDetails.customOccasionText}
-*Ambiente:* ${ambiente}
-*Escopo:* ${escopo}
+🎬 *SOBRE O PROJETO*
+▪️ Tipo: Demanda Especial
+▪️ Nota: Necessidade específica não listada nos pacotes.
 
-🚚 *LOGÍSTICA*
-*Distância:* ${distanciaStr}
-*Frete:* ${freteStr}
+🚗 *LOGÍSTICA*
+▪️ Distância: ${distanciaStr}
 
-💰 *FINANCEIRO*
-*Valor Total:* ${formattedPrice}
-*Pagamento:* ${pagamentoStr}
-*Status:* Aprovado via Plataforma Digital
+💎 *INVESTIMENTO*
+▪️ Status: *Sob Análise*
+
+──────────────────────
+*Aguardo o contato para briefing!* 🥂
 `.trim();
+      } else {
+          // --- MENSAGEM PADRÃO (Casamento, Social, Comercial, etc) ---
+          message = `
+✨ *NOVO ORÇAMENTO GERADO* ✨
+
+Olá! Finalizei a configuração da minha proposta no site e gostaria de verificar a disponibilidade.
+
+──────────────────────
+
+🗓️ *DATA:* ${formatDate(clientData.date)}
+
+👤 *CLIENTE*
+▪️ Nome: *${clientData.name}*
+▪️ Contato: ${clientData.contact}
+▪️ Local: ${clientData.location}
+
+🎥 *SERVIÇOS SELECIONADOS*
+▪️ Pacote: *${quoteDetails.customOccasionText}*
+▪️ Ambiente: ${ambiente}
+▪️ Escopo: ${escopo}
+
+📍 *LOGÍSTICA*
+▪️ Distância: ${distanciaStr}
+▪️ Frete: ${freteStr}
+
+💎 *VALOR FINAL*
+▪️ Total: *${formattedPrice}*
+▪️ Pagamento: ${pagamentoStr}
+
+──────────────────────
+*Fico no aguardo da confirmação!* 🥂
+`.trim();
+      }
   }
 
   const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
@@ -109,12 +149,12 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
         </motion.div>
 
         <motion.h1 variants={fadeInUp} className="text-2xl md:text-4xl font-serif text-white mb-2">
-            Orçamento Completo!
+            Proposta Gerada!
         </motion.h1>
 
         <motion.div variants={fadeInUp} className="mb-8">
              <motion.p animate={{ y: [0, 5, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="text-brand-DEFAULT font-medium text-sm flex items-center justify-center gap-2">
-                Enviar orçamento para o WhatsApp
+                Finalizar atendimento no WhatsApp
                 <ArrowDown size={14} />
              </motion.p>
         </motion.div>
@@ -123,7 +163,7 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
                 <Button variant="primary" size="md" className="w-full flex items-center gap-2 justify-center bg-green-600 border-green-600 hover:bg-green-700 shadow-green-900/20 py-4 text-base font-bold tracking-wide">
                     <MessageCircle size={20} />
-                    ENVIAR PARA PRODUÇÃO
+                    ENVIAR E RESERVAR DATA
                 </Button>
             </a>
             <Button onClick={onReset} size="md" variant="secondary" className="w-full py-3 text-sm border-transparent hover:bg-white/5 text-neutral-500 hover:text-white">
@@ -135,8 +175,8 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
             <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-500/10 rounded-full text-yellow-500"><AnimatedClock /></div>
                 <div className="text-left">
-                    <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Próximo Passo</p>
-                    <p className="text-white text-sm font-medium">Aguardando seu contato!</p>
+                    <p className="text-[10px] text-neutral-500 uppercase tracking-wider">Status</p>
+                    <p className="text-white text-sm font-medium">Aguardando envio...</p>
                 </div>
             </div>
             <div className="h-1.5 w-1.5 rounded-full bg-yellow-500 animate-pulse" />

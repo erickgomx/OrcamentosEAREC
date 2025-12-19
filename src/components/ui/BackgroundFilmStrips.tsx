@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 
 /**
  * Componente SVG: Tira de Filme (Film Strip)
- * Renderiza uma tira vertical infinita usando patterns SVG.
+ * Renderiza uma tira vertical infinita com animação de rolagem contínua.
  */
-const FilmStripTexture = ({ className, speed = 2, direction = 1 }: { className?: string, speed?: number, direction?: number }) => (
+const FilmStripTexture = ({ className, speed = 5, direction = 1 }: { className?: string, speed?: number, direction?: number }) => (
   <svg
-    viewBox="0 0 100 800"
+    viewBox="0 0 100 100"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     className={className}
@@ -16,33 +16,41 @@ const FilmStripTexture = ({ className, speed = 2, direction = 1 }: { className?:
   >
     {/* Definição do Padrão de Furos (Sprockets) e Quadros */}
     <defs>
-      <pattern id="film-holes" x="0" y="0" width="100" height="60" patternUnits="userSpaceOnUse">
+      {/* 
+         Ajuste Visual: Reduzido de 60 para 30 para criar mais quadros (maior densidade).
+         Isso faz parecer que tem "mais frames" visíveis na tira.
+      */}
+      <pattern id="film-holes" x="0" y="0" width="100" height="30" patternUnits="userSpaceOnUse">
          {/* Furos Esquerdos */}
-         <rect x="2" y="15" width="12" height="20" rx="2" fill="currentColor" fillOpacity="0.4" />
+         <rect x="5" y="8" width="10" height="14" rx="2" fill="currentColor" fillOpacity="0.6" />
          {/* Furos Direitos */}
-         <rect x="86" y="15" width="12" height="20" rx="2" fill="currentColor" fillOpacity="0.4" />
+         <rect x="85" y="8" width="10" height="14" rx="2" fill="currentColor" fillOpacity="0.6" />
          {/* Linha divisória de quadro (Frame Line) */}
-         <line x1="18" y1="59" x2="82" y2="59" stroke="currentColor" strokeWidth="2" strokeOpacity="0.2" />
+         <line x1="20" y1="29" x2="80" y2="29" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.3" />
       </pattern>
     </defs>
 
-    {/* Fundo sutil da tira (Estático relativo ao container) */}
-    <rect x="15" width="70" height="800" fill="currentColor" fillOpacity="0.05" />
+    {/* Fundo sutil da tira */}
+    <rect x="18" width="64" height="100%" fill="currentColor" fillOpacity="0.03" />
     
     {/* Bordas da área de imagem */}
-    <line x1="18" y1="0" x2="18" y2="800" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
-    <line x1="82" y1="0" x2="82" y2="800" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
+    <line x1="20" y1="0" x2="20" y2="100%" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
+    <line x1="80" y1="0" x2="80" y2="100%" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
     
     {/* 
-        ANIMAÇÃO DE ROLAGEM (Rolling Effect)
-        O rect preenchido com o padrão move-se de 0 a -60 (altura do padrão).
+        ANIMAÇÃO DE ROLAGEM (Infinite Scroll)
+        O rect é preenchido com o padrão. Movemos o Y do rect
+        ciclando a cada 30 unidades (altura do padrão) para um loop perfeito.
     */}
     <motion.rect 
       x="0"
+      y="-30" // Começa com offset do tamanho do padrão
       width="100" 
-      height="1000" 
+      height="200%" 
       fill="url(#film-holes)"
-      animate={{ y: direction > 0 ? [0, -60] : [-60, 0] }}
+      animate={{ 
+        y: direction > 0 ? [0, -30] : [-30, 0] 
+      }}
       transition={{ 
         repeat: Infinity, 
         ease: "linear", 
@@ -54,48 +62,26 @@ const FilmStripTexture = ({ className, speed = 2, direction = 1 }: { className?:
 
 const BackgroundFilmStrips: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen">
-      {/* 
-        === FILME DE CÂMERA VERMELHO (GLOBAL) === 
-        Opacidade reduzida em 30% (de 1.0 para 0.7) para maior sutileza.
-      */}
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-black">
       
-      {/* Tira Superior Direita */}
-      <motion.div
-        initial={{ opacity: 0, x: 100, rotate: -35 }}
-        animate={{ 
-            opacity: 0.7, // Reduzido de 1.0 para 0.7
-            x: 0,
-            y: [0, -20, 0] 
-        }}
-        transition={{ 
-            opacity: { duration: 1.5 },
-            y: { duration: 15, repeat: Infinity, ease: "easeInOut" }
-        }}
-        className="absolute -top-20 -right-20 md:right-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT"
-      >
-         <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" speed={45} direction={1} />
-      </motion.div>
+      {/* 
+        Tira Esquerda - Diagonal Descendo 
+        Rotacionada -12 graus para cruzar a tela diagonalmente.
+      */}
+      <div className="absolute -top-[20%] left-[10%] md:left-[20%] w-24 md:w-32 h-[150vh] border-x border-white/5 bg-neutral-900/20 text-brand-DEFAULT/10 transform -rotate-12 backdrop-blur-[1px]">
+         <FilmStripTexture className="w-full h-full opacity-60" speed={18} direction={1} />
+      </div>
 
-      {/* Tira Inferior Esquerda */}
-      <motion.div
-        initial={{ opacity: 0, x: -100, rotate: -35 }}
-        animate={{ 
-            opacity: 0.7, // Reduzido de 1.0 para 0.7
-            x: 0,
-            y: [0, 20, 0] 
-        }}
-        transition={{ 
-            opacity: { duration: 1.5 },
-            y: { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }
-        }}
-        className="absolute -bottom-20 -left-20 md:left-0 w-32 md:w-48 h-[120vh] text-brand-DEFAULT"
-      >
-         <FilmStripTexture className="w-full h-full drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" speed={60} direction={-1} />
-      </motion.div>
+      {/* 
+        Tira Direita - Diagonal Subindo (Contra-fluxo)
+        Rotacionada -12 graus para manter o paralelismo visual (///).
+      */}
+      <div className="absolute -top-[20%] right-[5%] md:right-[15%] w-20 md:w-28 h-[150vh] border-x border-white/5 bg-neutral-900/20 text-brand-DEFAULT/10 transform -rotate-12 backdrop-blur-[1px]">
+         <FilmStripTexture className="w-full h-full opacity-40" speed={22} direction={-1} />
+      </div>
 
-      {/* CAMADA DE ESCURECIMENTO */}
-      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+      {/* Vignette Global para focar no centro e suavizar as bordas */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0a0a0a_90%)] pointer-events-none" />
     </div>
   );
 };

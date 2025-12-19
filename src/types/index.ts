@@ -76,3 +76,25 @@ export interface CheckboxProps {
   label?: string;
   price?: number;
 }
+
+// --- NOVOS TIPOS PARA A FASE 2 (POO) ---
+
+export interface PriceBreakdownItem {
+  label: string;
+  value: number;
+  type: 'base' | 'addon' | 'freight';
+}
+
+export interface PricingResult {
+  totalPrice: number;
+  breakdown: PriceBreakdownItem[];
+  currency: string;
+}
+
+export interface PricingContext {
+  pricePerKm: number;
+  photoUnitPrice: number;
+  videoUnitPrice: number;
+  distance: number;
+  isQuickMode?: boolean; // Nova flag para controlar lógica de frete "A consultar"
+}

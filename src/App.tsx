@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import QuoteView from './src/pages/QuoteView';
 import WelcomeView from './src/pages/WelcomeView';
@@ -11,6 +11,7 @@ import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
 import { ClientData, QuoteData, QuoteState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
+import { AppConfig } from './src/config/AppConfig';
 
 // Definição dos estados possíveis da aplicação
 type ViewState = 'intro' | 'welcome' | 'quote' | 'admin';
@@ -21,6 +22,9 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<QuoteData>(mockQuote);
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
+  
+  // Novo estado: Modo Rápido
+  const [isQuickMode, setIsQuickMode] = useState(false);
 
   const [clientData, setClientData] = useState<ClientData | null>(() => {
     const saved = localStorage.getItem('earec_client_data');
@@ -37,6 +41,14 @@ const App: React.FC = () => {
     selectionMode: 'duration'
   });
 
+  // === DESIGN SYSTEM INJECTION ===
+  // Aplica as cores definidas no AppConfig como variáveis CSS globais
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--brand-color', AppConfig.BRAND.COLORS.PRIMARY);
+    root.style.setProperty('--brand-glow', `${AppConfig.BRAND.COLORS.PRIMARY}80`); // 50% opacity hex
+  }, []);
+
   useEffect(() => {
     if (clientData) {
       localStorage.setItem('earec_client_data', JSON.stringify(clientData));
@@ -48,7 +60,6 @@ const App: React.FC = () => {
       history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
-    // Tempo total de splash reduzido de 3500ms para 2200ms
     const timer = setTimeout(() => setShowSplash(false), 2200); 
     return () => clearTimeout(timer);
   }, []);
@@ -63,8 +74,32 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  // Handler para Orçamento Rápido
+  const handleQuickStart = async () => {
+    // Define dados temporários para não quebrar a QuoteView
+    setClientData({
+        name: '', 
+        location: '', 
+        date: '', 
+        contact: ''
+    });
+    setIsQuickMode(true); // Ativa flag
+    setIsLoading(true);
+    setIsQuoteSuccess(false);
+    await delay(800); // Delay menor para sensação de rapidez
+    setIsLoading(false);
+    setView('quote');
+    window.scrollTo(0, 0);
+  };
+
   const handleAdminUpdate = (newConfig: QuoteData) => {
     setConfig(newConfig);
+  };
+
+  // Callback chamado pelo QuoteView quando precisa dos dados no modo rápido
+  const handleRequestForm = () => {
+    setView('welcome');
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -84,7 +119,7 @@ const App: React.FC = () => {
                <motion.div
                  initial={{ scale: 0.8, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
-                 transition={{ duration: 0.8, ease: "easeOut" }} // Reduzido de 1.2s para 0.8s
+                 transition={{ duration: 0.8, ease: "easeOut" }}
                  className="mb-4"
                >
                   <Logo className="w-64 md:w-96" animate={true} />
@@ -93,11 +128,13 @@ const App: React.FC = () => {
                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.5 }} // Delay reduzido de 1.2s para 0.7s
+                  transition={{ delay: 0.7, duration: 0.5 }}
                   className="flex flex-col items-center"
                >
                   <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest">Orçamento Facilitado</p>
+                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest uppercase">
+                    Orçamento Facilitado
+                  </p>
                </motion.div>
              </div>
           </motion.div>
@@ -113,7 +150,11 @@ const App: React.FC = () => {
             <>
             {view === 'intro' && (
                 <IntroView 
-                    onContinue={() => setView('welcome')} 
+                    onContinue={() => {
+                        setIsQuickMode(false);
+                        setView('welcome');
+                    }}
+                    onQuickStart={handleQuickStart}
                 />
             )}
 
@@ -121,7 +162,7 @@ const App: React.FC = () => {
                 <WelcomeView 
                   onStart={handleStart} 
                   onAdminClick={() => setView('admin')}
-                  onBack={() => setView('intro')} 
+                  onBack={() => setView(isQuickMode ? 'quote' : 'intro')} 
                 />
             )}
 
@@ -130,10 +171,12 @@ const App: React.FC = () => {
                   clientData={clientData} 
                   onUpdateClientData={setClientData}
                   config={config}
-                  onBack={() => setView('welcome')}
+                  onBack={() => setView(isQuickMode ? 'intro' : 'welcome')}
                   quoteState={quoteState}
                   setQuoteState={setQuoteState}
                   onSuccess={() => setIsQuoteSuccess(true)}
+                  isQuickMode={isQuickMode}
+                  onRequestForm={handleRequestForm}
                 />
             )}
 

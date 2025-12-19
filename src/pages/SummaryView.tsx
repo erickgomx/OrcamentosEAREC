@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, CheckCircle, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, Settings2, User, Phone, Edit2, Save, X, Banknote, QrCode, FileText, Check, Map as MapIcon, RefreshCcw, Trash2 } from 'lucide-react';
+import { Calendar, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import AnimatedPrice from '../components/ui/AnimatedPrice';
@@ -45,17 +45,45 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [tempData, setTempData] = useState<ClientData>(clientData);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  
   const today = new Date().toISOString().split('T')[0];
 
-  useEffect(() => { setTempData(clientData); }, [clientData]);
+  // Sincroniza dados apenas quando NÃO está editando para evitar conflito de digitação
+  useEffect(() => { 
+      if (!isEditing) {
+          setTempData(clientData); 
+      }
+  }, [clientData, isEditing]);
 
   useEffect(() => {
     const timer = setTimeout(() => { setShowContent(true); }, 1500); 
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSave = () => { onUpdateClientData(tempData); setIsEditing(false); };
-  const handleCancel = () => { setTempData(clientData); setIsEditing(false); };
+  // --- LÓGICA DE AUTO-SAVE (DEBOUNCE) ---
+  useEffect(() => {
+    // Não executa na montagem inicial ou se não estiver editando
+    if (!isEditing) return;
+
+    setSaveStatus('saving');
+    const handler = setTimeout(() => {
+        // Envia para o pai
+        onUpdateClientData(tempData);
+        setSaveStatus('saved');
+        
+        // Volta para idle após um tempo
+        setTimeout(() => setSaveStatus('idle'), 2000);
+    }, 600); // Aguarda 600ms após parar de digitar
+
+    return () => clearTimeout(handler);
+  }, [tempData, isEditing, onUpdateClientData]);
+
+  const handleFinishEditing = () => {
+      // Garante o último save
+      onUpdateClientData(tempData);
+      setIsEditing(false);
+  };
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -138,14 +166,36 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 <User size={14} className="text-brand-DEFAULT" />
                                 Dados do Cliente
                             </h3>
+                            
                             {!isEditing ? (
                                 <button onClick={() => setIsEditing(true)} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-white/5">
                                     <Edit2 size={12} /> Editar
                                 </button>
                             ) : (
-                                <div className="flex gap-2">
-                                    <button onClick={handleCancel} className="text-neutral-400 hover:text-white p-1"><X size={14}/></button>
-                                    <button onClick={handleSave} className="text-brand-DEFAULT hover:text-white p-1"><Save size={14}/></button>
+                                <div className="flex items-center gap-3">
+                                    {/* Indicador de Status */}
+                                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider transition-all">
+                                        {saveStatus === 'saving' && (
+                                            <>
+                                                <Loader2 size={10} className="animate-spin text-neutral-500" />
+                                                <span className="text-neutral-500">Salvando...</span>
+                                            </>
+                                        )}
+                                        {saveStatus === 'saved' && (
+                                            <>
+                                                <Cloud size={10} className="text-green-500" />
+                                                <span className="text-green-500">Salvo</span>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Botão Concluir */}
+                                    <button 
+                                        onClick={handleFinishEditing} 
+                                        className="text-xs flex items-center gap-1 bg-brand-DEFAULT/10 hover:bg-brand-DEFAULT/20 text-brand-DEFAULT px-3 py-1 rounded-full transition-colors border border-brand-DEFAULT/20"
+                                    >
+                                        <Check size={12} /> Concluir
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -171,7 +221,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                             <input name="location" value={tempData.location} onChange={handleChange} className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 pr-10 focus:outline-none" />
                                             <button onClick={() => setIsMapOpen(true)} className="absolute right-0 top-0 text-neutral-400 hover:text-brand-DEFAULT p-1" title="Abrir Mapa"><MapIcon size={16} /></button>
                                         </div>
-                                    ) : ( <p className="text-white font-medium flex items-center gap-2"><MapPin size={12} className="text-neutral-500" />{clientData.location}</p> )}
+                                    ) : ( <p className="text-white font-medium flex items-center gap-2"><MapPin size={12} className="text-neutral-500" />{clientData.location || "A definir"}</p> )}
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Contato</label>
@@ -184,7 +234,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                             placeholder="Apenas números"
                                             className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 focus:outline-none" 
                                         />
-                                    ) : ( <p className="text-white font-medium flex items-center gap-2"><Phone size={12} className="text-neutral-500" />{clientData.contact}</p> )}
+                                    ) : ( <p className="text-white font-medium flex items-center gap-2"><Phone size={12} className="text-neutral-500" />{clientData.contact || "A definir"}</p> )}
                                 </div>
                             </div>
                         </div>
@@ -198,7 +248,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 Escopo Financeiro
                             </h3>
                             <button onClick={onBack} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-white/5">
-                                <RefreshCcw size={12} /> Alterar Itens
+                                <PlusCircle size={12} /> Adicionar Itens
                             </button>
                          </div>
                          
@@ -209,29 +259,37 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                             </p>
 
                             {/* Lista de Itens com Preços */}
-                            <div className="space-y-3 mb-6">
+                            <div className="space-y-2 mb-6">
                                 {priceBreakdown.map((item, idx) => (
                                     <div 
                                         key={idx} 
                                         className={cn(
-                                            "flex justify-between items-center text-sm py-1 border-b border-white/5 px-2 -mx-2 rounded transition-colors group",
+                                            "flex justify-between items-center text-sm py-2 border-b border-white/5 px-2 -mx-2 rounded transition-colors",
                                             item.type === 'freight' ? "text-neutral-400 italic cursor-default" : "text-neutral-200",
-                                            item.type === 'addon' ? "hover:bg-white/5 cursor-pointer" : ""
                                         )}
-                                        onDoubleClick={() => {
-                                            // FIX: Permite remoção apenas para itens adicionais (addons), não deslocamento ou base.
-                                            if (item.type === 'addon' && onRemoveAddon) {
-                                                onRemoveAddon(item.label);
-                                            }
-                                        }}
-                                        title={item.type === 'addon' ? "Duplo clique para remover" : ""}
                                     >
-                                        <div className="flex items-center gap-2">
-                                            <span>{item.label}</span>
-                                            {item.type === 'addon' && <Trash2 size={12} className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" />}
+                                        <div className="flex items-center gap-3">
+                                            {/* Botão de Lixeira Explicito para Addons */}
+                                            {item.type === 'addon' && onRemoveAddon ? (
+                                                <button 
+                                                    onClick={() => onRemoveAddon(item.label)}
+                                                    className="text-neutral-500 hover:text-red-500 hover:bg-red-500/10 p-1 rounded transition-all"
+                                                    title="Remover item"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            ) : (
+                                                // Espaçador para alinhar itens base se necessário, ou null
+                                                null
+                                            )}
+
+                                            <span className={item.type === 'addon' ? "text-white" : ""}>{item.label}</span>
                                         </div>
+
                                         <div className="flex items-center gap-1">
-                                            {item.value === 0 ? (
+                                            {item.label.includes("A consultar") ? (
+                                                <span className="text-yellow-500 text-xs uppercase font-medium">Sob Consulta</span>
+                                            ) : item.value === 0 ? (
                                                 <span className="text-green-500 text-xs uppercase font-medium">Incluso</span>
                                             ) : (
                                                 <span className="font-mono">{formatCurrency(item.value)}</span>
@@ -247,12 +305,6 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                          <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-1">Total Final</p>
                                          <p className="text-2xl text-white font-serif"><AnimatedPrice value={totalPrice} /></p>
                                     </div>
-                                    {/* FIX: Mostra a dica apenas se houver addons removíveis na lista */}
-                                    {priceBreakdown.some(i => i.type === 'addon') && (
-                                        <p className="text-[9px] text-neutral-600 italic max-w-[150px] text-right">
-                                            Dica: Clique duas vezes em um item adicional para removê-lo.
-                                        </p>
-                                    )}
                                 </div>
                             </div>
                          </div>

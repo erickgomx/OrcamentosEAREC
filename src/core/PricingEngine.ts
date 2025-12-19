@@ -1,0 +1,256 @@
+
+import { AppConfig } from "../config/AppConfig";
+import { PricingContext, PricingResult, QuoteState, PriceBreakdownItem } from "../types";
+
+/**
+ * PricingEngine
+ * -------------
+ * Classe responsável puramente pela lógica matemática de precificação.
+ * Recebe o Estado (O que o usuário escolheu) e o Contexto (Regras de preço atuais/Admin)
+ * e retorna o Resultado calculado.
+ * 
+ * Princípio: SRP (Single Responsibility Principle) - Esta classe só muda se a matemática mudar.
+ */
+export class PricingEngine {
+
+  /**
+   * Método principal de cálculo.
+   */
+  static calculate(state: QuoteState, context: PricingContext): PricingResult {
+    const { category } = state;
+    
+    let result: PricingResult = {
+      totalPrice: 0,
+      breakdown: [],
+      currency: 'BRL'
+    };
+
+    // Roteamento de Estratégia
+    switch (category) {
+      case 'wedding':
+        result = this.calculateWedding(state, context);
+        break;
+      case 'social':
+        result = this.calculateSocial(state, context);
+        break;
+      case 'commercial':
+        result = this.calculateCommercial(state, context);
+        break;
+      case 'studio':
+        result = this.calculateStudio(state, context);
+        break;
+      case 'video_production':
+        result = this.calculateProduction(state, context);
+        break;
+      case 'custom':
+        result = {
+          totalPrice: AppConfig.PRICING_TABLE.custom.custom_project.base,
+          breakdown: [{ label: AppConfig.PRICING_TABLE.custom.custom_project.label, value: 0, type: 'base' }],
+          currency: 'BRL'
+        };
+        break;
+    }
+
+    // Cálculos Globais (Frete e Adicionais Transversais)
+    result = this.applyAddonsAndFreight(state, context, result);
+
+    return result;
+  }
+
+  // --- ESTRATÉGIAS ESPECÍFICAS POR CATEGORIA ---
+
+  private static calculateWedding(state: QuoteState, ctx: PricingContext): PricingResult {
+    const { serviceId, hours, addRealTime } = state;
+    const table = AppConfig.PRICING_TABLE.wedding;
+    const breakdown: PriceBreakdownItem[] = [];
+    let total = 0;
+
+    // Base Price Lookup
+    let baseVal = 0;
+    let baseLabel = "";
+
+    // Mapeamento seguro (Type Guarded no runtime)
+    const key = serviceId as keyof typeof table;
+    if (table[key] && 'base' in table[key]) {
+        // @ts-ignore
+        baseVal = table[key].base;
+        // @ts-ignore
+        baseLabel = table[key].label;
+    }
+
+    total += baseVal;
+    breakdown.push({ label: baseLabel, value: baseVal, type: 'base' });
+
+    // Horas Extras (Regra: Acima de 2h, +250/h)
+    // Nota: Em casamentos, normalmente pacotes são fechados, mas mantemos a lógica caso o user altere
+    if (state.selectionMode === 'duration' && hours > 2) {
+      const extraHoursVal = (hours - 2) * 250;
+      total += extraHoursVal;
+      breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraHoursVal, type: 'addon' });
+    }
+
+    // Tempo Real (Específico de Wedding/Social)
+    if (addRealTime) {
+      total += table.realtime.fixed;
+      breakdown.push({ label: table.realtime.label, value: table.realtime.fixed, type: 'addon' });
+    }
+
+    return { totalPrice: total, breakdown, currency: 'BRL' };
+  }
+
+  private static calculateSocial(state: QuoteState, ctx: PricingContext): PricingResult {
+    const { serviceId, hours, qty, addRealTime, selectionMode } = state;
+    const table = AppConfig.PRICING_TABLE.social;
+    const breakdown: PriceBreakdownItem[] = [];
+    let total = 0;
+
+    if (serviceId === 'graduation') {
+      total += table.graduation.base;
+      breakdown.push({ label: table.graduation.label, value: table.graduation.base, type: 'base' });
+    } else {
+      // Birthday / Fifteen
+      const ref = serviceId === 'birthday' ? table.birthday : table.fifteen;
+      
+      if (selectionMode === 'duration') {
+        total += ref.base;
+        breakdown.push({ label: `${ref.label} (Base 2h)`, value: ref.base, type: 'base' });
+        
+        if (hours > ref.hoursIncluded) {
+          const extraHoursVal = (hours - ref.hoursIncluded) * ref.hourPrice;
+          total += extraHoursVal;
+          breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
+        }
+      } else {
+        // Cobrança por foto
+        const val = qty * ctx.photoUnitPrice; // Usa o preço configurado no Admin Context
+        total += val;
+        breakdown.push({ label: `${ref.label} (${qty} Fotos)`, value: val, type: 'base' });
+      }
+    }
+
+    if (addRealTime) {
+      total += table.realtime.fixed;
+      breakdown.push({ label: table.realtime.label, value: table.realtime.fixed, type: 'addon' });
+    }
+
+    return { totalPrice: total, breakdown, currency: 'BRL' };
+  }
+
+  private static calculateCommercial(state: QuoteState, ctx: PricingContext): PricingResult {
+    const { serviceId, qty } = state;
+    const table = AppConfig.PRICING_TABLE.commercial;
+    const breakdown: PriceBreakdownItem[] = [];
+    let total = 0;
+
+    if (serviceId === 'comm_photo') {
+      const val = qty * table.photo.unit;
+      total += val;
+      breakdown.push({ label: `${table.photo.label} (${qty}x)`, value: val, type: 'base' });
+    }
+    else if (serviceId === 'comm_video') {
+      const val = qty * table.video.unit;
+      total += val;
+      breakdown.push({ label: `${table.video.label} (${qty}x)`, value: val, type: 'base' });
+    }
+    else if (serviceId === 'comm_combo') {
+      const val = table.combo.videoBase;
+      total += val;
+      breakdown.push({ label: table.combo.label, value: val, type: 'base' });
+    }
+
+    return { totalPrice: total, breakdown, currency: 'BRL' };
+  }
+
+  private static calculateStudio(state: QuoteState, ctx: PricingContext): PricingResult {
+    const { serviceId, qty, hours, selectionMode } = state;
+    const table = AppConfig.PRICING_TABLE.studio;
+    const breakdown: PriceBreakdownItem[] = [];
+    let total = 0;
+
+    if (selectionMode === 'quantity') {
+      if (serviceId === 'studio_photo') {
+        const val = qty * table.photo.unit;
+        total += val;
+        breakdown.push({ label: `${table.photo.label} (${qty}x)`, value: val, type: 'base' });
+      } else {
+        total += table.video.base;
+        breakdown.push({ label: table.video.label, value: table.video.base, type: 'base' });
+      }
+    } else {
+      const baseHour = 350; // Valor fixo para locação de estúdio
+      total += baseHour;
+      breakdown.push({ label: `Sessão Estúdio (2h)`, value: baseHour, type: 'base' });
+      
+      if (hours > 2) {
+        const extraVal = (hours - 2) * 200;
+        total += extraVal;
+        breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
+      }
+    }
+
+    return { totalPrice: total, breakdown, currency: 'BRL' };
+  }
+
+  private static calculateProduction(state: QuoteState, ctx: PricingContext): PricingResult {
+    const { serviceId, qty } = state;
+    const table = AppConfig.PRICING_TABLE.video_production;
+    const breakdown: PriceBreakdownItem[] = [];
+    let total = 0;
+
+    if (serviceId === 'edit_only') {
+      const val = qty * table.edit.unit;
+      total += val;
+      breakdown.push({ label: `${table.edit.label} (${qty}x)`, value: val, type: 'base' });
+    }
+    else if (serviceId === 'cam_cap') { 
+      total += table.cam_cap.fixed; 
+      breakdown.push({ label: table.cam_cap.label, value: table.cam_cap.fixed, type: 'base' }); 
+    }
+    else if (serviceId === 'mobile_cap') { 
+      total += table.mobile_cap.fixed; 
+      breakdown.push({ label: table.mobile_cap.label, value: table.mobile_cap.fixed, type: 'base' }); 
+    }
+    else if (serviceId === 'drone') { 
+      total += table.drone.fixed; 
+      breakdown.push({ label: table.drone.label, value: table.drone.fixed, type: 'base' }); 
+    }
+
+    return { totalPrice: total, breakdown, currency: 'BRL' };
+  }
+
+  // --- CÁLCULOS GLOBAIS ---
+
+  private static applyAddonsAndFreight(state: QuoteState, ctx: PricingContext, currentResult: PricingResult): PricingResult {
+    const { category, addDrone } = state;
+    const { distance, pricePerKm, isQuickMode } = ctx;
+    
+    // 1. Drone (Se aplicável à categoria)
+    if (addDrone && (category === 'wedding' || category === 'social' || category === 'commercial')) {
+       const dronePrice = AppConfig.PRICING_TABLE.video_production.drone.fixed;
+       currentResult.totalPrice += dronePrice;
+       currentResult.breakdown.push({ label: AppConfig.TEXTS.LABELS.ADD_DRONE, value: dronePrice, type: 'addon' });
+    }
+
+    // 2. Frete / Deslocamento
+    // Regra: Estúdio e Edição não pagam frete. Custom paga se tiver local.
+    const isExemptFromTravel = category === 'studio' || state.serviceId === 'edit_only';
+    
+    if (!isExemptFromTravel) {
+      // CORREÇÃO: Prioridade para distância real > 0.
+      if (distance > 0) {
+        // Cálculo Normal: Ida e Volta
+        const freight = (distance * 2 * pricePerKm);
+        currentResult.totalPrice += freight;
+        currentResult.breakdown.push({ label: `Deslocamento (${distance}km)`, value: freight, type: 'freight' });
+      } else if (isQuickMode) {
+        // Modo Rápido sem local definido: "A consultar" (Valor 0, mas com label específico)
+        currentResult.breakdown.push({ label: "Deslocamento (A consultar)", value: 0, type: 'freight' });
+      } else {
+        // Modo normal sem distância (ainda não calculou ou é perto da base)
+        currentResult.breakdown.push({ label: "Deslocamento", value: 0, type: 'freight' });
+      }
+    }
+
+    return currentResult;
+  }
+}

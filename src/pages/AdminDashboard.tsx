@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Lock, Save, DollarSign, LogOut, ShieldAlert, Loader2, KeyRound } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Logo from '../components/ui/Logo';
 import { QuoteData } from '../types';
 import { fadeInUp, staggerContainer } from '../lib/animations';
 import { formatCurrency } from '../lib/utils';
-import { verifyPassword, securityDelay } from '../lib/security';
+import { AuthService } from '../services/AuthService';
 
 interface AdminDashboardProps {
   currentConfig: QuoteData;
@@ -39,10 +39,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
     setError('');
     setIsLoading(true);
 
-    // Adiciona delay artificial para segurança e UX
-    await securityDelay();
+    // Adiciona delay artificial via AuthService
+    await AuthService.securityDelay();
 
-    const isValid = await verifyPassword(password);
+    const isValid = await AuthService.verify(password);
 
     if (isValid) {
       setIsAuthenticated(true);
@@ -56,7 +56,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
 
       // Lógica de Expulsão (3 tentativas erradas)
       if (newAttempts >= 3) {
-        // Redireciona imediatamente para a tela de boas-vindas
         onExit();
       } else {
         setError(`Senha incorreta. Tentativas restantes: ${3 - newAttempts}`);
@@ -79,7 +78,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
       ...currentConfig,
       ...formData
     });
-    // Feedback visual simples
     alert('Configurações salvas com segurança!');
   };
 
@@ -100,7 +98,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
             <motion.div 
                 key="normal"
                 initial={{ scale: 0 }} animate={{ scale: 1 }}
-                className="p-4 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.1)]"
+                className="p-4 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT shadow-[0_0_20px_var(--brand-glow)]"
             >
                 <Lock size={32} />
             </motion.div>
@@ -174,7 +172,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
   // TELA DE DASHBOARD (Acesso concedido)
   return (
     <div className="min-h-screen bg-neutral-950 text-white font-sans">
-      {/* Header */}
       <header className="border-b border-white/5 bg-neutral-900/50 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -201,7 +198,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
         <motion.div 
           initial="hidden" 
           animate="visible" 
-          variants={staggerContainer} // Container principal
+          variants={staggerContainer}
         >
           <motion.div variants={fadeInUp} className="flex items-center justify-between mb-8">
             <div>
@@ -213,10 +210,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
             </div>
           </motion.div>
 
-          {/* Form Container */}
           <motion.div variants={fadeInUp} className="bg-white/5 border border-white/5 rounded-xl p-8 space-y-8 shadow-inner">
-            
-            {/* Base Price */}
             <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-white/5">
               <div>
                 <label className="block text-sm font-medium text-white mb-2">Preço Base (Mobilização)</label>
@@ -234,7 +228,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
               </div>
             </motion.div>
 
-            {/* Studio Fee */}
             <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-white/5">
               <div>
                 <label className="block text-sm font-medium text-white mb-2">Taxa de Estúdio</label>
@@ -252,7 +245,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
               </div>
             </motion.div>
 
-            {/* Photo Unit Price */}
             <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-white/5">
               <div>
                 <label className="block text-sm font-medium text-white mb-2">Preço por Foto</label>
@@ -270,7 +262,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
               </div>
             </motion.div>
 
-            {/* Video Unit Price */}
             <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label className="block text-sm font-medium text-white mb-2">Preço por Vídeo</label>
@@ -300,7 +291,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
             </Button>
           </motion.div>
 
-          {/* Preview Rápido */}
           <motion.div variants={fadeInUp} className="mt-12 p-6 bg-brand-DEFAULT/5 border border-brand-DEFAULT/10 rounded-lg">
             <h3 className="text-sm font-medium text-brand-DEFAULT mb-4">Simulação Atual</h3>
             <div className="flex justify-between text-sm text-neutral-400">

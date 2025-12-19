@@ -1,5 +1,5 @@
 
-# 🔴 EAREC | Cinematic Proposals System
+# 🔴 EAREC | Orçamento Facilitado
 
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-007ACC?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -17,7 +17,8 @@ Uma plataforma de orçamentos projetada para encantar clientes premium. Muito al
 ## ✨ Features Principais
 
 *   **🎬 Cinematic UX:** Fundo dinâmico com FilmStrips, transições de estado, feedback tátil e animações suaves.
-*   **💰 Precificação Dinâmica:** Motor de cálculo em tempo real que considera tipo de evento, horas, quantidade de mídia e adicionais (Drone, Tempo Real).
+*   **⚡ Modo Rápido:** Opção de "Orçamento Flash" para usuários que desejam pular a introdução e ir direto aos valores.
+*   **💰 Precificação Dinâmica:** Motor de cálculo (`PricingEngine`) em tempo real que considera tipo de evento, horas, quantidade de mídia e adicionais.
 *   **🗺️ Logística Inteligente:** Integração com OpenStreetMap (Nominatim) para cálculo automático de frete baseado na distância real de condução.
 *   **📅 Validação de Agenda:** Integração segura com Google Calendar (suporte a .env).
 *   **✍️ Assinatura Digital:** Modal de assinatura manuscrita para aprovação formal.
@@ -28,7 +29,7 @@ Uma plataforma de orçamentos projetada para encantar clientes premium. Muito al
 
 ## 🏗 Arquitetura do Projeto
 
-O projeto segue uma arquitetura **SPA (Single Page Application)** leve, onde a navegação é controlada por uma máquina de estados finita no componente raiz. Isso garante transições instantâneas.
+O projeto segue uma arquitetura **SPA (Single Page Application)** leve com separação clara de responsabilidades (SOLID).
 
 ### 📂 Estrutura de Diretórios
 
@@ -36,27 +37,37 @@ O projeto segue uma arquitetura **SPA (Single Page Application)** leve, onde a n
 src/
 ├── components/           # Blocos de Construção da UI
 │   ├── quote/            # Componentes de Negócio (Lógica de Venda)
-│   │   ├── UpsellList    # Seletor visual de serviços e adicionais (Tutorial Interativo)
+│   │   ├── UpsellList    # Seletor visual de serviços e adicionais
 │   │   ├── StickyFooter  # Barra de totalização e ação
-│   │   ├── Hero          # Cabeçalho imersivo com vídeo
+│   │   ├── SignatureModal# Canvas de assinatura
 │   │   └── Moodboard     # Galeria visual (Parallax)
 │   └── ui/               # Design System (Botões, Inputs, Logos, FilmStrips)
 │
-├── data/                 # Camada de Dados
-│   └── mock.ts           # Configurações iniciais e preços default
+├── config/               # Configurações Estáticas
+│   └── AppConfig.ts      # Singleton com textos, branding e tabelas de preço
 │
-├── lib/                  # Utilitários e Lógica Pura
-│   ├── maps.ts           # Algoritmo de geocoding e cálculo de distância (Haversine)
-│   ├── calendar.ts       # Serviço de verificação de disponibilidade
-│   └── animations.ts     # Variantes do Framer Motion centralizadas
+├── core/                 # Lógica de Negócio Pura
+│   └── PricingEngine.ts  # Motor de cálculo de preços (Strategy Pattern)
+│
+├── data/                 # Camada de Dados
+│   └── mock.ts           # Configurações iniciais e placeholders
+│
+├── lib/                  # Utilitários
+│   ├── animations.ts     # Variantes do Framer Motion centralizadas
+│   └── utils.ts          # Formatadores e helpers
 │
 ├── pages/                # Telas Principais (Views)
-│   ├── IntroView.tsx     # Landing page com opções iniciais
-│   ├── WelcomeView.tsx   # Formulário de captação de dados
-│   ├── QuoteView.tsx     # O "Cérebro" da aplicação (Configurador)
-│   ├── SummaryView.tsx   # Revisão e fechamento
-│   └── SuccessView.tsx   # Mensagem final e link WhatsApp
+│   ├── IntroView.tsx     # Landing page com opções (Instagram/Rápido/Normal)
+│   ├── WelcomeView.tsx   # Wizard de captação de dados
+│   ├── QuoteView.tsx     # Configurador de Orçamento
+│   ├── SummaryView.tsx   # Resumo do Pedido e Pagamento
+│   ├── SuccessView.tsx   # Mensagem final e link WhatsApp
 │   └── AdminDashboard.tsx# Painel de controle protegido
+│
+├── services/             # Serviços Externos
+│   ├── AuthService.ts    # Autenticação Admin
+│   ├── CalendarService.ts# Google Calendar API
+│   └── LocationService.ts# OpenStreetMap / Nominatim API
 │
 └── types/                # Definições de Tipo (TypeScript)
     └── index.ts          # Interfaces centrais (ClientData, QuoteData)
@@ -68,7 +79,7 @@ src/
 
 A aplicação não utiliza rotas tradicionais (`react-router`). O estado `view` em `App.tsx` controla o fluxo:
 
-1.  **`intro`**: Tela inicial de boas-vindas com fundo de filmstrip.
+1.  **`intro`**: Tela inicial de boas-vindas com fundo de filmstrip e opção de Orçamento Rápido.
 2.  **`welcome`**: Coleta dados do cliente (Nome, Local, Data). Valida disponibilidade.
 3.  **`quote`**: Onde a mágica acontece. O usuário monta o pacote. 
     *   *Nota:* O fundo de FilmStrip é ocultado aqui para foco total nos valores.
@@ -116,7 +127,7 @@ VITE_GOOGLE_CALENDAR_ID=SeuIDDeCalendario
 
 O painel administrativo (`/admin` acessível via ícone de cadeado na tela de Welcome) permite alterar os preços base (Km, Taxa de Estúdio, etc.) em tempo de execução.
 
-> **Nota:** A senha padrão está definida no arquivo `src/lib/security.ts`. Recomenda-se alterá-la para produção.
+> **Nota:** A senha padrão está definida no arquivo `src/services/AuthService.ts`. Recomenda-se alterá-la para produção.
 
 ---
 
