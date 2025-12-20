@@ -60,7 +60,7 @@ export class PricingEngine {
   // --- ESTRATÉGIAS ESPECÍFICAS POR CATEGORIA ---
 
   private static calculateWedding(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { serviceId, hours, addRealTime } = state;
+    const { serviceId, hours } = state;
     const table = AppConfig.PRICING_TABLE.wedding;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
@@ -89,17 +89,13 @@ export class PricingEngine {
       breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraHoursVal, type: 'addon' });
     }
 
-    // Tempo Real (Específico de Wedding/Social)
-    if (addRealTime) {
-      total += table.realtime.fixed;
-      breakdown.push({ label: table.realtime.label, value: table.realtime.fixed, type: 'addon' });
-    }
+    // OBS: Tempo Real movido para applyAddonsAndFreight para consistência global
 
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
   private static calculateSocial(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { serviceId, hours, qty, addRealTime, selectionMode } = state;
+    const { serviceId, hours, qty, selectionMode } = state;
     const table = AppConfig.PRICING_TABLE.social;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
@@ -128,10 +124,7 @@ export class PricingEngine {
       }
     }
 
-    if (addRealTime) {
-      total += table.realtime.fixed;
-      breakdown.push({ label: table.realtime.label, value: table.realtime.fixed, type: 'addon' });
-    }
+    // OBS: Tempo Real movido para applyAddonsAndFreight para consistência global
 
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
@@ -143,12 +136,14 @@ export class PricingEngine {
     let total = 0;
 
     if (serviceId === 'comm_photo') {
-      const val = qty * table.photo.unit;
+      // Usa o preço unitário dinâmico do contexto (configurado no Admin)
+      const val = qty * ctx.photoUnitPrice;
       total += val;
       breakdown.push({ label: `${table.photo.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_video') {
-      const val = qty * table.video.unit;
+      // Usa o preço unitário dinâmico do contexto (configurado no Admin)
+      const val = qty * ctx.videoUnitPrice;
       total += val;
       breakdown.push({ label: `${table.video.label} (${qty}x)`, value: val, type: 'base' });
     }
@@ -169,7 +164,8 @@ export class PricingEngine {
 
     if (selectionMode === 'quantity') {
       if (serviceId === 'studio_photo') {
-        const val = qty * table.photo.unit;
+        // Usa o preço unitário do contexto para consistência com o admin
+        const val = qty * ctx.photoUnitPrice;
         total += val;
         breakdown.push({ label: `${table.photo.label} (${qty}x)`, value: val, type: 'base' });
       } else {
@@ -221,7 +217,7 @@ export class PricingEngine {
   // --- CÁLCULOS GLOBAIS ---
 
   private static applyAddonsAndFreight(state: QuoteState, ctx: PricingContext, currentResult: PricingResult): PricingResult {
-    const { category, addDrone } = state;
+    const { category, addDrone, addRealTime } = state;
     const { distance, pricePerKm, isQuickMode } = ctx;
     
     // 1. Drone (Se aplicável à categoria)
@@ -231,8 +227,18 @@ export class PricingEngine {
        currentResult.breakdown.push({ label: AppConfig.TEXTS.LABELS.ADD_DRONE, value: dronePrice, type: 'addon' });
     }
 
-    // 2. Frete / Deslocamento
-    // Regra: Estúdio e Edição não pagam frete. Custom paga se tiver local.
+    // 2. Fotos em Tempo Real (Aplicável a Wedding, Social e Commercial)
+    if (addRealTime && (category === 'wedding' || category === 'social' || category === 'commercial')) {
+       // Usamos o preço base configurado no objeto 'wedding' como referência global (R$ 600)
+       const realtimePrice = AppConfig.PRICING_TABLE.wedding.realtime.fixed;
+       const realtimeLabel = AppConfig.TEXTS.LABELS.ADD_REALTIME;
+       
+       currentResult.totalPrice += realtimePrice;
+       currentResult.breakdown.push({ label: realtimeLabel, value: realtimePrice, type: 'addon' });
+    }
+
+    // 3. Frete / Deslocamento
+    // Regra: Estúdio é SEMPRE isento, independente de distância ou modo. Edição também.
     const isExemptFromTravel = category === 'studio' || state.serviceId === 'edit_only';
     
     if (!isExemptFromTravel) {
@@ -249,7 +255,8 @@ export class PricingEngine {
         // Modo normal sem distância (ainda não calculou ou é perto da base)
         currentResult.breakdown.push({ label: "Deslocamento", value: 0, type: 'freight' });
       }
-    }
+    } 
+    // Se for Estúdio, explicitamente não adiciona nada ao breakdown, resultando em custo 0.
 
     return currentResult;
   }

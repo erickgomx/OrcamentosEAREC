@@ -100,8 +100,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
       {/* === STEP 1: CATEGORY SELECTION === */}
       {viewMode === 'categories' && (
         <div className="space-y-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* MOBILE GRID ADJUSTMENT: Grid responsivo com aspect-square */}
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-4 relative px-2">
+            {/* MOBILE GRID ADJUSTMENT: Grid responsivo com aspect-square.
+                Alterado para sm:grid-cols-6 para garantir linha única em landscape mobile */}
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 md:gap-4 relative px-2">
                 {categories.map((cat) => {
                     const isActive = category === cat.id;
                     const Icon = cat.icon;
@@ -125,16 +126,23 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 })}
             </div>
             
-             <motion.div 
-                key={category} 
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/5 p-4 md:p-6 rounded-xl border border-white/10 max-w-lg mx-auto"
-            >
-                <p className="text-neutral-300 font-serif italic text-base md:text-lg">
-                    "{AppConfig.TEXTS.CATEGORY_DESCRIPTIONS[category]}"
-                </p>
-            </motion.div>
+            {/* Texto de Descrição com Animação Refinada */}
+            <div className="min-h-[80px] flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                    <motion.div 
+                        key={category} 
+                        initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }} 
+                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: -10, filter: 'blur(5px)' }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        className="bg-white/5 p-4 md:p-6 rounded-xl border border-white/10 max-w-lg mx-auto w-full"
+                    >
+                        <p className="text-neutral-300 font-serif italic text-base md:text-lg">
+                            "{AppConfig.TEXTS.CATEGORY_DESCRIPTIONS[category]}"
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
+            </div>
         </div>
       )}
 
@@ -177,7 +185,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {/* 
+               GRID RESPONSIVO OTIMIZADO PARA LANDSCAPE MOBILE
+               Alterado para sm:grid-cols-2. Dispositivos em landscape geralmente tem width > 640px,
+               ativando as 2 colunas e organizando horizontalmente.
+            */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 auto-rows-fr">
                  {/* Wedding Options */}
                  {category === 'wedding' && (
                     <>
@@ -191,17 +204,46 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 {/* Social Options */}
                 {category === 'social' && (
                     <>
-                        <ServiceCard active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price="A partir de R$ 400" composition={TABLE.social.birthday.composition} desc={TABLE.social.birthday.description} />
-                        <ServiceCard active={serviceId === 'fifteen'} onClick={() => handleServiceSelect('fifteen')} onInfo={setInfoData} icon={Crown} title={TABLE.social.fifteen.label} price="A partir de R$ 450" composition={TABLE.social.fifteen.composition} desc={TABLE.social.fifteen.description} />
-                        <ServiceCard active={serviceId === 'graduation'} onClick={() => handleServiceSelect('graduation')} onInfo={setInfoData} icon={GraduationCap} title={TABLE.social.graduation.label} price={formatCurrency(TABLE.social.graduation.base)} composition={TABLE.social.graduation.composition} desc={TABLE.social.graduation.description} />
+                        <ServiceCard 
+                            active={serviceId === 'birthday'} 
+                            onClick={() => handleServiceSelect('birthday')} 
+                            onInfo={setInfoData} 
+                            icon={Gift} 
+                            title={TABLE.social.birthday.label} 
+                            // TEXTO DINÂMICO baseando-se no modo de seleção
+                            price={selectionMode === 'duration' ? "A partir de R$ 400" : "R$ 25,00 / un"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Seleção de Fotos Avulsas"} 
+                            desc={TABLE.social.birthday.description} 
+                        />
+                        <ServiceCard 
+                            active={serviceId === 'fifteen'} 
+                            onClick={() => handleServiceSelect('fifteen')} 
+                            onInfo={setInfoData} 
+                            icon={Crown} 
+                            title={TABLE.social.fifteen.label} 
+                            // TEXTO DINÂMICO baseando-se no modo de seleção
+                            price={selectionMode === 'duration' ? "A partir de R$ 450" : "R$ 25,00 / un"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.fifteen.composition : "Seleção de Fotos Avulsas"} 
+                            desc={TABLE.social.fifteen.description} 
+                        />
+                        <ServiceCard 
+                            active={serviceId === 'graduation'} 
+                            onClick={() => handleServiceSelect('graduation')} 
+                            onInfo={setInfoData} 
+                            icon={GraduationCap} 
+                            title={TABLE.social.graduation.label} 
+                            price={formatCurrency(TABLE.social.graduation.base)} 
+                            composition={TABLE.social.graduation.composition} 
+                            desc={TABLE.social.graduation.description} 
+                        />
                     </>
                 )}
 
                 {/* Commercial Options */}
                 {category === 'commercial' && (
                     <>
-                        <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo', 'quantity')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.photo.label} price={`R$ ${TABLE.commercial.photo.unit}/un`} composition={TABLE.commercial.photo.composition} desc={TABLE.commercial.photo.description} />
-                        <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video', 'quantity')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.video.label} price={`R$ ${TABLE.commercial.video.unit}/un`} composition={TABLE.commercial.video.composition} desc={TABLE.commercial.video.description} />
+                        <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo', 'quantity')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.photo.label} price={`R$ ${TABLE.commercial.photo.unit}/unidade`} composition={TABLE.commercial.photo.composition} desc={TABLE.commercial.photo.description} />
+                        <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video', 'quantity')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.video.label} price={`R$ ${TABLE.commercial.video.unit}/unidade`} composition={TABLE.commercial.video.composition} desc={TABLE.commercial.video.description} />
                         <ServiceCard active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo', 'quantity')} onInfo={setInfoData} icon={Star} title={TABLE.commercial.combo.label} price={formatCurrency(TABLE.commercial.combo.videoBase)} composition={TABLE.commercial.combo.composition} desc={TABLE.commercial.combo.description} highlight />
                     </>
                 )}
@@ -209,7 +251,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 {/* Studio Options */}
                 {category === 'studio' && (
                     <>
-                        <ServiceCard active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo', 'quantity')} onInfo={setInfoData} icon={Aperture} title={TABLE.studio.photo.label} price={`R$ ${TABLE.studio.photo.unit}/un`} composition={TABLE.studio.photo.composition} desc={TABLE.studio.photo.description} />
+                        <ServiceCard active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo', 'quantity')} onInfo={setInfoData} icon={Aperture} title={TABLE.studio.photo.label} price={`R$ ${TABLE.studio.photo.unit}/unidade`} composition={TABLE.studio.photo.composition} desc={TABLE.studio.photo.description} />
                         <ServiceCard active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video', 'duration')} onInfo={setInfoData} icon={Video} title={TABLE.studio.video.label} price={formatCurrency(TABLE.studio.video.base)} composition={TABLE.studio.video.composition} desc={TABLE.studio.video.description} />
                     </>
                 )}
@@ -226,7 +268,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
                 {/* Custom Option */}
                 {category === 'custom' && (
-                    <motion.div variants={fadeInUp} className="col-span-1 md:col-span-3 bg-white/5 border border-white/10 p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center">
+                    <motion.div variants={fadeInUp} className="col-span-1 md:col-span-3 bg-white/5 border border-white/10 p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
                         <Star className="mx-auto text-brand-DEFAULT mb-4" size={32} />
                         <h3 className="font-serif text-xl text-white mb-2">Projeto Personalizado</h3>
                         <p className="text-neutral-400 mb-6">Descreva sua necessidade específica no WhatsApp após finalizar ou entre em contato agora.</p>
@@ -261,9 +303,17 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     >
                          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         
-                        <div className="flex items-center gap-3 mb-6">
+                        <div 
+                            className="flex items-center gap-3 mb-6 relative group cursor-pointer"
+                            onClick={() => setInfoData({ 
+                                title: "Tempo de Cobertura", 
+                                desc: "Período contínuo de trabalho da equipe. Horas adicionais podem ser negociadas no dia do evento caso a festa se estenda.", 
+                                price: "Info" 
+                            })}
+                        >
                              <Clock className="text-brand-DEFAULT" size={18} />
                              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">Tempo de Cobertura</h3>
+                             <HelpCircle size={14} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
 
                         <div className="flex items-center justify-between w-full gap-8 px-4">
@@ -287,9 +337,17 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
 
-                        <div className="flex items-center gap-3 mb-6">
+                        <div 
+                            className="flex items-center gap-3 mb-6 relative group cursor-pointer"
+                            onClick={() => setInfoData({ 
+                                title: "Quantidade", 
+                                desc: "Número de arquivos digitais em alta resolução com tratamento de cor e pele inclusos.", 
+                                price: "Info" 
+                            })}
+                        >
                              <Camera className="text-brand-DEFAULT" size={18} />
                              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">Quantidade</h3>
+                             <HelpCircle size={14} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
 
                         <div className="flex items-center justify-between w-full gap-8 px-4">
@@ -314,14 +372,18 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         price={250} 
                         icon={Plane} 
                         active={addDrone} 
-                        onClick={() => setAddDrone(!addDrone)} 
+                        onClick={() => setAddDrone(!addDrone)}
+                        onInfo={setInfoData}
+                        desc={TABLE.video_production.drone.description}
                     />
                     <AddonCard 
                         label="Fotos Tempo Real" 
                         price={600} 
                         icon={Timer} 
                         active={addRealTime} 
-                        onClick={() => setAddRealTime(!addRealTime)} 
+                        onClick={() => setAddRealTime(!addRealTime)}
+                        onInfo={setInfoData}
+                        desc="Entrega imediata de uma seleção de fotos durante o evento para postagem nas redes sociais. Engajamento instantâneo."
                     />
                 </motion.div>
             )}
@@ -417,7 +479,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         whileHover={{ y: -4, transition: { duration: 0.2 } }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer p-4 md:p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center gap-3 md:gap-4 relative overflow-hidden group h-full min-h-[180px] md:min-h-[220px] justify-between", 
+            "cursor-pointer p-5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group h-full w-full", 
             active 
                 ? "bg-brand-DEFAULT/5 border-brand-DEFAULT shadow-[0_0_20px_var(--brand-glow)] z-10" 
                 : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10"
@@ -425,57 +487,75 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
     >
         {highlight && (
             <div className={cn(
-                "absolute top-0 right-0 text-[8px] md:text-[9px] font-bold px-2 md:px-3 py-1 rounded-bl-lg uppercase tracking-widest",
-                active ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-500"
+                "absolute top-0 right-0 text-[8px] md:text-[9px] font-bold px-3 py-1.5 rounded-bl-xl uppercase tracking-widest z-20",
+                active ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-500"
             )}>
                 Popular
             </div>
         )}
 
         <button 
-          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/5 rounded-full"
+          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
           onClick={(e) => {
              e.stopPropagation();
-             // Aqui passamos a 'desc' completa para o modal de info
              if (onInfo) onInfo({ title, desc, price });
           }}
         >
             <HelpCircle size={16} strokeWidth={2} />
         </button>
         
+        {/* 1. ICONE - Container Fixo */}
         <div className={cn(
-            "mt-2 transition-all duration-300 group-hover:scale-110",
-            active ? "text-brand-DEFAULT" : "text-neutral-500 group-hover:text-white"
+            "mt-4 mb-4 shrink-0 h-14 w-14 flex items-center justify-center rounded-full transition-all duration-300",
+            active ? "text-brand-DEFAULT bg-brand-DEFAULT/10" : "text-neutral-500 bg-white/5 group-hover:bg-white/10 group-hover:text-white"
         )}>
-            <Icon size={28} strokeWidth={1.5} className="md:w-8 md:h-8" />
+            <Icon size={28} strokeWidth={1.5} />
         </div>
         
-        <div className="space-y-1 w-full">
-            <h4 className={cn("text-base md:text-lg font-serif transition-colors", active ? "text-white" : "text-neutral-300 group-hover:text-white")}>
+        {/* 2. TÍTULO - Altura Fixa (2 linhas) */}
+        <div className="w-full h-[3.5rem] flex items-center justify-center px-1 mb-2">
+            <h4 className={cn(
+                "text-base md:text-lg font-serif transition-colors leading-tight line-clamp-2", 
+                active ? "text-white" : "text-neutral-300 group-hover:text-white"
+            )}>
                 {title}
             </h4>
-            {/* Aqui usamos 'composition' se existir, ou 'desc' como fallback */}
-            <p className="text-[10px] md:text-[11px] text-neutral-500 leading-relaxed font-light tracking-wide">
+        </div>
+            
+        {/* 3. DESCRIÇÃO - Altura Fixa (2 linhas) */}
+        <div className="w-full h-[2.5rem] px-2 mb-6 flex items-start justify-center">
+            <p className="text-[10px] md:text-[11px] text-neutral-500 leading-relaxed font-light tracking-wide line-clamp-2">
                 {composition || desc}
             </p>
         </div>
 
-        <div className="w-full pt-3 border-t border-white/5 mt-auto">
-            <p className={cn("text-xs font-bold tracking-widest uppercase", active ? "text-brand-DEFAULT" : "text-neutral-400")}>
+        {/* 4. RODAPÉ - Ancorado no fundo */}
+        <div className="w-full pt-4 border-t border-white/5 mt-auto">
+            <p className={cn("text-xs font-bold tracking-widest uppercase truncate", active ? "text-brand-DEFAULT" : "text-neutral-400")}>
                 {price}
             </p>
         </div>
     </motion.div>
 );
 
-const AddonCard = ({ label, price, icon: Icon, active, onClick }: any) => (
+const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: any) => (
     <div 
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex flex-col items-center justify-center p-6 rounded-2xl border transition-all select-none relative gap-3 h-full", 
+            "cursor-pointer flex flex-col items-center justify-center p-6 rounded-2xl border transition-all select-none relative gap-3 h-full group", 
             active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)]" : "bg-neutral-900/40 border-white/5 hover:bg-white/5"
         )}
     >
+        <button 
+          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/5 rounded-full"
+          onClick={(e) => {
+             e.stopPropagation();
+             if (onInfo && desc) onInfo({ title: label, desc, price: formatCurrency(price) });
+          }}
+        >
+            <HelpCircle size={16} strokeWidth={2} />
+        </button>
+
         <div className={cn(
             "absolute top-3 right-3 w-5 h-5 rounded-full border flex items-center justify-center transition-all", 
             active ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/10 bg-black/20"

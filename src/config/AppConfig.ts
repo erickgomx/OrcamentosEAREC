@@ -152,8 +152,8 @@ export class AppConfig {
         mobile_cap: { 
             fixed: 250, 
             label: "Captação Celular",
-            composition: "Filmmaker Mobile + iPhone 15 Pro",
-            description: "Captação ágil e discreta com iPhone 15 Pro Max. Perfeito para cobrir bastidores, eventos corporativos rápidos e conteúdo 'real-time' para stories." 
+            composition: "Filmmaker Mobile + iPhone 13 Pro Max",
+            description: "Captação ágil e discreta com iPhone 13 Pro Max. Perfeito para cobrir bastidores, eventos corporativos rápidos e conteúdo 'real-time' para stories." 
         },
         drone: { 
             fixed: 250, 

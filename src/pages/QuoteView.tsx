@@ -9,7 +9,7 @@ import SuccessView from './SuccessView';
 import { formatCurrency } from '../lib/utils';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ClientData, QuoteData, ServiceCategory, ServiceId, QuoteState, PricingContext } from '../types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Tag } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 
 // === POO INTEGRATION ===
@@ -92,6 +92,16 @@ const QuoteView: React.FC<QuoteViewProps> = ({
 
   // Destructuring do State
   const { category, serviceId, hours, qty, addDrone, addRealTime, selectionMode } = quoteState;
+
+  // Mapa de Labels para Exibição no Header
+  const categoryLabels: Record<string, string> = {
+    wedding: 'Casamento',
+    social: 'Social',
+    commercial: 'Comercial',
+    studio: 'Estúdio',
+    video_production: 'Produção',
+    custom: 'Personalizado'
+  };
 
   // Setters Helpers
   const setCategory = (c: ServiceCategory) => setQuoteState(prev => ({ ...prev, category: c }));
@@ -295,8 +305,35 @@ const QuoteView: React.FC<QuoteViewProps> = ({
                 </div>
             ))}
           </div>
-          <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest">
-                Passo {currentStep + 1}: {steps[currentStep].title}
+          
+          {/* Badge de Categoria (Só aparece após selecionar a categoria) */}
+          <AnimatePresence>
+            {currentStep > 0 && (
+                 <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9, filter: 'blur(4px)' }}
+                    className="mt-5 flex items-center gap-3 px-5 py-2 rounded-full bg-neutral-900/80 backdrop-blur-md border border-white/10 shadow-xl shadow-black/40 hover:border-brand-DEFAULT/30 transition-all duration-500 group"
+                 >
+                    {/* Indicador Pulsante */}
+                    <div className="relative flex items-center justify-center w-2 h-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-DEFAULT opacity-30 group-hover:opacity-60 transition-opacity"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-DEFAULT shadow-[0_0_8px_var(--brand-glow)]"></span>
+                    </div>
+                    
+                    {/* Divisor Vertical */}
+                    <div className="h-3 w-px bg-white/10 group-hover:bg-white/20 transition-colors" />
+
+                    {/* Texto da Categoria */}
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-neutral-400 font-medium group-hover:text-white transition-colors">
+                        {categoryLabels[category]}
+                    </span>
+                 </motion.div>
+            )}
+          </AnimatePresence>
+
+          <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest mt-2 opacity-60">
+                {steps[currentStep].title}
           </p>
       </div>
 

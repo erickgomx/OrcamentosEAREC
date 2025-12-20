@@ -34,7 +34,7 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   };
 
-  // --- GERAÇÃO DA MENSAGEM (Lógica mantida intacta) ---
+  // --- GERAÇÃO DA MENSAGEM ---
   let message = "";
 
   if (quoteDetails) {
@@ -57,62 +57,51 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
 
       if (quoteDetails.occasion === 'custom') {
           message = `
-✨ *SOLICITAÇÃO DE PROJETO PERSONALIZADO* ✨
+*SOLICITAÇÃO DE PROJETO PERSONALIZADO*
+Olá, equipe EAREC!
 
-Olá, equipe EAREC! Gostaria de um orçamento sob medida.
+Gostaria de um orçamento sob medida. Seguem os detalhes:
 
-──────────────────────
+👤 *CLIENTE*
+${clientData.name}
+${clientData.location}
 
-🗓️ *DATA PREVISTA:* ${formatDate(clientData.date)}
+🗓️ *DATA PREVISTA*
+${formatDate(clientData.date)}
 
-👤 *DADOS DO CLIENTE*
-▪️ Nome: *${clientData.name}*
-▪️ Contato: ${clientData.contact}
-▪️ Local: ${clientData.location}
-
-🎬 *SOBRE O PROJETO*
-▪️ Tipo: Demanda Especial
-▪️ Nota: Necessidade específica não listada nos pacotes.
+🎬 *DEMANDA*
+Necessidade específica (Projeto Especial).
 
 🚗 *LOGÍSTICA*
-▪️ Distância: ${distanciaStr}
+${distanciaStr}
 
-💎 *INVESTIMENTO*
-▪️ Status: *Sob Análise*
-
-──────────────────────
-*Aguardo o contato para briefing!* 🥂
+*Aguardo o contato para briefing!*
 `.trim();
       } else {
           message = `
-✨ *NOVO ORÇAMENTO GERADO* ✨
+*PRÉ-PROPOSTA: ${clientData.name.toUpperCase()}*
+Olá! Configurei meu pacote no site e gostaria de verificar a disponibilidade.
 
-Olá! Finalizei a configuração da minha proposta no site e gostaria de verificar a disponibilidade.
-
-──────────────────────
-
-🗓️ *DATA:* ${formatDate(clientData.date)}
+🗓️ *DATA DO EVENTO*
+${formatDate(clientData.date)}
 
 👤 *CLIENTE*
-▪️ Nome: *${clientData.name}*
-▪️ Contato: ${clientData.contact}
-▪️ Local: ${clientData.location}
+${clientData.name}
+${clientData.location}
 
-🎥 *SERVIÇOS SELECIONADOS*
+🎥 *SERVIÇOS*
 ▪️ Pacote: *${quoteDetails.customOccasionText}*
-▪️ Ambiente: ${ambiente}
+▪️ Tipo: ${ambiente}
 ▪️ Escopo: ${escopo}
 
-📍 *LOGÍSTICA*
-▪️ Distância: ${distanciaStr}
+📍 *LOGÍSTICA & VALORES*
+▪️ Deslocamento: ${distanciaStr}
 ▪️ Frete: ${freteStr}
-
-💎 *VALOR FINAL*
-▪️ Total: *${formattedPrice}*
 ▪️ Pagamento: ${pagamentoStr}
 
-──────────────────────
-*Fico no aguardo da confirmação!* 🥂
+💎 *TOTAL ESTIMADO: ${formattedPrice}*
+
+*Podemos confirmar a reserva?*
 `.trim();
       }
   }
@@ -135,9 +124,9 @@ Olá! Finalizei a configuração da minha proposta no site e gostaria de verific
         animate="visible" 
         className="relative z-10 w-full max-w-sm"
       >
-        {/* Logo Header */}
-        <motion.div variants={fadeInUp} className="flex justify-center mb-10 opacity-80">
-          <Logo className="w-32" />
+        {/* Logo Header - AUMENTADA */}
+        <motion.div variants={fadeInUp} className="flex justify-center mb-12 opacity-90">
+          <Logo className="w-48 md:w-64" />
         </motion.div>
 
         {/* Card Principal - Estilo Ticket/Pass */}
@@ -160,12 +149,22 @@ Olá! Finalizei a configuração da minha proposta no site e gostaria de verific
                     >
                         <Check className="text-emerald-500" size={32} strokeWidth={3} />
                     </motion.div>
+                    
+                    {/* Estrela / Brilho Animado (Refinado: Pulsa, Gira e Some) */}
                     <motion.div 
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-2 -right-2 text-emerald-300 opacity-60"
+                        animate={{ 
+                            scale: [0.5, 1.2],
+                            opacity: [0, 1, 0],
+                            rotate: [0, 45]
+                        }}
+                        transition={{ 
+                            duration: 2.5, 
+                            repeat: Infinity, 
+                            ease: "easeInOut" 
+                        }}
+                        className="absolute -top-4 -right-4 text-emerald-300"
                     >
-                        <Sparkles size={16} />
+                        <Sparkles size={24} className="fill-emerald-300/20" />
                     </motion.div>
                 </div>
 
