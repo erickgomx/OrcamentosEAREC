@@ -29,7 +29,7 @@ export class AppConfig {
     },
     CATEGORY_DESCRIPTIONS: {
       wedding: "Cobertura cinematográfica para eternizar o dia mais importante da sua vida.",
-      social: "Registros vibrantes e emocionantes para 15 anos, aniversários e formaturas.",
+      social: "Registros vibrantes e emocionantes para Batizados, 15 anos e formaturas.",
       commercial: "Valorize sua marca com fotos e vídeos profissionais de alta conversão.",
       studio: "Ambiente controlado e iluminação perfeita para ensaios e produções de alto nível.",
       video_production: "Diárias para Freelancers: Equipe técnica, edição especializada e captação aérea.",
@@ -84,6 +84,14 @@ export class AppConfig {
             label: "Aniversários",
             composition: "2h de Evento + Galeria Digital",
             description: "Cobertura dinâmica para registrar a alegria, a decoração e os momentos espontâneos da festa. Focamos em capturar sorrisos verdadeiros e a interação entre os convidados."
+        },
+        baptism: { 
+            base: 450, 
+            hoursIncluded: 2, 
+            hourPrice: 250, 
+            label: "Batizado",
+            composition: "Cerimônia + Fotos com Família",
+            description: "Registro sensível e respeitoso da cerimônia religiosa. Inclui fotos protocolares com padrinhos e família logo após o rito."
         },
         fifteen: { 
             base: 450, 

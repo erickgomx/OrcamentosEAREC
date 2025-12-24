@@ -9,7 +9,7 @@ import SuccessView from './SuccessView';
 import { formatCurrency, cn } from '../lib/utils';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ClientData, QuoteData, ServiceCategory, ServiceId, QuoteState, PricingContext } from '../types';
-import { ArrowLeft, Tag, User, Check, AlertCircle, ChevronDown, CheckCircle, X } from 'lucide-react';
+import { ArrowLeft, Tag, User, Check, AlertCircle, ChevronsUpDown, CheckCircle, X } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 
@@ -33,19 +33,18 @@ interface QuoteViewProps {
 type ViewState = 'config' | 'summary' | 'success';
 
 // Variantes de Animação para o Wizard (Slide Lateral)
+// OTIMIZAÇÃO: Blur removido para evitar glitch/piscar em algumas GPUs/Navegadores
 const stepVariants: Variants = {
   enter: (direction: number) => ({
     x: direction > 0 ? 50 : -50,
     opacity: 0,
-    filter: 'blur(10px)',
   }),
   center: {
     zIndex: 1,
     x: 0,
     opacity: 1,
-    filter: 'blur(0px)',
     transition: {
-        duration: 0.5,
+        duration: 0.4,
         ease: [0.22, 1, 0.36, 1]
     }
   },
@@ -53,9 +52,8 @@ const stepVariants: Variants = {
     zIndex: 0,
     x: direction < 0 ? 50 : -50,
     opacity: 0,
-    filter: 'blur(10px)',
     transition: {
-        duration: 0.4,
+        duration: 0.3,
         ease: "easeIn"
     }
   })
@@ -417,7 +415,7 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
                  <motion.button
                     initial={{ opacity: 0, y: 10, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9, filter: 'blur(4px)' }}
+                    exit={{ opacity: 0, scale: 0.9 }}
                     onClick={() => setIsCategoryMenuOpen(true)}
                     className="mt-5 flex items-center gap-3 px-5 py-2 rounded-full bg-neutral-900/80 backdrop-blur-md border border-white/10 shadow-xl shadow-black/40 hover:border-brand-DEFAULT/30 transition-all duration-500 group relative overflow-hidden"
                  >
@@ -432,7 +430,7 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
                         {categoryLabels[category]}
                     </span>
 
-                    <ChevronDown size={14} className="text-neutral-500 group-hover:text-white transition-colors ml-1" />
+                    <ChevronsUpDown size={14} className="text-neutral-500 group-hover:text-white transition-colors ml-1" />
                  </motion.button>
             )}
           </AnimatePresence>
@@ -528,6 +526,10 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
                                       onClick={() => {
                                           setCategory(key as ServiceCategory);
                                           setIsCategoryMenuOpen(false);
+                                          // FORÇA NAVEGAÇÃO PARA O PASSO DE SERVIÇOS
+                                          setDirection(0);
+                                          setCurrentStep(1);
+                                          window.scrollTo({ top: 0, behavior: 'smooth' });
                                       }}
                                       className={cn(
                                           "w-full text-left px-4 py-3 rounded-xl flex items-center justify-between transition-all",

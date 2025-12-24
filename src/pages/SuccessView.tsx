@@ -109,7 +109,7 @@ Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a dispon
 • *Frete:* ${quoteDetails.location === 'studio' ? "Isento (Estúdio)" : "Calculado no total"}
 • *Pagamento:* ${quoteDetails.paymentMethod || "A combinar"}
 
-💎 *APROVEI O ORÇAMENTO NO TOTAL DE:*
+💎 *APROVEI O ORÇAMENTO:*
 *Total: ${formattedPrice}*
 
 --------------------------------

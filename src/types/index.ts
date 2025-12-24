@@ -13,7 +13,7 @@ export type ServiceCategory = 'wedding' | 'social' | 'commercial' | 'studio' | '
 
 // IDs únicos para cada "Produto" vendável no sistema
 export type ServiceId = 
-  | 'birthday' | 'fifteen' | 'graduation' 
+  | 'birthday' | 'fifteen' | 'graduation' | 'baptism'
   | 'wedding_base' | 'wedding_classic' | 'wedding_romance' | 'wedding_essence'
   | 'comm_photo' | 'comm_video' | 'comm_combo'
   | 'studio_photo' | 'studio_video'

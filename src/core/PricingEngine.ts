@@ -102,8 +102,11 @@ export class PricingEngine {
       total += table.graduation.base;
       breakdown.push({ label: table.graduation.label, value: table.graduation.base, type: 'base' });
     } else {
-      // Birthday / Fifteen
-      const ref = serviceId === 'birthday' ? table.birthday : table.fifteen;
+      // Birthday / Fifteen / Baptism
+      let ref;
+      if (serviceId === 'baptism') ref = table.baptism;
+      else if (serviceId === 'fifteen') ref = table.fifteen;
+      else ref = table.birthday;
       
       if (selectionMode === 'duration') {
         total += ref.base;
