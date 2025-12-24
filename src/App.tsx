@@ -32,7 +32,7 @@ const App: React.FC = () => {
   });
 
   const [quoteState, setQuoteState] = useState<QuoteState>({
-    category: 'wedding',
+    category: null, // CRÍTICO: Inicia como null para bloquear o botão 'Continuar'
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
@@ -68,6 +68,8 @@ const App: React.FC = () => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
+    // Reseta a categoria ao iniciar o fluxo normal para garantir validação
+    setQuoteState(prev => ({ ...prev, category: null }));
     await delay(2000); 
     setIsLoading(false);
     setView('quote');
@@ -83,6 +85,7 @@ const App: React.FC = () => {
         date: '', 
         contact: ''
     });
+    setQuoteState(prev => ({ ...prev, category: null })); // Reseta categoria ao iniciar rápido
     setIsQuickMode(true); // Ativa flag
     setIsLoading(true);
     setIsQuoteSuccess(false);

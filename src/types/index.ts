@@ -22,7 +22,7 @@ export type ServiceId =
 
 // Estado persistente da tela de Orçamento
 export interface QuoteState {
-  category: ServiceCategory;
+  category: ServiceCategory | null; // Alterado para permitir nulo (sem seleção)
   serviceId: ServiceId;
   hours: number;
   qty: number;

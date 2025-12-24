@@ -343,7 +343,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     {/* CONTRATO E PAGAMENTO */}
                     <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white/5 border border-white/10 rounded-lg p-5 flex items-start gap-4 h-full">
-                            <div className="mt-1 text-neutral-400"><Copyright size={18} /></div>
+                            <div className="mt-1 text-brand-DEFAULT"><Copyright size={18} /></div>
                             <div>
                                 <h4 className="text-sm font-medium text-white mb-1">Condições de Pagamento</h4>
                                 <p className="text-xs text-neutral-500 leading-relaxed">

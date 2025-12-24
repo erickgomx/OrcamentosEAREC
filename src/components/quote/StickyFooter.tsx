@@ -11,11 +11,12 @@ interface StickyFooterProps {
   onApprove: () => void;
   isApproved: boolean;
   highlight?: boolean;
-  showPrice?: boolean; // Nova prop
+  showPrice?: boolean; 
+  disabled?: boolean;
 }
 
 const StickyFooter: React.FC<StickyFooterProps> = ({ 
-  totalPrice, onApprove, isApproved, highlight = false, showPrice = true 
+  totalPrice, onApprove, isApproved, highlight = false, showPrice = true, disabled = false
 }) => {
   return (
     <motion.div 
@@ -72,13 +73,15 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
                 variant="primary" 
                 size="lg" 
                 onClick={onApprove}
+                disabled={disabled}
                 className={cn(
-                    "flex items-center gap-3 px-8 py-4 shadow-[0_0_25px_rgba(220,38,38,0.4)]",
+                    "flex items-center gap-3 px-8 py-4 transition-all duration-300",
+                    !disabled ? "shadow-[0_0_25px_rgba(220,38,38,0.4)]" : "opacity-50 cursor-not-allowed shadow-none grayscale",
                     !showPrice && "px-12 py-5 text-lg" // Botão maior quando centralizado na intro
                 )}
             >
                 <span className="font-medium">Continuar</span> 
-                <div className="bg-white/20 p-1 rounded-full">
+                <div className={cn("p-1 rounded-full", disabled ? "bg-white/5" : "bg-white/20")}>
                     <ChevronRight size={16} />
                 </div>
             </Button>

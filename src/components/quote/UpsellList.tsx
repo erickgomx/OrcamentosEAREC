@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, Video, Gift, Crown, GraduationCap, Heart, 
@@ -15,7 +16,7 @@ import { AppConfig } from '../../config/AppConfig';
 import Button from '../ui/Button';
 
 interface UpsellListProps {
-  category: ServiceCategory;
+  category: ServiceCategory | null; 
   setCategory: (c: ServiceCategory) => void;
   serviceId: ServiceId;
   setServiceId: (s: ServiceId) => void;
@@ -34,7 +35,8 @@ interface UpsellListProps {
   selectionMode?: 'duration' | 'quantity';
   setSelectionMode?: (mode: 'duration' | 'quantity') => void;
   viewMode?: 'categories' | 'services' | 'config';
-  isQuickMode?: boolean; // Nova prop
+  isQuickMode?: boolean;
+  onContactRequest?: (type: 'custom_project' | 'commercial_custom') => void; // Callback para solicitar contato (WhatsApp)
 }
 
 const UpsellList: React.FC<UpsellListProps> = (props) => {
@@ -43,7 +45,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
     hours, setHours, qty, setQty, addDrone, setAddDrone, addRealTime, setAddRealTime,
     distance, pricePerKm, locationClient, onOpenMap, selectionMode, setSelectionMode,
     viewMode = 'categories',
-    isQuickMode = false
+    isQuickMode = false,
+    onContactRequest
   } = props;
 
   const [infoData, setInfoData] = useState<{ title: string; desc: string; price: string } | null>(null);
@@ -52,12 +55,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const TABLE = AppConfig.PRICING_TABLE;
 
   const categories = [
-    { id: 'wedding', label: 'Casamento', icon: Heart },
-    { id: 'social', label: 'Social', icon: Gift },
-    { id: 'commercial', label: 'Comercial', icon: Store },
-    { id: 'studio', label: 'Estúdio', icon: Aperture },
-    { id: 'video_production', label: 'Freelancer', icon: Video },
-    { id: 'custom', label: 'Outros', icon: Star },
+    { id: 'wedding', label: 'Casamento', icon: Heart, desc: "Eternize o sim." },
+    { id: 'social', label: 'Social', icon: Gift, desc: "15 anos e festas." },
+    { id: 'commercial', label: 'Comercial', icon: Store, desc: "Venda mais." },
+    { id: 'studio', label: 'Estúdio', icon: Aperture, desc: "Produção controlada." },
+    { id: 'video_production', label: 'Freelancer', icon: Video, desc: "Equipe técnica." },
+    { id: 'custom', label: 'Outros', icon: Star, desc: "Projetos únicos." },
   ];
 
   const handleServiceSelect = (id: ServiceId, mode: 'duration' | 'quantity' = 'duration') => {
@@ -71,12 +74,24 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
     else if (category === 'social') setQty(10);
   };
 
+  // Redireciona a ação de clique para o pai (QuoteView) para validar o nome
+  const handleCustomCommercialClick = () => {
+    if (onContactRequest) {
+        onContactRequest('commercial_custom');
+    }
+  };
+
+  const handleCustomProjectClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (onContactRequest) {
+          onContactRequest('custom_project');
+      }
+  };
+
   // === VISIBILITY LOGIC ===
-  // Alteração: Removemos 'video_production' daqui para que Cam/Mobile/Drone não mostrem relógio
   const showDuration = (category === 'social' && serviceId !== 'graduation' && selectionMode === 'duration') ||
                        (category === 'studio' && selectionMode === 'duration');
   
-  // Alteração: comm_combo não mostra quantidade pois é um pacote fixo
   const showQuantity = (category === 'commercial' && serviceId !== 'comm_combo') || 
                        (category === 'social' && serviceId !== 'graduation' && selectionMode === 'quantity') ||
                        (category === 'studio' && selectionMode === 'quantity') ||
@@ -84,7 +99,6 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   
   const canChooseMode = category === 'social' && serviceId !== 'graduation';
   
-  // Alteração: 'custom' removido da lista de isenção para permitir cálculo de frete se o usuário escolher local
   const isNoTravelCost = category === 'studio' || serviceId === 'edit_only';
   const travelCost = isNoTravelCost ? 0 : distance * 2 * pricePerKm;
 
@@ -95,52 +109,111 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
   // Renderização Condicional baseada no viewMode
   return (
-    <section className="w-full max-w-4xl mx-auto">
+    <section className="w-full max-w-5xl mx-auto">
       
-      {/* === STEP 1: CATEGORY SELECTION === */}
+      {/* === STEP 1: CATEGORY SELECTION (REFORMULATED) === */}
       {viewMode === 'categories' && (
-        <div className="space-y-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* MOBILE GRID ADJUSTMENT: Grid responsivo com aspect-square.
-                Alterado para sm:grid-cols-6 para garantir linha única em landscape mobile */}
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 md:gap-4 relative px-2">
+        <div className="space-y-8">
+            
+            {/* NOVO LAYOUT DE CARDS - Grid 3x3 Fixo - CENTRALIZADO E MAIOR */}
+            <motion.div 
+                key="categories-grid" 
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-3 gap-2 md:gap-6 px-1 md:px-0"
+            >
                 {categories.map((cat) => {
                     const isActive = category === cat.id;
                     const Icon = cat.icon;
                     return (
                         <motion.button
                             key={cat.id}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            variants={fadeInUp}
                             onClick={() => setCategory(cat.id as ServiceCategory)}
                             className={cn(
-                                "flex flex-col items-center justify-center gap-2 md:gap-3 rounded-2xl transition-all duration-300 border w-full aspect-square",
+                                "relative group flex flex-col items-center justify-center gap-2 p-3 md:p-6 rounded-xl md:rounded-3xl border transition-all duration-500 overflow-hidden text-center h-36 md:h-64",
                                 isActive 
-                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-[0_0_25px_var(--brand-glow)]" 
-                                    : "bg-white/5 border-white/5 text-neutral-400 hover:border-white/20 hover:text-white hover:bg-white/10"
+                                    ? "bg-brand-DEFAULT border-brand-DEFAULT shadow-[0_0_40px_rgba(220,38,38,0.3)] scale-[1.02] z-10" 
+                                    : "bg-white/[0.03] border-white/5 hover:bg-white/[0.07] hover:border-white/20"
                             )}
                         >
-                            <Icon size={28} className={cn("md:w-8 md:h-8", isActive ? "text-white" : "text-neutral-500")} />
-                            <span className="text-[9px] md:text-xs font-bold uppercase tracking-widest truncate w-full px-1">{cat.label}</span>
+                            {/* Fundo Decorativo */}
+                            {!isActive && (
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            )}
+                            
+                            {/* Checkmark Absoluto (Canto Superior Direito) */}
+                            {isActive && (
+                                <motion.div 
+                                    initial={{ scale: 0 }} animate={{ scale: 1 }}
+                                    className="absolute top-2 right-2 md:top-4 md:right-4 bg-white text-brand-DEFAULT rounded-full p-0.5 md:p-1 shadow-lg z-20"
+                                >
+                                    <Check size={10} className="md:w-[14px] md:h-[14px]" strokeWidth={4} />
+                                </motion.div>
+                            )}
+                            
+                            {/* Ícone Centralizado */}
+                            <div className={cn(
+                                "p-3 md:p-5 rounded-xl md:rounded-full transition-all duration-300 mb-1",
+                                isActive ? "bg-white/20 text-white" : "bg-white/5 text-neutral-500 group-hover:text-white group-hover:bg-white/10"
+                            )}>
+                                <Icon size={24} className="md:w-10 md:h-10" />
+                            </div>
+
+                            {/* Texto Centralizado e Maior */}
+                            <div className="relative z-10 w-full">
+                                <h3 className={cn(
+                                    "font-serif text-sm md:text-3xl mb-1 transition-colors duration-300 w-full font-bold",
+                                    isActive ? "text-white" : "text-neutral-300 group-hover:text-white"
+                                )}>
+                                    {cat.label}
+                                </h3>
+                                <p className={cn(
+                                    "text-[10px] md:text-base font-medium tracking-wide transition-colors duration-300 opacity-80 hidden md:block",
+                                    isActive ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"
+                                )}>
+                                    {cat.desc}
+                                </p>
+                            </div>
+
+                            {/* Brilho Animado (Apenas Desktop Hover) */}
+                            {!isActive && (
+                                <div className="absolute -inset-full top-0 block w-1/2 -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-0 group-hover:animate-shine" />
+                            )}
                         </motion.button>
                     )
                 })}
-            </div>
+            </motion.div>
             
-            {/* Texto de Descrição com Animação Refinada */}
-            <div className="min-h-[80px] flex items-center justify-center">
+            {/* Texto de Descrição Limpo (Sem boxes) */}
+            <div className="h-24 md:h-32 flex items-center justify-center px-4 overflow-hidden relative">
                 <AnimatePresence mode="wait">
-                    <motion.div 
-                        key={category} 
-                        initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }} 
-                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, y: -10, filter: 'blur(5px)' }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="bg-white/5 p-4 md:p-6 rounded-xl border border-white/10 max-w-lg mx-auto w-full"
-                    >
-                        <p className="text-neutral-300 font-serif italic text-base md:text-lg">
-                            "{AppConfig.TEXTS.CATEGORY_DESCRIPTIONS[category]}"
-                        </p>
-                    </motion.div>
+                    {category ? (
+                        <motion.div 
+                            key={category} 
+                            initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }} 
+                            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            className="max-w-2xl text-center"
+                        >
+                            <p className="text-white font-serif text-xl md:text-3xl leading-snug drop-shadow-xl">
+                                {AppConfig.TEXTS.CATEGORY_DESCRIPTIONS[category]}
+                            </p>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="placeholder"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="flex flex-col items-center gap-2 opacity-40 animate-pulse"
+                        >
+                            <div className="w-1 h-8 bg-gradient-to-b from-transparent to-white/50" />
+                            <p className="text-sm font-medium uppercase tracking-widest text-neutral-400">
+                                Selecione uma categoria acima
+                            </p>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
             </div>
         </div>
@@ -148,49 +221,55 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
       {/* === STEP 2: SERVICE SELECTION === */}
       {viewMode === 'services' && (
-        <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+        <motion.div 
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+        >
              
              {/* Modo de Seleção (Se aplicável) - VISUAL REFORÇADO */}
              {canChooseMode && setSelectionMode && (
-                <div className="flex flex-col items-center mb-10">
-                    <p className="text-center text-[10px] uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">
+                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10">
+                    <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">
                         Como deseja contratar?
                     </p>
                     <div className="flex bg-neutral-900 p-2 rounded-2xl border border-white/10 shadow-lg">
                         <button 
                             onClick={() => setSelectionMode('duration')} 
                             className={cn(
-                                "px-6 py-4 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-3 w-40 justify-center", 
+                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
                                 selectionMode === 'duration' 
-                                    ? "bg-white text-black shadow-lg scale-105 z-10" 
-                                    : "text-neutral-500 hover:text-white hover:bg-white/5"
+                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
-                            <Clock size={18} className={selectionMode === 'duration' ? "text-brand-DEFAULT" : ""} /> 
+                            <Clock size={20} className={selectionMode === 'duration' ? "text-brand-DEFAULT" : ""} /> 
                             POR TEMPO
                         </button>
                         <button 
                             onClick={() => setSelectionMode('quantity')} 
                             className={cn(
-                                "px-6 py-4 rounded-xl text-xs md:text-sm font-bold transition-all flex items-center gap-3 w-40 justify-center", 
+                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
                                 selectionMode === 'quantity' 
-                                    ? "bg-white text-black shadow-lg scale-105 z-10" 
-                                    : "text-neutral-500 hover:text-white hover:bg-white/5"
+                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
-                            <Camera size={18} className={selectionMode === 'quantity' ? "text-brand-DEFAULT" : ""} /> 
+                            <Camera size={20} className={selectionMode === 'quantity' ? "text-brand-DEFAULT" : ""} /> 
                             POR FOTO
                         </button>
                     </div>
-                </div>
+                </motion.div>
             )}
 
-            {/* 
-               GRID RESPONSIVO OTIMIZADO PARA LANDSCAPE MOBILE
-               Alterado para sm:grid-cols-2. Dispositivos em landscape geralmente tem width > 640px,
-               ativando as 2 colunas e organizando horizontalmente.
-            */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 auto-rows-fr">
+            {/* Grid de Serviços - ANIMADO COM STAGGER */}
+            <motion.div 
+                key="services-grid"
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 auto-rows-fr"
+            >
                  {/* Wedding Options */}
                  {category === 'wedding' && (
                     <>
@@ -210,7 +289,6 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             onInfo={setInfoData} 
                             icon={Gift} 
                             title={TABLE.social.birthday.label} 
-                            // TEXTO DINÂMICO baseando-se no modo de seleção
                             price={selectionMode === 'duration' ? "A partir de R$ 400" : "R$ 25,00 / un"} 
                             composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Seleção de Fotos Avulsas"} 
                             desc={TABLE.social.birthday.description} 
@@ -221,7 +299,6 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             onInfo={setInfoData} 
                             icon={Crown} 
                             title={TABLE.social.fifteen.label} 
-                            // TEXTO DINÂMICO baseando-se no modo de seleção
                             price={selectionMode === 'duration' ? "A partir de R$ 450" : "R$ 25,00 / un"} 
                             composition={selectionMode === 'duration' ? TABLE.social.fifteen.composition : "Seleção de Fotos Avulsas"} 
                             desc={TABLE.social.fifteen.description} 
@@ -245,6 +322,18 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo', 'quantity')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.photo.label} price={`R$ ${TABLE.commercial.photo.unit}/unidade`} composition={TABLE.commercial.photo.composition} desc={TABLE.commercial.photo.description} />
                         <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video', 'quantity')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.video.label} price={`R$ ${TABLE.commercial.video.unit}/unidade`} composition={TABLE.commercial.video.composition} desc={TABLE.commercial.video.description} />
                         <ServiceCard active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo', 'quantity')} onInfo={setInfoData} icon={Star} title={TABLE.commercial.combo.label} price={formatCurrency(TABLE.commercial.combo.videoBase)} composition={TABLE.commercial.combo.composition} desc={TABLE.commercial.combo.description} highlight />
+                        
+                        {/* CARD PERSONALIZADO PARA COMERCIAL */}
+                        <ServiceCard 
+                            active={false}
+                            onClick={handleCustomCommercialClick}
+                            onInfo={setInfoData}
+                            icon={MessageCircle}
+                            title="Personalizado"
+                            price="A Consultar"
+                            composition="Projeto Especial"
+                            desc="Demandas específicas? Campanhas grandes? Fale diretamente com nossa equipe."
+                        />
                     </>
                 )}
 
@@ -268,25 +357,24 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
                 {/* Custom Option */}
                 {category === 'custom' && (
-                    <motion.div variants={fadeInUp} className="col-span-1 md:col-span-3 bg-white/5 border border-white/10 p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
+                    <motion.div variants={fadeInUp} className="col-span-2 md:col-span-3 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
                         <Star className="mx-auto text-brand-DEFAULT mb-4" size={32} />
-                        <h3 className="font-serif text-xl text-white mb-2">Projeto Personalizado</h3>
-                        <p className="text-neutral-400 mb-6">Descreva sua necessidade específica no WhatsApp após finalizar ou entre em contato agora.</p>
+                        <h3 className="font-serif text-2xl text-white mb-2">Projeto Personalizado</h3>
+                        <p className="text-neutral-400 mb-6 text-lg">Descreva sua necessidade específica no WhatsApp.</p>
                         
-                        <a 
-                            href={`https://api.whatsapp.com/send?phone=${AppConfig.BRAND.WHATSAPP}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                        <Button 
+                            variant="primary" 
+                            size="lg" 
+                            className="flex items-center gap-3"
+                            onClick={handleCustomProjectClick}
                         >
-                            <Button variant="primary" size="md" className="flex items-center gap-2">
-                                <MessageCircle size={18} />
-                                Falar no WhatsApp
-                            </Button>
-                        </a>
+                            <MessageCircle size={22} />
+                            Falar no WhatsApp
+                        </Button>
                     </motion.div>
                 )}
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
       )}
 
       {/* === STEP 3: CONFIGURATION (DETAILS) === */}
@@ -304,25 +392,25 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         
                         <div 
-                            className="flex items-center gap-3 mb-6 relative group cursor-pointer"
+                            className="flex items-center gap-3 mb-8 relative group cursor-pointer"
                             onClick={() => setInfoData({ 
                                 title: "Tempo de Cobertura", 
                                 desc: "Período contínuo de trabalho da equipe. Horas adicionais podem ser negociadas no dia do evento caso a festa se estenda.", 
                                 price: "Info" 
                             })}
                         >
-                             <Clock className="text-brand-DEFAULT" size={18} />
-                             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">Tempo de Cobertura</h3>
-                             <HelpCircle size={14} className="text-neutral-600 group-hover:text-white transition-colors" />
+                             <Clock className="text-brand-DEFAULT" size={24} />
+                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Tempo de Cobertura</h3>
+                             <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
 
                         <div className="flex items-center justify-between w-full gap-8 px-4">
                             <ControlBtn onClick={() => setHours(Math.max(2, hours - 1))} icon={Minus} />
                             <div className="text-center">
-                                <span className="block text-5xl font-serif text-white tracking-tighter mb-1 drop-shadow-lg">
+                                <span className="block text-6xl font-serif text-white tracking-tighter mb-2 drop-shadow-lg">
                                     <AnimatedNumber value={hours} />
                                 </span>
-                                <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-[0.4em]">Horas</span>
+                                <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">Horas</span>
                             </div>
                             <ControlBtn onClick={() => setHours(hours + 1)} icon={Plus} active />
                         </div>
@@ -338,25 +426,25 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
 
                         <div 
-                            className="flex items-center gap-3 mb-6 relative group cursor-pointer"
+                            className="flex items-center gap-3 mb-8 relative group cursor-pointer"
                             onClick={() => setInfoData({ 
                                 title: "Quantidade", 
                                 desc: "Número de arquivos digitais em alta resolução com tratamento de cor e pele inclusos.", 
                                 price: "Info" 
                             })}
                         >
-                             <Camera className="text-brand-DEFAULT" size={18} />
-                             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-400">Quantidade</h3>
-                             <HelpCircle size={14} className="text-neutral-600 group-hover:text-white transition-colors" />
+                             <Camera className="text-brand-DEFAULT" size={24} />
+                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Quantidade</h3>
+                             <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
 
                         <div className="flex items-center justify-between w-full gap-8 px-4">
                             <ControlBtn onClick={() => setQty(Math.max(minQty, qty - 1))} icon={Minus} />
                             <div className="text-center">
-                                <span className="block text-5xl font-serif text-white tracking-tighter mb-1 drop-shadow-lg">
+                                <span className="block text-6xl font-serif text-white tracking-tighter mb-2 drop-shadow-lg">
                                     <AnimatedNumber value={qty} />
                                 </span>
-                                <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-[0.4em]">Unidades</span>
+                                <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">Unidades</span>
                             </div>
                             <ControlBtn onClick={() => setQty(qty + 1)} icon={Plus} active />
                         </div>
@@ -364,9 +452,14 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 )}
             </AnimatePresence>
 
-            {/* 2. ADDONS (Drone / RealTime) - Layout Centralizado */}
+            {/* 2. ADDONS (Drone / RealTime) - ANIMADO COM STAGGER */}
             {(category === 'wedding' || category === 'social' || category === 'commercial') && (
-                <motion.div variants={fadeInUp} className="w-full max-w-lg grid grid-cols-2 gap-4">
+                <motion.div 
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="visible"
+                  className="w-full max-w-lg grid grid-cols-2 gap-4"
+                >
                     <AddonCard 
                         label="Drone (Aéreo)" 
                         price={250} 
@@ -388,26 +481,28 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 </motion.div>
             )}
 
-            {/* 3. LOGISTICS */}
+            {/* 3. LOGISTICS - Layout Corrigido para Não Estourar */}
             {!isNoTravelCost && (
                 <motion.div 
                     variants={fadeInUp} 
+                    initial="hidden"
+                    animate="visible"
                     onClick={onOpenMap} 
-                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-4 transition-colors"
+                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-6 transition-colors gap-4"
                 >
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors">
-                            <Route size={20} />
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                        <div className="shrink-0 p-4 bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors">
+                            <Route size={24} />
                         </div>
-                        <div className="text-left">
-                            <p className="text-[10px] uppercase tracking-widest text-neutral-500">Logística</p>
-                            <p className="text-white text-sm font-medium mt-0.5 truncate max-w-[180px]">
+                        <div className="text-left min-w-0">
+                            <p className="text-xs uppercase tracking-widest text-neutral-500 font-bold">Logística</p>
+                            <p className="text-white text-base md:text-lg font-medium mt-1 truncate w-full">
                                 {isQuickMode && distance === 0 ? "A definir" : (locationClient || "Selecionar Local")}
                             </p>
                         </div>
                     </div>
-                    <div className="text-right">
-                         <p className="text-neutral-400 text-xs">
+                    <div className="text-right shrink-0">
+                         <p className="text-neutral-400 text-sm font-medium">
                              {isQuickMode && distance === 0 
                                 ? "A consultar" 
                                 : `${distance}km • ${travelCost > 0 ? formatCurrency(travelCost) : "Grátis"}`}
@@ -418,40 +513,56 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
         </div>
       )}
 
-      {/* INFO MODAL */}
-      <AnimatePresence>
-        {infoData && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-             <motion.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/60 backdrop-blur-md"
-                onClick={() => setInfoData(null)}
-             />
-             <motion.div 
-                variants={modalVariants} initial="hidden" animate="visible" exit="exit"
-                className="relative bg-neutral-900 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl"
-             >
-                <button 
+      {/* INFO MODAL - CORREÇÃO: Portal para o body (Z-Index Real + Fixed Viewport) */}
+      {/* Movemos o Portal para envolver o AnimatePresence para garantir ciclo de vida correto */}
+      {createPortal(
+        <AnimatePresence>
+          {infoData && (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
+               {/* Backdrop Fixed */}
+               <motion.div 
+                  key="backdrop"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-black/80 backdrop-blur-lg"
                   onClick={() => setInfoData(null)}
-                  className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors"
-                >
-                    <X size={20} />
-                </button>
-                
-                <h3 className="text-2xl font-serif text-white mb-4">{infoData.title}</h3>
-                <div className="w-12 h-0.5 bg-brand-DEFAULT mx-auto mb-6" />
-                <p className="text-neutral-300 leading-relaxed font-light text-sm mb-8 text-left">
-                    {infoData.desc}
-                    <br/><br/>
-                    <span className="text-neutral-500 text-xs block text-center mt-4">Inclui suporte completo e equipamentos profissionais da EAREC.</span>
-                </p>
-                <div className="bg-white/5 py-2 px-4 rounded-full inline-block border border-white/5">
-                    <span className="text-brand-DEFAULT font-bold">{infoData.price}</span>
-                </div>
-             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+               />
+               {/* Modal Content */}
+               <motion.div 
+                  key="modal"
+                  variants={modalVariants} initial="hidden" animate="visible" exit="exit"
+                  className="relative z-[10000] bg-neutral-900 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl overflow-hidden"
+               >
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInfoData(null);
+                    }}
+                    className="absolute top-4 right-4 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors z-50"
+                    aria-label="Fechar"
+                  >
+                      <X size={24} />
+                  </button>
+                  
+                  <h3 className="text-2xl font-serif text-white mb-4 pr-8">{infoData.title}</h3>
+                  <div className="w-12 h-0.5 bg-brand-DEFAULT mx-auto mb-6" />
+                  <div className="max-h-[60vh] overflow-y-auto">
+                      <p className="text-neutral-300 leading-relaxed font-light text-base mb-8 text-left">
+                          {infoData.desc}
+                          <br/><br/>
+                          <span className="text-neutral-500 text-sm block text-center mt-4 border-t border-white/5 pt-4">
+                              Inclui suporte completo e equipamentos profissionais da EAREC.
+                          </span>
+                      </p>
+                  </div>
+                  <div className="bg-brand-DEFAULT/10 py-3 px-6 rounded-full inline-block border border-brand-DEFAULT/20">
+                      <span className="text-brand-DEFAULT font-bold text-lg">{infoData.price}</span>
+                  </div>
+               </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
     </section>
   );
@@ -465,29 +576,30 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
       whileTap={{ scale: 0.9 }}
       onClick={onClick} 
       className={cn(
-        "w-12 h-12 flex items-center justify-center rounded-full transition-colors border",
+        "w-16 h-16 flex items-center justify-center rounded-full transition-colors border",
         active ? "bg-white/5 border-white/10 text-white" : "bg-transparent border-white/5 text-neutral-500"
       )}
   >
-      <Icon size={20}/>
+      <Icon size={24}/>
   </motion.button>
 );
 
 const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight }: any) => (
     <motion.div 
         variants={fadeInUp}
+        // REMOVIDO: layout prop para evitar glitch visual ao clicar
         whileHover={{ y: -4, transition: { duration: 0.2 } }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer p-5 rounded-2xl border transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group h-full w-full", 
+            "cursor-pointer p-4 md:p-6 rounded-xl md:rounded-2xl border transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group h-full w-full box-border", 
             active 
-                ? "bg-brand-DEFAULT/5 border-brand-DEFAULT shadow-[0_0_20px_var(--brand-glow)] z-10" 
+                ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_20px_var(--brand-glow)] ring-1 ring-brand-DEFAULT z-10" 
                 : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10"
         )}
     >
         {highlight && (
             <div className={cn(
-                "absolute top-0 right-0 text-[8px] md:text-[9px] font-bold px-3 py-1.5 rounded-bl-xl uppercase tracking-widest z-20",
+                "absolute top-0 right-0 text-[8px] md:text-[10px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-bl-xl uppercase tracking-widest z-20",
                 active ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-500"
             )}>
                 Popular
@@ -495,43 +607,44 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         )}
 
         <button 
-          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
+          className="absolute top-2 left-2 md:top-3 md:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
           onClick={(e) => {
              e.stopPropagation();
              if (onInfo) onInfo({ title, desc, price });
           }}
         >
-            <HelpCircle size={16} strokeWidth={2} />
+            <HelpCircle size={18} strokeWidth={2} className="md:w-6 md:h-6" />
         </button>
         
-        {/* 1. ICONE - Container Fixo */}
+        {/* 1. ICONE - BG WHITE/20 TEXT-WHITE PARA CONSISTÊNCIA */}
         <div className={cn(
-            "mt-4 mb-4 shrink-0 h-14 w-14 flex items-center justify-center rounded-full transition-all duration-300",
-            active ? "text-brand-DEFAULT bg-brand-DEFAULT/10" : "text-neutral-500 bg-white/5 group-hover:bg-white/10 group-hover:text-white"
+            "mt-4 mb-3 md:mb-5 shrink-0 h-12 w-12 md:h-16 md:w-16 flex items-center justify-center rounded-full transition-all duration-300",
+            active ? "bg-white/20 text-white" : "text-neutral-300 bg-white/10 group-hover:bg-white/20 group-hover:text-white"
         )}>
-            <Icon size={28} strokeWidth={1.5} />
+            <Icon size={24} className="md:hidden" strokeWidth={1.5} />
+            <Icon size={32} className="hidden md:block" strokeWidth={1.5} />
         </div>
         
-        {/* 2. TÍTULO - Altura Fixa (2 linhas) */}
-        <div className="w-full h-[3.5rem] flex items-center justify-center px-1 mb-2">
+        {/* 2. TÍTULO */}
+        <div className="w-full h-[3rem] md:h-[4.5rem] flex items-center justify-center px-1 mb-2 overflow-hidden">
             <h4 className={cn(
-                "text-base md:text-lg font-serif transition-colors leading-tight line-clamp-2", 
-                active ? "text-white" : "text-neutral-300 group-hover:text-white"
+                "text-sm md:text-xl font-serif transition-colors leading-tight line-clamp-2", 
+                active ? "text-white font-medium" : "text-neutral-300 group-hover:text-white"
             )}>
                 {title}
             </h4>
         </div>
             
-        {/* 3. DESCRIÇÃO - Altura Fixa (2 linhas) */}
-        <div className="w-full h-[2.5rem] px-2 mb-6 flex items-start justify-center">
-            <p className="text-[10px] md:text-[11px] text-neutral-500 leading-relaxed font-light tracking-wide line-clamp-2">
+        {/* 3. DESCRIÇÃO */}
+        <div className="w-full h-[2.5rem] md:h-[3.5rem] px-1 md:px-2 mb-4 md:mb-6 flex items-start justify-center overflow-hidden">
+            <p className="text-[11px] md:text-sm text-neutral-400 leading-relaxed font-light tracking-wide line-clamp-2">
                 {composition || desc}
             </p>
         </div>
 
-        {/* 4. RODAPÉ - Ancorado no fundo */}
-        <div className="w-full pt-4 border-t border-white/5 mt-auto">
-            <p className={cn("text-xs font-bold tracking-widest uppercase truncate", active ? "text-brand-DEFAULT" : "text-neutral-400")}>
+        {/* 4. RODAPÉ */}
+        <div className="w-full pt-3 md:pt-4 border-t border-white/5 mt-auto">
+            <p className={cn("text-xs md:text-sm font-bold tracking-widest uppercase truncate", active ? "text-brand-DEFAULT" : "text-neutral-400")}>
                 {price}
             </p>
         </div>
@@ -539,41 +652,48 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
 );
 
 const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: any) => (
-    <div 
+    <motion.div 
+        variants={fadeInUp}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex flex-col items-center justify-center p-6 rounded-2xl border transition-all select-none relative gap-3 h-full group", 
-            active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)]" : "bg-neutral-900/40 border-white/5 hover:bg-white/5"
+            "cursor-pointer flex flex-col items-center justify-center p-6 rounded-2xl border transition-all select-none relative gap-3 h-full group box-border", 
+            active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT" : "bg-neutral-900/40 border-white/5 hover:bg-white/5"
         )}
     >
         <button 
-          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/5 rounded-full"
+          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
           onClick={(e) => {
              e.stopPropagation();
              if (onInfo && desc) onInfo({ title: label, desc, price: formatCurrency(price) });
           }}
         >
-            <HelpCircle size={16} strokeWidth={2} />
+            <HelpCircle size={18} strokeWidth={2} />
         </button>
 
         <div className={cn(
-            "absolute top-3 right-3 w-5 h-5 rounded-full border flex items-center justify-center transition-all", 
+            "absolute top-3 right-3 w-6 h-6 rounded-full border flex items-center justify-center transition-all", 
             active ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/10 bg-black/20"
         )}>
-            {active && <Check size={12} className="text-white" />}
+            {active && <Check size={14} className="text-white" />}
         </div>
 
-        <div className={cn("p-3 rounded-full mb-1 transition-colors", active ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-400")}>
-           <Icon size={24} />
+        {/* Ícone - BG WHITE/20 TEXT-WHITE PARA CONSISTÊNCIA */}
+        <div className={cn(
+            "p-4 rounded-full mb-1 transition-all duration-300", 
+            active ? "bg-white/20 text-white" : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
+        )}>
+           <Icon size={28} />
         </div>
         
         <div className="space-y-1 text-center">
-            <p className={cn("text-sm font-medium", active ? "text-white" : "text-neutral-300")}>{label}</p>
+            <p className={cn("text-base font-medium", active ? "text-white" : "text-neutral-300")}>{label}</p>
             <p className="text-xs text-brand-DEFAULT font-bold bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block">
                 + {formatCurrency(price)}
             </p>
         </div>
-    </div>
+    </motion.div>
 );
 
 export default UpsellList;
