@@ -98,7 +98,7 @@ Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a dispon
 👤 *CLIENTE*
 *Nome:* ${finalName}
 
-🎬 *O QUE ESCOLHI*
+🎬 *SERVIÇOS SELECIONADOS*
 • *Pacote:* ${quoteDetails.customOccasionText}
 • *Tipo:* ${ambiente}
 • *Escopo:* ${escopo}
@@ -109,7 +109,7 @@ Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a dispon
 • *Frete:* ${quoteDetails.location === 'studio' ? "Isento (Estúdio)" : "Calculado no total"}
 • *Pagamento:* ${quoteDetails.paymentMethod || "A combinar"}
 
-💎 *INVESTIMENTO ESTIMADO*
+💎 *APROVEI O ORÇAMENTO NO TOTAL DE:*
 *Total: ${formattedPrice}*
 
 --------------------------------

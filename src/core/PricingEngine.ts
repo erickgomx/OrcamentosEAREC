@@ -89,8 +89,6 @@ export class PricingEngine {
       breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraHoursVal, type: 'addon' });
     }
 
-    // OBS: Tempo Real movido para applyAddonsAndFreight para consistência global
-
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
@@ -124,8 +122,6 @@ export class PricingEngine {
       }
     }
 
-    // OBS: Tempo Real movido para applyAddonsAndFreight para consistência global
-
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
@@ -139,18 +135,18 @@ export class PricingEngine {
       // Usa o preço unitário dinâmico do contexto (configurado no Admin)
       const val = qty * ctx.photoUnitPrice;
       total += val;
-      breakdown.push({ label: `${table.photo.label} (${qty}x)`, value: val, type: 'base' });
+      breakdown.push({ label: `${table.comm_photo.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_video') {
       // Usa o preço unitário dinâmico do contexto (configurado no Admin)
       const val = qty * ctx.videoUnitPrice;
       total += val;
-      breakdown.push({ label: `${table.video.label} (${qty}x)`, value: val, type: 'base' });
+      breakdown.push({ label: `${table.comm_video.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_combo') {
-      const val = table.combo.videoBase;
+      const val = table.comm_combo.videoBase;
       total += val;
-      breakdown.push({ label: table.combo.label, value: val, type: 'base' });
+      breakdown.push({ label: table.comm_combo.label, value: val, type: 'base' });
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };
@@ -167,10 +163,10 @@ export class PricingEngine {
         // Usa o preço unitário do contexto para consistência com o admin
         const val = qty * ctx.photoUnitPrice;
         total += val;
-        breakdown.push({ label: `${table.photo.label} (${qty}x)`, value: val, type: 'base' });
+        breakdown.push({ label: `${table.studio_photo.label} (${qty}x)`, value: val, type: 'base' });
       } else {
-        total += table.video.base;
-        breakdown.push({ label: table.video.label, value: table.video.base, type: 'base' });
+        total += table.studio_video.base;
+        breakdown.push({ label: table.studio_video.label, value: table.studio_video.base, type: 'base' });
       }
     } else {
       const baseHour = 350; // Valor fixo para locação de estúdio
@@ -194,9 +190,9 @@ export class PricingEngine {
     let total = 0;
 
     if (serviceId === 'edit_only') {
-      const val = qty * table.edit.unit;
+      const val = qty * table.edit_only.unit;
       total += val;
-      breakdown.push({ label: `${table.edit.label} (${qty}x)`, value: val, type: 'base' });
+      breakdown.push({ label: `${table.edit_only.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'cam_cap') { 
       total += table.cam_cap.fixed; 

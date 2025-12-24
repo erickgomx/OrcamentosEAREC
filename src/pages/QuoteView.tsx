@@ -188,7 +188,11 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         if (category === 'video_production') setServiceId('edit_only');
         if (category === 'custom') setServiceId('custom_project');
         
+        // RESETAR ADICIONAIS E CONFIGURAÇÕES PARA EVITAR SOMA DE OCASIÕES
         setHours(2);
+        setAddDrone(false);
+        setAddRealTime(false);
+        
         if (category === 'commercial') {
             if (serviceId === 'comm_photo') setQty(20);
             else if (serviceId === 'comm_video') setQty(1);
@@ -342,16 +346,25 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
     addons: activeAddons
   };
 
+  // Lógica para determinar se é Foto ou Vídeo na contagem de quantidade
+  const isPhotoService = 
+      (category === 'social' && selectionMode === 'quantity') ||
+      (category === 'studio' && serviceId === 'studio_photo') ||
+      (category === 'commercial' && serviceId === 'comm_photo');
+
+  const isVideoService = 
+      (category === 'commercial' && (serviceId === 'comm_video' || serviceId === 'comm_combo')) ||
+      (category === 'video_production' && serviceId === 'edit_only');
+
   const quoteDetails = {
     occasion: category === 'custom' ? 'custom' : (category as any),
     customOccasionText: serviceLabel,
     location: (category === 'studio' ? 'studio' : 'external'),
-    photoQty: selectionMode === 'quantity' ? qty : (category === 'commercial' && serviceId === 'comm_photo' ? qty : 0),
-    videoQty: (category === 'video_production' && serviceId === 'edit_only') ? qty : 
-              ((category === 'commercial' && (serviceId === 'comm_video' || serviceId === 'comm_combo'))) ? qty : 0,
+    photoQty: isPhotoService ? qty : 0,
+    videoQty: isVideoService ? qty : 0,
     distance,
     paymentMethod,
-    addons: activeAddons // FIX: Passando os addons corretos para a View
+    addons: activeAddons 
   };
 
   if (viewState === 'success') {

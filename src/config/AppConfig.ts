@@ -47,6 +47,7 @@ export class AppConfig {
   // Estrutura migrada do antigo QuoteView para cá.
   // composition: O que aparece no card (Itens inclusos)
   // description: O que aparece no modal de info (Explicação detalhada/Venda)
+  // CHAVES AGORA CORRESPONDEM AOS ServiceId PARA FACILITAR BUSCA
   static readonly PRICING_TABLE = {
     wedding: {
         wedding_base: { 
@@ -101,19 +102,19 @@ export class AppConfig {
         realtime: { fixed: 600, label: "Fotos em Tempo Real" }
     },
     commercial: {
-        photo: { 
+        comm_photo: { 
             unit: 20, 
             label: "Comércio (Fotos)",
             composition: "Pack de Fotos em Alta Resolução",
             description: "Fotografia publicitária pensada para cardápios, catálogos e e-commerce. Iluminação que valoriza a textura e as cores do seu produto para aumentar vendas." 
         },
-        video: { 
+        comm_video: { 
             unit: 500, 
             label: "Comércio (Vídeo)",
             composition: "Vídeos Verticais (Reels/TikTok)",
             description: "Produção de vídeos curtos com edição ágil, transições modernas e trilha sonora em alta. Foco total em retenção de audiência e engajamento nas redes sociais." 
         },
-        combo: { 
+        comm_combo: { 
             videoBase: 800, 
             label: "Comércio (Foto + Vídeo)",
             composition: "Sessão Híbrida: Fotos + Reels",
@@ -121,13 +122,13 @@ export class AppConfig {
         } 
     },
     studio: {
-        photo: { 
+        studio_photo: { 
             unit: 25, 
             label: "Estúdio (Fotos)",
             composition: "Sessão em Fundo Infinito",
             description: "Sessão em estúdio profissional com fundo infinito e iluminação de cinema controlada. Perfeito para retratos corporativos, moda ou produtos que exigem perfeição técnica." 
         },
-        video: { 
+        studio_video: { 
             base: 350, 
             hoursIncluded: 2, 
             hourPrice: 250, 
@@ -137,7 +138,7 @@ export class AppConfig {
         },
     },
     video_production: {
-        edit: { 
+        edit_only: { 
             unit: 250, 
             label: "Apenas Edição",
             composition: "Montagem + Cor + Som",
@@ -175,9 +176,6 @@ export class AppConfig {
     if (table[category] && table[category][serviceId]) {
       return table[category][serviceId].label;
     }
-    // Fallback para combo
-    if (category === 'commercial' && serviceId === 'comm_combo') return table.commercial.combo.label;
-    
     return "Serviço Selecionado";
   }
 }

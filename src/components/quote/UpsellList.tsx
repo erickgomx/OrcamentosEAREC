@@ -107,6 +107,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   if (category === 'studio' && serviceId === 'studio_photo') minQty = 8;
   if (category === 'social') minQty = 10;
 
+  // Verifica se a quantidade é de VÍDEO ou FOTO para ajustar ícone e texto
+  const isVideoQuantity = (category === 'commercial' && serviceId === 'comm_video') ||
+                          (category === 'video_production' && serviceId === 'edit_only');
+
   // Renderização Condicional baseada no viewMode
   return (
     <section className="w-full max-w-5xl mx-auto">
@@ -319,9 +323,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 {/* Commercial Options */}
                 {category === 'commercial' && (
                     <>
-                        <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo', 'quantity')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.photo.label} price={`R$ ${TABLE.commercial.photo.unit}/unidade`} composition={TABLE.commercial.photo.composition} desc={TABLE.commercial.photo.description} />
-                        <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video', 'quantity')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.video.label} price={`R$ ${TABLE.commercial.video.unit}/unidade`} composition={TABLE.commercial.video.composition} desc={TABLE.commercial.video.description} />
-                        <ServiceCard active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo', 'quantity')} onInfo={setInfoData} icon={Star} title={TABLE.commercial.combo.label} price={formatCurrency(TABLE.commercial.combo.videoBase)} composition={TABLE.commercial.combo.composition} desc={TABLE.commercial.combo.description} highlight />
+                        <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo', 'quantity')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.comm_photo.label} price={`R$ ${TABLE.commercial.comm_photo.unit}/unidade`} composition={TABLE.commercial.comm_photo.composition} desc={TABLE.commercial.comm_photo.description} />
+                        <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video', 'quantity')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.comm_video.label} price={`R$ ${TABLE.commercial.comm_video.unit}/unidade`} composition={TABLE.commercial.comm_video.composition} desc={TABLE.commercial.comm_video.description} />
+                        <ServiceCard active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo', 'quantity')} onInfo={setInfoData} icon={Star} title={TABLE.commercial.comm_combo.label} price={formatCurrency(TABLE.commercial.comm_combo.videoBase)} composition={TABLE.commercial.comm_combo.composition} desc={TABLE.commercial.comm_combo.description} highlight />
                         
                         {/* CARD PERSONALIZADO PARA COMERCIAL */}
                         <ServiceCard 
@@ -340,15 +344,15 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 {/* Studio Options */}
                 {category === 'studio' && (
                     <>
-                        <ServiceCard active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo', 'quantity')} onInfo={setInfoData} icon={Aperture} title={TABLE.studio.photo.label} price={`R$ ${TABLE.studio.photo.unit}/unidade`} composition={TABLE.studio.photo.composition} desc={TABLE.studio.photo.description} />
-                        <ServiceCard active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video', 'duration')} onInfo={setInfoData} icon={Video} title={TABLE.studio.video.label} price={formatCurrency(TABLE.studio.video.base)} composition={TABLE.studio.video.composition} desc={TABLE.studio.video.description} />
+                        <ServiceCard active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo', 'quantity')} onInfo={setInfoData} icon={Aperture} title={TABLE.studio.studio_photo.label} price={`R$ ${TABLE.studio.studio_photo.unit}/unidade`} composition={TABLE.studio.studio_photo.composition} desc={TABLE.studio.studio_photo.description} />
+                        <ServiceCard active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video', 'duration')} onInfo={setInfoData} icon={Video} title={TABLE.studio.studio_video.label} price={formatCurrency(TABLE.studio.studio_video.base)} composition={TABLE.studio.studio_video.composition} desc={TABLE.studio.studio_video.description} />
                     </>
                 )}
 
                 {/* Production Options */}
                 {category === 'video_production' && (
                     <>
-                        <ServiceCard active={serviceId === 'edit_only'} onClick={() => handleServiceSelect('edit_only', 'quantity')} onInfo={setInfoData} icon={Edit} title={TABLE.video_production.edit.label} price={`R$ ${TABLE.video_production.edit.unit}`} composition={TABLE.video_production.edit.composition} desc={TABLE.video_production.edit.description} />
+                        <ServiceCard active={serviceId === 'edit_only'} onClick={() => handleServiceSelect('edit_only', 'quantity')} onInfo={setInfoData} icon={Edit} title={TABLE.video_production.edit_only.label} price={`R$ ${TABLE.video_production.edit_only.unit}`} composition={TABLE.video_production.edit_only.composition} desc={TABLE.video_production.edit_only.description} />
                         <ServiceCard active={serviceId === 'cam_cap'} onClick={() => handleServiceSelect('cam_cap', 'duration')} onInfo={setInfoData} icon={Video} title={TABLE.video_production.cam_cap.label} price={formatCurrency(TABLE.video_production.cam_cap.fixed)} composition={TABLE.video_production.cam_cap.composition} desc={TABLE.video_production.cam_cap.description} />
                         <ServiceCard active={serviceId === 'mobile_cap'} onClick={() => handleServiceSelect('mobile_cap', 'duration')} onInfo={setInfoData} icon={SmartphoneIcon} title={TABLE.video_production.mobile_cap.label} price={formatCurrency(TABLE.video_production.mobile_cap.fixed)} composition={TABLE.video_production.mobile_cap.composition} desc={TABLE.video_production.mobile_cap.description} />
                         <ServiceCard active={serviceId === 'drone'} onClick={() => handleServiceSelect('drone', 'duration')} onInfo={setInfoData} icon={Plane} title={TABLE.video_production.drone.label} price={formatCurrency(TABLE.video_production.drone.fixed)} composition={TABLE.video_production.drone.composition} desc={TABLE.video_production.drone.description} />
@@ -429,11 +433,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             className="flex items-center gap-3 mb-8 relative group cursor-pointer"
                             onClick={() => setInfoData({ 
                                 title: "Quantidade", 
-                                desc: "Número de arquivos digitais em alta resolução com tratamento de cor e pele inclusos.", 
+                                desc: isVideoQuantity 
+                                    ? "Número de vídeos editados ou produzidos. Inclui ajustes básicos de montagem e cor." 
+                                    : "Número de arquivos digitais em alta resolução com tratamento de cor e pele inclusos.", 
                                 price: "Info" 
                             })}
                         >
-                             <Camera className="text-brand-DEFAULT" size={24} />
+                             {isVideoQuantity ? <Video className="text-brand-DEFAULT" size={24} /> : <Camera className="text-brand-DEFAULT" size={24} />}
                              <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Quantidade</h3>
                              <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
