@@ -129,27 +129,47 @@ export class PricingEngine {
   }
 
   private static calculateCommercial(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { serviceId, qty } = state;
+    const { serviceId, qty, videoQty } = state; // videoQty usado apenas no combo
     const table = AppConfig.PRICING_TABLE.commercial;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
 
     if (serviceId === 'comm_photo') {
-      // Usa o preço unitário dinâmico do contexto (configurado no Admin)
-      const val = qty * ctx.photoUnitPrice;
+      // FIX: Usa o preço unitário específico de comercial (20) em vez do global (25)
+      const val = qty * table.comm_photo.unit;
       total += val;
       breakdown.push({ label: `${table.comm_photo.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_video') {
-      // Usa o preço unitário dinâmico do contexto (configurado no Admin)
-      const val = qty * ctx.videoUnitPrice;
+      // FIX: Usa o preço unitário específico da tabela (500) em vez do global (videoUnitPrice do contexto)
+      const val = qty * table.comm_video.unit;
       total += val;
       breakdown.push({ label: `${table.comm_video.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_combo') {
-      const val = table.comm_combo.videoBase;
-      total += val;
-      breakdown.push({ label: table.comm_combo.label, value: val, type: 'base' });
+      // 1. Preço Fixo do Pacote (Base 700 para 10F + 1V)
+      const baseVal = table.comm_combo.videoBase;
+      total += baseVal;
+      breakdown.push({ label: "Combo Base (10F + 1V)", value: baseVal, type: 'base' });
+
+      // 2. Fotos Extras (Acima de 10)
+      if (qty > 10) {
+          const extraPhotos = qty - 10;
+          const photoPrice = table.comm_photo.unit; // 20
+          const val = extraPhotos * photoPrice;
+          total += val;
+          breakdown.push({ label: `Fotos Extras (+${extraPhotos})`, value: val, type: 'addon' });
+      }
+
+      // 3. Vídeos Extras (Acima de 1)
+      // Nota: O prompt pediu explicitamente 350 por vídeo adicional no combo
+      if (videoQty > 1) {
+          const extraVideos = videoQty - 1;
+          const videoPrice = 350; 
+          const val = extraVideos * videoPrice;
+          total += val;
+          breakdown.push({ label: `Vídeos Extras (+${extraVideos})`, value: val, type: 'addon' });
+      }
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };

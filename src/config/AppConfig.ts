@@ -29,7 +29,7 @@ export class AppConfig {
     },
     CATEGORY_DESCRIPTIONS: {
       wedding: "Cobertura cinematográfica para eternizar o dia mais importante da sua vida.",
-      social: "Registros vibrantes e emocionantes para Batizados, 15 anos e formaturas.",
+      social: "Registros vibrantes e emocionantes para Cultos, Batizados, 15 anos e formaturas.",
       commercial: "Valorize sua marca com fotos e vídeos profissionais de alta conversão.",
       studio: "Ambiente controlado e iluminação perfeita para ensaios e produções de alto nível.",
       video_production: "Diárias para Freelancers: Equipe técnica, edição especializada e captação aérea.",
@@ -53,26 +53,26 @@ export class AppConfig {
         wedding_base: { 
             base: 650, 
             label: "Casamento (Base)",
-            composition: "Cerimônia (Até 2h) + Fotos Ilimitadas",
-            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Ideal para Mini Weddings e registros intimistas da união, garantindo que o momento do 'Sim' seja eternizado com qualidade de cinema."
+            composition: "Cerimônia + Decoração + Fotos c/ Convidados",
+            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Inclui registros detalhados da decoração e fotos protocolares com convidados."
         },
         wedding_classic: { 
             base: 900, 
             label: "Pacote Clássico",
-            composition: "Making-of + Cerimônia + Protocolos",
-            description: "A escolha mais popular. Inclui a cobertura do Making-of dos noivos, a cerimônia completa e as fotos protocolares com padrinhos e família logo após o altar." 
+            composition: "Pré Wedding + Casamento",
+            description: "A união de dois momentos especiais. Inclui um ensaio Pré Wedding (para celebrar o noivado) e a cobertura completa do Casamento." 
         },
         wedding_romance: {
-            base: 1400,
+            base: 1150,
             label: "Pacote Romance",
-            composition: "Cerimônia + Recepção (Sem Making-of)",
-            description: "Para casais que querem focar na festa. Cobrimos a cerimônia religiosa/civil e a recepção completa, garantindo os melhores momentos da celebração."
+            composition: "Pré Wedding + Making Of + Cerimônia",
+            description: "Cobertura expandida para contar mais da sua história. Inclui o Ensaio Pré Wedding, o Making Of dos noivos (preparação) e a Cerimônia."
         },
         wedding_essence: { 
             base: 1750, 
-            label: "Pacote Essência",
-            composition: "Making-of + Cerimônia + Recepção Completa",
-            description: "A narrativa completa do seu grande dia. Acompanhamos desde a preparação, passando por toda a emoção da cerimônia, até o final da festa. Nada é perdido." 
+            label: "Pacote Mais Essência",
+            composition: "Pré + Making Of + Casamento + Vídeo",
+            description: "A experiência completa. Pré Wedding, Making Of, Casamento e um Vídeo Highlight cinematográfico com os melhores momentos do grande dia." 
         },
         realtime: { fixed: 600, label: "Fotos em Tempo Real" }
     },
@@ -86,12 +86,12 @@ export class AppConfig {
             description: "Cobertura dinâmica para registrar a alegria, a decoração e os momentos espontâneos da festa. Focamos em capturar sorrisos verdadeiros e a interação entre os convidados."
         },
         baptism: { 
-            base: 450, 
+            base: 500, 
             hoursIncluded: 2, 
             hourPrice: 250, 
-            label: "Batizado",
-            composition: "Cerimônia + Fotos com Família",
-            description: "Registro sensível e respeitoso da cerimônia religiosa. Inclui fotos protocolares com padrinhos e família logo após o rito."
+            label: "Religioso",
+            composition: "Fotos + Vídeo (Melhores Momentos)",
+            description: "Cobertura completa para Cultos, Batizados e celebrações religiosas. Inclui fotos de todo o rito e um vídeo highlight emocionante com os melhores momentos."
         },
         fifteen: { 
             base: 450, 
@@ -123,10 +123,10 @@ export class AppConfig {
             description: "Produção de vídeos curtos com edição ágil, transições modernas e trilha sonora em alta. Foco total em retenção de audiência e engajamento nas redes sociais." 
         },
         comm_combo: { 
-            videoBase: 800, 
+            videoBase: 700, 
             label: "Comércio (Foto + Vídeo)",
-            composition: "Sessão Híbrida: Fotos + Reels",
-            description: "O pacote completo para posicionamento digital. Resolvemos sua necessidade de feed e stories em uma única diária otimizada." 
+            composition: "10 Fotos + 1 Reel",
+            description: "O pacote completo para posicionamento digital. Inclui 10 fotos tratadas e 1 Reel editado. (Adicionais: R$ 20/foto e R$ 350/vídeo)." 
         } 
     },
     studio: {
@@ -141,7 +141,7 @@ export class AppConfig {
             hoursIncluded: 2, 
             hourPrice: 250, 
             label: "Estúdio (Vídeo)",
-            composition: "Gravação com Teleprompter e Luz",
+            composition: "Gravação com Iluminação Profissional",
             description: "Ideal para Videocasts, Cursos Online ou Institucionais. Ambiente acústico tratado e setup pronto para gravar conteúdos densos com qualidade de TV." 
         },
     },
@@ -149,14 +149,14 @@ export class AppConfig {
         edit_only: { 
             unit: 250, 
             label: "Apenas Edição",
-            composition: "Montagem + Cor + Som",
-            description: "Você grava, nós editamos. Pós-produção avançada incluindo: Color grading, sound design, legendas e montagem dinâmica para seu material bruto." 
+            composition: "Edição Profissional (até 1min)",
+            description: "Você grava, nós editamos. Pós-produção avançada para vídeos de até 1 minuto. Inclui: Color grading, sound design e legendas." 
         },
         cam_cap: { 
             fixed: 350, 
             label: "Captação Câmera",
-            composition: "Operador + Câmera Cinema Line",
-            description: "Contrate apenas a mão de obra especializada. Operador de câmera experiente com equipamento 4K incluso (Linha Sony Alpha ou Blackmagic)." 
+            composition: "Operador + Câmera Profissional",
+            description: "Contrate apenas a mão de obra especializada. Operador de câmera experiente com equipamento 4K incluso (Linha Sony Alpha)." 
         },
         mobile_cap: { 
             fixed: 250, 

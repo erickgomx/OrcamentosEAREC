@@ -31,10 +31,11 @@ const App: React.FC = () => {
   });
 
   const [quoteState, setQuoteState] = useState<QuoteState>({
-    category: 'wedding',
+    category: null, 
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
+    videoQty: 1, // Inicialização
     addDrone: false,
     addRealTime: false,
     selectionMode: 'duration'
@@ -67,6 +68,8 @@ const App: React.FC = () => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
+    // Reseta a categoria ao iniciar o fluxo normal para garantir validação
+    setQuoteState(prev => ({ ...prev, category: null }));
     await delay(2000); 
     setIsLoading(false);
     setView('quote');
@@ -82,6 +85,7 @@ const App: React.FC = () => {
         date: '', 
         contact: ''
     });
+    setQuoteState(prev => ({ ...prev, category: null })); // Reseta categoria ao iniciar rápido
     setIsQuickMode(true); // Ativa flag
     setIsLoading(true);
     setIsQuoteSuccess(false);
@@ -93,6 +97,12 @@ const App: React.FC = () => {
 
   const handleAdminUpdate = (newConfig: QuoteData) => {
     setConfig(newConfig);
+  };
+
+  // Callback chamado pelo QuoteView quando precisa dos dados no modo rápido
+  const handleRequestForm = () => {
+    setView('welcome');
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -125,7 +135,7 @@ const App: React.FC = () => {
                   className="flex flex-col items-center"
                >
                   <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest">
+                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest uppercase">
                     Orçamento Facilitado
                   </p>
                </motion.div>
@@ -155,7 +165,7 @@ const App: React.FC = () => {
                 <WelcomeView 
                   onStart={handleStart} 
                   onAdminClick={() => setView('admin')}
-                  onBack={() => setView('intro')} 
+                  onBack={() => setView(isQuickMode ? 'quote' : 'intro')} 
                 />
             )}
 
@@ -169,6 +179,7 @@ const App: React.FC = () => {
                   setQuoteState={setQuoteState}
                   onSuccess={() => setIsQuoteSuccess(true)}
                   isQuickMode={isQuickMode}
+                  onRequestForm={handleRequestForm}
                 />
             )}
 

@@ -1,4 +1,5 @@
 
+
 // === DEFINIÇÕES DE TIPO DE DOMÍNIO (DDD) ===
 // Este arquivo centraliza todas as interfaces que modelam o negócio.
 
@@ -25,7 +26,8 @@ export interface QuoteState {
   category: ServiceCategory | null; // Alterado para permitir nulo (sem seleção)
   serviceId: ServiceId;
   hours: number;
-  qty: number;
+  qty: number;      // Usado para fotos ou quantidade genérica
+  videoQty: number; // NOVO: Usado especificamente para vídeos em pacotes híbridos
   addDrone: boolean;
   addRealTime: boolean;
   selectionMode: 'duration' | 'quantity'; // Novo: Define se cobra por tempo ou por entrega

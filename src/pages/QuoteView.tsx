@@ -98,7 +98,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   const [pendingAction, setPendingAction] = useState<'next_step' | 'custom_project' | 'commercial_custom' | null>(null);
 
   // Destructuring do State
-  const { category, serviceId, hours, qty, addDrone, addRealTime, selectionMode } = quoteState;
+  const { category, serviceId, hours, qty, videoQty, addDrone, addRealTime, selectionMode } = quoteState;
 
   // Mapa de Labels para Exibição no Header
   const categoryLabels: Record<string, string> = {
@@ -106,7 +106,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
     social: 'Social',
     commercial: 'Comercial',
     studio: 'Estúdio',
-    video_production: 'Produção',
+    video_production: 'Freelancer',
     custom: 'Personalizado'
   };
 
@@ -123,6 +123,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
   const setServiceId = (s: ServiceId) => setQuoteState(prev => ({ ...prev, serviceId: s }));
   const setHours = (h: number) => setQuoteState(prev => ({ ...prev, hours: h }));
   const setQty = (q: number) => setQuoteState(prev => ({ ...prev, qty: q }));
+  const setVideoQty = (q: number) => setQuoteState(prev => ({ ...prev, videoQty: q }));
   const setAddDrone = (b: boolean) => setQuoteState(prev => ({ ...prev, addDrone: b }));
   const setAddRealTime = (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b }));
   const setSelectionMode = (mode: 'duration' | 'quantity') => setQuoteState(prev => ({ ...prev, selectionMode: mode }));
@@ -192,7 +193,7 @@ const QuoteView: React.FC<QuoteViewProps> = ({
         setAddRealTime(false);
         
         if (category === 'commercial') {
-            if (serviceId === 'comm_photo') setQty(20);
+            if (serviceId === 'comm_photo') setQty(5);
             else if (serviceId === 'comm_video') setQty(1);
         } else if (category === 'studio' && serviceId === 'studio_photo') {
             setQty(8);
@@ -202,7 +203,16 @@ const QuoteView: React.FC<QuoteViewProps> = ({
             setQty(10);
         }
       }
-  }, [category]);
+      
+      // RESET ESPECIAL PARA COMBO
+      if (category === 'commercial' && serviceId === 'comm_combo') {
+          setQty(10);      // 10 Fotos
+          setVideoQty(1);  // 1 Vídeo
+      } else {
+          setVideoQty(0);
+      }
+
+  }, [category, serviceId]);
 
   const handleSignatureSuccess = (signatureData: string) => {
     setIsModalOpen(false);
@@ -328,7 +338,12 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
   if (selectionMode === 'duration') {
        metricLabel = `${hours}h de Cobertura`;
   } else {
-       metricLabel = `${qty} Unidades`;
+       // Se for combo, mostra o label combinado
+       if (serviceId === 'comm_combo') {
+           metricLabel = `${qty} Fotos + ${videoQty} Vídeos`;
+       } else {
+           metricLabel = `${qty} Unidades`;
+       }
   }
   if (category === 'wedding' && selectionMode === 'duration' && hours === 2) metricLabel = "Pacote Completo";
   if (category === 'custom') metricLabel = 'Sob medida';
@@ -344,25 +359,37 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
     addons: activeAddons
   };
 
-  // Lógica para determinar se é Foto ou Vídeo na contagem de quantidade
-  const isPhotoService = 
-      (category === 'social' && selectionMode === 'quantity') ||
-      (category === 'studio' && serviceId === 'studio_photo') ||
-      (category === 'commercial' && serviceId === 'comm_photo');
-
-  const isVideoService = 
-      (category === 'commercial' && (serviceId === 'comm_video' || serviceId === 'comm_combo')) ||
-      (category === 'video_production' && serviceId === 'edit_only');
-
   const quoteDetails = {
     occasion: category === 'custom' ? 'custom' : (category as any),
     customOccasionText: serviceLabel,
     location: (category === 'studio' ? 'studio' : 'external'),
-    photoQty: isPhotoService ? qty : 0,
-    videoQty: isVideoService ? qty : 0,
     distance,
     paymentMethod,
-    addons: activeAddons 
+    addons: activeAddons,
+    // --- NOVOS CAMPOS PARA PRECISAO DA MENSAGEM ---
+    serviceId: serviceId,
+    selectionMode: selectionMode,
+    hours: hours,
+    photoQty: qty,
+    videoQty: videoQty 
+  };
+
+  // --- LOGIC: DYNAMIC BUTTON LABEL ---
+  const getFooterLabel = () => {
+    // Etapa 0: Categorias
+    if (currentStep === 0) return "Ver Detalhes"; 
+    
+    // Etapa 1: Serviços (Upsell List)
+    if (currentStep === 1) return "Configurar Detalhes";
+
+    // Etapa 2: Configuração (Final)
+    if (currentStep === 2) {
+        if (category === 'custom') return "Solicitar";
+        if (selectionMode === 'quantity') return "Confirmar Quantidade";
+        if (selectionMode === 'duration') return "Confirmar Tempo";
+    }
+
+    return "Continuar";
   };
 
   if (viewState === 'success') {
@@ -460,6 +487,7 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
                       serviceId={serviceId} setServiceId={setServiceId}
                       hours={hours} setHours={setHours}
                       qty={qty} setQty={setQty}
+                      videoQty={videoQty} setVideoQty={setVideoQty}
                       addDrone={addDrone} setAddDrone={setAddDrone}
                       addRealTime={addRealTime} setAddRealTime={setAddRealTime}
                       distance={distance}
@@ -486,6 +514,7 @@ Estou no configurador e gostaria de um orçamento personalizado para minha empre
                 highlight={true}
                 showPrice={currentStep !== 0} 
                 disabled={isNextDisabled}
+                customLabel={getFooterLabel()} // Texto dinâmico
             />
         </div>
       )}

@@ -32,10 +32,11 @@ const App: React.FC = () => {
   });
 
   const [quoteState, setQuoteState] = useState<QuoteState>({
-    category: null, // CRÍTICO: Inicia como null para bloquear o botão 'Continuar'
+    category: null, 
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
+    videoQty: 1, // Inicialização
     addDrone: false,
     addRealTime: false,
     selectionMode: 'duration'

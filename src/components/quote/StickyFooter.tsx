@@ -13,10 +13,11 @@ interface StickyFooterProps {
   highlight?: boolean;
   showPrice?: boolean; 
   disabled?: boolean;
+  customLabel?: string;
 }
 
 const StickyFooter: React.FC<StickyFooterProps> = ({ 
-  totalPrice, onApprove, isApproved, highlight = false, showPrice = true, disabled = false
+  totalPrice, onApprove, isApproved, highlight = false, showPrice = true, disabled = false, customLabel
 }) => {
   return (
     <motion.div 
@@ -26,15 +27,13 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
       transition={{ duration: 0.5, type: "spring", damping: 20 }}
       className="fixed bottom-0 left-0 right-0 z-40"
     >
-      {/* 
-         GRADIENTE REDUZIDO - Mais sutil e menor altura
-      */}
+      {/* Gradiente de transição para o conteúdo */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none h-12 -top-12" />
       
-      <div className="bg-neutral-950 border-t border-white/10 pb-8 pt-4 px-6 md:pb-8 md:px-12 relative z-10">
+      <div className="bg-neutral-950 border-t border-white/10 pb-6 pt-4 px-4 md:pb-8 md:px-12 relative z-10">
+        {/* ALTERAÇÃO: justify-center usado sempre para centralizar o bloco todo */}
         <div className={cn(
-            "max-w-4xl mx-auto flex items-center gap-4",
-            showPrice ? "justify-between" : "justify-center"
+            "max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-12"
         )}>
           
           <AnimatePresence mode="wait">
@@ -44,10 +43,10 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="flex flex-col"
+                className="flex flex-col items-center sm:items-end w-full sm:w-auto"
               >
                 <span className="text-neutral-500 text-[10px] uppercase tracking-widest mb-0.5">Valor Estimado</span>
-                <div className="text-3xl font-serif text-white flex items-baseline gap-2">
+                <div className="text-2xl md:text-3xl font-serif text-white flex items-baseline gap-2">
                   <AnimatedPrice value={totalPrice} />
                   <span className="text-xs font-sans text-neutral-600 font-normal">BRL</span>
                 </div>
@@ -55,33 +54,20 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
             )}
           </AnimatePresence>
 
-          {/* Oculta a hint e mantém apenas o botão centralizado se showPrice for false */}
-          {showPrice && (
-             <motion.div 
-                key="hint"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="hidden sm:block text-neutral-500 text-xs italic ml-auto mr-4"
-             >
-                {/* Espaço para dica se necessário */}
-             </motion.div>
-          )}
-
-          <div className="flex items-center gap-4">
+          <div className={cn("flex items-center gap-4 w-full sm:w-auto justify-center")}>
             <Button 
                 variant="primary" 
                 size="lg" 
                 onClick={onApprove}
                 disabled={disabled}
                 className={cn(
-                    "flex items-center gap-3 px-8 py-4 transition-all duration-300",
+                    "flex items-center justify-center gap-3 transition-all duration-300 w-full sm:w-auto", // Full width on mobile
                     !disabled ? "shadow-[0_0_25px_rgba(220,38,38,0.4)]" : "opacity-50 cursor-not-allowed shadow-none grayscale",
-                    !showPrice && "px-12 py-5 text-lg" // Botão maior quando centralizado na intro
+                    !showPrice ? "px-12 py-5 text-lg" : "px-6 py-3.5 md:px-8 md:py-4"
                 )}
             >
-                <span className="font-medium">Continuar</span> 
-                <div className={cn("p-1 rounded-full", disabled ? "bg-white/5" : "bg-white/20")}>
+                <span className="font-medium whitespace-nowrap text-sm md:text-base">{customLabel || "Continuar"}</span> 
+                <div className={cn("p-1 rounded-full shrink-0", disabled ? "bg-white/5" : "bg-white/20")}>
                     <ChevronRight size={16} />
                 </div>
             </Button>

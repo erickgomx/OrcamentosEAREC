@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X } from 'lucide-react';
 import Logo from '../components/ui/Logo';
-import Button from '../components/ui/Button'; // Importando Button
+import Button from '../components/ui/Button'; 
 import { fadeInUp, staggerContainer, modalVariants } from '../lib/animations';
-import { ClientData, OccasionType, LocationType } from '../types';
+import { ClientData, OccasionType, LocationType, ServiceId } from '../types';
 import { cn, formatCurrency } from '../lib/utils';
 import { AppConfig } from '../config/AppConfig';
 
@@ -17,11 +17,15 @@ interface SuccessViewProps {
       occasion: OccasionType;
       customOccasionText?: string;
       location: LocationType;
-      photoQty: number;
-      videoQty: number;
       distance: number;
       paymentMethod?: string;
       addons?: string[];
+      // Novos campos para precisão
+      serviceId: ServiceId;
+      selectionMode: 'duration' | 'quantity';
+      hours: number;
+      photoQty: number; // Mapeado para qty genérico
+      videoQty: number;
   };
 }
 
@@ -76,17 +80,36 @@ Tenho um projeto específico (Briefing a discutir com a equipe criativa).
         } else {
             // TEMPLATE: ORÇAMENTO PADRÃO (PREMIUM)
             let escopo = "";
-            const ambiente = quoteDetails.location === 'studio' ? "Estúdio Controlado" : "Externo / In Loco";
+            const { serviceId, selectionMode, hours, photoQty, videoQty } = quoteDetails;
+
+            // LÓGICA DE ESCOPO PRECISA
+            if (serviceId === 'comm_combo') {
+                escopo = "Combo Comercial (10 Fotos + 1 Vídeo)";
+                const extraPhotos = photoQty - 10;
+                const extraVideos = videoQty - 1;
+                
+                if (extraPhotos > 0 || extraVideos > 0) escopo += "\n   _Incluindo:_";
+                if (extraPhotos > 0) escopo += `\n   + ${extraPhotos} Fotos Extras`;
+                if (extraVideos > 0) escopo += `\n   + ${extraVideos} Vídeos Extras`;
             
-            if (quoteDetails.photoQty > 0 && quoteDetails.videoQty > 0) {
-                escopo = `${quoteDetails.photoQty} Fotos + ${quoteDetails.videoQty} Vídeo(s)`;
-            } else if (quoteDetails.photoQty > 0) {
-                escopo = `${quoteDetails.photoQty} Fotos`;
-            } else if (quoteDetails.videoQty > 0) {
-                escopo = `${quoteDetails.videoQty} Vídeo(s)`;
+            } else if (serviceId === 'edit_only') {
+                // Para edição, qty representa minutos
+                escopo = `${photoQty} Minutos de Edição (Aprox.)`;
+            
+            } else if (selectionMode === 'duration') {
+                escopo = `${hours} Horas de Cobertura`;
+            
             } else {
-                escopo = "Cobertura por Hora/Diária";
+                // Modo Quantidade Genérico (Fotos ou Vídeos Avulsos)
+                // Verifica o ID do serviço para saber se é foto ou vídeo
+                if (serviceId.includes('video') || serviceId === 'comm_video' || serviceId === 'studio_video') {
+                    escopo = `${photoQty} Vídeos Produzidos`;
+                } else {
+                    escopo = `${photoQty} Fotos Tratadas`;
+                }
             }
+
+            const ambiente = quoteDetails.location === 'studio' ? "Estúdio Controlado" : "Externo / In Loco";
 
             message = `✨ *OLÁ! NOVA PROPOSTA GERADA*
 Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a disponibilidade.
