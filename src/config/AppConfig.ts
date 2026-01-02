@@ -38,7 +38,7 @@ export class AppConfig {
     LABELS: {
       DURATION_MODE: "POR TEMPO (Fotos Ilimitadas)",
       QUANTITY_MODE: "POR ENTREGA (Pack de Fotos)",
-      ADD_DRONE: "Imagens de Drone",
+      ADD_DRONE: "Drone (1 Bateria)",
       ADD_REALTIME: "Fotos em Tempo Real",
     }
   };
@@ -53,26 +53,26 @@ export class AppConfig {
         wedding_base: { 
             base: 650, 
             label: "Casamento (Base)",
-            composition: "Cerimônia + Decoração + Fotos c/ Convidados",
-            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Inclui registros detalhados da decoração e fotos protocolares com convidados."
+            composition: "Cerimônia (Fotos Ilimitadas)",
+            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Inclui registros detalhados da decoração e fotos protocolares ilimitadas."
         },
         wedding_classic: { 
             base: 900, 
             label: "Pacote Clássico",
-            composition: "Pré Wedding + Casamento",
-            description: "A união de dois momentos especiais. Inclui um ensaio Pré Wedding (para celebrar o noivado) e a cobertura completa do Casamento." 
+            composition: "Pré (10 Fotos) + Casamento (Ilimitado)",
+            description: "A união de dois momentos especiais. Inclui um ensaio Pré Wedding (entrega de 10 fotos tratadas) e a cobertura completa do Casamento com fotos ilimitadas." 
         },
         wedding_romance: {
             base: 1150,
             label: "Pacote Romance",
-            composition: "Pré Wedding + Making Of + Cerimônia",
-            description: "Cobertura expandida para contar mais da sua história. Inclui o Ensaio Pré Wedding, o Making Of dos noivos (preparação) e a Cerimônia."
+            composition: "Pré (10 Fotos) + Making Of + Cerimônia",
+            description: "Cobertura expandida. Inclui o Ensaio Pré Wedding (10 fotos tratadas), o Making Of dos noivos e a Cerimônia com entrega ilimitada de fotos."
         },
         wedding_essence: { 
             base: 1750, 
             label: "Pacote Mais Essência",
-            composition: "Pré + Making Of + Casamento + Vídeo",
-            description: "A experiência completa. Pré Wedding, Making Of, Casamento e um Vídeo Highlight cinematográfico com os melhores momentos do grande dia." 
+            composition: "Pré (10 Fotos) + Casamento + Vídeo",
+            description: "A experiência completa. Pré Wedding (10 fotos tratadas), Making Of, Casamento (Ilimitado) e um Vídeo Highlight cinematográfico dos melhores momentos." 
         },
         realtime: { fixed: 600, label: "Fotos em Tempo Real" }
     },
@@ -166,9 +166,9 @@ export class AppConfig {
         },
         drone: { 
             fixed: 250, 
-            label: "Drone (Imagens Aéreas)",
-            composition: "Voo Técnico + Takes 4K",
-            description: "Imagens aéreas que valorizam a locação e dão grandiosidade ao projeto. Inclui piloto certificado e drone DJI de última geração." 
+            label: "Drone (Por Bateria)",
+            composition: "1 Bateria (Aprox. 20min)",
+            description: "Imagens aéreas que valorizam a locação. Cada bateria oferece aprox. 20 minutos de voo. Inclui piloto certificado e Drone DJI." 
         }
     },
     custom: {

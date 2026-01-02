@@ -1,4 +1,3 @@
-
 import { AppConfig } from "../config/AppConfig";
 import { PricingContext, PricingResult, QuoteState, PriceBreakdownItem } from "../types";
 
@@ -207,7 +206,7 @@ export class PricingEngine {
   }
 
   private static calculateProduction(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { serviceId, qty } = state;
+    const { serviceId, qty, hours } = state;
     const table = AppConfig.PRICING_TABLE.video_production;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
@@ -218,16 +217,31 @@ export class PricingEngine {
       breakdown.push({ label: `${table.edit_only.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'cam_cap') { 
+      // IMPLEMENTAÇÃO DE HORAS EXTRAS PARA FREELANCERS
       total += table.cam_cap.fixed; 
-      breakdown.push({ label: table.cam_cap.label, value: table.cam_cap.fixed, type: 'base' }); 
+      breakdown.push({ label: `${table.cam_cap.label} (Base 2h)`, value: table.cam_cap.fixed, type: 'base' }); 
+      
+      if (hours > 2) {
+          const extraVal = (hours - 2) * 200; // Hora extra Captação Pro
+          total += extraVal;
+          breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
+      }
     }
     else if (serviceId === 'mobile_cap') { 
       total += table.mobile_cap.fixed; 
-      breakdown.push({ label: table.mobile_cap.label, value: table.mobile_cap.fixed, type: 'base' }); 
+      breakdown.push({ label: `${table.mobile_cap.label} (Base 2h)`, value: table.mobile_cap.fixed, type: 'base' }); 
+      
+      if (hours > 2) {
+          const extraVal = (hours - 2) * 150; // Hora extra Mobile (Mais barato)
+          total += extraVal;
+          breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
+      }
     }
     else if (serviceId === 'drone') { 
-      total += table.drone.fixed; 
-      breakdown.push({ label: table.drone.label, value: table.drone.fixed, type: 'base' }); 
+      // Alterado para multiplicar por QTY (Baterias)
+      const val = qty * table.drone.fixed; 
+      total += val; 
+      breakdown.push({ label: `${table.drone.label} (${qty}x)`, value: val, type: 'base' }); 
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };

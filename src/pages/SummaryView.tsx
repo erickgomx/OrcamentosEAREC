@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown } from 'lucide-react';
+import { Calendar, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown, Sparkles, ShieldCheck } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import AnimatedPrice from '../components/ui/AnimatedPrice';
@@ -37,6 +36,28 @@ interface SummaryViewProps {
   onRemoveAddon?: (addonName: string) => void;
 }
 
+// Componente Auxiliar para Campos de Informação
+interface InfoFieldProps {
+  label: string;
+  children: React.ReactNode;
+  icon: any;
+  editing: boolean;
+}
+
+const InfoField: React.FC<InfoFieldProps> = ({ label, children, icon: Icon, editing }) => (
+    <div className={cn("flex gap-3", editing ? "opacity-100" : "opacity-80")}>
+        <div className="mt-1 text-neutral-500 shrink-0">
+            <Icon size={16} />
+        </div>
+        <div className="w-full">
+            <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-0.5">{label}</p>
+            <div className="text-sm md:text-base text-white font-light break-words leading-snug">
+                {children}
+            </div>
+        </div>
+    </div>
+);
+
 const SummaryView: React.FC<SummaryViewProps> = ({ 
   clientData, onUpdateClientData, quoteData, totalPrice, paymentMethod,
   setPaymentMethod, onBack, onProceedToSign, summaryDetails, priceBreakdown = [], onRemoveAddon
@@ -50,53 +71,46 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   
   const today = new Date().toISOString().split('T')[0];
 
-  // Sincroniza dados apenas quando NÃO está editando para evitar conflito de digitação
+  // Sincroniza dados apenas quando NÃO está editando
   useEffect(() => { 
       if (!isEditing) {
           setTempData(clientData); 
       }
   }, [clientData, isEditing]);
 
+  // Animação de entrada atrasada para permitir a transição do modal anterior
   useEffect(() => {
-    const timer = setTimeout(() => { setShowContent(true); }, 1500); 
+    const timer = setTimeout(() => { setShowContent(true); }, 800); 
     return () => clearTimeout(timer);
   }, []);
 
   // --- LÓGICA DE AUTO-SAVE (DEBOUNCE) ---
   useEffect(() => {
-    // Não executa na montagem inicial ou se não estiver editando
     if (!isEditing) return;
 
     setSaveStatus('saving');
     const handler = setTimeout(() => {
-        // Envia para o pai
         onUpdateClientData(tempData);
         setSaveStatus('saved');
-        
-        // Volta para idle após um tempo
         setTimeout(() => setSaveStatus('idle'), 2000);
-    }, 600); // Aguarda 600ms após parar de digitar
+    }, 600); 
 
     return () => clearTimeout(handler);
   }, [tempData, isEditing, onUpdateClientData]);
 
   const handleFinishEditing = () => {
-      // Garante o último save
       onUpdateClientData(tempData);
       setIsEditing(false);
   };
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    // LÓGICA DE CONTATO: Apenas Números e Limite de Caracteres
     if (name === 'contact') {
-        const numericValue = value.replace(/\D/g, ''); // Remove tudo que não for dígito
-        if (numericValue.length > 15) return; // Limite de caracteres
+        const numericValue = value.replace(/\D/g, ''); 
+        if (numericValue.length > 15) return; 
         setTempData(prev => ({ ...prev, [name]: numericValue }));
         return;
     }
-
     setTempData(prev => ({ ...prev, [name]: value }));
   };
   
@@ -128,272 +142,260 @@ const SummaryView: React.FC<SummaryViewProps> = ({
           <motion.div
             key="intro-overlay"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+            exit={{ opacity: 0, filter: 'blur(20px)' }}
             transition={{ duration: 0.8 }}
             className="absolute inset-0 flex items-center justify-center bg-black z-50"
           >
-            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1 }}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}>
               <Logo className="w-64" animate />
+              <p className="text-center text-neutral-500 text-[10px] uppercase tracking-widest mt-4">Preparando resumo...</p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
       
-      {/* INDICADOR DE ROLAGEM */}
-      <AnimatePresence>
-        {showContent && !hasScrolled && (
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="fixed bottom-8 left-0 right-0 z-50 pointer-events-none flex justify-center"
-            >
-                <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="flex flex-col items-center gap-2"
-                >
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-neutral-500 font-medium bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/5 shadow-lg">
-                        Conferir Detalhes
-                    </span>
-                    <div className="p-2 bg-brand-DEFAULT/10 rounded-full border border-brand-DEFAULT/20 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.3)]">
-                        <ChevronDown size={20} />
-                    </div>
-                </motion.div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Background Ambience */}
+      <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-900/10 blur-[120px] rounded-full" />
+      </div>
 
       {showContent && (
         <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="min-h-screen py-12 px-4 md:px-6 relative"
+            transition={{ duration: 0.6 }}
+            className="min-h-screen py-8 px-4 md:px-8 relative z-10 flex flex-col items-center"
         >
-             <div className="fixed top-0 left-0 w-full h-1/2 bg-gradient-to-b from-brand-DEFAULT/5 to-transparent pointer-events-none" />
-
-             <motion.div className="max-w-3xl mx-auto relative z-10" variants={staggerContainer} initial="hidden" animate="visible">
+             <motion.div className="w-full max-w-6xl mx-auto" variants={staggerContainer} initial="hidden" animate="visible">
                 
-                <motion.div variants={fadeInUp} className="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
-                    <button onClick={onBack} className="flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group text-sm">
+                {/* HEADER */}
+                <motion.div variants={fadeInUp} className="flex flex-col md:flex-row items-center justify-between mb-8 pb-6 border-b border-white/5 gap-4">
+                    <button onClick={onBack} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group text-sm font-medium bg-white/5 px-4 py-2 rounded-full hover:bg-white/10">
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                        VOLTAR
+                        Voltar à Configuração
                     </button>
-                    <div className="text-right">
-                        <p className="text-xs text-neutral-500 uppercase tracking-widest">Resumo do Pedido</p>
-                        <p className="text-white font-serif text-lg">{quoteData.id}</p>
+                    <div className="text-center md:text-right">
+                        <h2 className="text-white font-serif text-2xl md:text-3xl">Revisão do Pedido</h2>
+                        <p className="text-neutral-500 text-xs uppercase tracking-widest mt-1">ID: {quoteData.id}</p>
                     </div>
                 </motion.div>
 
-                <div className="grid grid-cols-1 gap-6">
+                {/* MAIN GRID LAYOUT */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
                     
-                    {/* DADOS DO CLIENTE */}
-                    <motion.div variants={fadeInUp} layout className="bg-neutral-900/50 border border-white/10 rounded-lg overflow-hidden relative">
-                        <div className="flex items-center justify-between px-6 py-4 bg-white/5 border-b border-white/5">
-                            <h3 className="text-sm font-medium text-white flex items-center gap-2">
-                                <User size={14} className="text-brand-DEFAULT" />
-                                Dados do Cliente
-                            </h3>
+                    {/* COLUNA ESQUERDA: DADOS + PAGAMENTO (lg:col-span-7) */}
+                    <motion.div variants={fadeInUp} className="lg:col-span-7 space-y-6">
+                        
+                        {/* 1. CARD DADOS DO CLIENTE */}
+                        <div className="bg-neutral-900/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden relative group">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-DEFAULT to-transparent opacity-50" />
                             
-                            {!isEditing ? (
-                                <button onClick={() => setIsEditing(true)} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-white/5">
-                                    <Edit2 size={12} /> Editar
-                                </button>
-                            ) : (
-                                <div className="flex items-center gap-3">
-                                    {/* Indicador de Status */}
-                                    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider transition-all">
-                                        {saveStatus === 'saving' && (
-                                            <>
-                                                <Loader2 size={10} className="animate-spin text-neutral-500" />
-                                                <span className="text-neutral-500">Salvando...</span>
-                                            </>
-                                        )}
-                                        {saveStatus === 'saved' && (
-                                            <>
-                                                <Cloud size={10} className="text-green-500" />
-                                                <span className="text-green-500">Salvo</span>
-                                            </>
-                                        )}
-                                    </div>
-
-                                    {/* Botão Concluir */}
-                                    <button 
-                                        onClick={handleFinishEditing} 
-                                        className="text-xs flex items-center gap-1 bg-brand-DEFAULT/10 hover:bg-brand-DEFAULT/20 text-brand-DEFAULT px-3 py-1 rounded-full transition-colors border border-brand-DEFAULT/20"
-                                    >
-                                        <Check size={12} /> Concluir
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+                                <h3 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                                    <User size={16} className="text-brand-DEFAULT" />
+                                    Dados do Contrato
+                                </h3>
+                                
+                                {!isEditing ? (
+                                    <button onClick={() => setIsEditing(true)} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-full hover:bg-white/5 border border-transparent hover:border-white/10">
+                                        <Edit2 size={12} /> Alterar
                                     </button>
+                                ) : (
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider transition-all">
+                                            {saveStatus === 'saving' && <><Loader2 size={10} className="animate-spin text-neutral-500" /><span className="text-neutral-500">Salvando...</span></>}
+                                            {saveStatus === 'saved' && <><Cloud size={10} className="text-green-500" /><span className="text-green-500">Salvo</span></>}
+                                        </div>
+                                        <button onClick={handleFinishEditing} className="text-xs flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 text-green-500 px-3 py-1.5 rounded-full transition-colors border border-green-500/20 font-medium">
+                                            <Check size={12} /> Concluir
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="p-6 md:p-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                                    <InfoField label="Nome / Empresa" icon={User} editing={isEditing}>
+                                        {isEditing ? (
+                                            <input name="name" value={tempData.name} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="Nome completo" />
+                                        ) : clientData.name}
+                                    </InfoField>
+
+                                    <InfoField label="Data do Evento" icon={Calendar} editing={isEditing}>
+                                        {isEditing ? (
+                                            <input name="date" type="date" min={today} value={getInputDateValue(tempData.date)} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors [&::-webkit-calendar-picker-indicator]:invert" />
+                                        ) : formatDateSafe(clientData.date)}
+                                    </InfoField>
+
+                                    <InfoField label="Localização" icon={MapPin} editing={isEditing}>
+                                        {isEditing ? (
+                                            <div className="relative">
+                                                <input name="location" value={tempData.location} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 pr-8 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="Cidade ou Endereço" />
+                                                <button onClick={() => setIsMapOpen(true)} className="absolute right-0 top-1 text-neutral-500 hover:text-brand-DEFAULT"><MapIcon size={16} /></button>
+                                            </div>
+                                        ) : (clientData.location || "A definir")}
+                                    </InfoField>
+
+                                    <InfoField label="WhatsApp" icon={Phone} editing={isEditing}>
+                                        {isEditing ? (
+                                            <input name="contact" type="tel" value={tempData.contact} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="(00) 00000-0000" />
+                                        ) : (clientData.contact || "A definir")}
+                                    </InfoField>
                                 </div>
-                            )}
+                            </div>
                         </div>
 
-                        <div className="p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8">
-                                <div className="space-y-1">
-                                    <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Nome / Empresa</label>
-                                    {isEditing ? (
-                                        <input name="name" value={tempData.name} onChange={handleChange} className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 focus:outline-none" />
-                                    ) : ( <p className="text-white font-medium">{clientData.name}</p> )}
+                        {/* 2. CARD PAGAMENTO */}
+                        <div className="bg-neutral-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative">
+                             <div className="flex items-center gap-2 mb-4 text-white">
+                                <div className="p-2 bg-white/5 rounded-lg text-brand-DEFAULT">
+                                    <CreditCard size={20} />
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Data do Evento</label>
-                                    {isEditing ? (
-                                        <input name="date" type="date" min={today} value={getInputDateValue(tempData.date)} onChange={handleChange} className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 focus:outline-none [&::-webkit-calendar-picker-indicator]:invert" />
-                                    ) : ( <p className="text-white font-medium">{formatDateSafe(clientData.date)}</p> )}
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Local do Serviço</label>
-                                    {isEditing ? (
-                                        <div className="relative">
-                                            <input name="location" value={tempData.location} onChange={handleChange} className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 pr-10 focus:outline-none" />
-                                            <button onClick={() => setIsMapOpen(true)} className="absolute right-0 top-0 text-neutral-400 hover:text-brand-DEFAULT p-1" title="Abrir Mapa"><MapIcon size={16} /></button>
-                                        </div>
-                                    ) : ( <p className="text-white font-medium flex items-center gap-2"><MapPin size={12} className="text-neutral-500" />{clientData.location || "A definir"}</p> )}
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-[10px] text-neutral-500 uppercase tracking-widest">Contato</label>
-                                    {isEditing ? (
-                                        <input 
-                                            name="contact" 
-                                            type="tel"
-                                            value={tempData.contact} 
-                                            onChange={handleChange} 
-                                            placeholder="Apenas números"
-                                            className="w-full bg-transparent border-b border-brand-DEFAULT text-white py-1 focus:outline-none" 
-                                        />
-                                    ) : ( <p className="text-white font-medium flex items-center gap-2"><Phone size={12} className="text-neutral-500" />{clientData.contact || "A definir"}</p> )}
+                                <div>
+                                    <h4 className="text-sm font-bold uppercase tracking-wide">Forma de Pagamento</h4>
+                                    <p className="text-[10px] text-neutral-500">Selecione como prefere realizar o pagamento</p>
                                 </div>
                             </div>
-                        </div>
-                    </motion.div>
 
-                    {/* ESCOPO DO PROJETO DETALHADO */}
-                    <motion.div variants={fadeInUp} layout className="bg-neutral-900/50 border border-white/10 rounded-lg overflow-hidden flex flex-col">
-                         <div className="flex items-center justify-between px-6 py-4 bg-white/5 border-b border-white/5">
-                            <h3 className="text-sm font-medium text-white flex items-center gap-2">
-                                <FileText size={14} className="text-brand-DEFAULT" />
-                                Escopo Financeiro
-                            </h3>
-                            <button onClick={onBack} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1 transition-colors px-2 py-1 rounded hover:bg-white/5">
-                                <PlusCircle size={12} /> Adicionar Itens
-                            </button>
-                         </div>
-                         
-                         <div className="p-6 flex-1 flex flex-col">
-                            {/* Categoria */}
-                            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-4">
-                                {summaryDetails.categoryLabel}
-                            </p>
-
-                            {/* Lista de Itens com Preços */}
-                            <div className="space-y-2 mb-6">
-                                {priceBreakdown.map((item, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className={cn(
-                                            "flex justify-between items-center text-sm py-2 border-b border-white/5 px-2 -mx-2 rounded transition-colors",
-                                            item.type === 'freight' ? "text-neutral-400 italic cursor-default" : "text-neutral-200",
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            {/* Botão de Lixeira Explicito para Addons */}
-                                            {item.type === 'addon' && onRemoveAddon ? (
-                                                <button 
-                                                    onClick={() => onRemoveAddon(item.label)}
-                                                    className="text-neutral-500 hover:text-red-500 hover:bg-red-500/10 p-1 rounded transition-all"
-                                                    title="Remover item"
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
-                                            ) : (
-                                                // Espaçador para alinhar itens base se necessário, ou null
-                                                null
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                {['Pix', 'Cartão', 'Espécie'].map((method) => {
+                                    const isActive = paymentMethod === method;
+                                    return (
+                                        <button 
+                                            key={method}
+                                            onClick={() => setPaymentMethod(method)}
+                                            className={cn(
+                                                "relative flex flex-col items-center justify-center py-4 px-2 rounded-xl border transition-all duration-300 group overflow-hidden",
+                                                isActive 
+                                                    ? "bg-brand-DEFAULT/10 border-brand-DEFAULT text-white shadow-[0_0_15px_rgba(220,38,38,0.2)]" 
+                                                    : "bg-black/20 border-white/5 text-neutral-400 hover:bg-white/5 hover:border-white/10 hover:text-white"
                                             )}
-
-                                            <span className={item.type === 'addon' ? "text-white" : ""}>{item.label}</span>
-                                        </div>
-
-                                        <div className="flex items-center gap-1">
-                                            {item.label.includes("A consultar") ? (
-                                                <span className="text-yellow-500 text-xs uppercase font-medium">Sob Consulta</span>
-                                            ) : item.value === 0 ? (
-                                                <span className="text-green-500 text-xs uppercase font-medium">Incluso</span>
-                                            ) : (
-                                                <span className="font-mono">{formatCurrency(item.value)}</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
+                                        >
+                                            {isActive && <div className="absolute top-2 right-2 text-brand-DEFAULT"><Check size={14} /></div>}
+                                            
+                                            <div className={cn("mb-2 transition-transform duration-300", isActive ? "scale-110 text-brand-DEFAULT" : "group-hover:scale-110")}>
+                                                {method === 'Pix' && <QrCode size={24} />}
+                                                {method === 'Cartão' && <CreditCard size={24} />}
+                                                {method === 'Espécie' && <Banknote size={24} />}
+                                            </div>
+                                            <span className="text-sm font-medium">{method}</span>
+                                        </button>
+                                    )
+                                })}
                             </div>
 
-                            <div className="mt-auto pt-4 border-t border-white/10">
-                                <div className="flex justify-between items-end">
-                                    <div className="text-left">
-                                         <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-1">Total Final</p>
-                                         <p className="text-2xl text-white font-serif"><AnimatedPrice value={totalPrice} /></p>
-                                    </div>
-                                </div>
-                            </div>
-                         </div>
-                    </motion.div>
-
-                    {/* CONTRATO E PAGAMENTO */}
-                    <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-white/5 border border-white/10 rounded-lg p-5 flex items-start gap-4 h-full">
-                            <div className="mt-1 text-brand-DEFAULT"><Copyright size={18} /></div>
-                            <div>
-                                <h4 className="text-sm font-medium text-white mb-1">Condições de Pagamento</h4>
-                                <p className="text-xs text-neutral-500 leading-relaxed">
-                                    Entrada de 50% na assinatura do contrato para reserva da data e 50% na entrega do material final.
+                            <motion.div 
+                                key={paymentMethod}
+                                initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
+                                className="mt-4 p-3 bg-white/5 rounded-lg border border-white/5 flex items-start gap-3"
+                            >
+                                <ShieldCheck size={16} className="text-green-500 mt-0.5 shrink-0" />
+                                <p className="text-xs text-neutral-400 leading-relaxed">
+                                    {paymentMethod === 'Pix' && <>Pagamento de <strong>50% na assinatura</strong> para reserva da data e <strong>50% na entrega</strong> do material.</>}
+                                    {paymentMethod === 'Cartão' && <>Parcelamento em até <strong>12x no cartão de crédito</strong> (consultar taxas da maquininha).</>}
+                                    {paymentMethod === 'Espécie' && <>Pagamento de <strong>50% na assinatura</strong> e 50% na entrega do material.</>}
                                 </p>
-                            </div>
+                            </motion.div>
                         </div>
 
-                         <div className="bg-white/5 border border-white/10 rounded-lg p-5 h-full">
-                            <div className="flex items-center gap-2 mb-3 text-white">
-                                <CreditCard size={18} className="text-neutral-400" />
-                                <h4 className="text-sm font-medium">Forma de Pagamento</h4>
-                            </div>
-                            <div className="grid grid-cols-3 gap-2">
-                                {['Pix', 'Cartão', 'Espécie'].map((method) => (
-                                    <button 
-                                        key={method}
-                                        onClick={() => setPaymentMethod(method)}
-                                        className={cn(
-                                            "flex flex-col items-center justify-center p-2 rounded border text-xs transition-all",
-                                            paymentMethod === method 
-                                                ? "bg-brand-DEFAULT/20 border-brand-DEFAULT text-white" 
-                                                : "bg-black/20 border-white/5 text-neutral-500 hover:bg-white/5"
-                                        )}
-                                    >
-                                        {method === 'Pix' && <QrCode size={16} className="mb-1" />}
-                                        {method === 'Cartão' && <CreditCard size={16} className="mb-1" />}
-                                        {method === 'Espécie' && <Banknote size={16} className="mb-1" />}
-                                        <span>{method}</span>
-                                    </button>
-                                ))}
-                            </div>
-                            <p className="text-[10px] text-neutral-500 mt-2 text-center">
-                                {paymentMethod === 'Pix' && "Pagamento à vista."}
-                                {paymentMethod === 'Cartão' && "Parcelamento em até 12x (com acréscimo)."}
-                                {paymentMethod === 'Espécie' && "Pagamento no ato do contrato."}
-                            </p>
-                        </div>
                     </motion.div>
 
-                    {/* TOTAL FINAL */}
-                    <motion.div variants={fadeInUp} className="mt-8 pt-8 border-t border-white/10 flex flex-col items-center">
-                        <Button 
-                            onClick={onProceedToSign}
-                            size="lg" 
-                            className="w-full md:w-auto md:min-w-[300px] shadow-[0_0_30px_rgba(220,38,38,0.3)] py-4 text-lg"
-                        >
-                            <PenTool size={20} className="mr-2" />
-                            Confirmar Orçamento
-                        </Button>
+                    {/* COLUNA DIREITA: RECIBO / TICKET (lg:col-span-5) */}
+                    <motion.div variants={fadeInUp} className="lg:col-span-5 relative">
+                        {/* EFEITO DE TICKET FLUTUANTE */}
+                        <div className="sticky top-8">
+                            <div className="relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                                
+                                {/* TOPO DO TICKET */}
+                                <div className="bg-brand-DEFAULT/10 p-6 border-b border-white/10 flex justify-between items-start">
+                                    <div>
+                                        <p className="text-[10px] text-brand-DEFAULT uppercase tracking-[0.2em] font-bold mb-1">Serviço Principal</p>
+                                        <h3 className="text-xl md:text-2xl text-white font-serif leading-none">{summaryDetails.serviceName}</h3>
+                                        <p className="text-neutral-400 text-xs mt-1">{summaryDetails.metricLabel}</p>
+                                    </div>
+                                    <div className="p-2 bg-white/5 rounded-lg border border-white/5">
+                                        <FileText size={20} className="text-white opacity-80" />
+                                    </div>
+                                </div>
+
+                                {/* LISTA DE ITENS */}
+                                <div className="p-6 space-y-4 bg-dots-pattern">
+                                    <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-2 border-b border-white/5 pb-2">Detalhamento</p>
+                                    
+                                    <div className="space-y-3">
+                                        {priceBreakdown.map((item, idx) => (
+                                            <div key={idx} className="flex justify-between items-start group">
+                                                <div className="flex items-start gap-2 max-w-[70%]">
+                                                    {item.type === 'addon' && onRemoveAddon && (
+                                                        <button 
+                                                            onClick={() => onRemoveAddon(item.label)} 
+                                                            className="text-neutral-600 hover:text-red-500 transition-colors mt-0.5"
+                                                            title="Remover Item"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    )}
+                                                    <span className={cn(
+                                                        "text-sm leading-tight",
+                                                        item.type === 'base' ? "text-white font-medium" : "text-neutral-400",
+                                                        item.type === 'freight' && "italic"
+                                                    )}>
+                                                        {item.label}
+                                                    </span>
+                                                </div>
+                                                <span className={cn(
+                                                    "text-sm font-mono",
+                                                    item.value === 0 ? "text-green-500 text-xs uppercase font-bold mt-0.5" : "text-white"
+                                                )}>
+                                                    {item.label.includes("A consultar") 
+                                                        ? "Consultar" 
+                                                        : item.value === 0 ? "Incluso" : formatCurrency(item.value)
+                                                    }
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="my-6 border-t-2 border-dashed border-white/10 relative">
+                                        {/* Bolinhas decorativas do ticket */}
+                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-neutral-950 rounded-full" />
+                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-neutral-950 rounded-full" />
+                                    </div>
+
+                                    {/* TOTAL */}
+                                    <div className="flex justify-between items-end">
+                                        <span className="text-sm text-neutral-500 font-medium uppercase tracking-widest">Valor Total</span>
+                                        <div className="text-right">
+                                            <span className="text-3xl md:text-4xl text-brand-DEFAULT font-serif block leading-none">
+                                                <AnimatedPrice value={totalPrice} />
+                                            </span>
+                                            <span className="text-[10px] text-neutral-500 uppercase font-medium">Moeda: BRL</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* AÇÃO */}
+                                <div className="p-4 bg-neutral-900 border-t border-white/5">
+                                    <Button 
+                                        onClick={onProceedToSign}
+                                        size="lg" 
+                                        className="w-full shadow-[0_0_30px_rgba(220,38,38,0.2)] py-4 text-base tracking-wide flex items-center justify-center gap-2"
+                                    >
+                                        <PenTool size={18} />
+                                        <span>CONFIRMAR ORÇAMENTO</span>
+                                    </Button>
+                                    <div className="mt-3 text-center flex items-center justify-center gap-1.5 opacity-50">
+                                        <Copyright size={10} className="text-neutral-500" />
+                                        <p className="text-[9px] text-neutral-500 uppercase tracking-widest">EAREC Audiovisual Experience</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            {/* Brilho de Fundo do Ticket */}
+                            <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[90%] bg-brand-DEFAULT/5 blur-3xl rounded-full" />
+                        </div>
                     </motion.div>
 
                 </div>

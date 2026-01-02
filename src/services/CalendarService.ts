@@ -1,4 +1,6 @@
 
+import { EnvConfig } from "../config/EnvConfig";
+
 /**
  * CalendarService
  * ---------------
@@ -16,15 +18,17 @@ export class CalendarService {
       return { available: false, message: "A data não pode ser no passado." };
     }
 
-    const apiKey = (import.meta as any).env?.VITE_GOOGLE_API_KEY || "";
-    const calendarId = (import.meta as any).env?.VITE_GOOGLE_CALENDAR_ID || "";
+    // Acesso seguro via EnvConfig
+    const apiKey = EnvConfig.GOOGLE_API_KEY;
+    const calendarId = EnvConfig.GOOGLE_CALENDAR_ID;
     
     // Modo Simulação (Mock)
-    if (!apiKey || !calendarId) {
+    if (!EnvConfig.HAS_CALENDAR_INTEGRATION) {
       // Simula delay de rede
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       const day = new Date(dateString).getDate();
+      // Lógica Mock para demonstração
       if (day === 15 || day === 20) {
           return { available: false, message: "Agenda lotada neste dia." };
       }

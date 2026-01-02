@@ -135,7 +135,7 @@ const App: React.FC = () => {
                   className="flex flex-col items-center"
                >
                   <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-400 font-serif italic text-xl md:text-2xl tracking-widest uppercase">
+                  <p className="text-neutral-500 font-sans font-medium text-sm md:text-base tracking-[0.4em] uppercase">
                     Orçamento Facilitado
                   </p>
                </motion.div>

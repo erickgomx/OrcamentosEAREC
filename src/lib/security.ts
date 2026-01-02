@@ -1,21 +1,49 @@
+
+
 /**
  * Módulo de Segurança
  * -------------------
- * Responsável pela validação de credenciais de forma simplificada.
+ * Utilitários para criptografia, hash e saneamento de dados.
  */
 
 /**
- * Verifica se a senha fornecida corresponde à senha mestre.
- * Senha definida: "XINGU" (Case insensitive)
- * @param input Senha em texto plano digitada pelo usuário.
+ * Gera um Hash SHA-256 de uma string.
+ * Utiliza a API nativa de criptografia do navegador (SubtleCrypto).
  */
-export const verifyPassword = async (input: string): Promise<boolean> => {
+export const sha256 = async (message: string): Promise<string> => {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+};
+
+/**
+ * Verifica se a senha fornecida corresponde ao Hash armazenado.
+ * @param input Senha digitada pelo usuário
+ * @param targetHash Hash SHA-256 esperado
+ */
+export const verifyHash = async (input: string, targetHash: string): Promise<boolean> => {
   if (!input) return false;
-  // Comparação simples e direta conforme solicitado
-  return input.toUpperCase().trim() === "XINGU";
+  const inputHash = await sha256(input.trim().toUpperCase());
+  return inputHash === targetHash;
+};
+
+/**
+ * Remove tags HTML e caracteres perigosos de uma string (Basic XSS Prevention).
+ * Útil para dados que serão exibidos na UI ou salvos em localStorage.
+ */
+export const sanitizeInput = (input: string): string => {
+  if (!input) return "";
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 };
 
 /**
  * Gera um delay artificial para prevenir Timing Attacks rudimentares e melhorar UX.
  */
-export const securityDelay = () => new Promise(resolve => setTimeout(resolve, 800));
+export const securityDelay = (): Promise<void> => new Promise<void>(resolve => setTimeout(resolve, 800));

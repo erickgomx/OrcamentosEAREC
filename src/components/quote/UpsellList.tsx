@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, Video, Gift, Crown, GraduationCap, Heart, 
   Store, Aperture, Plane, Clock, Minus, Plus, Route, Star, 
-  Edit, Smartphone as SmartphoneIcon, Sparkles, Gem, HelpCircle, X, MessageCircle, Hand, Check, Timer, Cross
+  Edit, Smartphone as SmartphoneIcon, Sparkles, Gem, HelpCircle, X, MessageCircle, Hand, Check, Timer, Cross, Battery
 } from 'lucide-react';
 
 import { cn, formatCurrency } from '../../lib/utils';
@@ -74,6 +73,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
     if (id === 'comm_photo') setQty(5);
     else if (id === 'comm_video') setQty(1);
     else if (id === 'studio_photo') setQty(8);
+    else if (id === 'drone') setQty(1); // Default 1 bateria
     else if (category === 'social') setQty(10);
   };
 
@@ -95,12 +95,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const isCombo = serviceId === 'comm_combo';
 
   const showDuration = (category === 'social' && serviceId !== 'graduation' && selectionMode === 'duration') ||
-                       (category === 'studio' && selectionMode === 'duration');
+                       (category === 'studio' && selectionMode === 'duration') ||
+                       (category === 'video_production' && (serviceId === 'cam_cap' || serviceId === 'mobile_cap')); 
   
   const showQuantity = ((category === 'commercial' && serviceId !== 'comm_combo') || 
                        (category === 'social' && serviceId !== 'graduation' && selectionMode === 'quantity') ||
                        (category === 'studio' && selectionMode === 'quantity') ||
-                       (category === 'video_production' && serviceId === 'edit_only')) && !isCombo;
+                       (category === 'video_production' && (serviceId === 'edit_only' || serviceId === 'drone'))) && !isCombo; 
   
   const canChooseMode = category === 'social' && serviceId !== 'graduation';
   
@@ -116,14 +117,63 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   // Verifica se a quantidade é de VÍDEO ou FOTO para ajustar ícone e texto
   const isVideoQuantity = (category === 'commercial' && serviceId === 'comm_video') ||
                           (category === 'video_production' && serviceId === 'edit_only');
+  const isDroneQuantity = category === 'video_production' && serviceId === 'drone';
+
+  // Lógica de Layout do Grid
+  const isCompactGrid = category === 'studio';
+  const gridClasses = cn(
+    "grid gap-4 md:gap-6 auto-rows-fr w-full mx-auto justify-center", 
+    isCompactGrid 
+        ? "grid-cols-2 max-w-2xl" 
+        : "grid-cols-2 lg:grid-cols-4 max-w-5xl" 
+  );
+
+  // === HELPER PARA CALCULAR CUSTO INCREMENTAL (VISUAL) ===
+  const getIncrementPrice = (type: 'hour' | 'qty' | 'combo_photo' | 'combo_video') => {
+    // Valores baseados no PricingEngine.ts e AppConfig.ts
+    
+    if (type === 'hour') {
+        if (category === 'studio') return 200; // Hora extra estúdio
+        if (category === 'video_production') {
+            if (serviceId === 'cam_cap') return 200;
+            if (serviceId === 'mobile_cap') return 150;
+        }
+        return 250; // Hora extra padrão (Social/Wedding)
+    }
+
+    if (type === 'combo_photo') return 20;  // Foto extra no combo
+    if (type === 'combo_video') return 350; // Vídeo extra no combo
+
+    if (type === 'qty') {
+        if (serviceId === 'comm_photo') return TABLE.commercial.comm_photo.unit; // 20
+        if (serviceId === 'comm_video') return TABLE.commercial.comm_video.unit; // 500
+        if (serviceId === 'drone') return TABLE.video_production.drone.fixed; // 250
+        if (serviceId === 'edit_only') return TABLE.video_production.edit_only.unit; // 250
+        // Padrão (Social/Studio Photos)
+        return 25; 
+    }
+    
+    return 0;
+  };
+
+  // Componente de Tooltip Sutil
+  const PriceTooltip = ({ value }: { value: number }) => (
+    <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none z-30">
+        <div className="bg-neutral-800/90 backdrop-blur-md text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg border border-white/10 shadow-xl whitespace-nowrap flex items-center gap-1">
+           <span className="text-brand-DEFAULT font-bold">+</span> {formatCurrency(value)}
+        </div>
+        {/* Seta do tooltip */}
+        <div className="w-2 h-2 bg-neutral-800/90 border-b border-r border-white/10 transform rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1"></div>
+    </div>
+  );
 
   // Renderização Condicional baseada no viewMode
   return (
-    <section className="w-full max-w-5xl mx-auto">
+    <section className="w-full max-w-5xl mx-auto flex flex-col items-center">
       
       {/* === STEP 1: CATEGORY SELECTION === */}
       {viewMode === 'categories' && (
-        <div className="space-y-8">
+        <div className="space-y-8 w-full">
             <motion.div 
                 key="categories-grid" 
                 variants={staggerContainer}
@@ -140,7 +190,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             variants={fadeInUp}
                             onClick={() => setCategory(cat.id as ServiceCategory)}
                             className={cn(
-                                "relative group flex flex-col items-center justify-center gap-2 p-3 md:p-6 rounded-xl md:rounded-3xl border transition-all duration-500 overflow-hidden text-center h-36 md:h-64",
+                                "relative group flex flex-col items-center justify-center gap-2 p-3 md:p-5 rounded-xl md:rounded-3xl border transition-all duration-500 overflow-hidden text-center h-36 md:h-52",
                                 isActive 
                                     ? "bg-brand-DEFAULT border-brand-DEFAULT shadow-[0_0_40px_rgba(220,38,38,0.3)] scale-[1.02] z-10" 
                                     : "bg-white/[0.03] border-white/5 hover:bg-white/[0.07] hover:border-white/20"
@@ -160,21 +210,21 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             )}
                             
                             <div className={cn(
-                                "p-3 md:p-5 rounded-xl md:rounded-full transition-all duration-300 mb-1",
+                                "p-3 md:p-4 rounded-xl md:rounded-full transition-all duration-300 mb-1",
                                 isActive ? "bg-white/20 text-white" : "bg-white/5 text-neutral-500 group-hover:text-white group-hover:bg-white/10"
                             )}>
-                                <Icon size={24} className="md:w-10 md:h-10" />
+                                <Icon size={24} className="md:w-8 md:h-8" />
                             </div>
 
                             <div className="relative z-10 w-full">
                                 <h3 className={cn(
-                                    "font-serif text-sm md:text-3xl mb-1 transition-colors duration-300 w-full font-bold",
+                                    "font-serif text-sm md:text-2xl mb-1 transition-colors duration-300 w-full font-bold",
                                     isActive ? "text-white" : "text-neutral-300 group-hover:text-white"
                                 )}>
                                     {cat.label}
                                 </h3>
                                 <p className={cn(
-                                    "text-[10px] md:text-base font-medium tracking-wide transition-colors duration-300 opacity-80 hidden md:block",
+                                    "text-[10px] md:text-sm font-medium tracking-wide transition-colors duration-300 opacity-80 hidden md:block",
                                     isActive ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"
                                 )}>
                                     {cat.desc}
@@ -226,7 +276,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
         <motion.div 
             initial="hidden"
             animate="visible"
-            className="space-y-8"
+            className="space-y-8 w-full flex flex-col items-center"
         >
              {canChooseMode && setSelectionMode && (
                 <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10">
@@ -267,7 +317,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
-                className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 auto-rows-fr"
+                className={gridClasses}
             >
                  {/* Wedding Options */}
                  {category === 'wedding' && (
@@ -371,13 +421,22 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         />
                         <ServiceCard active={serviceId === 'cam_cap'} onClick={() => handleServiceSelect('cam_cap', 'duration')} onInfo={setInfoData} icon={Video} title={TABLE.video_production.cam_cap.label} price={formatCurrency(TABLE.video_production.cam_cap.fixed)} composition={TABLE.video_production.cam_cap.composition} desc={TABLE.video_production.cam_cap.description} />
                         <ServiceCard active={serviceId === 'mobile_cap'} onClick={() => handleServiceSelect('mobile_cap', 'duration')} onInfo={setInfoData} icon={SmartphoneIcon} title={TABLE.video_production.mobile_cap.label} price={formatCurrency(TABLE.video_production.mobile_cap.fixed)} composition={TABLE.video_production.mobile_cap.composition} desc={TABLE.video_production.mobile_cap.description} />
-                        <ServiceCard active={serviceId === 'drone'} onClick={() => handleServiceSelect('drone', 'duration')} onInfo={setInfoData} icon={Plane} title={TABLE.video_production.drone.label} price={formatCurrency(TABLE.video_production.drone.fixed)} composition={TABLE.video_production.drone.composition} desc={TABLE.video_production.drone.description} />
+                        <ServiceCard 
+                            active={serviceId === 'drone'} 
+                            onClick={() => handleServiceSelect('drone', 'quantity')} 
+                            onInfo={setInfoData} 
+                            icon={Plane} 
+                            title={TABLE.video_production.drone.label} 
+                            price={`R$ ${TABLE.video_production.drone.fixed} / bateria`}
+                            composition={TABLE.video_production.drone.composition} 
+                            desc={TABLE.video_production.drone.description} 
+                        />
                     </>
                 )}
 
                 {/* Custom Option */}
                 {category === 'custom' && (
-                    <motion.div variants={fadeInUp} className="col-span-2 md:col-span-3 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
+                    <motion.div variants={fadeInUp} className="col-span-2 md:col-span-2 lg:col-span-4 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full w-full">
                         <Star className="mx-auto text-brand-DEFAULT mb-4" size={32} />
                         <h3 className="font-serif text-2xl text-white mb-2">Projeto Personalizado</h3>
                         <p className="text-neutral-400 mb-6 text-lg">Descreva sua necessidade específica no WhatsApp.</p>
@@ -432,7 +491,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 </span>
                                 <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">Horas</span>
                             </div>
-                            <ControlBtn onClick={() => setHours(hours + 1)} icon={Plus} active />
+                            <div className="flex flex-col items-center gap-2 group relative">
+                                <PriceTooltip value={getIncrementPrice('hour')} />
+                                <ControlBtn onClick={() => setHours(hours + 1)} icon={Plus} active />
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -446,7 +508,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                    >
                         {/* Seletor de Fotos */}
                         <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
+                            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                             
                             <div className="flex items-center gap-2 mb-4">
                                 <Camera className="text-brand-DEFAULT" size={20} />
@@ -460,7 +522,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         <AnimatedNumber value={qty} />
                                     </span>
                                 </div>
-                                <ControlBtn onClick={() => setQty(qty + 1)} icon={Plus} active />
+                                <div className="flex flex-col items-center gap-2 group relative">
+                                    <PriceTooltip value={getIncrementPrice('combo_photo')} />
+                                    <ControlBtn onClick={() => setQty(qty + 1)} icon={Plus} active />
+                                </div>
                             </div>
                         </div>
 
@@ -478,7 +543,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         <AnimatedNumber value={videoQty} />
                                     </span>
                                 </div>
-                                <ControlBtn onClick={() => setVideoQty(videoQty + 1)} icon={Plus} active />
+                                <div className="flex flex-col items-center gap-2 group relative">
+                                    <PriceTooltip value={getIncrementPrice('combo_video')} />
+                                    <ControlBtn onClick={() => setVideoQty(videoQty + 1)} icon={Plus} active />
+                                </div>
                             </div>
                         </div>
                    </motion.div>
@@ -495,15 +563,24 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <div 
                             className="flex items-center gap-3 mb-8 relative group cursor-pointer"
                             onClick={() => setInfoData({ 
-                                title: "Quantidade", 
-                                desc: isVideoQuantity 
-                                    ? "Número de vídeos editados ou produzidos. Inclui ajustes básicos de montagem e cor." 
-                                    : "Número de arquivos digitais em alta resolução com tratamento de cor e pele inclusos.", 
+                                title: isDroneQuantity ? "Quantidade de Baterias" : "Quantidade", 
+                                desc: isDroneQuantity 
+                                    ? "Número de baterias contratadas. Cada bateria oferece aprox. 20 minutos de voo técnico."
+                                    : isVideoQuantity 
+                                        ? "Número de vídeos editados ou produzidos. Inclui ajustes básicos de montagem e cor." 
+                                        : "Número de arquivos digitais em alta resolução com tratamento de cor e pele inclusos.", 
                                 price: "Info" 
                             })}
                         >
-                             {isVideoQuantity ? <Video className="text-brand-DEFAULT" size={24} /> : <Camera className="text-brand-DEFAULT" size={24} />}
-                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Quantidade</h3>
+                             {isDroneQuantity 
+                                ? <Battery className="text-brand-DEFAULT" size={24} /> 
+                                : isVideoQuantity 
+                                    ? <Video className="text-brand-DEFAULT" size={24} /> 
+                                    : <Camera className="text-brand-DEFAULT" size={24} />
+                             }
+                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">
+                                {isDroneQuantity ? "Baterias" : "Quantidade"}
+                             </h3>
                              <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
 
@@ -513,9 +590,14 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 <span className="block text-6xl font-serif text-white tracking-tighter mb-2 drop-shadow-lg">
                                     <AnimatedNumber value={qty} />
                                 </span>
-                                <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">Unidades</span>
+                                <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">
+                                    {isDroneQuantity ? "Baterias" : "Unidades"}
+                                </span>
                             </div>
-                            <ControlBtn onClick={() => setQty(qty + 1)} icon={Plus} active />
+                            <div className="flex flex-col items-center gap-2 group relative">
+                                <PriceTooltip value={getIncrementPrice('qty')} />
+                                <ControlBtn onClick={() => setQty(qty + 1)} icon={Plus} active />
+                            </div>
                         </div>
                     </motion.div>
                 )}
