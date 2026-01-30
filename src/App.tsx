@@ -3,26 +3,26 @@ import { AnimatePresence, motion } from 'framer-motion';
 import QuoteView from './src/pages/QuoteView';
 import WelcomeView from './src/pages/WelcomeView';
 import IntroView from './src/pages/IntroView';
+import ConfirmationView from './src/pages/ConfirmationView';
 import AdminDashboard from './src/pages/AdminDashboard';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
 import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
-import { ClientData, QuoteData, QuoteState } from './src/types';
+import { ClientData, QuoteData, QuoteState, ViewState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
 import { AppConfig } from './src/config/AppConfig';
 
-// Definição dos estados possíveis da aplicação
-type ViewState = 'intro' | 'welcome' | 'quote' | 'admin';
-
 const App: React.FC = () => {
+  // Splash inicia true
   const [showSplash, setShowSplash] = useState(true);
-  const [view, setView] = useState<ViewState>('intro');
+  
+  // View inicia em 'confirmation', mas só aparece após o splash sair
+  const [view, setView] = useState<ViewState>('confirmation');
+  
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<QuoteData>(mockQuote);
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
-  
-  // Novo estado: Modo Rápido
   const [isQuickMode, setIsQuickMode] = useState(false);
 
   const [clientData, setClientData] = useState<ClientData | null>(() => {
@@ -35,18 +35,16 @@ const App: React.FC = () => {
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
-    videoQty: 1, // Inicialização
+    videoQty: 1, 
     addDrone: false,
     addRealTime: false,
     selectionMode: 'duration'
   });
 
-  // === DESIGN SYSTEM INJECTION ===
-  // Aplica as cores definidas no AppConfig como variáveis CSS globais
   useLayoutEffect(() => {
     const root = document.documentElement;
     root.style.setProperty('--brand-color', AppConfig.BRAND.COLORS.PRIMARY);
-    root.style.setProperty('--brand-glow', `${AppConfig.BRAND.COLORS.PRIMARY}80`); // 50% opacity hex
+    root.style.setProperty('--brand-glow', `${AppConfig.BRAND.COLORS.PRIMARY}80`);
   }, []);
 
   useEffect(() => {
@@ -55,12 +53,15 @@ const App: React.FC = () => {
     }
   }, [clientData]);
 
+  // Controle do Splash Screen
   useEffect(() => {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
-    const timer = setTimeout(() => setShowSplash(false), 2200); 
+    
+    // Aumentado levemente para 2.5s para garantir leitura
+    const timer = setTimeout(() => setShowSplash(false), 2500); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -68,7 +69,6 @@ const App: React.FC = () => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    // Reseta a categoria ao iniciar o fluxo normal para garantir validação
     setQuoteState(prev => ({ ...prev, category: null }));
     await delay(2000); 
     setIsLoading(false);
@@ -76,20 +76,18 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  // Handler para Orçamento Rápido
   const handleQuickStart = async () => {
-    // Define dados temporários para não quebrar a QuoteView
     setClientData({
         name: '', 
         location: '', 
         date: '', 
         contact: ''
     });
-    setQuoteState(prev => ({ ...prev, category: null })); // Reseta categoria ao iniciar rápido
-    setIsQuickMode(true); // Ativa flag
+    setQuoteState(prev => ({ ...prev, category: null }));
+    setIsQuickMode(true);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    await delay(800); // Delay menor para sensação de rapidez
+    await delay(800);
     setIsLoading(false);
     setView('quote');
     window.scrollTo(0, 0);
@@ -99,7 +97,6 @@ const App: React.FC = () => {
     setConfig(newConfig);
   };
 
-  // Callback chamado pelo QuoteView quando precisa dos dados no modo rápido
   const handleRequestForm = () => {
     setView('welcome');
     window.scrollTo(0, 0);
@@ -109,13 +106,14 @@ const App: React.FC = () => {
     <main className="w-full min-h-screen bg-black text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
 
+      {/* SPLASH SCREEN (Prioridade Máxima Z-Index 100) */}
       <AnimatePresence mode="wait">
         {showSplash && (
           <motion.div 
             key="splash"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
@@ -149,8 +147,17 @@ const App: React.FC = () => {
       </AnimatePresence>
 
       <div className="relative z-10">
+        {/* Renderiza o conteúdo apenas quando o Splash sai */}
         {!showSplash && !isLoading && (
             <>
+            {/* 1. TELA DE CONFIRMAÇÃO */}
+            {view === 'confirmation' && (
+                <ConfirmationView 
+                    onContinue={() => setView('intro')}
+                />
+            )}
+
+            {/* 2. MENU PRINCIPAL (INTRO) */}
             {view === 'intro' && (
                 <IntroView 
                     onContinue={() => {
@@ -161,6 +168,7 @@ const App: React.FC = () => {
                 />
             )}
 
+            {/* 3. WIZARD (WELCOME) */}
             {view === 'welcome' && (
                 <WelcomeView 
                   onStart={handleStart} 
@@ -169,6 +177,7 @@ const App: React.FC = () => {
                 />
             )}
 
+            {/* 4. CONFIGURADOR (QUOTE) */}
             {view === 'quote' && clientData && (
                 <QuoteView 
                   clientData={clientData} 
@@ -183,6 +192,7 @@ const App: React.FC = () => {
                 />
             )}
 
+            {/* 5. ADMIN */}
             {view === 'admin' && (
                 <AdminDashboard 
                   currentConfig={config}

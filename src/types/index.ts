@@ -2,6 +2,9 @@
 // === DEFINIÇÕES DE TIPO DE DOMÍNIO (DDD) ===
 // Este arquivo centraliza todas as interfaces que modelam o negócio.
 
+// Controle de Navegação Global
+export type ViewState = 'confirmation' | 'intro' | 'welcome' | 'quote' | 'admin';
+
 // Tipos de Locação (Afetam o cálculo de frete)
 export type LocationType = 'studio' | 'external';
 
