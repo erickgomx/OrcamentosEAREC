@@ -79,7 +79,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 selectionMode: quoteState.selectionMode,
                 hours: quoteState.hours,
                 photoQty: quoteState.qty,
-                videoQty: quoteState.videoQty
+                videoQty: quoteState.videoQty,
+                commercialMode: state.commercialMode // Passando o modo comercial
             }}
         />
       );
@@ -125,8 +126,16 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                     onClick={() => actions.setIsCategoryMenuOpen(true)}
                     className="mt-5 flex items-center gap-3 px-5 py-2 rounded-full bg-neutral-900/80 backdrop-blur-md border border-white/10 shadow-xl shadow-black/40 hover:border-brand-DEFAULT/30 transition-all duration-500 group relative overflow-hidden"
                  >
-                    <div className="relative flex items-center justify-center w-2 h-2">
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-DEFAULT shadow-[0_0_8px_var(--brand-glow)]"></span>
+                    <div className="relative flex items-center justify-center w-3 h-3">
+                        <motion.div 
+                            className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.9)]"
+                            animate={{ opacity: [1, 0.6, 1] }}
+                            transition={{ 
+                                duration: 3, 
+                                repeat: Infinity, 
+                                ease: "easeInOut" 
+                            }}
+                        />
                     </div>
                     <div className="h-3 w-px bg-white/10 group-hover:bg-white/20 transition-colors" />
                     <span className="text-[10px] uppercase tracking-[0.25em] text-neutral-400 font-medium group-hover:text-white transition-colors">
@@ -179,6 +188,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       setSelectionMode={actions.setSelectionMode}
                       isQuickMode={props.isQuickMode} 
                       onContactRequest={actions.handleContactRequest}
+                      commercialMode={state.commercialMode}
+                      setCommercialMode={actions.setCommercialMode}
                     />
                 </motion.div>
             )}

@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, Video, Gift, Crown, GraduationCap, Heart, 
   Store, Aperture, Plane, Clock, Minus, Plus, Route, Star, 
-  Edit, Smartphone as SmartphoneIcon, Sparkles, Gem, HelpCircle, X, MessageCircle, Hand, Check, Timer, Cross, Battery
+  Edit, Smartphone as SmartphoneIcon, Sparkles, Gem, HelpCircle, X, MessageCircle, Hand, Check, Timer, Cross, Battery, Music, GlassWater, Building, MapPin
 } from 'lucide-react';
 
 import { cn, formatCurrency } from '../../lib/utils';
@@ -38,6 +39,8 @@ interface UpsellListProps {
   viewMode?: 'categories' | 'services' | 'config';
   isQuickMode?: boolean;
   onContactRequest?: (type: 'custom_project' | 'commercial_custom') => void; 
+  commercialMode?: 'on_location' | 'studio';
+  setCommercialMode?: (mode: 'on_location' | 'studio') => void;
 }
 
 const UpsellList: React.FC<UpsellListProps> = (props) => {
@@ -48,7 +51,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
     distance, pricePerKm, locationClient, onOpenMap, selectionMode, setSelectionMode,
     viewMode = 'categories',
     isQuickMode = false,
-    onContactRequest
+    onContactRequest,
+    commercialMode, setCommercialMode
   } = props;
 
   const [infoData, setInfoData] = useState<{ title: string; desc: string; price: string } | null>(null);
@@ -105,8 +109,17 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   
   const canChooseMode = category === 'social' && serviceId !== 'graduation';
   
-  const isNoTravelCost = category === 'studio' || serviceId === 'edit_only';
+  // Isenção de frete atualizada: Estúdio, Apenas Edição OU Comercial em Estúdio
+  const isNoTravelCost = category === 'studio' || serviceId === 'edit_only' || (category === 'commercial' && commercialMode === 'studio');
   const travelCost = isNoTravelCost ? 0 : distance * 2 * pricePerKm;
+
+  // Drone Visibility:
+  // Mostra em Wedding, Social e Comercial (mas em Comercial, some se for Estúdio)
+  const isCommercialStudio = category === 'commercial' && commercialMode === 'studio';
+  const showDroneAddon = !isCommercialStudio && (category === 'wedding' || category === 'social' || category === 'commercial');
+
+  // RealTime Price Logic
+  const realTimePrice = category === 'commercial' ? TABLE.commercial.realtime.fixed : TABLE.wedding.realtime.fixed;
 
   // Lógica de Mínimo
   let minQty = 1;
@@ -120,9 +133,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const isDroneQuantity = category === 'video_production' && serviceId === 'drone';
 
   // Lógica de Layout do Grid
+  // FIX: 'items-start' impede que os cards vizinhos estiquem quando um card expande
   const isCompactGrid = category === 'studio';
   const gridClasses = cn(
-    "grid gap-4 md:gap-6 auto-rows-fr w-full mx-auto justify-center", 
+    "grid gap-4 md:gap-6 w-full mx-auto justify-center items-start", 
     isCompactGrid 
         ? "grid-cols-2 max-w-2xl" 
         : "grid-cols-2 lg:grid-cols-4 max-w-5xl" 
@@ -192,7 +206,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             className={cn(
                                 "relative group flex flex-col items-center justify-center gap-2 p-3 md:p-5 rounded-xl md:rounded-3xl border transition-all duration-500 overflow-hidden text-center h-36 md:h-52",
                                 isActive 
-                                    ? "bg-brand-DEFAULT border-brand-DEFAULT shadow-[0_0_40px_rgba(220,38,38,0.3)] scale-[1.02] z-10" 
+                                    ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_40px_rgba(220,38,38,0.3)] scale-[1.02] z-10" 
                                     : "bg-white/[0.03] border-white/5 hover:bg-white/[0.07] hover:border-white/20"
                             )}
                         >
@@ -203,7 +217,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             {isActive && (
                                 <motion.div 
                                     initial={{ scale: 0 }} animate={{ scale: 1 }}
-                                    className="absolute top-2 right-2 md:top-4 md:right-4 bg-white text-brand-DEFAULT rounded-full p-0.5 md:p-1 shadow-lg z-20"
+                                    className="absolute top-2 right-2 md:top-4 md:right-4 bg-[#DC2626] text-white rounded-full p-0.5 md:p-1 shadow-lg z-20"
                                 >
                                     <Check size={10} className="md:w-[14px] md:h-[14px]" strokeWidth={4} />
                                 </motion.div>
@@ -211,14 +225,16 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             
                             <div className={cn(
                                 "p-3 md:p-4 rounded-xl md:rounded-full transition-all duration-300 mb-1",
-                                isActive ? "bg-white/20 text-white" : "bg-white/5 text-neutral-500 group-hover:text-white group-hover:bg-white/10"
+                                isActive 
+                                    ? "bg-white/10 text-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.2)]" 
+                                    : "bg-white/5 text-neutral-500 group-hover:text-white group-hover:bg-white/10"
                             )}>
                                 <Icon size={24} className="md:w-8 md:h-8" />
                             </div>
 
                             <div className="relative z-10 w-full">
                                 <h3 className={cn(
-                                    "font-serif text-sm md:text-2xl mb-1 transition-colors duration-300 w-full font-bold",
+                                    "font-sans text-sm md:text-2xl mb-1 transition-colors duration-300 w-full font-bold", // FONTE ALTERADA PARA SANS
                                     isActive ? "text-white" : "text-neutral-300 group-hover:text-white"
                                 )}>
                                     {cat.label}
@@ -278,7 +294,48 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             animate="visible"
             className="space-y-8 w-full flex flex-col items-center"
         >
-             {canChooseMode && setSelectionMode && (
+            {/* SELETOR DE MODO: COMERCIAL (Comércio vs Estúdio) */}
+            {category === 'commercial' && setCommercialMode && commercialMode && (
+                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10">
+                    <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">
+                        Onde será o serviço?
+                    </p>
+                    <div className="flex bg-neutral-900 p-2 rounded-2xl border border-white/10 shadow-lg">
+                        <button 
+                            onClick={() => setCommercialMode('on_location')} 
+                            className={cn(
+                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
+                                commercialMode === 'on_location' 
+                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
+                            )}
+                        >
+                            <Store size={20} className={commercialMode === 'on_location' ? "text-brand-DEFAULT" : ""} /> 
+                            NO COMÉRCIO
+                        </button>
+                        <button 
+                            onClick={() => setCommercialMode('studio')} 
+                            className={cn(
+                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
+                                commercialMode === 'studio' 
+                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
+                            )}
+                        >
+                            <Aperture size={20} className={commercialMode === 'studio' ? "text-brand-DEFAULT" : ""} /> 
+                            NO ESTÚDIO
+                        </button>
+                    </div>
+                    {commercialMode === 'studio' && (
+                        <p className="text-sm font-bold text-green-500 mt-2 flex items-center gap-1">
+                            <Check size={14} /> Frete Grátis no Estúdio
+                        </p>
+                    )}
+                </motion.div>
+            )}
+
+            {/* SELETOR DE MODO: SOCIAL (Tempo vs Quantidade) */}
+            {canChooseMode && setSelectionMode && (
                 <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10">
                     <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">
                         Como deseja contratar?
@@ -326,6 +383,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <ServiceCard active={serviceId === 'wedding_classic'} onClick={() => handleServiceSelect('wedding_classic')} onInfo={setInfoData} icon={Sparkles} title={TABLE.wedding.wedding_classic.label} price={formatCurrency(TABLE.wedding.wedding_classic.base)} composition={TABLE.wedding.wedding_classic.composition} desc={TABLE.wedding.wedding_classic.description} />
                         <ServiceCard active={serviceId === 'wedding_romance'} onClick={() => handleServiceSelect('wedding_romance')} onInfo={setInfoData} icon={Hand} title={TABLE.wedding.wedding_romance.label} price={formatCurrency(TABLE.wedding.wedding_romance.base)} composition={TABLE.wedding.wedding_romance.composition} desc={TABLE.wedding.wedding_romance.description} highlight />
                         <ServiceCard active={serviceId === 'wedding_essence'} onClick={() => handleServiceSelect('wedding_essence')} onInfo={setInfoData} icon={Gem} title={TABLE.wedding.wedding_essence.label} price={formatCurrency(TABLE.wedding.wedding_essence.base)} composition={TABLE.wedding.wedding_essence.composition} desc={TABLE.wedding.wedding_essence.description} highlight />
+                        
+                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                 )}
 
@@ -334,35 +393,52 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     <>
                         <ServiceCard 
                             active={serviceId === 'birthday'} 
-                            // FIX: Mantém o modo atual (selecionado pelo usuário)
                             onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} 
                             onInfo={setInfoData} 
                             icon={Gift} 
                             title={TABLE.social.birthday.label} 
                             price={selectionMode === 'duration' ? "A partir de R$ 400" : "R$ 25,00 / foto"} 
-                            composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Seleção de Fotos Avulsas"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Pague apenas pelo que amar. Ideal para momentos do parabéns."} 
                             desc={TABLE.social.birthday.description} 
                         />
                         <ServiceCard 
+                            active={serviceId === 'social_party'} 
+                            onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} 
+                            onInfo={setInfoData} 
+                            icon={Music} 
+                            title={TABLE.social.social_party.label} 
+                            price={selectionMode === 'duration' ? "A partir de R$ 400" : "R$ 25,00 / foto"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "Flexível: Registre a vibe e os convidados principais."} 
+                            desc={TABLE.social.social_party.description} 
+                        />
+                        <ServiceCard 
+                            active={serviceId === 'social_event'} 
+                            onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} 
+                            onInfo={setInfoData} 
+                            icon={GlassWater} 
+                            title={TABLE.social.social_event.label} 
+                            price={selectionMode === 'duration' ? "A partir de R$ 400" : "R$ 25,00 / foto"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Cobertura pontual. Foco em decoração e presença VIP."} 
+                            desc={TABLE.social.social_event.description} 
+                        />
+                         <ServiceCard 
                             active={serviceId === 'baptism'} 
-                            // FIX: Mantém o modo atual
                             onClick={() => handleServiceSelect('baptism', selectionMode || 'duration')} 
                             onInfo={setInfoData} 
                             icon={Cross} 
                             title={TABLE.social.baptism.label} 
                             price={selectionMode === 'duration' ? "A partir de R$ 500" : "R$ 25,00 / foto"} 
-                            composition={selectionMode === 'duration' ? TABLE.social.baptism.composition : "Seleção de Fotos Avulsas"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.baptism.composition : "Essencial: Fotos do rito sagrado e retratos com a família."} 
                             desc={TABLE.social.baptism.description} 
                         />
                         <ServiceCard 
                             active={serviceId === 'fifteen'} 
-                            // FIX: Mantém o modo atual
                             onClick={() => handleServiceSelect('fifteen', selectionMode || 'duration')} 
                             onInfo={setInfoData} 
                             icon={Crown} 
                             title={TABLE.social.fifteen.label} 
                             price={selectionMode === 'duration' ? "A partir de R$ 450" : "R$ 25,00 / foto"} 
-                            composition={selectionMode === 'duration' ? TABLE.social.fifteen.composition : "Seleção de Fotos Avulsas"} 
+                            composition={selectionMode === 'duration' ? TABLE.social.fifteen.composition : "Sessão Pré ou Valsa: Seleção exclusiva de momentos."} 
                             desc={TABLE.social.fifteen.description} 
                         />
                         <ServiceCard 
@@ -375,6 +451,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             composition={TABLE.social.graduation.composition} 
                             desc={TABLE.social.graduation.description} 
                         />
+                        
+                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                 )}
 
@@ -403,6 +481,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     <>
                         <ServiceCard active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo', 'quantity')} onInfo={setInfoData} icon={Aperture} title={TABLE.studio.studio_photo.label} price={`R$ ${TABLE.studio.studio_photo.unit} / foto`} composition={TABLE.studio.studio_photo.composition} desc={TABLE.studio.studio_photo.description} />
                         <ServiceCard active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video', 'duration')} onInfo={setInfoData} icon={Video} title={TABLE.studio.studio_video.label} price={formatCurrency(TABLE.studio.studio_video.base)} composition={TABLE.studio.studio_video.composition} desc={TABLE.studio.studio_video.description} />
+                        
+                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                 )}
 
@@ -431,6 +511,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             composition={TABLE.video_production.drone.composition} 
                             desc={TABLE.video_production.drone.description} 
                         />
+                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                 )}
 
@@ -609,20 +690,25 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   variants={staggerContainer}
                   initial="hidden"
                   animate="visible"
-                  className="w-full max-w-lg grid grid-cols-2 gap-4"
+                  className={cn(
+                    "w-full max-w-lg grid gap-4",
+                    showDroneAddon ? "grid-cols-2" : "grid-cols-1 max-w-xs" // Layout adaptativo se só tiver 1 item
+                  )}
                 >
-                    <AddonCard 
-                        label="Drone (Aéreo)" 
-                        price={250} 
-                        icon={Plane} 
-                        active={addDrone} 
-                        onClick={() => setAddDrone(!addDrone)}
-                        onInfo={setInfoData}
-                        desc={TABLE.video_production.drone.description}
-                    />
+                    {showDroneAddon && (
+                        <AddonCard 
+                            label="Drone (Aéreo)" 
+                            price={250} 
+                            icon={Plane} 
+                            active={addDrone} 
+                            onClick={() => setAddDrone(!addDrone)}
+                            onInfo={setInfoData}
+                            desc={TABLE.video_production.drone.description}
+                        />
+                    )}
                     <AddonCard 
                         label="Fotos Tempo Real" 
-                        price={600} 
+                        price={realTimePrice} 
                         icon={Timer} 
                         active={addRealTime} 
                         onClick={() => setAddRealTime(!addRealTime)}
@@ -734,11 +820,12 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
 
 const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight }: any) => (
     <motion.div 
+        layout 
         variants={fadeInUp}
         whileHover={{ y: -4, transition: { duration: 0.2 } }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer p-4 md:p-6 rounded-xl md:rounded-2xl border transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group h-full w-full box-border", 
+            "cursor-pointer p-4 md:p-6 rounded-xl md:rounded-2xl border transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group w-full box-border min-h-[220px]", // Restaurado padding e min-h
             active 
                 ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_20px_var(--brand-glow)] ring-1 ring-brand-DEFAULT z-10" 
                 : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10"
@@ -765,26 +852,41 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         
         <div className={cn(
             "mt-4 mb-3 md:mb-5 shrink-0 h-12 w-12 md:h-16 md:w-16 flex items-center justify-center rounded-full transition-all duration-300",
-            active ? "bg-white/20 text-white" : "text-neutral-300 bg-white/10 group-hover:bg-white/20 group-hover:text-white"
+            active 
+                ? "bg-white/10 text-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.2)]" 
+                : "text-neutral-500 bg-white/5 group-hover:bg-white/10 group-hover:text-white"
         )}>
-            <Icon size={24} className="md:hidden" strokeWidth={1.5} />
-            <Icon size={32} className="hidden md:block" strokeWidth={1.5} />
+            <Icon size={24} className="md:hidden" strokeWidth={1.5} /> {/* Restaurado tamanho */}
+            <Icon size={32} className="hidden md:block" strokeWidth={1.5} /> {/* Restaurado tamanho */}
         </div>
         
         <div className="w-full px-1 mb-2 flex items-center justify-center">
             <h4 className={cn(
-                "text-sm md:text-xl font-serif transition-colors leading-tight", 
+                "text-sm md:text-xl font-sans transition-colors leading-tight", // FONTE ALTERADA PARA SANS
                 active ? "text-white font-medium" : "text-neutral-300 group-hover:text-white"
             )}>
                 {title}
             </h4>
         </div>
             
-        <div className="w-full px-1 md:px-2 mb-4 md:mb-6 flex items-start justify-center grow">
-            <p className="text-[11px] md:text-sm text-neutral-400 leading-relaxed font-light tracking-wide">
-                {composition || desc}
-            </p>
-        </div>
+        {/* DESCRIÇÃO - SÓ APARECE QUANDO ATIVO */}
+        <AnimatePresence>
+            {active && (
+                <motion.div
+                    initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    className="w-full px-1 md:px-2 flex items-start justify-center overflow-hidden"
+                >
+                    <p className="text-[11px] md:text-sm text-neutral-400 leading-relaxed font-light tracking-wide">
+                        {composition || desc}
+                    </p>
+                </motion.div>
+            )}
+        </AnimatePresence>
+
+        {/* Espaçador para empurrar o preço para baixo quando inativo (se necessário pelo layout) */}
+        {!active && <div className="grow" />}
 
         <div className="w-full pt-3 md:pt-4 border-t border-white/5 mt-auto">
             <p className={cn("text-xs md:text-sm font-bold tracking-widest uppercase", active ? "text-brand-DEFAULT" : "text-neutral-400")}>

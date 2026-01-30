@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { ClientData, QuoteData, QuoteState, PricingContext, ServiceCategory, ServiceId } from '../types';
 import { AppConfig } from '../config/AppConfig';
@@ -70,7 +71,7 @@ export const useQuoteLogic = ({
   }), [clientData, config]);
 
   // Destructuring QuoteState for internal use
-  const { category, serviceId, hours, qty, videoQty, addDrone, addRealTime, selectionMode } = quoteState;
+  const { category, serviceId, hours, qty, videoQty, addDrone, addRealTime, selectionMode, commercialMode } = quoteState;
 
   // === HELPERS: STATE SETTERS ===
   const actions = {
@@ -96,6 +97,7 @@ export const useQuoteLogic = ({
       setAddDrone: (b: boolean) => setQuoteState(prev => ({ ...prev, addDrone: b })),
       setAddRealTime: (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b })),
       setSelectionMode: (mode: 'duration' | 'quantity') => setQuoteState(prev => ({ ...prev, selectionMode: mode })),
+      setCommercialMode: (mode: 'on_location' | 'studio') => setQuoteState(prev => ({ ...prev, commercialMode: mode })),
       
       handleUpdateLocation: (address: string) => {
           onUpdateClientData({ ...clientData, location: address });
@@ -128,7 +130,11 @@ export const useQuoteLogic = ({
   // === EFFECT: SMART DEFAULTS (Category Change) ===
   useEffect(() => {
       if (category === 'wedding') actions.setSelectionMode('duration');
-      if (category === 'commercial') actions.setSelectionMode('quantity');
+      if (category === 'commercial') {
+          actions.setSelectionMode('quantity');
+          // Default commercial mode
+          if (!commercialMode) actions.setCommercialMode('on_location');
+      }
       if (category === 'studio' && serviceId === 'studio_photo') actions.setSelectionMode('quantity');
       if (category === 'studio' && serviceId === 'studio_video') actions.setSelectionMode('duration');
       if (category === 'social' && serviceId === 'graduation') actions.setSelectionMode('duration');
@@ -315,7 +321,8 @@ export const useQuoteLogic = ({
         categoryLabels,
         quoteData,
         totalPrice,
-        priceBreakdown
+        priceBreakdown,
+        commercialMode 
     },
     actions: {
         ...actions,

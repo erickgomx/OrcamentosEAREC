@@ -44,35 +44,31 @@ export class AppConfig {
   };
 
   // === TABELA DE PREÇOS (BASE) ===
-  // Estrutura migrada do antigo QuoteView para cá.
-  // composition: O que aparece no card (Itens inclusos)
-  // description: O que aparece no modal de info (Explicação detalhada/Venda)
-  // CHAVES AGORA CORRESPONDEM AOS ServiceId PARA FACILITAR BUSCA
   static readonly PRICING_TABLE = {
     wedding: {
         wedding_base: { 
             base: 650, 
             label: "Casamento (Base)",
-            composition: "Cerimônia (Fotos Ilimitadas)",
-            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Inclui registros detalhados da decoração e fotos protocolares ilimitadas."
+            composition: "Cerimônia (Até 80 Fotos)",
+            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Inclui registros detalhados da decoração e entrega de até 80 fotos tratadas."
         },
         wedding_classic: { 
             base: 900, 
             label: "Pacote Clássico",
-            composition: "Pré (10 Fotos) + Casamento (Ilimitado)",
-            description: "A união de dois momentos especiais. Inclui um ensaio Pré Wedding (entrega de 10 fotos tratadas) e a cobertura completa do Casamento com fotos ilimitadas." 
+            composition: "Pré (10 Fotos) + Casamento (Até 80 Fotos)",
+            description: "A união de dois momentos especiais. Inclui um ensaio Pré Wedding (entrega de 10 fotos tratadas) e a cobertura da Cerimônia com até 80 fotos." 
         },
         wedding_romance: {
             base: 1150,
             label: "Pacote Romance",
-            composition: "Pré (10 Fotos) + Making Of + Cerimônia",
-            description: "Cobertura expandida. Inclui o Ensaio Pré Wedding (10 fotos tratadas), o Making Of dos noivos e a Cerimônia com entrega ilimitada de fotos."
+            composition: "Pré (10 Fotos) + Making Of + Cerimônia (Até 80 Fotos)",
+            description: "Cobertura expandida. Inclui o Ensaio Pré Wedding (10 fotos tratadas), o Making Of dos noivos e a Cerimônia com entrega de até 80 fotos."
         },
         wedding_essence: { 
             base: 1750, 
             label: "Pacote Mais Essência",
-            composition: "Pré (10 Fotos) + Casamento + Vídeo",
-            description: "A experiência completa. Pré Wedding (10 fotos tratadas), Making Of, Casamento (Ilimitado) e um Vídeo Highlight cinematográfico dos melhores momentos." 
+            composition: "Pré (10 Fotos) + Casamento (Até 80 Fotos) + Vídeo",
+            description: "A experiência completa. Pré Wedding (10 fotos tratadas), Making Of, Casamento (Até 80 Fotos) e um Vídeo Highlight cinematográfico dos melhores momentos." 
         },
         realtime: { fixed: 600, label: "Fotos em Tempo Real" }
     },
@@ -84,6 +80,22 @@ export class AppConfig {
             label: "Aniversários",
             composition: "2h de Evento + Galeria Digital",
             description: "Cobertura dinâmica para registrar a alegria, a decoração e os momentos espontâneos da festa. Focamos em capturar sorrisos verdadeiros e a interação entre os convidados."
+        },
+        social_party: { 
+            base: 400, 
+            hoursIncluded: 2, 
+            hourPrice: 250, 
+            label: "Festas",
+            composition: "2h de Evento + Galeria Digital",
+            description: "Cobertura vibrante para festas e celebrações. Registramos a atmosfera, os convidados e a diversão com olhar atento e edição premium."
+        },
+        social_event: { 
+            base: 400, 
+            hoursIncluded: 2, 
+            hourPrice: 250, 
+            label: "Eventos",
+            composition: "2h de Cobertura + Galeria Digital",
+            description: "Cobertura profissional para eventos sociais diversos. Foco nos detalhes, na ambientação e nos momentos chave da ocasião."
         },
         baptism: { 
             base: 500, 
@@ -124,10 +136,11 @@ export class AppConfig {
         },
         comm_combo: { 
             videoBase: 700, 
-            label: "Comércio (Foto + Vídeo)",
+            label: "Combo (Foto + Vídeo)",
             composition: "10 Fotos + 1 Reel",
             description: "O pacote completo para posicionamento digital. Inclui 10 fotos tratadas e 1 Reel editado. (Adicionais: R$ 20/foto e R$ 350/vídeo)." 
-        } 
+        },
+        realtime: { fixed: 300, label: "Fotos em Tempo Real" }
     },
     studio: {
         studio_photo: { 

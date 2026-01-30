@@ -1,5 +1,4 @@
 
-
 // === DEFINIÇÕES DE TIPO DE DOMÍNIO (DDD) ===
 // Este arquivo centraliza todas as interfaces que modelam o negócio.
 
@@ -14,7 +13,7 @@ export type ServiceCategory = 'wedding' | 'social' | 'commercial' | 'studio' | '
 
 // IDs únicos para cada "Produto" vendável no sistema
 export type ServiceId = 
-  | 'birthday' | 'fifteen' | 'graduation' | 'baptism'
+  | 'birthday' | 'fifteen' | 'graduation' | 'baptism' | 'social_party' | 'social_event'
   | 'wedding_base' | 'wedding_classic' | 'wedding_romance' | 'wedding_essence'
   | 'comm_photo' | 'comm_video' | 'comm_combo'
   | 'studio_photo' | 'studio_video'
@@ -30,7 +29,8 @@ export interface QuoteState {
   videoQty: number; // NOVO: Usado especificamente para vídeos em pacotes híbridos
   addDrone: boolean;
   addRealTime: boolean;
-  selectionMode: 'duration' | 'quantity'; // Novo: Define se cobra por tempo ou por entrega
+  selectionMode: 'duration' | 'quantity'; // Define se cobra por tempo ou por entrega
+  commercialMode?: 'on_location' | 'studio'; // Novo: Define local para categoria Comercial
 }
 
 // Estrutura de um item individual dentro de um orçamento

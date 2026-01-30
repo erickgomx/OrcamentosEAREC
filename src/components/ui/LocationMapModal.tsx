@@ -1,7 +1,6 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Check, Loader2, Info } from 'lucide-react';
+import { X, MapPin, Check, Loader2, Info, Search, ArrowRight } from 'lucide-react';
 import Button from './Button';
 import { modalVariants } from '../../lib/animations';
 import L from 'leaflet';
@@ -18,12 +17,30 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   
-  const [currentAddress, setCurrentAddress] = useState("Carregando posição...");
+  const [currentAddress, setCurrentAddress] = useState(initialAddress || "Carregando posição...");
   const [isLoading, setIsLoading] = useState(true);
+
+  // Lógica de Busca Automática (Debounce de 4s)
+  useEffect(() => {
+    if (!isOpen || !currentAddress || currentAddress.length < 3) return;
+
+    // Se o endereço for "Carregando posição...", ignora
+    if (currentAddress === "Carregando posição...") return;
+
+    const timer = setTimeout(() => {
+        handleSearch(currentAddress);
+    }, 4000); // 4 segundos de espera após parar de digitar
+
+    return () => clearTimeout(timer);
+  }, [currentAddress, isOpen]);
 
   // Inicialização do Mapa
   useEffect(() => {
     if (!isOpen) return;
+
+    if (initialAddress) {
+        setCurrentAddress(initialAddress);
+    }
 
     // Pequeno delay para garantir que o DOM renderizou o container
     const timer = setTimeout(() => {
@@ -59,8 +76,8 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
             markerRef.current = marker;
             mapInstanceRef.current = map;
 
-            // 5. Tenta pegar geolocalização do usuário
-            if (navigator.geolocation) {
+            // 5. Tenta pegar geolocalização do usuário se não tiver endereço inicial
+            if (!initialAddress && navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         const { latitude, longitude } = pos.coords;
@@ -72,6 +89,9 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
                         fetchAddress(initialLat, initialLng); 
                     }
                 );
+            } else if (initialAddress) {
+                // Se tiver endereço inicial, tenta buscar as coordenadas dele (Busca inicial)
+                handleSearch(initialAddress, map, marker);
             } else {
                 fetchAddress(initialLat, initialLng);
             }
@@ -100,7 +120,7 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
     };
   }, [isOpen]);
 
-  // Função para buscar endereço (Reverse Geocoding)
+  // Função para buscar endereço por coordenadas (Reverse Geocoding)
   const fetchAddress = async (lat: number, lng: number) => {
       setIsLoading(true);
       try {
@@ -133,10 +153,50 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
       }
   };
 
+  // Função para buscar coordenadas por texto (Forward Geocoding)
+  const handleSearch = async (queryAddress?: string, mapInstance?: L.Map, markerInstance?: L.Marker) => {
+    const term = queryAddress || currentAddress;
+    if (!term || term.length < 3) return;
+
+    setIsLoading(true);
+    try {
+        // Adiciona "Brasil" para contexto se não houver
+        const query = term.toLowerCase().includes('brasil') ? term : `${term}, Brasil`;
+        
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            const lat = parseFloat(data[0].lat);
+            const lon = parseFloat(data[0].lon);
+            
+            const targetMap = mapInstance || mapInstanceRef.current;
+            const targetMarker = markerInstance || markerRef.current;
+
+            if (targetMap && targetMarker) {
+                targetMap.setView([lat, lon], 16);
+                targetMarker.setLatLng([lat, lon]);
+                // Atualiza o texto com o display_name retornado pela API para ficar formatado
+                // Mas mantemos o que o usuário digitou se preferir, aqui opto por manter a sincronia
+            }
+        }
+    } catch (e) {
+        console.error("Erro na busca:", e);
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   const handleConfirm = () => {
       onSelectLocation(currentAddress);
       onClose();
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+          handleSearch();
+      }
+  }
 
   return (
     <AnimatePresence>
@@ -166,7 +226,7 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
                     </h3>
                     <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
                        <Info size={12} />
-                       Arraste o pino vermelho ou clique no mapa.
+                       Digite apenas Cidade ou Bairro para maior precisão.
                     </p>
                 </div>
                 <button onClick={onClose} className="text-neutral-400 hover:text-white p-2">
@@ -175,19 +235,35 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
             </div>
 
             {/* Mapa */}
-            <div className="relative flex-1 min-h-[400px] w-full bg-neutral-950">
+            <div className="relative flex-1 min-h-[400px] w-full bg-neutral-950 group">
                 <div ref={mapContainerRef} className="absolute inset-0 z-0" />
                 
-                {/* Overlay de Endereço */}
-                <div className="absolute top-4 left-4 right-4 z-[400] bg-neutral-900/90 backdrop-blur border border-white/10 p-3 rounded-lg shadow-xl flex items-center gap-3">
-                    {isLoading ? (
-                        <Loader2 size={20} className="text-brand-DEFAULT animate-spin shrink-0" />
-                    ) : (
-                        <MapPin size={20} className="text-brand-DEFAULT shrink-0" />
-                    )}
-                    <p className="text-sm text-white truncate font-medium">
-                        {currentAddress}
-                    </p>
+                {/* Barra de Busca Flutuante (Input Editável) */}
+                <div className="absolute top-4 left-4 right-4 z-[400] bg-neutral-900/90 backdrop-blur-md border border-white/10 p-2 rounded-lg shadow-xl flex items-center gap-2 transition-all focus-within:border-brand-DEFAULT/50 focus-within:bg-neutral-900">
+                    <div className="p-2 text-neutral-400">
+                        {isLoading ? (
+                            <Loader2 size={18} className="text-brand-DEFAULT animate-spin" />
+                        ) : (
+                            <Search size={18} />
+                        )}
+                    </div>
+                    
+                    <input 
+                        type="text"
+                        value={currentAddress}
+                        onChange={(e) => setCurrentAddress(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Ex: Ponta Negra, Natal (Pesquisa auto em 4s...)"
+                        className="w-full bg-transparent text-sm text-white placeholder:text-neutral-500 outline-none h-full py-1"
+                    />
+
+                    <button 
+                        onClick={() => handleSearch()}
+                        className="p-2 bg-white/5 hover:bg-brand-DEFAULT text-neutral-400 hover:text-white rounded-md transition-colors"
+                        title="Buscar Agora"
+                    >
+                        <ArrowRight size={16} />
+                    </button>
                 </div>
             </div>
 

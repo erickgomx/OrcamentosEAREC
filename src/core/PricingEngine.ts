@@ -1,3 +1,4 @@
+
 import { AppConfig } from "../config/AppConfig";
 import { PricingContext, PricingResult, QuoteState, PriceBreakdownItem } from "../types";
 
@@ -101,11 +102,13 @@ export class PricingEngine {
       total += table.graduation.base;
       breakdown.push({ label: table.graduation.label, value: table.graduation.base, type: 'base' });
     } else {
-      // Birthday / Fifteen / Baptism
+      // Birthday / Fifteen / Baptism / Party / Event
       let ref;
       if (serviceId === 'baptism') ref = table.baptism;
       else if (serviceId === 'fifteen') ref = table.fifteen;
-      else ref = table.birthday;
+      else if (serviceId === 'social_party') ref = table.social_party;
+      else if (serviceId === 'social_event') ref = table.social_event;
+      else ref = table.birthday; // Default
       
       if (selectionMode === 'duration') {
         total += ref.base;
@@ -149,7 +152,7 @@ export class PricingEngine {
       // 1. Preço Fixo do Pacote (Base 700 para 10F + 1V)
       const baseVal = table.comm_combo.videoBase;
       total += baseVal;
-      breakdown.push({ label: "Combo Base (10F + 1V)", value: baseVal, type: 'base' });
+      breakdown.push({ label: "Combo (10F + 1V)", value: baseVal, type: 'base' });
 
       // 2. Fotos Extras (Acima de 10)
       if (qty > 10) {
@@ -250,11 +253,15 @@ export class PricingEngine {
   // --- CÁLCULOS GLOBAIS ---
 
   private static applyAddonsAndFreight(state: QuoteState, ctx: PricingContext, currentResult: PricingResult): PricingResult {
-    const { category, addDrone, addRealTime } = state;
+    const { category, addDrone, addRealTime, commercialMode } = state;
     const { distance, pricePerKm, isQuickMode } = ctx;
     
     // 1. Drone (Se aplicável à categoria)
-    if (addDrone && (category === 'wedding' || category === 'social' || category === 'commercial')) {
+    // Regra: Drone disponível para Wedding e Social. 
+    // Para Comercial, disponível APENAS se NÃO for Estúdio.
+    const isCommercialStudio = category === 'commercial' && commercialMode === 'studio';
+    
+    if (addDrone && !isCommercialStudio && (category === 'wedding' || category === 'social' || category === 'commercial')) {
        const dronePrice = AppConfig.PRICING_TABLE.video_production.drone.fixed;
        currentResult.totalPrice += dronePrice;
        currentResult.breakdown.push({ label: AppConfig.TEXTS.LABELS.ADD_DRONE, value: dronePrice, type: 'addon' });
@@ -262,8 +269,15 @@ export class PricingEngine {
 
     // 2. Fotos em Tempo Real (Aplicável a Wedding, Social e Commercial)
     if (addRealTime && (category === 'wedding' || category === 'social' || category === 'commercial')) {
-       // Usamos o preço base configurado no objeto 'wedding' como referência global (R$ 600)
-       const realtimePrice = AppConfig.PRICING_TABLE.wedding.realtime.fixed;
+       let realtimePrice;
+       
+       if (category === 'commercial') {
+           realtimePrice = AppConfig.PRICING_TABLE.commercial.realtime.fixed; // 300
+       } else {
+           // Usamos o preço base configurado no objeto 'wedding' como referência padrão (R$ 600)
+           realtimePrice = AppConfig.PRICING_TABLE.wedding.realtime.fixed;
+       }
+       
        const realtimeLabel = AppConfig.TEXTS.LABELS.ADD_REALTIME;
        
        currentResult.totalPrice += realtimePrice;
@@ -272,7 +286,8 @@ export class PricingEngine {
 
     // 3. Frete / Deslocamento
     // Regra: Estúdio é SEMPRE isento, independente de distância ou modo. Edição também.
-    const isExemptFromTravel = category === 'studio' || state.serviceId === 'edit_only';
+    // Se for comercial em modo ESTÚDIO, também é isento.
+    const isExemptFromTravel = category === 'studio' || state.serviceId === 'edit_only' || isCommercialStudio;
     
     if (!isExemptFromTravel) {
       // CORREÇÃO: Prioridade para distância real > 0.

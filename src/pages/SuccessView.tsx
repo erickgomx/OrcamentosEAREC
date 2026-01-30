@@ -5,7 +5,7 @@ import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X }
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button'; 
 import { fadeInUp, staggerContainer, modalVariants } from '../lib/animations';
-import { ClientData, OccasionType, LocationType, ServiceId } from '../types';
+import { ClientData, LocationType, ServiceId, ServiceCategory } from '../types';
 import { cn, formatCurrency } from '../lib/utils';
 import { AppConfig } from '../config/AppConfig';
 
@@ -14,7 +14,7 @@ interface SuccessViewProps {
   clientData: ClientData;
   totalPrice: number;
   quoteDetails?: {
-      occasion: OccasionType;
+      occasion: ServiceCategory;
       customOccasionText?: string;
       location: LocationType;
       distance: number;
@@ -26,6 +26,7 @@ interface SuccessViewProps {
       hours: number;
       photoQty: number; // Mapeado para qty genérico
       videoQty: number;
+      commercialMode?: 'on_location' | 'studio'; // Novo
   };
 }
 
@@ -58,50 +59,53 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
             : "Nenhum";
 
         if (quoteDetails.occasion === 'custom') {
-            // TEMPLATE: PROJETO PERSONALIZADO
-            message = `🚀 *SOLICITAÇÃO DE PROJETO EXCLUSIVO*
-Olá, equipe EAREC!
+            // TEMPLATE: PROJETO PERSONALIZADO (Mantido simplificado, mas no novo estilo)
+            message = `✨ OLÁ! NOVA CONSULTORIA
+Gostaria de discutir um projeto personalizado com a EAREC.
 
-Gostaria de uma consultoria para um projeto personalizado. Seguem os detalhes iniciais:
+🗓️ AGENDA
+Data: ${formatDate(clientData.date)}
+Local: ${clientData.location}
 
-👤 *MEUS DADOS*
-*Cliente:* ${finalName}
-*Local:* ${clientData.location}
-*Data Prevista:* ${formatDate(clientData.date)}
+👤 CLIENTE
+Nome: ${finalName}
 
-💡 *MINHA DEMANDA*
-Tenho um projeto específico (Briefing a discutir com a equipe criativa).
+💡 DEMANDA ESPECÍFICA
+Tenho um projeto único e preciso de orçamento sob medida.
 
-📍 *LOGÍSTICA PRELIMINAR*
-*Distância:* ${quoteDetails.distance}km (Ref. Goianinha)
+📍 LOGÍSTICA PRELIMINAR
+* Distância: ${quoteDetails.distance}km
+* Frete: A calcular
 
-*Aguardo o retorno para alinharmos os detalhes!*`;
+--------------------------------
+Podemos agendar uma conversa?`;
 
         } else {
-            // TEMPLATE: ORÇAMENTO PADRÃO (PREMIUM)
+            // TEMPLATE: ORÇAMENTO PADRÃO (NOVO PADRÃO SOLICITADO)
             let escopo = "";
-            const { serviceId, selectionMode, hours, photoQty, videoQty } = quoteDetails;
-
+            const { serviceId, selectionMode, hours, photoQty, videoQty, commercialMode } = quoteDetails;
+            
             // LÓGICA DE ESCOPO PRECISA
             if (serviceId === 'comm_combo') {
-                escopo = "Combo Comercial (10 Fotos + 1 Vídeo)";
+                escopo = "Combo (10 Fotos + 1 Vídeo)";
                 const extraPhotos = photoQty - 10;
                 const extraVideos = videoQty - 1;
                 
-                if (extraPhotos > 0 || extraVideos > 0) escopo += "\n   _Incluindo:_";
-                if (extraPhotos > 0) escopo += `\n   + ${extraPhotos} Fotos Extras`;
-                if (extraVideos > 0) escopo += `\n   + ${extraVideos} Vídeos Extras`;
+                // Formatação clean para extras dentro do escopo
+                if (extraPhotos > 0) escopo += ` + ${extraPhotos} Fotos Extras`;
+                if (extraVideos > 0) escopo += ` + ${extraVideos} Vídeos Extras`;
             
             } else if (serviceId === 'edit_only') {
-                // Para edição, qty representa minutos
-                escopo = `${photoQty} Minutos de Edição (Aprox.)`;
+                escopo = `${photoQty} Minuto(s) de Edição`;
             
+            } else if (serviceId === 'drone') {
+                 escopo = `${photoQty} Bateria(s) de Voo`;
+
             } else if (selectionMode === 'duration') {
                 escopo = `${hours} Horas de Cobertura`;
             
             } else {
-                // Modo Quantidade Genérico (Fotos ou Vídeos Avulsos)
-                // Verifica o ID do serviço para saber se é foto ou vídeo
+                // Modo Quantidade Genérico
                 if (serviceId.includes('video') || serviceId === 'comm_video' || serviceId === 'studio_video') {
                     escopo = `${photoQty} Vídeos Produzidos`;
                 } else {
@@ -109,34 +113,50 @@ Tenho um projeto específico (Briefing a discutir com a equipe criativa).
                 }
             }
 
-            const ambiente = quoteDetails.location === 'studio' ? "Estúdio Controlado" : "Externo / In Loco";
+            // Definição do Tipo/Ambiente
+            let tipoAmbiente = "Locação Externa";
+            let freightStatus = "Calculado";
 
-            message = `✨ *OLÁ! NOVA PROPOSTA GERADA*
+            if (quoteDetails.location === 'studio') {
+                tipoAmbiente = "Estúdio Controlado";
+                freightStatus = "Isento (Estúdio)";
+            } else if (quoteDetails.occasion === 'commercial' && commercialMode === 'studio') {
+                tipoAmbiente = "Estúdio Controlado";
+                freightStatus = "Isento (Estúdio)";
+            } else if (serviceId === 'edit_only') {
+                tipoAmbiente = "Pós-Produção / Remoto";
+                freightStatus = "Isento (Online)";
+            } else if (quoteDetails.distance === 0 && freightStatus !== "Isento (Estúdio)") {
+                freightStatus = "A consultar";
+            }
+
+            // MENSAGEM FINAL FORMATADA
+            message = `✨ OLÁ! NOVA PROPOSTA GERADA
 Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a disponibilidade.
 
-🗓️ *AGENDA*
-*Data:* ${formatDate(clientData.date)}
-*Local:* ${clientData.location}
+🗓️ AGENDA
+Data: ${formatDate(clientData.date)}
+Local: ${clientData.location}
 
-👤 *CLIENTE*
-*Nome:* ${finalName}
+👤 CLIENTE
+Nome: ${finalName}
 
-🎬 *SERVIÇOS SELECIONADOS*
-• *Pacote:* ${quoteDetails.customOccasionText}
-• *Tipo:* ${ambiente}
-• *Escopo:* ${escopo}
-• *Adicionais:* ${addonsText}
+🎬 SERVIÇOS SELECIONADOS
+* Pacote: ${quoteDetails.customOccasionText}
+* Tipo: ${tipoAmbiente}
+* Escopo: ${escopo}
+* Adicionais: ${addonsText}
 
-📍 *LOGÍSTICA & VALORES*
-• *Distância:* ${quoteDetails.distance}km
-• *Frete:* ${quoteDetails.location === 'studio' ? "Isento (Estúdio)" : "Calculado no total"}
-• *Pagamento:* ${quoteDetails.paymentMethod || "A combinar"}
+📍 LOGÍSTICA & VALORES
+* Distância: ${quoteDetails.distance}km
+* Frete: ${freightStatus}
+* Pagamento: ${quoteDetails.paymentMethod || "A definir"}
 
-💎 *APROVEI O ORÇAMENTO:*
-*Total: ${formattedPrice}*
+💎 APROVEI O ORÇAMENTO:
+Total: ${formattedPrice}
 
 --------------------------------
-*Poderiam confirmar a reserva desta data?*`;
+Poderiam confirmar a reserva desta data?`;
         }
     }
     
