@@ -102,4 +102,5 @@ export interface PricingContext {
   videoUnitPrice: number;
   distance: number;
   isQuickMode?: boolean; // Nova flag para controlar lógica de frete "A consultar"
+  includeFreight?: boolean; // Nova flag para somar o frete apenas no resumo
 }

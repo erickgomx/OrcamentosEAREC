@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, MousePointerClick, SlidersHorizontal, MessageCircle } from 'lucide-react';
@@ -11,7 +12,7 @@ interface ConfirmationViewProps {
 
 const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden overflow-y-auto px-6 py-12 bg-neutral-950">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden overflow-y-auto px-6 py-12 bg-[#0a0a0a]">
       
       {/* Container Principal */}
       <motion.div 

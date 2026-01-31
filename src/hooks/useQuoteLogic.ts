@@ -188,11 +188,13 @@ export const useQuoteLogic = ({
         photoUnitPrice: config.photoUnitPrice,
         videoUnitPrice: config.videoUnitPrice,
         distance: distance,
-        isQuickMode: isQuickMode 
+        isQuickMode: isQuickMode,
+        // SÓ INCLUI FRETE NO TOTAL SE ESTIVER NO RESUMO OU SUCESSO
+        includeFreight: viewState === 'summary' || viewState === 'success'
     };
     const result = PricingEngine.calculate(quoteState, context);
     return { totalPrice: result.totalPrice, priceBreakdown: result.breakdown };
-  }, [quoteState, config, distance, isQuickMode]);
+  }, [quoteState, config, distance, isQuickMode, viewState]);
 
   // === ACTIONS: WHATSAPP ===
   const openWhatsappAction = (type: 'custom_project' | 'commercial_custom', nameOverride?: string) => {
@@ -223,6 +225,17 @@ export const useQuoteLogic = ({
               setViewState('success');
               window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
+              // --- VALIDAÇÃO DE LOCALIZAÇÃO (FORÇAR INPUT) ---
+              // Se o serviço exige deslocamento (não é estúdio nem remoto) e o local está vazio,
+              // forçamos o usuário a selecionar o local abrindo o mapa.
+              const isNoTravelCost = category === 'studio' || serviceId === 'edit_only' || (category === 'commercial' && commercialMode === 'studio');
+              
+              if (!isNoTravelCost && (!clientData.location || clientData.location.trim().length < 3)) {
+                  actions.setIsMapOpen(true);
+                  return; // Interrompe o fluxo até que o local seja definido
+              }
+
+              // --- VALIDAÇÃO DE NOME (QUICK MODE) ---
               if (isQuickMode && !clientData.name) {
                   setPendingAction('next_step');
                   setIsNameModalOpen(true);
@@ -294,12 +307,11 @@ export const useQuoteLogic = ({
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
 
   const getFooterLabel = () => {
-    if (currentStep === 0) return "Ver Detalhes"; 
+    if (currentStep === 0) return "Escolher Serviço"; 
     if (currentStep === 1) return "Configurar Detalhes";
     if (currentStep === 2) {
         if (category === 'custom') return "Solicitar";
-        if (selectionMode === 'quantity') return "Confirmar Quantidade";
-        if (selectionMode === 'duration') return "Confirmar Tempo";
+        return "Ir para Resumo"; // Texto alterado conforme solicitado
     }
     return "Continuar";
   };

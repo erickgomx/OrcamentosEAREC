@@ -134,7 +134,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
   return (
     <div 
-        className="fixed inset-0 z-50 bg-neutral-950 overflow-y-auto"
+        className="fixed inset-0 z-50 bg-[#0a0a0a] overflow-y-auto"
         onScroll={(e) => setHasScrolled(e.currentTarget.scrollTop > 50)}
     >
       <AnimatePresence>
@@ -144,7 +144,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(20px)' }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center bg-black z-50"
+            className="absolute inset-0 flex items-center justify-center bg-[#0a0a0a] z-50"
           >
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}>
               <Logo className="w-64" animate />
@@ -349,8 +349,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                     item.value === 0 ? "text-green-500 text-xs uppercase font-bold mt-0.5" : "text-white"
                                                 )}>
                                                     {item.label.includes("A consultar") 
-                                                        ? "Consultar" 
-                                                        : item.value === 0 ? "Incluso" : formatCurrency(item.value)
+                                                            ? "Consultar" 
+                                                            : item.value === 0 ? "Incluso" : formatCurrency(item.value)
                                                     }
                                                 </span>
                                             </div>

@@ -254,7 +254,7 @@ export class PricingEngine {
 
   private static applyAddonsAndFreight(state: QuoteState, ctx: PricingContext, currentResult: PricingResult): PricingResult {
     const { category, addDrone, addRealTime, commercialMode } = state;
-    const { distance, pricePerKm, isQuickMode } = ctx;
+    const { distance, pricePerKm, isQuickMode, includeFreight } = ctx;
     
     // 1. Drone (Se aplicável à categoria)
     // Regra: Drone disponível para Wedding e Social. 
@@ -289,7 +289,9 @@ export class PricingEngine {
     // Se for comercial em modo ESTÚDIO, também é isento.
     const isExemptFromTravel = category === 'studio' || state.serviceId === 'edit_only' || isCommercialStudio;
     
-    if (!isExemptFromTravel) {
+    // SÓ ADICIONA FRETE SE O CONTEXTO PERMITIR (includeFreight)
+    // Isso garante que no modo de configuração o valor exibido seja apenas dos serviços
+    if (includeFreight && !isExemptFromTravel) {
       // CORREÇÃO: Prioridade para distância real > 0.
       if (distance > 0) {
         // Cálculo Normal: Ida e Volta

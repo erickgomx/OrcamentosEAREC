@@ -7,8 +7,14 @@
  */
 export class EnvConfig {
   private static getEnv(key: string): string {
-    // @ts-ignore - Vite uses import.meta.env
-    return import.meta.env[key] || "";
+    try {
+      // @ts-ignore - Vite uses import.meta.env
+      const env = (import.meta as any).env || {};
+      return env[key] || "";
+    } catch (e) {
+      console.warn("EnvConfig: Erro ao acessar variáveis de ambiente", e);
+      return "";
+    }
   }
 
   static get GOOGLE_API_KEY(): string {

@@ -84,9 +84,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
   // TELA DE LOGIN (SECURE GATE)
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6 relative overflow-hidden">
         {/* Fundo dinâmico */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black z-0" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-black z-0" />
         
         <motion.div 
           initial="hidden"
@@ -171,7 +171,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
 
   // TELA DE DASHBOARD (Acesso concedido)
   return (
-    <div className="min-h-screen bg-neutral-950 text-white font-sans">
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
       <header className="border-b border-white/5 bg-neutral-900/50 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">

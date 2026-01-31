@@ -18,8 +18,16 @@ export const checkDateAvailability = async (dateString: string): Promise<{ avail
   // CONFIGURAÇÃO SEGURA:
   // As chaves devem vir de variáveis de ambiente, nunca hardcoded no fonte.
   // Se não estiverem presentes, o sistema roda em modo Simulação (Mock).
-  const apiKey = (import.meta as any).env?.VITE_GOOGLE_API_KEY || "";
-  const calendarId = (import.meta as any).env?.VITE_GOOGLE_CALENDAR_ID || "";
+  let apiKey = "";
+  let calendarId = "";
+
+  try {
+    const env = (import.meta as any).env || {};
+    apiKey = env.VITE_GOOGLE_API_KEY || "";
+    calendarId = env.VITE_GOOGLE_CALENDAR_ID || "";
+  } catch (e) {
+    // Silencioso em caso de erro de acesso
+  }
   
   // SIMULAÇÃO / MOCK (Se não houver chaves configuradas)
   // Isso permite que o app funcione visualmente sem quebrar se o usuário não tiver configurado a API ainda.

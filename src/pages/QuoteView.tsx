@@ -87,10 +87,10 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   }
 
   return (
-    <div className="relative min-h-screen bg-black/80 flex flex-col">
+    <div className="relative min-h-screen bg-[#0a0a0a]/80 flex flex-col">
       
       {/* Background sutil */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-black to-black -z-10" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-[#0a0a0a] -z-10" />
 
       {/* HEADER: PROGRESS & NAV */}
       <div className="pt-8 px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20">

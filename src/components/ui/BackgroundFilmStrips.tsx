@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 /**
@@ -112,7 +113,7 @@ const FilmWheel3D = ({
 
 const BackgroundFilmStrips: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#050505]">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#0a0a0a]">
       
       {/* Luzes Volumétricas de Fundo */}
       <div className="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-slate-800/20 blur-[150px] rounded-full opacity-40 mix-blend-screen" />

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import Logo from './Logo';
@@ -12,10 +13,10 @@ const Loading: React.FC<LoadingProps> = ({ text = "Gerando Proposta..." }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.8 } }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-neutral-950"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a]"
     >
       {/* Background Pulse */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900/50 via-neutral-950 to-black animate-pulse-slow" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900/50 via-[#0a0a0a] to-black animate-pulse-slow" />
       
       <div className="relative z-10 flex flex-col items-center">
         <motion.div

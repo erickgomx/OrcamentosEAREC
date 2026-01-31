@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import QuoteView from './src/pages/QuoteView';
@@ -103,7 +104,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="w-full min-h-screen bg-black text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
+    <main className="w-full min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
 
       {/* SPLASH SCREEN (Prioridade Máxima Z-Index 100) */}
@@ -114,7 +115,7 @@ const App: React.FC = () => {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
