@@ -117,7 +117,7 @@ const App: React.FC = () => {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div

@@ -1,183 +1,154 @@
-
-import React, { useId } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
 
 /**
- * RealisticFilmStripTexture
- * -------------------------
- * Textura procedural de filme 35mm com simulação de volume cilíndrico.
- * 
- * TÉCNICAS DE VOLUME (CURVAS):
- * 1. Gradiente Cilíndrico (Sheen): Um highlight fino e intenso no centro-direita simula a crista da curva.
- * 2. Sombras de Borda (Fresnel Darkening): As bordas escurecem drasticamente para simular a superfície virando para trás.
- * 3. Iluminação de Borda (Rim Light): Uma linha fina de luz nas extremidades para separar do fundo.
+ * SingleFilmFrame
+ * ---------------
+ * Renderiza APENAS UM QUADRO do filme (SVG estático).
+ * Será repetido várias vezes para formar a roda.
  */
-const RealisticFilmStripTexture = ({ 
-    className, 
-    speed = 10, 
-    direction = 1, 
-    opacity = 1,
-    perspective = false
-}: { 
-    className?: string, 
-    speed?: number, 
-    direction?: number, 
-    opacity?: number,
-    perspective?: boolean
-}) => {
-  const uniqueId = useId().replace(/:/g, ''); 
-  const patternId = `film-pattern-${uniqueId}`;
-  const sheenId = `sheen-${uniqueId}`;
-  const curvatureId = `curvature-${uniqueId}`;
-  const frameGradId = `frame-grad-${uniqueId}`;
+const SingleFilmFrame = ({ opacity = 1 }: { opacity?: number }) => {
+  const frameGradId = `frame-grad-${Math.random().toString(36).substr(2, 9)}`;
 
   return (
-    <div className={`relative overflow-hidden ${className}`} style={{ opacity }}>
-        
-        {/* RIM LIGHTS (Luz de Borda) - Crucial para destacar a silhueta curva no preto */}
-        <div className="absolute top-0 left-0 w-[2px] h-full bg-gradient-to-b from-cyan-500/20 via-white/40 to-cyan-500/20 blur-[1px] z-30 mix-blend-screen" />
-        <div className="absolute top-0 right-0 w-[2px] h-full bg-gradient-to-b from-red-500/20 via-white/40 to-red-500/20 blur-[1px] z-30 mix-blend-screen" />
+    <div className="w-full h-full relative" style={{ opacity }}>
+       {/* Iluminação de Borda (Rim Light) - Silver */}
+       <div className="absolute top-0 left-0 w-[2px] h-full bg-gradient-to-b from-white/20 via-white/80 to-white/20 blur-[1px] z-20 mix-blend-overlay" />
+       <div className="absolute top-0 right-0 w-[1px] h-full bg-gradient-to-b from-white/10 via-white/50 to-white/10 blur-[1px] z-20 mix-blend-overlay" />
 
-        <svg
-          viewBox="0 0 140 100"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full block"
-          preserveAspectRatio="none"
-        >
+       <svg viewBox="0 0 140 90" fill="none" className="w-full h-full block">
           <defs>
-            {/* Gradiente Metálico do Frame (Interno) */}
             <linearGradient id={frameGradId} x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#222" />
-                <stop offset="50%" stopColor="#333" />
-                <stop offset="100%" stopColor="#1a1a1a" />
+                <stop offset="0%" stopColor="#1a1a1a" />
+                <stop offset="40%" stopColor="#333333" />
+                <stop offset="60%" stopColor="#222222" />
+                <stop offset="100%" stopColor="#0a0a0a" />
             </linearGradient>
-
-            {/* PADRÃO DA FITA */}
-            <pattern id={patternId} x="0" y="0" width="140" height="90" patternUnits="userSpaceOnUse">
-              <rect width="140" height="90" fill="#050505" />
-              
-              {/* Frame com cantos levemente mais arredondados */}
-              <rect x="24" y="8" width="92" height="74" rx="3" fill={`url(#${frameGradId})`} stroke="#444" strokeWidth="0.5" />
-              
-              {/* Reflexo de Vidro no Frame */}
-              <path d="M 24 82 L 116 8 L 116 45 L 24 110 Z" fill="white" fillOpacity="0.04" />
-
-              {/* Sprockets (Furos) */}
-              <g fill="#eeeeee" fillOpacity="0.9">
-                  <rect x="7" y="12" width="9" height="14" rx="2" />
-                  <rect x="7" y="42" width="9" height="14" rx="2" />
-                  <rect x="7" y="72" width="9" height="14" rx="2" />
-              </g>
-
-              <g fill="#eeeeee" fillOpacity="0.9">
-                  <rect x="124" y="12" width="9" height="14" rx="2" />
-                  <rect x="124" y="42" width="9" height="14" rx="2" />
-                  <rect x="124" y="72" width="9" height="14" rx="2" />
-              </g>
-            </pattern>
-
-            {/* 
-               GRADIENTE DE CURVATURA (MAPA DE VOLUME) 
-               Simula a forma cilíndrica da fita.
-               Escuro nas bordas -> Claro no "pico" da curva -> Escuro na outra borda.
-            */}
-            <linearGradient id={curvatureId} x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="black" stopOpacity="0.9" />   {/* Borda Esquerda (Sombra Profunda) */}
-                <stop offset="15%" stopColor="black" stopOpacity="0.4" />
-                <stop offset="30%" stopColor="black" stopOpacity="0.1" />  {/* Início da Curva iluminada */}
-                <stop offset="50%" stopColor="black" stopOpacity="0" />    {/* Centro Plano */}
-                <stop offset="70%" stopColor="black" stopOpacity="0.1" />
-                <stop offset="85%" stopColor="black" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.9" /> {/* Borda Direita (Sombra Profunda) */}
-            </linearGradient>
-
-            {/* 
-               REFLEXO ESPECULAR (ANISOTRÓPICO)
-               O brilho "plástico" concentrado em uma linha vertical.
-            */}
-            <linearGradient id={sheenId} x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="white" stopOpacity="0" />
-                <stop offset="35%" stopColor="white" stopOpacity="0" />
-                <stop offset="42%" stopColor="white" stopOpacity="0.05" />
-                <stop offset="45%" stopColor="white" stopOpacity="0.3" />  {/* Highlight Principal */}
-                <stop offset="48%" stopColor="white" stopOpacity="0.05" />
-                <stop offset="60%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-            </linearGradient>
-
           </defs>
 
-          {/* CAMADA 1: CONTEÚDO (Móvel) */}
-          <motion.rect 
-            x="0"
-            y="-90"
-            width="140" 
-            height="300%"
-            fill={`url(#${patternId})`}
-            animate={{ 
-              y: direction > 0 ? [0, -90] : [-90, 0] 
-            }}
-            transition={{ 
-              repeat: Infinity, 
-              ease: "linear", 
-              duration: speed 
-            }}
-          />
+          {/* Fundo do Filme */}
+          <rect width="140" height="90" fill="#050505" />
 
-          {/* CAMADA 2: REFLEXO PLÁSTICO (Fixo) */}
-          <rect 
-            width="100%" 
-            height="100%" 
-            fill={`url(#${sheenId})`} 
-            style={{ mixBlendMode: 'screen' }} 
-            pointerEvents="none" 
-          />
+          {/* Frame da Foto (Interior) */}
+          <rect x="24" y="8" width="92" height="74" rx="3" fill={`url(#${frameGradId})`} stroke="#444" strokeWidth="0.5" />
           
-          {/* CAMADA 3: SOMBRA DE VOLUME (Curvatura Geométrica) */}
-          {/* Multiplica as sombras sobre a fita para "arredondar" as bordas */}
-          <rect width="100%" height="100%" fill={`url(#${curvatureId})`} style={{ mixBlendMode: 'multiply' }} pointerEvents="none" />
+          {/* Reflexo Diagonal (Vidro) */}
+          <path d="M 24 82 L 116 8 L 116 35 L 24 90 Z" fill="white" fillOpacity="0.04" />
 
-        </svg>
+          {/* Sprockets (Furos) - Prateados e Alinhados */}
+          {/* Esquerda */}
+          <rect x="8" y="10" width="8" height="12" rx="1.5" fill="#e5e5e5" fillOpacity="0.8" />
+          <rect x="8" y="39" width="8" height="12" rx="1.5" fill="#e5e5e5" fillOpacity="0.8" />
+          <rect x="8" y="68" width="8" height="12" rx="1.5" fill="#e5e5e5" fillOpacity="0.8" />
+
+          {/* Direita */}
+          <rect x="124" y="10" width="8" height="12" rx="1.5" fill="#e5e5e5" fillOpacity="0.8" />
+          <rect x="124" y="39" width="8" height="12" rx="1.5" fill="#e5e5e5" fillOpacity="0.8" />
+          <rect x="124" y="68" width="8" height="12" rx="1.5" fill="#e5e5e5" fillOpacity="0.8" />
+       </svg>
     </div>
   );
+};
+
+/**
+ * FilmWheel3D
+ * -----------
+ * Componente puro que cria o anel de frames.
+ * AGORA SEM RESPONSABILIDADE DE POSICIONAMENTO.
+ * Recebe apenas props de animação interna.
+ */
+const FilmWheel3D = ({ 
+    speed = 80, 
+    direction = 'normal' 
+}: { 
+    speed?: number, 
+    direction?: 'normal' | 'reverse' 
+}) => {
+    const frameCount = 18; // Quantidade de frames no anel
+    const radius = 600;    // Raio do anel
+    const frameHeight = 160; // Altura aproximada de cada frame no DOM
+    const angleStep = 360 / frameCount;
+
+    return (
+        <div style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}>
+            <div 
+                className="relative w-[180px] md:w-[240px] h-[200px]" // Container base
+                style={{ 
+                    transformStyle: 'preserve-3d',
+                    animation: `spinWheel ${speed}s linear infinite ${direction}`
+                }}
+            >
+                {/* Gerando os segmentos da roda */}
+                {Array.from({ length: frameCount }).map((_, i) => (
+                    <div
+                        key={i}
+                        className="absolute top-0 left-0 w-full backface-hidden"
+                        style={{
+                            height: `${frameHeight}px`,
+                            // Mágica 3D: Gira X graus e empurra para fora (Raio)
+                            transform: `rotateX(${i * angleStep}deg) translateZ(${radius}px)`,
+                            // Ajuste fino para não ver o verso
+                            backfaceVisibility: 'hidden', 
+                        }}
+                    >
+                        <SingleFilmFrame opacity={0.9} />
+                    </div>
+                ))}
+            </div>
+
+            {/* CSS In-JS para a animação de rotação */}
+            <style>{`
+                @keyframes spinWheel {
+                    from { transform: rotateX(0deg); }
+                    to { transform: rotateX(360deg); }
+                }
+                .backface-hidden {
+                    backface-visibility: hidden;
+                    -webkit-backface-visibility: hidden;
+                }
+            `}</style>
+        </div>
+    );
 };
 
 const BackgroundFilmStrips: React.FC = () => {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#050505]">
       
-      {/* Backlight Volumétrico Global */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[120px] rounded-full opacity-60 mix-blend-screen" />
-      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full opacity-50 mix-blend-screen" />
+      {/* Luzes Volumétricas de Fundo */}
+      <div className="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-slate-800/20 blur-[150px] rounded-full opacity-40 mix-blend-screen" />
+      <div className="absolute bottom-[-10%] right-[10%] w-[800px] h-[800px] bg-neutral-800/30 blur-[180px] rounded-full opacity-30 mix-blend-screen" />
 
-      {/* FITA ESQUERDA - Afastada para a borda */}
-      <div 
-        className="absolute -top-[10%] left-[-5%] md:left-[2%] w-28 md:w-44 h-[120vh]"
-        style={{
-            transform: 'perspective(500px) rotateY(25deg) rotateZ(-8deg) translateZ(50px)',
-            filter: 'drop-shadow(20px 20px 40px black)'
-        }}
-      >
-         <RealisticFilmStripTexture className="h-full w-full" speed={28} direction={1} opacity={1} />
+      {/* 
+          RODA ESQUERDA 
+          - Wrapper 1: Posicionamento e Escala (Tailwind)
+          - Wrapper 2: Rotação 3D (Inline Style) - Isso previne conflito de transforms
+          
+          UPDATE: Scale massivo para 0.85 (Mobile) / 1.0 (Tablet)
+          UPDATE: Position ajustado para -80px para mostrar mais as rodas (Menos escondidas)
+      */}
+      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] transition-all duration-1000 origin-left">
+          <div style={{ transform: 'rotateY(25deg) rotateZ(-8deg)' }}>
+             <FilmWheel3D speed={80} direction="normal" />
+          </div>
       </div>
 
-      {/* FITA DIREITA - Afastada para a borda */}
-      <div 
-        className="absolute -top-[10%] right-[-15%] md:right-[-2%] w-32 md:w-48 h-[120vh]"
-        style={{
-            transform: 'perspective(600px) rotateY(-30deg) rotateZ(-4deg) translateZ(0)',
-            filter: 'drop-shadow(-20px 20px 40px black)'
-        }}
-      >
-         <RealisticFilmStripTexture className="h-full w-full" speed={22} direction={-1} opacity={0.8} />
+      {/* 
+          RODA DIREITA
+          Simétrico à esquerda.
+      */}
+      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] transition-all duration-1000 origin-right">
+          <div style={{ transform: 'rotateY(-25deg) rotateZ(5deg)' }}>
+             <FilmWheel3D speed={100} direction="reverse" />
+          </div>
       </div>
 
-      {/* Vignette Global de Câmera */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,#000_100%)] z-10 opacity-90" />
-      
-      {/* Noise Texture para realismo de filme */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay" 
+      {/* Máscaras de Gradiente (Vignette) para suavizar as pontas das rodas */}
+      {/* UPDATE: Opacidade reduzida (from-black/60 e from-black/40) para tornar os filmstrips mais visíveis */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 pointer-events-none z-10" />
+
+      {/* Noise Texture */}
+      <div className="absolute inset-0 opacity-[0.07] pointer-events-none mix-blend-overlay z-20" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
     </div>

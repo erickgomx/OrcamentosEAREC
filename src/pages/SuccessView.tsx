@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X } from 'lucide-react';
@@ -188,11 +187,14 @@ Poderiam confirmar a reserva desta data?`;
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
       
-      {/* Background Cinematico */}
-      <div className="absolute inset-0 bg-neutral-950">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neutral-900 via-black to-black opacity-80" />
-        {/* Luz de fundo sutil */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-DEFAULT/5 blur-[100px] rounded-full pointer-events-none" />
+      {/* Background Cinematico (Transparente para mostrar FilmStrips) */}
+      {/* O fundo sólido (bg-neutral-950) foi removido. */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Gradiente sutil para garantir leitura, mas permitindo ver o fundo */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/40 via-black/80 to-black/95" />
+        
+        {/* Luz de fundo sutil para atmosfera */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[100px] rounded-full mix-blend-screen" />
       </div>
 
       <motion.div 
@@ -201,8 +203,8 @@ Poderiam confirmar a reserva desta data?`;
         animate="visible" 
         className="relative z-10 w-full max-w-sm"
       >
-        {/* Logo Header - AUMENTADA */}
-        <motion.div variants={fadeInUp} className="flex justify-center mb-12 opacity-90">
+        {/* Logo Header - AUMENTADA & REPOSICIONADA PARA BAIXO */}
+        <motion.div variants={fadeInUp} className="flex justify-center mb-10 mt-12 opacity-90">
           <Logo className="w-48 md:w-64" />
         </motion.div>
 
