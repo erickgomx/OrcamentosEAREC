@@ -103,17 +103,13 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           </div>
 
           {/* Progress Bar */}
-          <div className="flex items-center gap-2 w-full max-w-xs mb-2">
-            {state.steps.map((_, idx) => (
-                <div key={idx} className="h-1 flex-1 rounded-full overflow-hidden bg-white/10">
-                    <motion.div 
-                        className="h-full bg-brand-DEFAULT"
-                        initial={{ width: "0%" }}
-                        animate={{ width: idx <= state.currentStep ? "100%" : "0%" }}
-                        transition={{ duration: 0.3 }}
-                    />
-                </div>
-            ))}
+          <div className="w-full max-w-xs mb-2 h-1 bg-white/10 rounded-full overflow-hidden">
+             <motion.div 
+                 className="h-full bg-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.5)] origin-left"
+                 initial={{ width: "0%" }}
+                 animate={{ width: `${((state.currentStep + 1) / state.steps.length) * 100}%` }}
+                 transition={{ duration: 0.5, ease: "easeInOut" }}
+             />
           </div>
           
           {/* Badge de Categoria Interativo */}

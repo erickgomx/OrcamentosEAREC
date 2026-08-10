@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X } from 'lucide-react';
+import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X, QrCode } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button'; 
 import { fadeInUp, staggerContainer, modalVariants } from '../lib/animations';
@@ -35,6 +36,8 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
   // Estado para capturar nome caso esteja faltando
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [tempName, setTempName] = useState('');
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'link' | 'qrcode'>('link');
 
   // Helper para formatar data
   const formatDate = (dateStr: string) => {
@@ -180,8 +183,11 @@ Poderiam confirmar a reserva desta data?`;
       if (tempName.trim().length < 2) return;
       
       setIsNameModalOpen(false);
-      // Abre o WhatsApp com o nome recém digitado
-      window.open(generateWhatsappUrl(tempName), '_blank');
+      if (pendingAction === 'qrcode') {
+          setIsQrModalOpen(true);
+      } else {
+          window.open(generateWhatsappUrl(tempName), '_blank');
+      }
   };
 
   return (
@@ -283,7 +289,7 @@ Poderiam confirmar a reserva desta data?`;
                     </motion.div>
 
                     <motion.button 
-                        onClick={handleSendClick}
+                        onClick={(e) => handleActionClick('link', e)}
                         className="w-full block relative overflow-hidden rounded-xl group cursor-pointer"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -313,6 +319,16 @@ Poderiam confirmar a reserva desta data?`;
                             <div className="w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg]" />
                         </motion.div>
                     </motion.button>
+                    
+                    <button 
+                        onClick={(e) => handleActionClick('qrcode', e)}
+                        className="w-full mt-3 block relative overflow-hidden rounded-xl group cursor-pointer bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-3"
+                    >
+                        <div className="flex items-center justify-center gap-3">
+                            <QrCode size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
+                            <span className="text-neutral-300 group-hover:text-white text-sm font-medium transition-colors">Gerar QR Code para outro dispositivo</span>
+                        </div>
+                    </button>
                 </div>
 
                 {/* Botão Secundário (Novo Orçamento) */}
@@ -342,6 +358,55 @@ Poderiam confirmar a reserva desta data?`;
         <p className="mt-8 text-center text-[10px] text-neutral-600 uppercase tracking-[0.2em]">
             EAREC Audiovisual
         </p>
+
+        {/* MODAL QR CODE */}
+        <AnimatePresence>
+            {isQrModalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-black/90 backdrop-blur-xl" 
+                        onClick={() => setIsQrModalOpen(false)}
+                    />
+                    <motion.div 
+                        variants={modalVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="bg-neutral-900 border border-white/10 p-8 rounded-3xl w-full max-w-sm relative z-10 shadow-2xl flex flex-col items-center"
+                    >
+                        <button 
+                            onClick={() => setIsQrModalOpen(false)}
+                            className="absolute top-4 right-4 text-neutral-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full p-2 transition-all"
+                        >
+                            <X size={16} />
+                        </button>
+                        
+                        <div className="w-16 h-16 bg-brand-DEFAULT/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-brand-DEFAULT/20">
+                             <QrCode size={32} className="text-brand-DEFAULT" />
+                        </div>
+
+                        <h3 className="text-2xl font-serif text-white mb-2 text-center">Escaneie para Enviar</h3>
+                        <p className="text-neutral-400 text-sm mb-8 text-center leading-relaxed">
+                            Abra a câmera do seu celular e aponte para o código abaixo para enviar a mensagem via WhatsApp.
+                        </p>
+
+                        <div className="bg-white p-4 rounded-2xl mb-2">
+                            <QRCodeSVG 
+                                value={generateWhatsappUrl(clientData.name || tempName)} 
+                                size={200}
+                                bgColor={"#ffffff"}
+                                fgColor={"#000000"}
+                                level={"H"}
+                                includeMargin={false}
+                            />
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
 
         {/* MODAL DE CAPTURA DE NOME (FIM DO FLUXO) */}
         <AnimatePresence>

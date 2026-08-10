@@ -41,8 +41,8 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
             {/* Cabeçalho */}
             <motion.div variants={fadeInUp} className="text-center mb-6 md:mb-8">
                 {/* Logo no Topo (Substituindo o Ícone) */}
-                <div className="flex justify-center mb-6"> 
-                    <Logo className="w-32 md:w-40" animate />
+                <div className="flex justify-center mb-4 md:mb-6"> 
+                    <Logo className="w-64 md:w-80 h-auto" animate />
                 </div>
                 <h1 className="font-serif text-2xl md:text-4xl text-white leading-tight">
                     COMO <span className="text-brand-DEFAULT font-medium">FUNCIONA?</span>
@@ -51,9 +51,9 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
             </motion.div>
 
             {/* Timeline de Passos */}
-            <div className="relative mb-8 pl-1 md:pl-2 flex-grow">
+            <div className="relative mb-8 pl-1 md:pl-2 min-h-[320px] md:min-h-[400px] flex-grow">
                 
-                {/* Linha Conectora Vertical - Centralizada no quadrado w-16 (64px/2 = 32px) / md:w-20 (80px/2 = 40px) */}
+                {/* Linha Conectora Vertical */}
                 <div className="absolute left-[36px] md:left-[46px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-brand-DEFAULT via-brand-DEFAULT/30 to-transparent opacity-30" />
 
                 <AnimatePresence mode="popLayout">

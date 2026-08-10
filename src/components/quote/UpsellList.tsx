@@ -133,13 +133,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const isDroneQuantity = category === 'video_production' && serviceId === 'drone';
 
   // Lógica de Layout do Grid
-  // FIX: 'items-start' impede que os cards vizinhos estiquem quando um card expande
-  const isCompactGrid = category === 'studio';
   const gridClasses = cn(
-    "grid gap-4 md:gap-6 w-full mx-auto justify-center items-start", 
-    isCompactGrid 
-        ? "grid-cols-2 max-w-2xl" 
-        : "grid-cols-2 lg:grid-cols-4 max-w-5xl" 
+    "flex flex-wrap gap-3 md:gap-6 w-full mx-auto justify-center items-stretch", 
+    "[&>*]:flex-shrink-0 [&>*]:w-[calc(50%-0.5rem)] md:[&>*]:w-[calc(50%-1rem)] [&>*]:max-w-[400px]" 
   );
 
   // === HELPER PARA CALCULAR CUSTO INCREMENTAL (VISUAL) ===
@@ -296,33 +292,33 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
         >
             {/* SELETOR DE MODO: COMERCIAL (Comércio vs Estúdio) */}
             {category === 'commercial' && setCommercialMode && commercialMode && (
-                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10">
+                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
                     <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">
                         Onde será o serviço?
                     </p>
-                    <div className="flex bg-neutral-900 p-2 rounded-2xl border border-white/10 shadow-lg">
+                    <div className="flex w-full bg-neutral-900 p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-lg">
                         <button 
                             onClick={() => setCommercialMode('on_location')} 
                             className={cn(
-                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
+                                "flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", 
                                 commercialMode === 'on_location' 
-                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" 
                                     : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
-                            <Store size={20} className={commercialMode === 'on_location' ? "text-brand-DEFAULT" : ""} /> 
+                            <Store size={20} className={commercialMode === 'on_location' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} /> 
                             NO COMÉRCIO
                         </button>
                         <button 
                             onClick={() => setCommercialMode('studio')} 
                             className={cn(
-                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
+                                "flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", 
                                 commercialMode === 'studio' 
-                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" 
                                     : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
-                            <Aperture size={20} className={commercialMode === 'studio' ? "text-brand-DEFAULT" : ""} /> 
+                            <Aperture size={20} className={commercialMode === 'studio' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} /> 
                             NO ESTÚDIO
                         </button>
                     </div>
@@ -336,33 +332,33 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
             {/* SELETOR DE MODO: SOCIAL (Tempo vs Quantidade) */}
             {canChooseMode && setSelectionMode && (
-                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10">
+                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
                     <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">
                         Como deseja contratar?
                     </p>
-                    <div className="flex bg-neutral-900 p-2 rounded-2xl border border-white/10 shadow-lg">
+                    <div className="flex w-full bg-neutral-900 p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-lg">
                         <button 
                             onClick={() => setSelectionMode('duration')} 
                             className={cn(
-                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
+                                "flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", 
                                 selectionMode === 'duration' 
-                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" 
                                     : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
-                            <Clock size={20} className={selectionMode === 'duration' ? "text-brand-DEFAULT" : ""} /> 
+                            <Clock size={20} className={selectionMode === 'duration' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} /> 
                             POR TEMPO
                         </button>
                         <button 
                             onClick={() => setSelectionMode('quantity')} 
                             className={cn(
-                                "px-6 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-3 w-44 justify-center border", 
+                                "flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", 
                                 selectionMode === 'quantity' 
-                                    ? "bg-white text-black border-white shadow-lg scale-105 z-10" 
+                                    ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" 
                                     : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5"
                             )}
                         >
-                            <Camera size={20} className={selectionMode === 'quantity' ? "text-brand-DEFAULT" : ""} /> 
+                            <Camera size={20} className={selectionMode === 'quantity' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} /> 
                             POR FOTO
                         </button>
                     </div>
