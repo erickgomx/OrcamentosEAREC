@@ -51,7 +51,7 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, children, icon: Icon, edit
         </div>
         <div className="w-full">
             <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-0.5">{label}</p>
-            <div className="text-sm md:text-base text-white font-light break-words leading-snug">
+            <div className="text-sm md:text-base text-white font-light leading-snug">
                 {children}
             </div>
         </div>

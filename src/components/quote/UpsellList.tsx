@@ -204,7 +204,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             variants={fadeInUp}
                             onClick={() => setCategory(cat.id as ServiceCategory)}
                             className={cn(
-                                "relative group flex flex-col items-center justify-center gap-2 p-3 md:p-5 rounded-xl md:rounded-3xl border transition-all duration-500 overflow-hidden text-center h-36 md:h-52",
+                                "relative group flex flex-col items-center justify-center gap-1 sm:gap-2 p-1.5 sm:p-3 md:p-5 rounded-xl md:rounded-3xl border transition-all duration-500 overflow-hidden text-center min-h-[7rem] sm:min-h-[9rem] md:min-h-[13rem]",
                                 isActive 
                                     ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_40px_rgba(220,38,38,0.3)] scale-[1.02] z-10" 
                                     : "bg-white/[0.03] border-white/5 hover:bg-white/[0.07] hover:border-white/20"
@@ -232,15 +232,15 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 <Icon size={24} className="md:w-8 md:h-8" />
                             </div>
 
-                            <div className="relative z-10 w-full">
+                            <div className="relative z-10 w-full px-0 sm:px-1">
                                 <h3 className={cn(
-                                    "font-sans text-sm md:text-2xl mb-1 transition-colors duration-300 w-full font-bold", // FONTE ALTERADA PARA SANS
+                                    "font-sans text-[11px] sm:text-[13px] md:text-xl mb-1 transition-colors duration-300 w-full font-bold whitespace-normal text-no-break", // FONTE ALTERADA PARA SANS E CLASS TEXT-NO-BREAK ADICIONADA
                                     isActive ? "text-white" : "text-neutral-300 group-hover:text-white"
                                 )}>
                                     {cat.label}
                                 </h3>
                                 <p className={cn(
-                                    "text-[10px] md:text-sm font-medium tracking-wide transition-colors duration-300 opacity-80 hidden md:block",
+                                    "text-[9px] sm:text-[10px] md:text-sm font-medium tracking-wide transition-colors duration-300 opacity-80 hidden md:block whitespace-normal text-no-break",
                                     isActive ? "text-white/80" : "text-neutral-500 group-hover:text-neutral-400"
                                 )}>
                                     {cat.desc}
@@ -255,7 +255,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 })}
             </motion.div>
             
-            <div className="h-24 md:h-32 flex items-center justify-center px-4 overflow-hidden relative">
+            <div className="min-h-[6rem] md:min-h-[8rem] h-auto flex items-center justify-center px-4 overflow-hidden relative">
                 <AnimatePresence mode="wait">
                     {category ? (
                         <motion.div 
@@ -860,10 +860,10 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <Icon size={32} className="hidden md:block" strokeWidth={1.5} /> {/* Restaurado tamanho */}
         </div>
         
-        <div className="w-full px-1 mb-2 flex items-center justify-center">
+        <div className="w-full px-0 sm:px-1 mb-2 flex items-center justify-center">
             <h4 className={cn(
-                "text-sm md:text-xl font-sans transition-colors leading-tight", // FONTE ALTERADA PARA SANS
-                active ? "text-white font-medium" : "text-neutral-300 group-hover:text-white"
+                "text-[12px] sm:text-[13px] md:text-base font-sans transition-colors leading-tight whitespace-normal text-no-break", 
+                active ? "text-white font-bold" : "text-neutral-300 font-medium group-hover:text-white"
             )}>
                 {title}
             </h4>
@@ -878,7 +878,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
                     exit={{ opacity: 0, height: 0, marginBottom: 0 }}
                     className="w-full px-1 md:px-2 flex items-start justify-center overflow-hidden"
                 >
-                    <p className="text-[11px] md:text-sm text-neutral-400 leading-relaxed font-light tracking-wide">
+                    <p className="text-[10px] sm:text-[11px] md:text-xs text-neutral-400 leading-relaxed font-light tracking-wide whitespace-normal text-no-break">
                         {composition || desc}
                     </p>
                 </motion.div>
@@ -931,9 +931,9 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: 
            <Icon size={28} />
         </div>
         
-        <div className="space-y-1 text-center">
-            <p className={cn("text-base font-medium", active ? "text-white" : "text-neutral-300")}>{label}</p>
-            <p className="text-xs text-brand-DEFAULT font-bold bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block">
+        <div className="space-y-1 text-center px-0 sm:px-1 w-full">
+            <p className={cn("text-[11px] sm:text-xs md:text-sm font-medium whitespace-normal leading-tight text-no-break", active ? "text-white" : "text-neutral-300")}>{label}</p>
+            <p className="text-[9px] md:text-xs text-brand-DEFAULT font-bold bg-brand-DEFAULT/10 py-1 px-2 md:px-3 rounded-full inline-block mt-1 whitespace-nowrap">
                 + {formatCurrency(price)}
             </p>
         </div>

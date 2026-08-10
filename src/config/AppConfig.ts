@@ -138,7 +138,8 @@ export class AppConfig {
             videoBase: 700, 
             label: "Combo (Foto + Vídeo)",
             composition: "10 Fotos + 1 Reel",
-            description: "O pacote completo para posicionamento digital. Inclui 10 fotos tratadas e 1 Reel editado. (Adicionais: R$ 20/foto e R$ 350/vídeo)." 
+            // CORREÇÃO: Valor do vídeo adicional atualizado de R$ 350 para R$ 500
+            description: "O pacote completo para posicionamento digital. Inclui 10 fotos tratadas e 1 Reel editado. (Adicionais: R$ 20/foto e R$ 500/vídeo)." 
         },
         realtime: { fixed: 300, label: "Fotos em Tempo Real" }
     },

@@ -79,7 +79,7 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center sm:p-4">
           
           {/* BACKGROUND CINEMATOGRÁFICO (NOVO) */}
           {/* Adiciona o efeito FilmStrips como fundo exclusivo deste modal */}
@@ -91,7 +91,7 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
           >
              <BackgroundFilmStrips />
              {/* Overlay Suave para focar no modal, mas deixando o fundo visível */}
-             <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+             <div className="absolute inset-0 bg-neutral-950/80 backdrop-blur-sm" />
           </motion.div>
 
           {/* Camada de clique para fechar (Transparente) */}
@@ -99,14 +99,19 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
 
           {/* Janela do Modal */}
           <motion.div
-            variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative z-20 bg-neutral-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full max-w-md overflow-hidden"
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="relative z-20 bg-neutral-900/90 backdrop-blur-xl border-t sm:border border-white/10 rounded-t-3xl sm:rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full sm:max-w-md overflow-hidden pb-10 sm:pb-0"
           >
-            {/* Faixa Superior de Destaque */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-neutral-800 via-brand-DEFAULT to-neutral-800" />
+            {/* Pull Indicator for Mobile */}
+            <div className="w-full flex justify-center pt-4 pb-2 sm:hidden">
+                 <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+            </div>
+
+            {/* Faixa Superior de Destaque (Escondida no mobile se tem indicador) */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-neutral-800 via-brand-DEFAULT to-neutral-800 hidden sm:block" />
 
             <div className="p-6 md:p-8">
               {/* Header com textos centralizados */}
@@ -115,8 +120,8 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
                 <p className="text-xs text-neutral-400 uppercase tracking-widest">Formalização Digital</p>
                 
                 <button 
-                  onClick={onClose} 
-                  className="absolute right-0 top-0 text-neutral-500 hover:text-white transition-colors p-1"
+                  onClick={onClose}
+                  className="absolute right-0 top-0 text-neutral-500 hover:text-white transition-colors p-1 hidden sm:block"
                 >
                   <X size={20} />
                 </button>

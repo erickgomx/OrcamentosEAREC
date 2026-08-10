@@ -106,8 +106,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="w-full min-h-screen bg-black text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
+    <main className="w-full min-h-[100dvh] bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
+      
+      {/* Cinematic Vignette Overlay */}
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_transparent_0%,_#0a0a0a_120%)] z-0 opacity-80" />
 
       {/* SPLASH SCREEN */}
       <AnimatePresence mode="wait">

@@ -87,7 +87,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a]/80 flex flex-col">
+    <div className="relative min-h-[100dvh] bg-[#0a0a0a]/80 flex flex-col">
       
       {/* Background sutil */}
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-[#0a0a0a] -z-10" />
@@ -214,24 +214,29 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       {/* MENU CASCATA (DROPDOWN MODAL) */}
       <AnimatePresence>
           {state.isCategoryMenuOpen && (
-              <div className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4">
+              <div className="fixed inset-0 z-[100] flex items-end sm:items-start sm:pt-24 justify-center sm:px-4">
                   <motion.div 
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-black/60 backdrop-blur-lg"
+                      className="absolute inset-0 bg-neutral-950/80 backdrop-blur-sm"
                       onClick={() => actions.setIsCategoryMenuOpen(false)}
                   />
                   <motion.div
-                      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 100, scale: 1 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                      className="relative bg-neutral-900 border border-white/10 rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl"
+                      exit={{ opacity: 0, y: 100, scale: 1 }}
+                      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                      className="relative bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0"
                   >
+                      {/* Pull Indicator for Mobile */}
+                      <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
+                          <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+                      </div>
                       <div className="p-4 bg-white/5 border-b border-white/5 text-center">
                           <h3 className="text-white font-serif text-lg">Trocar Ocasião</h3>
                           <p className="text-neutral-500 text-[10px] uppercase tracking-wider">Selecione uma nova categoria</p>
                       </div>
                       
-                      <div className="p-2 space-y-1 max-h-[60vh] overflow-y-auto">
+                      <div className="p-3 space-y-2 max-h-[60vh] overflow-y-auto">
                           {Object.entries(state.categoryLabels).map(([key, label], index) => {
                               const isActive = quoteState.category === key;
                               return (
@@ -245,14 +250,14 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                                           actions.setIsCategoryMenuOpen(false);
                                       }}
                                       className={cn(
-                                          "w-full text-left px-4 py-3 rounded-xl flex items-center justify-between transition-all",
+                                          "w-full text-left px-5 py-4 sm:py-3 rounded-2xl flex items-center justify-between transition-all",
                                           isActive 
                                               ? "bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20" 
-                                              : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                              : "bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white"
                                       )}
                                   >
                                       <span className="text-sm font-medium tracking-wide uppercase">{label}</span>
-                                      {isActive && <CheckCircle size={16} />}
+                                      {isActive && <CheckCircle size={18} />}
                                   </motion.button>
                               )
                           })}
@@ -298,47 +303,52 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       {/* NAME CAPTURE MODAL */}
       <AnimatePresence>
         {state.isNameModalOpen && (
-             <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
+             <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center sm:p-6">
                 <motion.div 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-neutral-950/90 backdrop-blur-sm"
+                    className="absolute inset-0 bg-neutral-950/90 backdrop-blur-md"
                     onClick={() => actions.setIsNameModalOpen(false)}
                 />
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                    className="relative bg-neutral-900 border border-white/10 p-8 rounded-2xl w-full max-w-sm shadow-2xl"
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    className="relative bg-neutral-900 border border-white/10 p-6 sm:p-8 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl pb-10 sm:pb-8"
                 >
+                     {/* Pull Indicator for Mobile */}
+                     <div className="w-full flex justify-center pb-6 sm:hidden">
+                          <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+                     </div>
                      <button 
                         onClick={() => actions.setIsNameModalOpen(false)}
-                        className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors"
+                        className="absolute top-6 right-6 text-neutral-500 hover:text-white transition-colors hidden sm:block"
                      >
                         <X size={20} />
                      </button>
 
                     <div className="mb-6 flex justify-center">
-                        <div className="p-3 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT">
-                            <User size={32} />
+                        <div className="p-4 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.2)]">
+                            <User size={36} strokeWidth={1.5} />
                         </div>
                     </div>
-                    <h3 className="text-xl text-white font-serif text-center mb-2">Identifique-se</h3>
-                    <p className="text-neutral-400 text-center text-sm mb-6">
-                        Para prosseguir com o atendimento personalizado, precisamos saber como podemos te chamar.
+                    <h3 className="text-2xl text-white font-serif text-center mb-2 leading-tight">Como podemos<br/>te chamar?</h3>
+                    <p className="text-neutral-400 text-center text-sm mb-8 font-light">
+                        Para um atendimento personalizado,<br/>informe seu nome ou empresa.
                     </p>
                     
                     <div className="space-y-4">
                         <input 
                             type="text"
-                            placeholder="Seu nome ou empresa..."
+                            placeholder="Seu nome..."
                             value={state.tempName}
                             onChange={(e) => actions.setTempName(e.target.value)}
                             autoFocus
-                            className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-brand-DEFAULT outline-none transition-colors"
+                            className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-neutral-600 focus:border-brand-DEFAULT focus:ring-1 focus:ring-brand-DEFAULT outline-none transition-all text-lg font-medium text-center"
                             onKeyDown={(e) => e.key === 'Enter' && actions.handleConfirmName()}
                         />
                         <Button 
-                            className="w-full"
+                            className="w-full py-4 text-lg"
                             onClick={actions.handleConfirmName}
                             disabled={state.tempName.trim().length < 2}
                         >

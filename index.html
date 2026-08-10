@@ -3,7 +3,8 @@
 <html lang="pt-BR" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" />
     <title>EAREC | Orçamento Facilitado</title>
     <!-- Favicon Personalizado EAREC (SVG Data URI) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='62' font-family='Inter, sans-serif' font-weight='900' font-size='45' text-anchor='middle' fill='white' letter-spacing='-3'%3EEA%3C/text%3E%3Ccircle cx='82' cy='28' r='10' fill='%23DC2626' stroke='%230a0a0a' stroke-width='3'/%3E%3C/svg%3E">
@@ -88,7 +89,14 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+<style>
+  .text-no-break {
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    white-space: normal !important;
+    hyphens: none !important;
+  }
+</style>
 </head>
   <body>
     <div id="root"></div>
