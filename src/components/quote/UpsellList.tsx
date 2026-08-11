@@ -721,15 +721,15 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     initial="hidden"
                     animate="visible"
                     onClick={onOpenMap} 
-                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-4 md:p-6 transition-colors gap-2 sm:gap-4"
+                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-4 md:p-6 transition-colors gap-2 sm:gap-4 overflow-hidden"
                 >
                     <div className="flex items-center gap-3 md:gap-4 min-w-0 w-full flex-1">
                         <div className="shrink-0 p-3 md:p-4 bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors flex items-center justify-center">
                             <MapPin size={20} className="md:w-6 md:h-6" />
                         </div>
-                        <div className="text-left min-w-0 flex-1">
+                        <div className="text-left min-w-0 flex-1 overflow-hidden">
                             <p className="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 font-bold">Logística</p>
-                            <p className="text-white text-sm md:text-lg font-medium mt-0.5 md:mt-1 truncate w-full">
+                            <p className="text-white text-sm md:text-lg font-medium mt-0.5 md:mt-1 truncate w-full block">
                                 {isQuickMode && distance === 0 ? "A definir" : (locationClient || "Selecionar Local")}
                             </p>
                         </div>

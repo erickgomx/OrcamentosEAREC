@@ -1,4 +1,3 @@
-
 # 🔴 EAREC | Orçamento Facilitado
 
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react)](https://react.dev/)
@@ -9,7 +8,6 @@
 ---
 
 ### **"High-End Audiovisual Experience"**
-
 Uma plataforma de orçamentos projetada para encantar clientes premium. Muito além de uma calculadora, o sistema oferece uma **experiência imersiva e cinematográfica** desde o primeiro contato, refletindo a qualidade visual das produções da EAREC.
 
 ---
@@ -19,7 +17,7 @@ Uma plataforma de orçamentos projetada para encantar clientes premium. Muito al
 *   **🎬 Cinematic UX:** Fundo dinâmico com FilmStrips, transições de estado, feedback tátil e animações suaves.
 *   **⚡ Modo Rápido:** Opção de "Orçamento Flash" para usuários que desejam pular a introdução e ir direto aos valores.
 *   **💰 Precificação Dinâmica:** Motor de cálculo (`PricingEngine`) em tempo real que considera tipo de evento, horas, quantidade de mídia e adicionais.
-*   **🗺️ Logística Inteligente:** Integração com OpenStreetMap (Nominatim) para cálculo automático de frete baseado na distância real de condução.
+*   **🗺️ Logística Inteligente:** Integração com OpenStreetMap (Nominatim) para cálculo automático de frete baseado na distância real de condução. Ajustado para ser responsivo e bem apresentado em dispositivos móveis.
 *   **📅 Validação de Agenda:** Integração segura com Google Calendar (suporte a .env).
 *   **✍️ Assinatura Digital:** Modal de assinatura manuscrita para aprovação formal.
 *   **🔐 Painel Administrativo:** Área segura para ajuste de preços base sem necessidade de deploy.
@@ -110,7 +108,6 @@ npm run dev
 ### Configuração de APIs (Segurança)
 
 Nunca insira chaves de API diretamente no código fonte. Para habilitar recursos reais, utilize variáveis de ambiente.
-
 Crie um arquivo `.env` na raiz do projeto (se utilizar Vite ou similar):
 
 ```env
@@ -120,6 +117,14 @@ VITE_GOOGLE_CALENDAR_ID=SeuIDDeCalendario
 
 *   **Google Calendar:** Se as chaves acima não forem fornecidas, o sistema rodará em **Modo Simulação** (Mock), permitindo o uso da interface sem integração real.
 *   **Mapas:** O sistema utiliza OpenStreetMap (Nominatim), que é gratuito e não requer chave para uso moderado.
+
+---
+
+## 🚀 Deploy / Atualizações Online
+
+Quando usar uma plataforma de preview/deploy automático (como Google AI Studio Build ou Vercel):
+* O **Preview** reflete o ambiente de desenvolvimento em tempo real.
+* O **Link Compartilhado (Produção)** precisa ser atualizado manualmente em alguns casos. Para refletir as novas alterações em produção, vá na opção de **Share / Export** (ou Deploy) da plataforma novamente para forçar um novo build e distribuição.
 
 ---
 
@@ -141,5 +146,4 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
     *   🔴 Marca: `Brand-Red` (#DC2626) - Acentos e Calls-to-Action.
 
 ---
-
 *Desenvolvido com excelência para EAREC Mídia.*

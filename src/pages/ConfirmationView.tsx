@@ -42,7 +42,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
             <motion.div variants={fadeInUp} className="text-center mb-6 md:mb-8">
                 {/* Logo no Topo (Substituindo o Ícone) */}
                 <div className="flex justify-center mb-4 md:mb-6"> 
-                    <Logo className="w-64 md:w-80 h-auto" animate />
+                    <Logo className="w-44 md:w-56 h-auto" animate />
                 </div>
                 <h1 className="font-serif text-2xl md:text-4xl text-white leading-tight">
                     COMO <span className="text-brand-DEFAULT font-medium">FUNCIONA?</span>

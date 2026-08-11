@@ -9,10 +9,10 @@ interface LogoProps {
 
 const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) => (
   <svg 
-    viewBox="-20 -20 380 120" 
+    viewBox="60 -5 240 70" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
-    className="w-full h-full drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10"
+    className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10"
     aria-label="EAREC Logo"
   >
     <motion.text 
@@ -22,8 +22,8 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       fill="#E5E5E5" 
       letterSpacing="-3"
       className="drop-shadow-sm"
-      initial={shouldAnimate ? { opacity: 0, x: -10, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 20, y: 52, filter: 'blur(0px)' }}
-      animate={{ opacity: 1, x: 20, y: 52, filter: 'blur(0px)' }}
+      initial={shouldAnimate ? { opacity: 0, x: -10, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 65, y: 52, filter: 'blur(0px)' }}
+      animate={{ opacity: 1, x: 65, y: 52, filter: 'blur(0px)' }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: shouldAnimate ? 0.2 : 0 }}
     >
       EA
@@ -31,7 +31,7 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
     
     {/* Ripple Effect Behind */}
     <motion.circle 
-      cx="145" 
+      cx="135" 
       cy="33" 
       r="16" 
       stroke="#DC2626"
@@ -44,7 +44,7 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
     
     {/* Pulse Circle */}
     <motion.circle 
-      cx="145" 
+      cx="135" 
       cy="33" 
       r="16" 
       fill="#DC2626" 
@@ -62,7 +62,7 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
 
     {/* Subtle Inner Glow Breathing */}
     <motion.circle 
-      cx="145" 
+      cx="135" 
       cy="33" 
       r="16" 
       fill="transparent"
@@ -80,8 +80,8 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       fill="#DC2626" 
       letterSpacing="-1"
       className="drop-shadow-[0_0_5px_rgba(220,38,38,0.4)]"
-      initial={shouldAnimate ? { opacity: 0, x: 215, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 185, y: 52, filter: 'blur(0px)' }}
-      animate={{ opacity: 1, x: 185, y: 52, filter: 'blur(0px)' }}
+      initial={shouldAnimate ? { opacity: 0, x: 215, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 155, y: 52, filter: 'blur(0px)' }}
+      animate={{ opacity: 1, x: 155, y: 52, filter: 'blur(0px)' }}
       transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: shouldAnimate ? 0.4 : 0 }}
     >
       REC
@@ -124,7 +124,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
       animate="visible"
       variants={containerVariants}
       onClick={handleClick}
-      className={cn("relative select-none cursor-pointer overflow-hidden rounded-xl group px-2 py-1", className)}
+      className={cn("relative select-none cursor-pointer overflow-hidden rounded-xl group px-2 py-1 flex items-center justify-center", className)}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
