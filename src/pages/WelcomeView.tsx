@@ -294,9 +294,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
              {currentStep === 0 ? <ArrowLeft size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
-
-      <div className="relative z-10 w-full max-w-lg flex flex-col items-center">
-        
+       <div className="relative z-10 w-full max-w-lg flex flex-col items-center">
         {/* LOGO & PROGRESS */}
         <motion.div 
             initial={{ opacity: 0, y: -20 }} 
@@ -306,7 +304,6 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
             <div className="flex justify-center mb-8">
                 <Logo className="w-48 md:w-56" />
             </div>
-
             {/* Progress Bar Minimalista */}
             <div className="flex items-center gap-2 max-w-[200px] mx-auto">
                 {steps.map((_, idx) => (
@@ -323,10 +320,14 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
             <p className="text-[10px] text-neutral-500 font-mono mt-3 uppercase tracking-widest">
                 Passo {currentStep + 1} de {steps.length}
             </p>
+        
         </motion.div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-lg flex flex-col items-center">
 
         {/* STEP CONTENT (WIZARD) */}
-        <div className="w-full min-h-[300px] relative">
+        <div className="w-full relative flex flex-col justify-center">
             <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div 
                     key={currentStep}
@@ -335,7 +336,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    className="absolute inset-0 w-full"
+                    className="w-full"
                 >
                     <div className="flex flex-col items-center text-center space-y-8">
                         
@@ -400,6 +401,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                         </div>
 
                     </div>
+                
                 </motion.div>
             </AnimatePresence>
         </div>
