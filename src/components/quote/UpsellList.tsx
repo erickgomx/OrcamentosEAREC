@@ -721,21 +721,21 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     initial="hidden"
                     animate="visible"
                     onClick={onOpenMap} 
-                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-6 transition-colors gap-4"
+                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-4 md:p-6 transition-colors gap-2 sm:gap-4"
                 >
-                    <div className="flex items-center gap-4 min-w-0 flex-1">
-                        <div className="shrink-0 p-4 bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors">
-                            <Route size={24} />
+                    <div className="flex items-center gap-3 md:gap-4 min-w-0 w-full flex-1">
+                        <div className="shrink-0 p-3 md:p-4 bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors flex items-center justify-center">
+                            <MapPin size={20} className="md:w-6 md:h-6" />
                         </div>
-                        <div className="text-left min-w-0">
-                            <p className="text-xs uppercase tracking-widest text-neutral-500 font-bold">Logística</p>
-                            <p className="text-white text-base md:text-lg font-medium mt-1 truncate w-full">
+                        <div className="text-left min-w-0 flex-1">
+                            <p className="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 font-bold">Logística</p>
+                            <p className="text-white text-sm md:text-lg font-medium mt-0.5 md:mt-1 truncate w-full">
                                 {isQuickMode && distance === 0 ? "A definir" : (locationClient || "Selecionar Local")}
                             </p>
                         </div>
                     </div>
-                    <div className="text-right shrink-0">
-                         <p className="text-neutral-400 text-sm font-medium">
+                    <div className="text-left sm:text-right shrink-0 pl-14 sm:pl-0">
+                         <p className="text-brand-DEFAULT md:text-neutral-400 text-xs md:text-sm font-medium">
                              {isQuickMode && distance === 0 
                                 ? "A consultar" 
                                 : `${distance}km • ${travelCost > 0 ? formatCurrency(travelCost) : "Grátis"}`}
@@ -899,7 +899,7 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: 
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex flex-col items-center justify-center p-6 rounded-2xl border transition-all select-none relative gap-3 h-full group box-border", 
+            "cursor-pointer flex flex-col items-center justify-center p-3 sm:p-6 rounded-2xl border transition-all select-none relative gap-2 sm:gap-3 h-full group box-border", 
             active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT" : "bg-neutral-900/40 border-white/5 hover:bg-white/5"
         )}
     >

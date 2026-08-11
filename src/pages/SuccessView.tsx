@@ -165,16 +165,21 @@ Poderiam confirmar a reserva desta data?`;
     return `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
   };
 
-  // Handler de Clique no Botão
-  const handleSendClick = (e: React.MouseEvent) => {
+  // Handler de Clique na Ação (Link ou QR Code)
+  const handleActionClick = (action: 'link' | 'qrcode', e: React.MouseEvent) => {
     e.preventDefault(); // Impede o link padrão
+    setPendingAction(action);
     
     // Se não tiver nome, abre modal
     if (!clientData.name || clientData.name.trim() === '') {
         setIsNameModalOpen(true);
     } else {
-        // Se tiver nome, abre direto
-        window.open(generateWhatsappUrl(), '_blank');
+        // Se tiver nome, processa a ação direto
+        if (action === 'qrcode') {
+            setIsQrModalOpen(true);
+        } else {
+            window.open(generateWhatsappUrl(), '_blank');
+        }
     }
   };
 

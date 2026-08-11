@@ -93,13 +93,12 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-[#0a0a0a] -z-10" />
 
       {/* HEADER: PROGRESS & NAV */}
-      <div className="pt-8 px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20">
-          <div className="w-full flex justify-between items-center mb-6">
-               <button onClick={actions.handlePrevStep} className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
-                   <ArrowLeft size={20} />
+      <div className="pt-6 md:pt-8 px-4 md:px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20">
+          <div className="w-full relative flex justify-center items-center mb-6">
+               <button onClick={actions.handlePrevStep} className="absolute left-0 p-2 md:p-3 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
+                   <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
                </button>
-               <Logo className="w-56 opacity-80" />
-               <div className="w-10" /> 
+               <Logo className="w-48 sm:w-56 md:w-64 opacity-90" />
           </div>
 
           {/* Progress Bar */}
