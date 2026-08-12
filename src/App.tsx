@@ -1,18 +1,18 @@
 
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import QuoteView from './src/pages/QuoteView';
-import WelcomeView from './src/pages/WelcomeView';
-import IntroView from './src/pages/IntroView';
-import ConfirmationView from './src/pages/ConfirmationView';
-import AdminDashboard from './src/pages/AdminDashboard';
-import Loading from './src/components/ui/Loading';
-import Logo from './src/components/ui/Logo';
-import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
-import { ClientData, QuoteData, QuoteState, ViewState } from './src/types';
-import { mockQuote } from './src/data/mock';
-import { delay } from './src/lib/utils';
-import { AppConfig } from './src/config/AppConfig';
+import QuoteView from './pages/QuoteView';
+import WelcomeView from './pages/WelcomeView';
+import IntroView from './pages/IntroView';
+import ConfirmationView from './pages/ConfirmationView';
+import AdminDashboard from './pages/AdminDashboard';
+import Loading from './components/ui/Loading';
+import Logo from './components/ui/Logo';
+import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
+import { ClientData, QuoteData, QuoteState, ViewState } from './types';
+import { mockQuote } from './data/mock';
+import { delay } from './lib/utils';
+import { AppConfig } from './config/AppConfig';
 
 const App: React.FC = () => {
   // Splash inicia true
@@ -38,6 +38,7 @@ const App: React.FC = () => {
     qty: 10,
     videoQty: 1, 
     addDrone: false,
+    droneQty: 0,
     addRealTime: false,
     selectionMode: 'duration'
   });

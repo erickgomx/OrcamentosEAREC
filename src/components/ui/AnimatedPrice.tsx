@@ -21,7 +21,7 @@ const AnimatedPrice: React.FC<AnimatedPriceProps> = ({ value, className }) => {
     damping: 25 
   });
   
-  const display = useTransform(spring, (current) => formatCurrency(current));
+  const display = useTransform(spring, (current: any) => formatCurrency(current as number));
 
   useEffect(() => {
     spring.set(value);

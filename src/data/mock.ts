@@ -37,7 +37,7 @@ export const mockQuote: QuoteData = {
   studioFee: 250,        // Taxa de Estúdio
   photoUnitPrice: 25,    // Valor Unitário: Preço por cada foto
   videoUnitPrice: 600,   // Valor Unitário: Preço por cada vídeo (1 min)
-  pricePerKm: 1.50,      // Logística: Valor alterado para R$ 1,50/km
+  pricePerKm: 3.75,      // Logística: Valor alterado para R$ 3,75/km (ex: Goianinha a Espirito Santo = ~R$ 120 ida e volta)
   
   // ========================================================================
 

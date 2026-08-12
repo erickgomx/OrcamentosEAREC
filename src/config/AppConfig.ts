@@ -32,7 +32,7 @@ export class AppConfig {
       social: "Registros vibrantes e emocionantes para Cultos, Batizados, 15 anos e formaturas.",
       commercial: "Valorize sua marca com fotos e vídeos profissionais de alta conversão.",
       studio: "Ambiente controlado e iluminação perfeita para ensaios e produções de alto nível.",
-      video_production: "Diárias para Freelancers: Equipe técnica, edição especializada e captação aérea.",
+      video_production: "Monte o pacote ideal com fotos, vídeos e adicionais conforme sua necessidade.",
       custom: "Soluções audiovisuais sob medida para demandas específicas e projetos únicos."
     } as Record<ServiceCategory, string>,
     LABELS: {
@@ -160,30 +160,11 @@ export class AppConfig {
         },
     },
     video_production: {
-        edit_only: { 
-            unit: 250, 
-            label: "Apenas Edição",
-            composition: "Edição Profissional (até 1min)",
-            description: "Você grava, nós editamos. Pós-produção avançada para vídeos de até 1 minuto. Inclui: Color grading, sound design e legendas." 
-        },
-        cam_cap: { 
-            fixed: 350, 
-            label: "Captação Câmera",
-            composition: "Operador + Câmera Profissional",
-            description: "Contrate apenas a mão de obra especializada. Operador de câmera experiente com equipamento 4K incluso (Linha Sony Alpha)." 
-        },
-        mobile_cap: { 
-            fixed: 250, 
-            label: "Captação Celular",
-            composition: "Filmmaker Mobile + iPhone 13 Pro Max",
-            description: "Captação ágil e discreta com iPhone 13 Pro Max. Perfeito para cobrir bastidores, eventos corporativos rápidos e conteúdo 'real-time' para stories." 
-        },
-        drone: { 
-            fixed: 250, 
-            label: "Drone (Por Bateria)",
-            composition: "1 Bateria (Aprox. 20min)",
-            description: "Imagens aéreas que valorizam a locação. Cada bateria oferece aprox. 20 minutos de voo. Inclui piloto certificado e Drone DJI." 
-        }
+        cam_cap: { fixed: 350, label: "Vídeo (Câmera)", composition: "Câmera Profissional", description: "Captação de vídeo de alta qualidade com equipamento profissional." },
+        mobile_cap: { fixed: 200, label: "Vídeo (Mobile)", composition: "iPhone/Smartphone", description: "Captação dinâmica focada em redes sociais." },
+        drone: { fixed: 250, label: "Drone (Aéreo)", composition: "1 Bateria (Aprox. 20min)", description: "Imagens aéreas." },
+        edit_only: { unit: 150, label: "Apenas Edição", composition: "Edição de material", description: "Envie seus arquivos e nós editamos." },
+        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
     },
     custom: {
         custom_project: { base: 0, label: "Projeto Personalizado", composition: "Sob Consulta", description: "Orçamento aberto." } 

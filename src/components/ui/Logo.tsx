@@ -7,9 +7,9 @@ interface LogoProps {
   animate?: boolean;
 }
 
-const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) => (
+const SvgContent = React.memo(({ shouldAnimate, isShining }: { shouldAnimate: boolean; isShining?: boolean }) => (
   <svg 
-    viewBox="60 -5 240 70" 
+    viewBox="60 -5 240 85" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
     className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10"
@@ -19,7 +19,9 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       fontFamily="'Microgramma Extd D Bold', 'Microgramma Extended', sans-serif" 
       fontWeight="900" 
       fontSize="55" 
-      fill="#E5E5E5" 
+      fill="#E5E5E5"
+       stroke="#E5E5E5"
+       strokeWidth="2" 
       letterSpacing="-3"
       className="drop-shadow-sm"
       initial={shouldAnimate ? { opacity: 0, x: -10, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 65, y: 52, filter: 'blur(0px)' }}
@@ -86,6 +88,29 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
     >
       REC
     </motion.text>
+
+    <AnimatePresence>
+      {isShining && (
+        <motion.text
+          fontFamily="sans-serif"
+          fontWeight="700"
+          fontSize="11"
+          fill="#ffffff"
+          opacity="0.9"
+          className="drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] uppercase"
+          initial={{ opacity: 0, y: 70, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, y: 65, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, y: 60, filter: 'blur(4px)' }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          x="180"
+          textAnchor="middle"
+          textLength="160"
+          lengthAdjust="spacing"
+        >
+          Revelando seu melhor
+        </motion.text>
+      )}
+    </AnimatePresence>
   </svg>
 ));
 
@@ -124,33 +149,37 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
       animate="visible"
       variants={containerVariants}
       onClick={handleClick}
-      className={cn("relative select-none cursor-pointer overflow-hidden rounded-xl group px-2 py-1 flex items-center justify-center", className)}
+      className={cn("relative select-none cursor-pointer overflow-visible rounded-xl group px-2 py-1 flex items-center justify-center", className)}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <SvgContent shouldAnimate={animate} />
+      <SvgContent shouldAnimate={animate} isShining={isShining} />
       
       {/* ELEGANT CLICK ANIMATION: GENTLE GLOW AND SOFT SWEEP */}
       <AnimatePresence>
         {isShining && (
             <>
-              {/* Radial glow expansion */}
-              <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: [0, 1, 0], scale: [0.8, 1.2, 1.4] }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.8, ease: "easeOut" }}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-full h-[300%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-DEFAULT/30 via-white/5 to-transparent blur-2xl pointer-events-none"
-              />
-              {/* Sharp elegant light sweep */}
-              <motion.div
-                  initial={{ x: '-150%', skewX: -20, opacity: 0 }}
-                  animate={{ x: '150%', skewX: -20, opacity: [0, 1, 0] }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
-                  className="absolute top-0 bottom-0 z-20 w-[80%] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-sm pointer-events-none"
-                  style={{ mixBlendMode: 'overlay' }}
-              />
+              <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none z-10">
+                {/* Radial glow expansion */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: [0, 1, 0], scale: [0.8, 1.2, 1.4] }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.8, ease: "easeOut" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[300%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-DEFAULT/30 via-white/5 to-transparent blur-2xl pointer-events-none"
+                />
+                {/* Sharp elegant light sweep */}
+                <motion.div
+                    initial={{ x: '-150%', skewX: -20, opacity: 0 }}
+                    animate={{ x: '150%', skewX: -20, opacity: [0, 1, 0] }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
+                    className="absolute top-0 bottom-0 w-[80%] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-sm pointer-events-none"
+                    style={{ mixBlendMode: 'overlay' }}
+                />
+              </div>
+              
+              
             </>
         )}
       </AnimatePresence>

@@ -60,6 +60,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   const logic = useQuoteLogic(props);
   const { state, actions, computed } = logic;
   const { quoteState, clientData } = props;
+  const travelCost = state.distance > 0 ? (state.distance * state.quoteData.pricePerKm) : 0;
 
   // View Routing
   if (state.viewState === 'success') {
@@ -171,14 +172,24 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       setQty={actions.setQty}
                       videoQty={quoteState.videoQty} 
                       setVideoQty={actions.setVideoQty}
+                      droneQty={quoteState.droneQty}
+                      setDroneQty={actions.setDroneQty}
+                      camCapHours={quoteState.camCapHours}
+                      setCamCapHours={actions.setCamCapHours}
+                      mobileCapHours={quoteState.mobileCapHours}
+                      setMobileCapHours={actions.setMobileCapHours}
+                      editQty={quoteState.editQty}
+                      setEditQty={actions.setEditQty}
                       addDrone={quoteState.addDrone} 
                       setAddDrone={actions.setAddDrone}
                       addRealTime={quoteState.addRealTime} 
                       setAddRealTime={actions.setAddRealTime}
                       distance={state.distance}
-                      pricePerKm={state.quoteData.pricePerKm}
-                      locationClient={props.clientData.location}
-                      onOpenMap={() => actions.setIsMapOpen(true)}
+                      travelCost={travelCost}
+                      clientData={props.clientData}
+                      isMapOpen={state.isMapOpen}
+                      setIsMapOpen={actions.setIsMapOpen}
+                      handleServiceSelect={(id, mode) => { actions.setServiceId(id); if (mode) actions.setSelectionMode(mode); }}
                       selectionMode={quoteState.selectionMode}
                       setSelectionMode={actions.setSelectionMode}
                       isQuickMode={props.isQuickMode} 
@@ -222,14 +233,12 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       transition={{ type: "spring", damping: 25, stiffness: 200 }}
                       className="relative bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0"
                   >
-                      {/* Pull Indicator for Mobile */}
-                      <div className="w-full flex justify-center pt-3 pb-1 sm:hidden">
-                          <div className="w-12 h-1.5 bg-white/20 rounded-full" />
-                      </div>
+ 
                       <div className="p-4 bg-white/5 border-b border-white/5 text-center">
                           <h3 className="text-white font-serif text-lg">Trocar Ocasião</h3>
                           <p className="text-neutral-500 text-[10px] uppercase tracking-wider">Selecione uma nova categoria</p>
-                      </div>
+                       </div>
+ 
                       
                       <div className="p-3 space-y-2 max-h-[60vh] overflow-y-auto">
                           {Object.entries(state.categoryLabels).map(([key, label], index) => {
@@ -256,7 +265,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                                   </motion.button>
                               )
                           })}
-                      </div>
+                     </div>
+ 
                   </motion.div>
               </div>
           )}
@@ -298,7 +308,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       {/* NAME CAPTURE MODAL */}
       <AnimatePresence>
         {state.isNameModalOpen && (
-             <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center sm:p-6">
+             <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
                 <motion.div 
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="absolute inset-0 bg-neutral-950/90 backdrop-blur-md"
@@ -309,15 +319,12 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 100 }}
                     transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="relative bg-neutral-900 border border-white/10 p-6 sm:p-8 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm shadow-2xl pb-10 sm:pb-8"
+                    className="relative bg-neutral-900 border border-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-sm shadow-2xl"
                 >
-                     {/* Pull Indicator for Mobile */}
-                     <div className="w-full flex justify-center pb-6 sm:hidden">
-                          <div className="w-12 h-1.5 bg-white/20 rounded-full" />
-                     </div>
+
                      <button 
                         onClick={() => actions.setIsNameModalOpen(false)}
-                        className="absolute top-6 right-6 text-neutral-500 hover:text-white transition-colors hidden sm:block"
+                        className="absolute top-6 right-6 text-neutral-500 hover:text-white transition-colors"
                      >
                         <X size={20} />
                      </button>

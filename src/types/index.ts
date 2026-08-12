@@ -20,7 +20,7 @@ export type ServiceId =
   | 'wedding_base' | 'wedding_classic' | 'wedding_romance' | 'wedding_essence'
   | 'comm_photo' | 'comm_video' | 'comm_combo'
   | 'studio_photo' | 'studio_video'
-  | 'edit_only' | 'cam_cap' | 'mobile_cap' | 'drone'
+  | 'edit_only' | 'cam_cap' | 'mobile_cap' | 'drone' | 'custom_bundle'
   | 'custom_project';
 
 // Estado persistente da tela de Orçamento
@@ -31,9 +31,13 @@ export interface QuoteState {
   qty: number;      // Usado para fotos ou quantidade genérica
   videoQty: number; // NOVO: Usado especificamente para vídeos em pacotes híbridos
   addDrone: boolean;
+  droneQty?: number;
   addRealTime: boolean;
   selectionMode: 'duration' | 'quantity'; // Define se cobra por tempo ou por entrega
   commercialMode?: 'on_location' | 'studio'; // Novo: Define local para categoria Comercial
+  camCapHours?: number;
+  mobileCapHours?: number;
+  editQty?: number;
 }
 
 // Estrutura de um item individual dentro de um orçamento

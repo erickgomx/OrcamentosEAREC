@@ -209,42 +209,42 @@ export class PricingEngine {
   }
 
   private static calculateProduction(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { serviceId, qty, hours } = state;
+    const { camCapHours = 0, mobileCapHours = 0, editQty = 0, droneQty = 0 } = state;
     const table = AppConfig.PRICING_TABLE.video_production;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
 
-    if (serviceId === 'edit_only') {
-      const val = qty * table.edit_only.unit;
-      total += val;
-      breakdown.push({ label: `${table.edit_only.label} (${qty}x)`, value: val, type: 'base' });
-    }
-    else if (serviceId === 'cam_cap') { 
-      // IMPLEMENTAÇÃO DE HORAS EXTRAS PARA FREELANCERS
+    if (camCapHours > 0) { 
       total += table.cam_cap.fixed; 
       breakdown.push({ label: `${table.cam_cap.label} (Base 2h)`, value: table.cam_cap.fixed, type: 'base' }); 
-      
-      if (hours > 2) {
-          const extraVal = (hours - 2) * 200; // Hora extra Captação Pro
+      if (camCapHours > 2) {
+          const extraVal = (camCapHours - 2) * 200;
           total += extraVal;
-          breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
+          breakdown.push({ label: `${table.cam_cap.label} Extras (+${camCapHours - 2}h)`, value: extraVal, type: 'addon' });
       }
     }
-    else if (serviceId === 'mobile_cap') { 
+
+    if (mobileCapHours > 0) { 
       total += table.mobile_cap.fixed; 
       breakdown.push({ label: `${table.mobile_cap.label} (Base 2h)`, value: table.mobile_cap.fixed, type: 'base' }); 
-      
-      if (hours > 2) {
-          const extraVal = (hours - 2) * 150; // Hora extra Mobile (Mais barato)
+      if (mobileCapHours > 2) {
+          const extraVal = (mobileCapHours - 2) * 150;
           total += extraVal;
-          breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
+          breakdown.push({ label: `${table.mobile_cap.label} Extras (+${mobileCapHours - 2}h)`, value: extraVal, type: 'addon' });
       }
     }
-    else if (serviceId === 'drone') { 
-      // Alterado para multiplicar por QTY (Baterias)
-      const val = qty * table.drone.fixed; 
+    
+    if (editQty > 0) {
+      const val = editQty * table.edit_only.unit;
+      total += val;
+      breakdown.push({ label: `${table.edit_only.label} (${editQty}x)`, value: val, type: 'base' });
+    }
+
+    // Drone can also be added here directly
+    if (droneQty > 0) { 
+      const val = droneQty * table.drone.fixed; 
       total += val; 
-      breakdown.push({ label: `${table.drone.label} (${qty}x)`, value: val, type: 'base' }); 
+      breakdown.push({ label: `${table.drone.label} (${droneQty} baterias)`, value: val, type: 'base' }); 
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };
@@ -268,7 +268,7 @@ export class PricingEngine {
     }
 
     // 2. Fotos em Tempo Real (Aplicável a Wedding, Social e Commercial)
-    if (addRealTime && (category === 'wedding' || category === 'social' || category === 'commercial')) {
+    if (addRealTime && (category === 'wedding' || category === 'social' || category === 'commercial' || (category === 'video_production'))) {
        let realtimePrice;
        
        if (category === 'commercial') {
@@ -295,7 +295,8 @@ export class PricingEngine {
       // CORREÇÃO: Prioridade para distância real > 0.
       if (distance > 0) {
         // Cálculo Normal: Ida e Volta
-        const freight = (distance * 2 * pricePerKm);
+        // O valor do pricePerKm já considera a viagem de ida e volta por km de distância (R$ 3.75)
+        const freight = (distance * pricePerKm);
         currentResult.totalPrice += freight;
         currentResult.breakdown.push({ label: `Deslocamento (${distance}km)`, value: freight, type: 'freight' });
       } else if (isQuickMode) {

@@ -58,7 +58,7 @@ export const useQuoteLogic = ({
     social: 'Social',
     commercial: 'Comercial',
     studio: 'Estúdio',
-    video_production: 'Freelancer',
+    video_production: 'Monte seu Orçamento',
     custom: 'Personalizado'
   };
 
@@ -84,7 +84,11 @@ export const useQuoteLogic = ({
           // Se estivermos nas etapas seguintes (via Menu Dropdown currentStep > 0), 
           // aí sim forçamos o reinício para Step 1 para evitar inconsistência.
           if (currentStep > 0) {
-              setCurrentStep(1);
+              if (c === 'video_production') {
+                  setCurrentStep(2);
+              } else {
+                  setCurrentStep(1);
+              }
               window.scrollTo({ top: 0, behavior: 'smooth' });
           }
           
@@ -94,6 +98,10 @@ export const useQuoteLogic = ({
       setHours: (h: number) => setQuoteState(prev => ({ ...prev, hours: h })),
       setQty: (q: number) => setQuoteState(prev => ({ ...prev, qty: q })),
       setVideoQty: (q: number) => setQuoteState(prev => ({ ...prev, videoQty: q })),
+      setDroneQty: (d: number) => setQuoteState(prev => ({ ...prev, droneQty: d })),
+      setCamCapHours: (h: number) => setQuoteState(prev => ({ ...prev, camCapHours: h })),
+      setMobileCapHours: (h: number) => setQuoteState(prev => ({ ...prev, mobileCapHours: h })),
+      setEditQty: (q: number) => setQuoteState(prev => ({ ...prev, editQty: q })),
       setAddDrone: (b: boolean) => setQuoteState(prev => ({ ...prev, addDrone: b })),
       setAddRealTime: (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b })),
       setSelectionMode: (mode: 'duration' | 'quantity') => setQuoteState(prev => ({ ...prev, selectionMode: mode })),
@@ -154,12 +162,16 @@ export const useQuoteLogic = ({
         if (category === 'social') actions.setServiceId('birthday');
         if (category === 'commercial') actions.setServiceId('comm_photo');
         if (category === 'studio') actions.setServiceId('studio_photo');
-        if (category === 'video_production') actions.setServiceId('edit_only');
+        if (category === 'video_production') actions.setServiceId('custom_bundle');
         if (category === 'custom') actions.setServiceId('custom_project');
         
         actions.setHours(2);
         actions.setAddDrone(false);
+        actions.setDroneQty(0);
         actions.setAddRealTime(false);
+        actions.setCamCapHours(0);
+        actions.setMobileCapHours(0);
+        actions.setEditQty(0);
         
         if (category === 'commercial') {
             if (serviceId === 'comm_photo') actions.setQty(5);
@@ -167,7 +179,8 @@ export const useQuoteLogic = ({
         } else if (category === 'studio' && serviceId === 'studio_photo') {
             actions.setQty(8);
         } else if (category === 'video_production') {
-            actions.setQty(1);
+            actions.setQty(0);
+            actions.setVideoQty(0);
         } else {
             actions.setQty(10);
         }
@@ -217,7 +230,10 @@ export const useQuoteLogic = ({
 
       if (currentStep < steps.length - 1) {
           setDirection(1);
-          setCurrentStep(prev => prev + 1);
+          setCurrentStep(prev => {
+             if (prev === 0 && category === 'video_production') return 2;
+             return prev + 1;
+          });
           window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
           if (category === 'custom') {
@@ -277,6 +293,7 @@ export const useQuoteLogic = ({
   const handleRemoveAddon = (addonName: string) => {
       const name = addonName.toLowerCase();
       if (name.includes('drone')) actions.setAddDrone(false);
+        actions.setDroneQty(0);
       if (name.includes('tempo real')) actions.setAddRealTime(false);
       if (name.includes('horas extras')) actions.setHours(2); 
   };
@@ -304,6 +321,7 @@ export const useQuoteLogic = ({
 
   const activeAddons = [];
   if (addDrone && (['wedding','social','commercial'].includes(category || ''))) activeAddons.push('Drone (Aéreo)');
+  if (quoteState.droneQty && quoteState.droneQty > 0) activeAddons.push(`Drone (${quoteState.droneQty} Baterias)`);
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
 
   const getFooterLabel = () => {
