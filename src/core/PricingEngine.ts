@@ -209,10 +209,16 @@ export class PricingEngine {
   }
 
   private static calculateProduction(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { camCapHours = 0, mobileCapHours = 0, editQty = 0, droneQty = 0 } = state;
+    const { camCapHours = 0, mobileCapHours = 0, editQty = 0, droneQty = 0, qty = 0 } = state;
     const table = AppConfig.PRICING_TABLE.video_production;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
+
+    if (qty > 0) {
+      const val = qty * table.photo_cap.unit;
+      total += val;
+      breakdown.push({ label: `${table.photo_cap.label} (${qty}x)`, value: val, type: 'base' });
+    }
 
     if (camCapHours > 0) { 
       total += table.cam_cap.fixed; 
@@ -294,11 +300,10 @@ export class PricingEngine {
     if (includeFreight && !isExemptFromTravel) {
       // CORREÇÃO: Prioridade para distância real > 0.
       if (distance > 0) {
-        // Cálculo Normal: Ida e Volta
-        // O valor do pricePerKm já considera a viagem de ida e volta por km de distância (R$ 3.75)
-        const freight = (distance * pricePerKm);
+        // Cálculo Normal: Ida e Volta (2x a distância)
+        const freight = (distance * 2 * pricePerKm);
         currentResult.totalPrice += freight;
-        currentResult.breakdown.push({ label: `Deslocamento (${distance}km)`, value: freight, type: 'freight' });
+        currentResult.breakdown.push({ label: `Deslocamento (${distance}km x2)`, value: freight, type: 'freight' });
       } else if (isQuickMode) {
         // Modo Rápido sem local definido: "A consultar" (Valor 0, mas com label específico)
         currentResult.breakdown.push({ label: "Deslocamento (A consultar)", value: 0, type: 'freight' });

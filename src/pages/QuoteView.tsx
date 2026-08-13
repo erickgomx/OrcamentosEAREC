@@ -60,7 +60,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   const logic = useQuoteLogic(props);
   const { state, actions, computed } = logic;
   const { quoteState, clientData } = props;
-  const travelCost = state.distance > 0 ? (state.distance * state.quoteData.pricePerKm) : 0;
+  const travelCost = state.distance > 0 ? (state.distance * 2 * state.quoteData.pricePerKm) : 0;
 
   // View Routing
   if (state.viewState === 'success') {
@@ -189,7 +189,29 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       clientData={props.clientData}
                       isMapOpen={state.isMapOpen}
                       setIsMapOpen={actions.setIsMapOpen}
-                      handleServiceSelect={(id, mode) => { actions.setServiceId(id); if (mode) actions.setSelectionMode(mode); }}
+                      handleServiceSelect={(id, mode) => { 
+                          actions.setServiceId(id); 
+                          if (mode) actions.setSelectionMode(mode); 
+                          // Reset to minimums when explicitly selecting a new package
+                          if (quoteState.category === 'commercial') {
+                              if (id === 'comm_photo') actions.setQty(5);
+                              else if (id === 'comm_video') actions.setQty(1);
+                              else if (id === 'comm_combo') { actions.setQty(10); actions.setVideoQty(1); }
+                          } else if (quoteState.category === 'studio' && id === 'studio_photo') {
+                              actions.setQty(8);
+                          } else if (quoteState.category === 'video_production') {
+                              // Reset all addon controls to 0 initially
+                              actions.setQty(0);
+                              actions.setVideoQty(0);
+                              actions.setCamCapHours(0);
+                              actions.setMobileCapHours(0);
+                              actions.setEditQty(0);
+                              actions.setDroneQty(0);
+                          } else {
+                              actions.setQty(10);
+                          }
+                          actions.setHours(2);
+                      }}
                       selectionMode={quoteState.selectionMode}
                       setSelectionMode={actions.setSelectionMode}
                       isQuickMode={props.isQuickMode} 

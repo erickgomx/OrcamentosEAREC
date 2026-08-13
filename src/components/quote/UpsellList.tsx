@@ -60,34 +60,42 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index }: any) 
         variants={{ hidden: { opacity: 0, y: 20 }, visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1 } }) }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-6 rounded-3xl border transition-all duration-500 cursor-pointer text-center h-full min-h-[220px] overflow-hidden",
+            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-500 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden",
             active 
                 ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)] scale-[1.02]" 
                 : "bg-neutral-950/50 border-white/5 hover:border-white/20 hover:bg-neutral-900/80"
         )}
     >
         <div className={cn(
-            "absolute top-3 right-3 w-6 h-6 rounded-full border flex items-center justify-center transition-all",
-            active ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/10 bg-black/20"
-        )}>
-            {active && <Check size={14} className="text-white" />}
-        </div>
+            "absolute top-3 right-3 w-3 h-3 rounded-full transition-all duration-500",
+            active ? "bg-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.8)] border border-brand-DEFAULT/50" : "bg-white/10"
+        )} />
+        
         <div className={cn(
             "p-4 rounded-full mb-1 transition-all duration-300",
-            active ? "bg-white/20 text-white" : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
+            active ? "bg-brand-DEFAULT/10 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.2)]" : "bg-white/5 text-neutral-400 group-hover:bg-white/10 group-hover:text-white"
         )}>
-            <Icon size={28} />
+            <Icon size={26} strokeWidth={1.5} />
         </div>
         <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-2">
             <p className={cn(
-                "text-[11px] sm:text-xs md:text-sm font-medium whitespace-normal leading-tight break-words",
-                active ? "text-white" : "text-neutral-300"
+                "text-[10px] sm:text-[11px] md:text-sm font-medium whitespace-normal leading-tight break-words transition-colors duration-300",
+                active ? "text-white" : "text-neutral-400 group-hover:text-neutral-300"
             )}>
                 {label}
             </p>
-            <p className="text-[10px] md:text-xs text-neutral-500 font-normal">
-                {desc}
-            </p>
+            <AnimatePresence mode="wait">
+                {active && (
+                    <motion.p 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-[9px] md:text-xs text-neutral-400 font-normal leading-tight"
+                    >
+                        {desc}
+                    </motion.p>
+                )}
+            </AnimatePresence>
         </div>
     </motion.div>
 );
@@ -113,11 +121,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const TABLE = AppConfig.PRICING_TABLE;
 
   const categories = [
+    { id: 'video_production', label: 'Monte seu Pacote', desc: 'Projetos Especiais', icon: Video },
     { id: 'wedding', label: 'Casamento', desc: 'Cobertura Completa', icon: Heart },
     { id: 'social', label: 'Social', desc: 'Aniversários e Festas', icon: Users },
     { id: 'commercial', label: 'Comercial', desc: 'Marcas e Produtos', icon: Building2 },
     { id: 'studio', label: 'Estúdio', desc: 'Retratos e Ensaios', icon: Camera },
-    { id: 'video_production', label: 'Monte seu Orçamento', desc: 'Projetos Especiais', icon: Video },
     { id: 'custom', label: 'Personalizado', desc: 'Outras Demandas', icon: MessageCircle }
   ];
 
@@ -161,8 +169,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const isCombo = category === 'commercial' && serviceId === 'comm_combo';
 
   const gridClasses = cn(
-    "flex flex-wrap gap-3 md:gap-6 w-full mx-auto justify-center items-stretch", 
-    "[&>*]:flex-shrink-0 [&>*]:w-[calc(50%-0.5rem)] md:[&>*]:w-[calc(50%-1rem)] [&>*]:max-w-[400px]" 
+    "grid grid-cols-2 md:grid-cols-2 gap-2 sm:gap-4 md:gap-6 w-full mx-auto items-stretch",
+    "max-w-5xl"
   );
 
   return (
@@ -175,9 +183,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto"
+          className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto pb-32"
         >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
                 {categories.map((cat, i) => (
                     <CategoryCard 
                         key={cat.id}
@@ -196,7 +204,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="space-y-8 w-full flex flex-col items-center"
+          className="space-y-8 w-full flex flex-col items-center pb-48"
         >
                 
             {category === 'commercial' && commercialMode && (
@@ -225,7 +233,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </button>
                         <button onClick={() => setSelectionMode('quantity')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", selectionMode === 'quantity' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
                             <Camera size={20} className={selectionMode === 'quantity' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
-                            POR FOTO
+                            POR UNIDADE
                         </button>
                     </div>
                 </motion.div>
@@ -251,9 +259,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
                   {category === 'social' && (
                     <>
-                        <ServiceCard active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? "A partir de R$ 400" : "R$ 25,00 / foto"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Pague apenas pelo que amar."} desc={TABLE.social.birthday.description} />
-                        <ServiceCard active={serviceId === 'event'} onClick={() => handleServiceSelect('event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? "A partir de R$ 600" : "R$ 25,00 / foto"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "Ideal para grandes eventos."} desc={TABLE.social.social_party.description} highlight />
-                        <ServiceCard active={serviceId === 'party'} onClick={() => handleServiceSelect('party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? "A partir de R$ 800" : "R$ 25,00 / foto"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "A melhor cobertura."} desc={TABLE.social.social_party.description} highlight />
+                        <ServiceCard active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Pague apenas pelo que amar."} desc={TABLE.social.birthday.description} />
+                        <ServiceCard active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Ideal para grandes eventos."} desc={TABLE.social.social_event.description} highlight />
+                        <ServiceCard active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "A melhor cobertura."} desc={TABLE.social.social_party.description} highlight />
                         
                         <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
@@ -273,7 +281,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
                   
                   {category === 'custom' && (
-                      <motion.div variants={fadeInUp} className="!w-full !max-w-none col-span-2 md:col-span-2 lg:col-span-4 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
+                      <motion.div variants={fadeInUp} className="!w-full !max-w-none col-span-3 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
                           <Star className="mx-auto text-brand-DEFAULT mb-4" size={32} />
                           <h3 className="font-serif text-2xl text-white mb-2">Projeto Personalizado</h3>
                           <p className="text-neutral-400 mb-6 text-lg">Descreva sua necessidade específica no WhatsApp.</p>
@@ -288,8 +296,68 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
               </motion.div>
             )}
+                 {/* CAIXA DE DETALHES DO SERVIÇO SELECIONADO (Fixed acima do rodapé) */}
+            {category !== 'custom' && (
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="fixed bottom-[170px] md:bottom-[140px] left-0 right-0 z-50 pointer-events-none flex flex-col items-center text-center justify-end"
+                >
+                    {/* Background gradient escuro para leitura, atado à caixa de detalhes */}
+                    <div className="absolute bottom-[-200px] left-0 right-0 h-[450px] bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent -z-10" />
 
-
+                    <div className="relative z-10 px-4 w-full flex flex-col items-center">
+                        <AnimatePresence mode="wait">
+                        {category === 'video_production' ? (
+                        <motion.div 
+                            key="video_prod_details"
+                            initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                            exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
+                            transition={{ duration: 0.4 }}
+                            className="flex flex-col items-center text-center max-w-2xl mx-auto drop-shadow-2xl"
+                        >
+                            <h3 className="text-xl md:text-2xl font-serif text-white mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
+                                Projetos Especiais
+                            </h3>
+                            <p className="text-xs md:text-sm text-neutral-200 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,1)] max-w-md mx-auto">
+                                Selecione e adicione exatamente os serviços que você precisa.
+                            </p>
+                        </motion.div>
+                    ) : serviceId && (AppConfig.PRICING_TABLE as any)[category]?.[serviceId] ? (
+                        <motion.div 
+                            key={serviceId}
+                            initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                            exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
+                            transition={{ duration: 0.4 }}
+                            className="flex flex-col items-center text-center max-w-3xl mx-auto drop-shadow-2xl"
+                        >
+                            <h3 className="text-xl md:text-2xl font-serif text-brand-DEFAULT font-bold mb-1 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
+                                {(AppConfig.PRICING_TABLE as any)[category][serviceId].label}
+                            </h3>
+                            <p className="text-xs md:text-sm text-neutral-200 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,1)] max-w-lg mx-auto">
+                                {(AppConfig.PRICING_TABLE as any)[category][serviceId].description}
+                            </p>
+                        </motion.div>
+                    ) : (
+                        <motion.div 
+                            key="empty_selection"
+                            initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                            exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
+                            transition={{ duration: 0.4 }}
+                            className="flex flex-col items-center text-center drop-shadow-2xl"
+                        >
+                            <h3 className="text-sm md:text-base font-medium text-white/50 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
+                                Toque em uma opção para ver os detalhes
+                            </h3>
+                        </motion.div>
+                    )}
+                        </AnimatePresence>
+                    </div>
+                </motion.div>
+            )}
         </motion.div>
       )}
 
@@ -312,80 +380,52 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <p className="text-neutral-400 text-sm mt-2">Escolha as quantidades para cada serviço desejado.</p>
                         </div>
 
-                        {/* Camera */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-                            <div className="flex items-center gap-4 w-full md:w-auto">
-                                <div className="p-3 bg-white/10 rounded-full text-white"><Camera size={24} /></div>
-                                <div className="text-left">
-                                    <h4 className="text-white font-bold text-sm">Vídeo (Câmera)</h4>
-                                    <p className="text-xs text-brand-DEFAULT mt-1">R$ 350 base (2h)</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <ControlBtn onClick={() => setCamCapHours?.(Math.max(0, (camCapHours || 0) - 1))} icon={Minus} />
-                                <div className="w-16 text-center">
-                                    <span className="text-2xl font-bold text-white"><AnimatedNumber value={camCapHours || 0} /></span>
-                                    <span className="block text-[10px] text-neutral-500 uppercase">Horas</span>
-                                </div>
-                                <ControlBtn onClick={() => setCamCapHours?.((camCapHours || 0) + 1)} icon={Plus} active />
-                            </div>
-                        </div>
-
-                        {/* Mobile */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-                            <div className="flex items-center gap-4 w-full md:w-auto">
-                                <div className="p-3 bg-white/10 rounded-full text-white"><Video size={24} /></div>
-                                <div className="text-left">
-                                    <h4 className="text-white font-bold text-sm">Vídeo (Mobile)</h4>
-                                    <p className="text-xs text-brand-DEFAULT mt-1">R$ 200 base (2h)</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <ControlBtn onClick={() => setMobileCapHours?.(Math.max(0, (mobileCapHours || 0) - 1))} icon={Minus} />
-                                <div className="w-16 text-center">
-                                    <span className="text-2xl font-bold text-white"><AnimatedNumber value={mobileCapHours || 0} /></span>
-                                    <span className="block text-[10px] text-neutral-500 uppercase">Horas</span>
-                                </div>
-                                <ControlBtn onClick={() => setMobileCapHours?.((mobileCapHours || 0) + 1)} icon={Plus} active />
-                            </div>
-                        </div>
-
-                        {/* Edit Only */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-                            <div className="flex items-center gap-4 w-full md:w-auto">
-                                <div className="p-3 bg-white/10 rounded-full text-white"><Zap size={24} /></div>
-                                <div className="text-left">
-                                    <h4 className="text-white font-bold text-sm">Apenas Edição</h4>
-                                    <p className="text-xs text-brand-DEFAULT mt-1">R$ 150 / vídeo</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <ControlBtn onClick={() => setEditQty?.(Math.max(0, (editQty || 0) - 1))} icon={Minus} />
-                                <div className="w-16 text-center">
-                                    <span className="text-2xl font-bold text-white"><AnimatedNumber value={editQty || 0} /></span>
-                                    <span className="block text-[10px] text-neutral-500 uppercase">Vídeos</span>
-                                </div>
-                                <ControlBtn onClick={() => setEditQty?.((editQty || 0) + 1)} icon={Plus} active />
-                            </div>
-                        </div>
-
-                        {/* Drone */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-                            <div className="flex items-center gap-4 w-full md:w-auto">
-                                <div className="p-3 bg-white/10 rounded-full text-white"><PlaneTakeoff size={24} /></div>
-                                <div className="text-left">
-                                    <h4 className="text-white font-bold text-sm">Drone (Aéreo)</h4>
-                                    <p className="text-xs text-brand-DEFAULT mt-1">R$ 250 / bateria</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <ControlBtn onClick={() => setDroneQty?.(Math.max(0, (droneQty || 0) - 1))} icon={Minus} />
-                                <div className="w-16 text-center">
-                                    <span className="text-2xl font-bold text-white"><AnimatedNumber value={droneQty || 0} /></span>
-                                    <span className="block text-[10px] text-neutral-500 uppercase">Baterias</span>
-                                </div>
-                                <ControlBtn onClick={() => setDroneQty?.((droneQty || 0) + 1)} icon={Plus} active />
-                            </div>
+                        <div className="grid grid-cols-1 gap-3 md:gap-4 w-full">
+                            <ProductionControlItem 
+                                icon={Camera} 
+                                title="Fotos" 
+                                desc="R$ 25 / foto" 
+                                value={qty} 
+                                setter={setQty} 
+                                min={10} 
+                                unitLabel="Fotos" 
+                            />
+                            <ProductionControlItem 
+                                icon={Video} 
+                                title="Vídeo (Câmera)" 
+                                desc="R$ 350 base (2h)" 
+                                value={camCapHours} 
+                                setter={setCamCapHours} 
+                                min={2} 
+                                unitLabel="Horas" 
+                            />
+                            <ProductionControlItem 
+                                icon={Video} 
+                                title="Vídeo (Mobile)" 
+                                desc="R$ 200 base (2h)" 
+                                value={mobileCapHours} 
+                                setter={setMobileCapHours} 
+                                min={2} 
+                                unitLabel="Horas" 
+                            />
+                            <ProductionControlItem 
+                                icon={Zap} 
+                                title="Apenas Edição" 
+                                desc="R$ 150 / vídeo" 
+                                value={editQty} 
+                                setter={setEditQty} 
+                                min={1} 
+                                unitLabel="Vídeos" 
+                            />
+                            <ProductionControlItem 
+                                icon={PlaneTakeoff} 
+                                title="Drone (Aéreo)" 
+                                desc="R$ 250 / bateria" 
+                                value={droneQty} 
+                                setter={setDroneQty} 
+                                min={1} 
+                                unitLabel="Baterias" 
+                            />
                         </div>
 
                     </motion.div>
@@ -677,78 +717,122 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
   </motion.button>
 );
 
+const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, step = 1, unitLabel }: any) => {
+    const isAdded = (value || 0) > 0;
+
+    return (
+        <div className={cn(
+            "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 md:p-5 rounded-3xl border transition-all duration-300 relative overflow-hidden",
+            isAdded 
+                ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)]" 
+                : "bg-white/[0.02] border-white/5 hover:border-white/10"
+        )}>
+            {/* Background Glow when active */}
+            {isAdded && (
+                <div className="absolute -left-10 top-0 w-32 h-full bg-brand-DEFAULT/10 blur-[50px] pointer-events-none" />
+            )}
+
+            <div className="flex items-center gap-4 w-full sm:w-auto relative z-10 flex-1">
+                <div className={cn(
+                    "p-3 rounded-full transition-colors shrink-0", 
+                    isAdded ? "bg-brand-DEFAULT/10 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)]" : "bg-white/5 text-neutral-400"
+                )}>
+                    <Icon size={22} strokeWidth={1.5} />
+                </div>
+                <div className="text-left">
+                    <h4 className="text-white font-medium text-base md:text-lg leading-tight">{title}</h4>
+                    <p className="text-[10px] md:text-[11px] text-neutral-400 font-medium mt-1 uppercase tracking-wider">{desc}</p>
+                </div>
+            </div>
+            
+            <div className="w-full sm:w-[160px] md:w-[180px] relative z-10 shrink-0">
+                {!isAdded ? (
+                    <button 
+                        onClick={() => setter?.(min)}
+                        className="w-full py-3 sm:py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-colors border border-white/5 flex justify-center items-center gap-2"
+                    >
+                        <Plus size={16} /> Adicionar
+                    </button>
+                ) : (
+                    <div className="flex items-center justify-between w-full bg-black/40 rounded-2xl p-1.5 border border-white/5">
+                        <ControlBtn onClick={() => setter?.(value > min ? value - step : 0)} icon={Minus} />
+                        <div className="text-center flex-1">
+                            <span className="text-lg font-bold text-white leading-none"><AnimatedNumber value={value} /></span>
+                            <span className="block text-[9px] text-neutral-500 uppercase font-bold mt-0.5 tracking-widest">{unitLabel}</span>
+                        </div>
+                        <ControlBtn onClick={() => setter?.(value + step)} icon={Plus} active />
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight }: any) => (
     <motion.div 
         layout 
         variants={fadeInUp}
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer p-4 md:p-6 rounded-xl md:rounded-2xl border transition-all duration-300 flex flex-col items-center text-center relative overflow-hidden group w-full box-border min-h-[220px]", // Restaurado padding e min-h
+            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-500 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden w-full box-border",
             active 
-                ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_20px_var(--brand-glow)] ring-1 ring-brand-DEFAULT z-10" 
-                : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10"
+                ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)] scale-[1.02] z-10" 
+                : "bg-neutral-950/50 border-white/5 hover:border-white/20 hover:bg-neutral-900/80"
         )}
     >
         {highlight && (
             <div className={cn(
-                "absolute top-0 right-0 text-[8px] md:text-[10px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-bl-xl uppercase tracking-widest z-20",
-                active ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-500"
+                "absolute top-0 right-0 text-[8px] md:text-[9px] font-bold px-2 py-1 md:px-3 md:py-1 rounded-bl-2xl uppercase tracking-widest z-20 transition-colors duration-300",
+                active ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-400 group-hover:text-neutral-300"
             )}>
                 Popular
             </div>
         )}
 
-        <button 
-          className="absolute top-2 left-2 md:top-3 md:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
-          onClick={(e) => {
-             e.stopPropagation();
-             if (onInfo) onInfo({ title, desc, price });
-          }}
-        >
-            <HelpCircle size={18} strokeWidth={2} className="md:w-6 md:h-6" />
-        </button>
+        {/* Small Elegant Indicator */}
+        <div className={cn(
+            "absolute top-3 right-3 w-2 h-2 rounded-full transition-all duration-500 z-20",
+            active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
+        )} />
         
         <div className={cn(
-            "mt-4 mb-3 md:mb-5 shrink-0 h-12 w-12 md:h-16 md:w-16 flex items-center justify-center rounded-full transition-all duration-300",
+            "p-4 rounded-full mb-1 transition-all duration-300",
             active 
-                ? "bg-white/10 text-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.2)]" 
-                : "text-neutral-500 bg-white/5 group-hover:bg-white/10 group-hover:text-white"
+                ? "bg-white/10 text-white" 
+                : "bg-white/5 text-neutral-400 group-hover:bg-white/10 group-hover:text-white"
         )}>
-            <Icon size={24} className="md:hidden" strokeWidth={1.5} /> {/* Restaurado tamanho */}
-            <Icon size={32} className="hidden md:block" strokeWidth={1.5} /> {/* Restaurado tamanho */}
+            <Icon size={26} strokeWidth={1.5} />
         </div>
         
-        <div className="w-full px-0 sm:px-1 mb-2 flex items-center justify-center">
+        <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-2 flex flex-col items-center">
             <h4 className={cn(
-                "text-[12px] sm:text-[13px] md:text-base font-sans transition-colors leading-tight whitespace-normal break-words", 
-                active ? "text-white font-bold" : "text-neutral-300 font-medium group-hover:text-white"
+                "text-[10px] sm:text-[11px] md:text-sm font-medium whitespace-normal leading-tight break-words transition-colors duration-300", 
+                active ? "text-white" : "text-neutral-400 group-hover:text-neutral-300"
             )}>
                 {title}
             </h4>
-        </div>
             
-        {/* DESCRIÇÃO - SÓ APARECE QUANDO ATIVO */}
-        <AnimatePresence>
-            {active && (
-                <motion.div
-                    initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                    animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
-                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                    className="w-full px-1 md:px-2 flex items-start justify-center overflow-hidden"
-                >
-                    <p className="text-[10px] sm:text-[11px] md:text-xs text-neutral-400 leading-relaxed font-light tracking-wide whitespace-normal break-words">
-                        {composition || desc}
-                    </p>
-                </motion.div>
-            )}
-        </AnimatePresence>
+            {/* DESCRIÇÃO BREVE - SÓ APARECE QUANDO ATIVO */}
+            <AnimatePresence mode="wait">
+                {active && (
+                    <motion.p
+                        initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
+                        animate={{ opacity: 1, height: "auto", filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
+                        transition={{ duration: 0.3 }}
+                        className="text-[9px] sm:text-[10px] md:text-[11px] text-brand-DEFAULT font-medium leading-tight pt-2"
+                    >
+                        {composition}
+                    </motion.p>
+                )}
+            </AnimatePresence>
+        </div>
 
         {/* Espaçador para empurrar o preço para baixo quando inativo (se necessário pelo layout) */}
         {!active && <div className="grow" />}
 
-        <div className="w-full pt-3 md:pt-4 border-t border-white/5 mt-auto">
-            <p className={cn("text-xs md:text-sm font-bold tracking-widest uppercase", active ? "text-brand-DEFAULT" : "text-neutral-400")}>
+        <div className="w-full pt-3 border-t border-white/5 mt-auto">
+            <p className={cn("text-[10px] sm:text-[11px] md:text-sm font-bold tracking-widest uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-500 group-hover:text-neutral-400")}>
                 {price}
             </p>
         </div>

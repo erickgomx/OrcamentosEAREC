@@ -54,12 +54,12 @@ export const useQuoteLogic = ({
   ];
 
   const categoryLabels: Record<string, string> = {
-    wedding: 'Casamento',
-    social: 'Social',
-    commercial: 'Comercial',
-    studio: 'Estúdio',
-    video_production: 'Monte seu Orçamento',
-    custom: 'Personalizado'
+    video_production: "Monte seu Pacote",
+    wedding: "Casamento",
+    social: "Social",
+    commercial: "Comercial",
+    studio: "Estúdio",
+    custom: "Personalizado"
   };
 
   // === DERIVED STATE ===
@@ -158,13 +158,15 @@ export const useQuoteLogic = ({
       const isIdValid = currentCategoryGroup && Object.keys(currentCategoryGroup).some(key => key === serviceId);
       
       if (!isIdValid) {
-        if (category === 'wedding') actions.setServiceId('wedding_base');
-        if (category === 'social') actions.setServiceId('birthday');
-        if (category === 'commercial') actions.setServiceId('comm_photo');
-        if (category === 'studio') actions.setServiceId('studio_photo');
-        if (category === 'video_production') actions.setServiceId('custom_bundle');
-        if (category === 'custom') actions.setServiceId('custom_project');
+        let newServiceId: ServiceId;
+        if (category === 'wedding') newServiceId = 'wedding_base';
+        else if (category === 'social') newServiceId = 'birthday';
+        else if (category === 'commercial') newServiceId = 'comm_photo';
+        else if (category === 'studio') newServiceId = 'studio_photo';
+        else if (category === 'video_production') newServiceId = 'custom_bundle';
+        else newServiceId = 'custom_project';
         
+        actions.setServiceId(newServiceId);
         actions.setHours(2);
         actions.setAddDrone(false);
         actions.setDroneQty(0);
@@ -174,9 +176,9 @@ export const useQuoteLogic = ({
         actions.setEditQty(0);
         
         if (category === 'commercial') {
-            if (serviceId === 'comm_photo') actions.setQty(5);
-            else if (serviceId === 'comm_video') actions.setQty(1);
-        } else if (category === 'studio' && serviceId === 'studio_photo') {
+            if (newServiceId === 'comm_photo') actions.setQty(5);
+            else if (newServiceId === 'comm_video') actions.setQty(1);
+        } else if (category === 'studio' && newServiceId === 'studio_photo') {
             actions.setQty(8);
         } else if (category === 'video_production') {
             actions.setQty(0);

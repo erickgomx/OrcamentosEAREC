@@ -160,6 +160,7 @@ export class AppConfig {
         },
     },
     video_production: {
+        photo_cap: { unit: 25, label: "Fotos", composition: "Cobertura fotográfica", description: "Fotos em alta resolução." },
         cam_cap: { fixed: 350, label: "Vídeo (Câmera)", composition: "Câmera Profissional", description: "Captação de vídeo de alta qualidade com equipamento profissional." },
         mobile_cap: { fixed: 200, label: "Vídeo (Mobile)", composition: "iPhone/Smartphone", description: "Captação dinâmica focada em redes sociais." },
         drone: { fixed: 250, label: "Drone (Aéreo)", composition: "1 Bateria (Aprox. 20min)", description: "Imagens aéreas." },

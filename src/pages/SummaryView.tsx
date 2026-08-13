@@ -71,6 +71,12 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   
   const today = new Date().toISOString().split('T')[0];
 
+  const handleEditPackage = () => {
+      if (window.confirm("Deseja voltar e alterar o pacote? Os dados do seu evento serão mantidos.")) {
+          onBack();
+      }
+  };
+
   // Sincroniza dados apenas quando NÃO está editando
   useEffect(() => { 
       if (!isEditing) {
@@ -314,9 +320,13 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                         <h3 className="text-xl md:text-2xl text-white font-serif leading-none">{summaryDetails.serviceName}</h3>
                                         <p className="text-neutral-400 text-xs mt-1">{summaryDetails.metricLabel}</p>
                                     </div>
-                                    <div className="p-2 bg-white/5 rounded-lg border border-white/5">
+                                    <button 
+                                        onClick={handleEditPackage}
+                                        className="p-2 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                                        title="Alterar pacote"
+                                    >
                                         <FileText size={20} className="text-white opacity-80" />
-                                    </div>
+                                    </button>
                                 </div>
 
                                 {/* LISTA DE ITENS */}
@@ -333,7 +343,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                             className="text-neutral-600 hover:text-red-500 transition-colors mt-0.5"
                                                             title="Remover Item"
                                                         >
-                                                            <Trash2 size={12} />
+                                                            <Trash2 size={20} />
                                                         </button>
                                                     )}
                                                     <span className={cn(

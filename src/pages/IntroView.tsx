@@ -59,7 +59,36 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
                     </h2>
                 </motion.div>
 
-                {/* Opção 1: Instagram */}
+                {/* Opção 1: Orçamento (Antigo Rápido) */}
+                <motion.div variants={itemVariants}>
+                    <p className="text-neutral-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-medium font-sans">Fazer Orçamento</p>
+                    <motion.div 
+                        onClick={onQuickStart} 
+                        className="cursor-pointer group relative rounded-2xl overflow-hidden transition-all shadow-2xl border border-white/20 hover:border-white/60"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                         {/* Fundo Gradiente Deep Red/Black */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#2a0a0a] to-[#111] opacity-90" />
+                        
+                        <div className="relative z-20 w-full flex items-center justify-center gap-3 py-5 px-6">
+                            <Zap size={24} className="text-neutral-200 group-hover:text-white transition-colors" />
+                            <span className="font-sans font-medium text-base md:text-lg text-neutral-100 group-hover:text-white transition-colors tracking-wide">
+                                Iniciar Orçamento
+                            </span>
+                            <ArrowRight size={18} className="ml-auto opacity-50 text-neutral-400 group-hover:opacity-100 group-hover:translate-x-1 transition-all absolute right-6" />
+                        </div>
+                    </motion.div>
+                </motion.div>
+
+                {/* Divisor Silver */}
+                <motion.div variants={itemVariants} className="flex items-center gap-4 opacity-60 my-2">
+                    <div className="h-px bg-gradient-to-r from-transparent via-white/40 to-transparent flex-1" />
+                    <span className="text-[10px] tracking-[0.2em] text-neutral-300 uppercase font-medium font-sans">Ou</span>
+                    <div className="h-px bg-gradient-to-r from-transparent via-white/40 to-transparent flex-1" />
+                </motion.div>
+
+                {/* Opção 2: Instagram */}
                 <motion.div variants={itemVariants}>
                     <p className="text-neutral-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-medium font-sans">Conhecer Trabalho</p>
                     <motion.a 
@@ -83,35 +112,6 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
                             <ArrowRight size={18} className="ml-auto opacity-50 text-neutral-400 group-hover:opacity-100 group-hover:translate-x-1 transition-all absolute right-6" />
                         </div>
                     </motion.a>
-                </motion.div>
-
-                {/* Divisor Silver */}
-                <motion.div variants={itemVariants} className="flex items-center gap-4 opacity-60 my-2">
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/40 to-transparent flex-1" />
-                    <span className="text-[10px] tracking-[0.2em] text-neutral-300 uppercase font-medium font-sans">Ou</span>
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/40 to-transparent flex-1" />
-                </motion.div>
-
-                {/* Opção 2: Orçamento (Antigo Rápido) */}
-                <motion.div variants={itemVariants}>
-                    <p className="text-neutral-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-medium font-sans">Fazer Orçamento</p>
-                    <motion.div 
-                        onClick={onQuickStart} 
-                        className="cursor-pointer group relative rounded-2xl overflow-hidden transition-all shadow-2xl border border-white/20 hover:border-white/60"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                         {/* Fundo Gradiente Deep Red/Black */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#2a0a0a] to-[#111] opacity-90" />
-                        
-                        <div className="relative z-20 w-full flex items-center justify-center gap-3 py-5 px-6">
-                            <Zap size={24} className="text-neutral-200 group-hover:text-white transition-colors" />
-                            <span className="font-sans font-medium text-base md:text-lg text-neutral-100 group-hover:text-white transition-colors tracking-wide">
-                                Iniciar Orçamento
-                            </span>
-                            <ArrowRight size={18} className="ml-auto opacity-50 text-neutral-400 group-hover:opacity-100 group-hover:translate-x-1 transition-all absolute right-6" />
-                        </div>
-                    </motion.div>
                 </motion.div>
             </div>
         </div>

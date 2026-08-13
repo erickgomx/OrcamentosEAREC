@@ -7,9 +7,9 @@ interface LogoProps {
   animate?: boolean;
 }
 
-const SvgContent = React.memo(({ shouldAnimate, isShining }: { shouldAnimate: boolean; isShining?: boolean }) => (
+const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) => (
   <svg 
-    viewBox="60 -5 240 85" 
+    viewBox="60 -5 240 70" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
     className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10"
@@ -88,29 +88,6 @@ const SvgContent = React.memo(({ shouldAnimate, isShining }: { shouldAnimate: bo
     >
       REC
     </motion.text>
-
-    <AnimatePresence>
-      {isShining && (
-        <motion.text
-          fontFamily="sans-serif"
-          fontWeight="700"
-          fontSize="11"
-          fill="#ffffff"
-          opacity="0.9"
-          className="drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] uppercase"
-          initial={{ opacity: 0, y: 70, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 65, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: 60, filter: 'blur(4px)' }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          x="180"
-          textAnchor="middle"
-          textLength="160"
-          lengthAdjust="spacing"
-        >
-          Revelando seu melhor
-        </motion.text>
-      )}
-    </AnimatePresence>
   </svg>
 ));
 
@@ -153,7 +130,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <SvgContent shouldAnimate={animate} isShining={isShining} />
+      <SvgContent shouldAnimate={animate} />
       
       {/* ELEGANT CLICK ANIMATION: GENTLE GLOW AND SOFT SWEEP */}
       <AnimatePresence>
@@ -179,7 +156,18 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
                 />
               </div>
               
-              
+              {/* Revelando seu melhor text */}
+              <motion.div
+                  initial={{ opacity: 0, y: 10, filter: 'blur(4px)', scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+                  exit={{ opacity: 0, y: -5, filter: 'blur(4px)', scale: 0.98 }}
+                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                  className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 z-30 flex justify-center pointer-events-none w-full"
+              >
+                  <span className="text-[10px] sm:text-[14px] uppercase tracking-[0.05em] sm:tracking-[0.1em] text-white/90 font-bold w-full text-center truncate drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] px-1">
+                      Revelando seu melhor
+                  </span>
+              </motion.div>
             </>
         )}
       </AnimatePresence>
