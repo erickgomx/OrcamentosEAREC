@@ -209,7 +209,7 @@ export class PricingEngine {
   }
 
   private static calculateProduction(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { camCapHours = 0, mobileCapHours = 0, editQty = 0, droneQty = 0, qty = 0 } = state;
+    const { camCapHours = 0, mobileCapHours = 0, edit30sQty = 0, edit1minQty = 0, droneQty = 0, qty = 0 } = state;
     const table = AppConfig.PRICING_TABLE.video_production;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
@@ -240,10 +240,16 @@ export class PricingEngine {
       }
     }
     
-    if (editQty > 0) {
-      const val = editQty * table.edit_only.unit;
+    if (edit30sQty > 0) {
+      const val = edit30sQty * table.edit_30s.unit;
       total += val;
-      breakdown.push({ label: `${table.edit_only.label} (${editQty}x)`, value: val, type: 'base' });
+      breakdown.push({ label: `${table.edit_30s.label} (${edit30sQty}x)`, value: val, type: 'base' });
+    }
+
+    if (edit1minQty > 0) {
+      const val = edit1minQty * table.edit_1min.unit;
+      total += val;
+      breakdown.push({ label: `${table.edit_1min.label} (${edit1minQty}x)`, value: val, type: 'base' });
     }
 
     // Drone can also be added here directly
@@ -251,6 +257,12 @@ export class PricingEngine {
       const val = droneQty * table.drone.fixed; 
       total += val; 
       breakdown.push({ label: `${table.drone.label} (${droneQty} baterias)`, value: val, type: 'base' }); 
+    }
+
+    if (state.projectType === 'commercial' && total > 0) {
+      const commercialAddon = total * 0.20;
+      total += commercialAddon;
+      breakdown.push({ label: "Licença Comercial (+20%)", value: commercialAddon, type: 'addon' });
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };

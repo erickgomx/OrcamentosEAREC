@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { Heart, Sparkles, Hand, Gem, MessageCircle, Gift, Users, GlassWater, PlaneTakeoff, GraduationCap, Building2, Camera, MapPin, Search, Clock, Zap, Video, Minus, Plus, ChevronRight, HelpCircle, Check, Play, Map as MapIcon, X, Battery, Star } from 'lucide-react';
+import { Heart, Sparkles, Hand, Gem, MessageCircle, Gift, Users, GlassWater, PlaneTakeoff, GraduationCap, Building2, Camera, MapPin, Search, Clock, Zap, Video, Minus, Plus, ChevronRight, HelpCircle, Check, Play, Map as MapIcon, X, Battery, Star , User } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { AppConfig } from '../../config/AppConfig';
 import AnimatedNumber from '../ui/AnimatedNumber';
@@ -40,7 +40,9 @@ interface UpsellListProps {
   droneQty: number; setDroneQty: (n: number) => void;
   camCapHours?: number; setCamCapHours?: (n: number) => void;
   mobileCapHours?: number; setMobileCapHours?: (n: number) => void;
-  editQty?: number; setEditQty?: (n: number) => void;
+  edit30sQty?: number; setEdit30sQty?: (n: number) => void;
+  edit1minQty?: number; setEdit1minQty?: (n: number) => void;
+  projectType?: 'commercial' | 'personal'; setProjectType?: (m: 'commercial' | 'personal') => void;
   addDrone: boolean; setAddDrone: (b: boolean) => void;
   addRealTime: boolean; setAddRealTime: (b: boolean) => void;
   distance: number; travelCost: number; isMapOpen: boolean; setIsMapOpen: (b: boolean) => void;
@@ -107,13 +109,13 @@ export const formatCurrency = (val: number) => {
 const UpsellList: React.FC<UpsellListProps> = (props) => {
   const {
     category, setCategory, serviceId, handleServiceSelect, clientData, viewMode,
-    hours, setHours, qty, setQty, videoQty, setVideoQty, droneQty, setDroneQty, camCapHours, setCamCapHours, mobileCapHours, setMobileCapHours, editQty, setEditQty,
+    hours, setHours, qty, setQty, videoQty, setVideoQty, droneQty, setDroneQty, camCapHours, setCamCapHours, mobileCapHours, setMobileCapHours, edit30sQty, setEdit30sQty, edit1minQty, setEdit1minQty,
     addDrone, setAddDrone, addRealTime, setAddRealTime,
     distance, travelCost, isMapOpen, setIsMapOpen,
     selectionMode, setSelectionMode,
     isQuickMode = false,
     onContactRequest,
-    commercialMode, setCommercialMode
+    commercialMode, setCommercialMode, projectType, setProjectType
   } = props;
 
   const [infoData, setInfoData] = useState<{ title: string; desc: string; price: string } | null>(null);
@@ -226,14 +228,26 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             {selectionMode && (category === 'social') && (
                 <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
                     <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Como deseja contratar?</p>
-                    <div className="flex w-full bg-neutral-900 p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-lg">
-                        <button onClick={() => setSelectionMode('duration')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", selectionMode === 'duration' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
-                            <Clock size={20} className={selectionMode === 'duration' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
-                            POR TEMPO
+                    <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-white/5">
+                        <button 
+                            onClick={() => setSelectionMode('duration')} 
+                            className={cn(
+                                "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
+                                selectionMode === 'duration' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <Clock size={16} />
+                            Por Tempo
                         </button>
-                        <button onClick={() => setSelectionMode('quantity')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", selectionMode === 'quantity' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
-                            <Camera size={20} className={selectionMode === 'quantity' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
-                            POR UNIDADE
+                        <button 
+                            onClick={() => setSelectionMode('quantity')} 
+                            className={cn(
+                                "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
+                                selectionMode === 'quantity' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <Camera size={16} />
+                            Por Unidade
                         </button>
                     </div>
                 </motion.div>
@@ -375,9 +389,33 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         
-                        <div className="text-center mb-2">
+                        <div className="text-center mb-6">
                             <h3 className="font-serif text-2xl text-white">Monte seu Pacote</h3>
                             <p className="text-neutral-400 text-sm mt-2">Escolha as quantidades para cada serviço desejado.</p>
+                            
+                            {/* Project Type Toggle */}
+                            <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mt-6 border border-white/5">
+                                <button
+                                    onClick={() => setProjectType?.('personal')}
+                                    className={cn(
+                                        "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
+                                        projectType === 'personal' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <User size={16} />
+                                    Pessoa Física
+                                </button>
+                                <button
+                                    onClick={() => setProjectType?.('commercial')}
+                                    className={cn(
+                                        "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
+                                        projectType === 'commercial' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <Building2 size={16} />
+                                    Comercial
+                                </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-3 md:gap-4 w-full">
@@ -392,7 +430,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             />
                             <ProductionControlItem 
                                 icon={Video} 
-                                title="Vídeo (Câmera)" 
+                                title="Gravação com câmera" 
                                 desc="R$ 350 base (2h)" 
                                 value={camCapHours} 
                                 setter={setCamCapHours} 
@@ -401,7 +439,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             />
                             <ProductionControlItem 
                                 icon={Video} 
-                                title="Vídeo (Mobile)" 
+                                title="Gravação com celular" 
                                 desc="R$ 200 base (2h)" 
                                 value={mobileCapHours} 
                                 setter={setMobileCapHours} 
@@ -410,10 +448,19 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             />
                             <ProductionControlItem 
                                 icon={Zap} 
-                                title="Apenas Edição" 
+                                title="Edição (30s)" 
                                 desc="R$ 150 / vídeo" 
-                                value={editQty} 
-                                setter={setEditQty} 
+                                value={edit30sQty} 
+                                setter={setEdit30sQty} 
+                                min={1} 
+                                unitLabel="Vídeos" 
+                            />
+                            <ProductionControlItem 
+                                icon={Zap} 
+                                title="Edição (1 min)" 
+                                desc="R$ 250 / vídeo" 
+                                value={edit1minQty} 
+                                setter={setEdit1minQty} 
                                 min={1} 
                                 unitLabel="Vídeos" 
                             />
@@ -595,7 +642,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         />
                     )}
                     <AddonCard 
-                        label="Fotos Tempo Real" 
+                        label="Receber material na hora" 
                         price={realTimePrice} 
                         icon={Clock} 
                         active={addRealTime} 
@@ -782,7 +829,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
     >
         {highlight && (
             <div className={cn(
-                "absolute top-0 right-0 text-[8px] md:text-[9px] font-bold px-2 py-1 md:px-3 md:py-1 rounded-bl-2xl uppercase tracking-widest z-20 transition-colors duration-300",
+                "absolute top-0 left-0 text-[8px] md:text-[9px] font-bold px-2 py-1 md:px-3 md:py-1 rounded-br-2xl uppercase tracking-widest z-20 transition-colors duration-300",
                 active ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-400 group-hover:text-neutral-300"
             )}>
                 Popular

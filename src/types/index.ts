@@ -34,10 +34,12 @@ export interface QuoteState {
   droneQty?: number;
   addRealTime: boolean;
   selectionMode: 'duration' | 'quantity'; // Define se cobra por tempo ou por entrega
-  commercialMode?: 'on_location' | 'studio'; // Novo: Define local para categoria Comercial
+  commercialMode?: 'on_location' | 'studio';
+  projectType?: 'commercial' | 'personal'; // Novo: Define local para categoria Comercial
   camCapHours?: number;
   mobileCapHours?: number;
-  editQty?: number;
+  edit30sQty?: number;
+  edit1minQty?: number;
 }
 
 // Estrutura de um item individual dentro de um orçamento

@@ -178,8 +178,10 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       setCamCapHours={actions.setCamCapHours}
                       mobileCapHours={quoteState.mobileCapHours}
                       setMobileCapHours={actions.setMobileCapHours}
-                      editQty={quoteState.editQty}
-                      setEditQty={actions.setEditQty}
+                      edit30sQty={quoteState.edit30sQty}
+                      setEdit30sQty={actions.setEdit30sQty}
+                      edit1minQty={quoteState.edit1minQty}
+                      setEdit1minQty={actions.setEdit1minQty}
                       addDrone={quoteState.addDrone} 
                       setAddDrone={actions.setAddDrone}
                       addRealTime={quoteState.addRealTime} 
@@ -205,7 +207,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                               actions.setVideoQty(0);
                               actions.setCamCapHours(0);
                               actions.setMobileCapHours(0);
-                              actions.setEditQty(0);
+                              actions.setEdit30sQty(0);
+                              actions.setEdit1minQty(0);
                               actions.setDroneQty(0);
                           } else {
                               actions.setQty(10);
@@ -218,6 +221,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       onContactRequest={actions.handleContactRequest}
                       commercialMode={state.commercialMode}
                       setCommercialMode={actions.setCommercialMode}
+                      projectType={quoteState.projectType || 'personal'}
+                      setProjectType={actions.setProjectType}
                     />
                 </motion.div>
             )}

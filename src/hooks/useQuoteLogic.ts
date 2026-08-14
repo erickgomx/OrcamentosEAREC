@@ -101,11 +101,13 @@ export const useQuoteLogic = ({
       setDroneQty: (d: number) => setQuoteState(prev => ({ ...prev, droneQty: d })),
       setCamCapHours: (h: number) => setQuoteState(prev => ({ ...prev, camCapHours: h })),
       setMobileCapHours: (h: number) => setQuoteState(prev => ({ ...prev, mobileCapHours: h })),
-      setEditQty: (q: number) => setQuoteState(prev => ({ ...prev, editQty: q })),
+      setEdit30sQty: (q: number) => setQuoteState(prev => ({ ...prev, edit30sQty: q })),
+      setEdit1minQty: (q: number) => setQuoteState(prev => ({ ...prev, edit1minQty: q })),
       setAddDrone: (b: boolean) => setQuoteState(prev => ({ ...prev, addDrone: b })),
       setAddRealTime: (b: boolean) => setQuoteState(prev => ({ ...prev, addRealTime: b })),
       setSelectionMode: (mode: 'duration' | 'quantity') => setQuoteState(prev => ({ ...prev, selectionMode: mode })),
       setCommercialMode: (mode: 'on_location' | 'studio') => setQuoteState(prev => ({ ...prev, commercialMode: mode })),
+      setProjectType: (mode: 'commercial' | 'personal') => setQuoteState(prev => ({ ...prev, projectType: mode })),
       
       handleUpdateLocation: (address: string) => {
           onUpdateClientData({ ...clientData, location: address });
@@ -173,7 +175,8 @@ export const useQuoteLogic = ({
         actions.setAddRealTime(false);
         actions.setCamCapHours(0);
         actions.setMobileCapHours(0);
-        actions.setEditQty(0);
+        actions.setEdit30sQty(0);
+        actions.setEdit1minQty(0);
         
         if (category === 'commercial') {
             if (newServiceId === 'comm_photo') actions.setQty(5);

@@ -39,7 +39,7 @@ export class AppConfig {
       DURATION_MODE: "POR TEMPO (Fotos Ilimitadas)",
       QUANTITY_MODE: "POR ENTREGA (Pack de Fotos)",
       ADD_DRONE: "Drone (1 Bateria)",
-      ADD_REALTIME: "Fotos em Tempo Real",
+      ADD_REALTIME: "Receber material na hora",
     }
   };
 
@@ -70,7 +70,7 @@ export class AppConfig {
             composition: "Pré (10 Fotos) + Casamento (Até 80 Fotos) + Vídeo",
             description: "A experiência completa. Pré Wedding (10 fotos tratadas), Making Of, Casamento (Até 80 Fotos) e um Vídeo Highlight cinematográfico dos melhores momentos." 
         },
-        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
+        realtime: { fixed: 600, label: "Receber material na hora" }
     },
     social: {
         birthday: { 
@@ -119,7 +119,7 @@ export class AppConfig {
             composition: "Colação de Grau + Baile",
             description: "Cobertura exclusiva com foco total no formando. Diferente da cobertura da turma, nós somos sua sombra, garantindo fotos com a família, amigos e todos os momentos da sua conquista." 
         },
-        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
+        realtime: { fixed: 600, label: "Receber material na hora" }
     },
     commercial: {
         comm_photo: { 
@@ -141,7 +141,7 @@ export class AppConfig {
             // CORREÇÃO: Valor do vídeo adicional atualizado de R$ 350 para R$ 500
             description: "O pacote completo para posicionamento digital. Inclui 10 fotos tratadas e 1 Reel editado. (Adicionais: R$ 20/foto e R$ 500/vídeo)." 
         },
-        realtime: { fixed: 300, label: "Fotos em Tempo Real" }
+        realtime: { fixed: 300, label: "Receber material na hora" }
     },
     studio: {
         studio_photo: { 
@@ -161,11 +161,12 @@ export class AppConfig {
     },
     video_production: {
         photo_cap: { unit: 25, label: "Fotos", composition: "Cobertura fotográfica", description: "Fotos em alta resolução." },
-        cam_cap: { fixed: 350, label: "Vídeo (Câmera)", composition: "Câmera Profissional", description: "Captação de vídeo de alta qualidade com equipamento profissional." },
-        mobile_cap: { fixed: 200, label: "Vídeo (Mobile)", composition: "iPhone/Smartphone", description: "Captação dinâmica focada em redes sociais." },
+        cam_cap: { fixed: 350, label: "Gravação com câmera", composition: "Câmera Profissional", description: "Captação de vídeo de alta qualidade com equipamento profissional." },
+        mobile_cap: { fixed: 200, label: "Gravação com celular", composition: "iPhone/Smartphone", description: "Captação dinâmica focada em redes sociais." },
         drone: { fixed: 250, label: "Drone (Aéreo)", composition: "1 Bateria (Aprox. 20min)", description: "Imagens aéreas." },
-        edit_only: { unit: 150, label: "Apenas Edição", composition: "Edição de material", description: "Envie seus arquivos e nós editamos." },
-        realtime: { fixed: 600, label: "Fotos em Tempo Real" }
+        edit_30s: { unit: 150, label: "Edição (30s)", composition: "Edição até 30s", description: "Edição de vídeo para redes sociais." },
+        edit_1min: { unit: 250, label: "Edição (1 min)", composition: "Edição até 1min", description: "Edição de vídeo para redes sociais." },
+        realtime: { fixed: 600, label: "Receber material na hora" }
     },
     custom: {
         custom_project: { base: 0, label: "Projeto Personalizado", composition: "Sob Consulta", description: "Orçamento aberto." } 
