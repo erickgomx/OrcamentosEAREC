@@ -138,21 +138,22 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const isVideoQuantity = serviceId === 'comm_video' || serviceId === 'edit_only';
   const minQty = (serviceId === 'comm_photo' ? 5 : (serviceId === 'comm_video' ? 1 : (serviceId === 'studio_photo' ? 8 : (category === 'video_production' ? 1 : 10))));
   const getIncrementPrice = (type: string) => {
-    if (type === 'combo_photo') return 25;
+    if (type === 'combo_photo') return projectType === 'commercial' ? 30 : 25;
     if (type === 'combo_video') return 350;
     if (type === 'qty') {
-        if (serviceId === 'comm_photo' || serviceId === 'studio_photo') return 25;
+        if (serviceId === 'comm_photo' || serviceId === 'studio_photo') return projectType === 'commercial' ? 30 : 25;
         if (serviceId === 'comm_video') return 350;
-        if (category === 'video_production' && serviceId === 'drone') return 250;
-        if (category === 'video_production' && serviceId === 'edit_only') return 150;
+        if (category === 'video_production' && serviceId === 'drone') return projectType === 'commercial' ? 300 : 250;
+        if (category === 'video_production' && serviceId === 'edit_only') return projectType === 'commercial' ? 180 : 150;
     }
-    if (type === 'hours') {
+    if (type === 'hours' || type === 'hour') {
         if (category === 'wedding') return 300;
         if (category === 'social') return 250;
         if (category === 'commercial' && serviceId === 'comm_event') return 250;
+        if (category === 'studio') return 175;
         if (category === 'video_production') {
-            if (serviceId === 'cam_cap') return 200;
-            if (serviceId === 'mobile_cap') return 150;
+            if (serviceId === 'cam_cap') return projectType === 'commercial' ? 300 : 200;
+            if (serviceId === 'mobile_cap') return projectType === 'commercial' ? 150 : 100;
         }
     }
     return 0;
@@ -166,7 +167,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   const isCustomBundle = false; // Removido para usar o grid padrão
   
   const showDuration = (selectionMode === 'duration') && !['custom_bundle'].includes(serviceId) && category !== 'video_production';
-  const showQuantity = !['custom_bundle'].includes(serviceId) && (selectionMode === 'quantity' || ['commercial', 'studio'].includes(category)) && category !== 'video_production';
+  const showQuantity = !['custom_bundle'].includes(serviceId) && (selectionMode === 'quantity' || category === 'commercial') && category !== 'video_production';
   const showDroneAddon = !['studio'].includes(category) && !['custom_bundle', 'edit_only', 'drone'].includes(serviceId);
   const isCombo = category === 'commercial' && serviceId === 'comm_combo';
 
