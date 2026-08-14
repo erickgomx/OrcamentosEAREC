@@ -49,26 +49,26 @@ export class AppConfig {
         wedding_base: { 
             base: 650, 
             label: "Casamento (Base)",
-            composition: "Cerimônia (Até 80 Fotos)",
-            description: "Cobertura focada exclusivamente na Cerimônia Religiosa ou Civil. Inclui registros detalhados da decoração e entrega de até 80 fotos tratadas."
+            composition: "Entrega de até 80 fotos",
+            description: "Cobertura apenas da Cerimônia Religiosa ou Civil (Entrega de até 80 fotos)"
         },
         wedding_classic: { 
             base: 900, 
             label: "Pacote Clássico",
             composition: "Pré (10 Fotos) + Casamento (Até 80 Fotos)",
-            description: "A união de dois momentos especiais. Inclui um ensaio Pré Wedding (entrega de 10 fotos tratadas) e a cobertura da Cerimônia com até 80 fotos." 
+            description: "Ensaio Pré-Wedding (10 fotos) + Cobertura da Cerimônia (Até 80 fotos)" 
         },
         wedding_romance: {
             base: 1150,
             label: "Pacote Romance",
-            composition: "Pré (10 Fotos) + Making Of + Cerimônia (Até 80 Fotos)",
-            description: "Cobertura expandida. Inclui o Ensaio Pré Wedding (10 fotos tratadas), o Making Of dos noivos e a Cerimônia com entrega de até 80 fotos."
+            composition: "Pré (10 Fotos) + Making Of (10 Fotos) + Cerimônia (Até 80 Fotos)",
+            description: "Ensaio Pré-Wedding (10 fotos) + Making Of (10 fotos) + Cerimônia (Até 80 fotos)"
         },
         wedding_essence: { 
             base: 1750, 
             label: "Pacote Mais Essência",
-            composition: "Pré (10 Fotos) + Casamento (Até 80 Fotos) + Vídeo",
-            description: "A experiência completa. Pré Wedding (10 fotos tratadas), Making Of, Casamento (Até 80 Fotos) e um Vídeo Highlight cinematográfico dos melhores momentos." 
+            composition: "Pré (10 Fotos) + Making Of + Casamento (Até 80 Fotos) + Vídeo",
+            description: "Pré-Wedding (10 fotos) + Making Of (10 fotos)+ Casamento (Até 80 fotos) + Vídeo Highlight (Melhores Momentos)" 
         },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
@@ -79,7 +79,7 @@ export class AppConfig {
             hourPrice: 250, 
             label: "Aniversários",
             composition: "2h de Evento + Galeria Digital",
-            description: "Cobertura dinâmica para registrar a alegria, a decoração e os momentos espontâneos da festa. Focamos em capturar sorrisos verdadeiros e a interação entre os convidados."
+            description: "2h de cobertura no evento com foco em sorrisos e momentos espontâneos + Galeria Digital de Fotos"
         },
         social_party: { 
             base: 400, 
@@ -87,7 +87,7 @@ export class AppConfig {
             hourPrice: 250, 
             label: "Festas",
             composition: "2h de Evento + Galeria Digital",
-            description: "Cobertura vibrante para festas e celebrações. Registramos a atmosfera, os convidados e a diversão com olhar atento e edição premium."
+            description: "2h de cobertura no evento com foco em sorrisos e momentos espontâneos + Galeria Digital de Fotos"
         },
         social_event: { 
             base: 400, 
@@ -95,77 +95,79 @@ export class AppConfig {
             hourPrice: 250, 
             label: "Eventos",
             composition: "2h de Cobertura + Galeria Digital",
-            description: "Cobertura profissional para eventos sociais diversos. Foco nos detalhes, na ambientação e nos momentos chave da ocasião."
+            description: "2h de cobertura no evento com foco em sorrisos e momentos espontâneos + Galeria Digital de Fotos"
         },
         baptism: { 
-            base: 500, 
+            base: 350, 
             hoursIncluded: 2, 
             hourPrice: 250, 
             label: "Religioso",
-            composition: "Fotos + Vídeo (Melhores Momentos)",
-            description: "Cobertura completa para Cultos, Batizados e celebrações religiosas. Inclui fotos de todo o rito e um vídeo highlight emocionante com os melhores momentos."
+            composition: "2h de evento (até 15 fotos)",
+            description: "2h de evento (até 15 fotos cobre Fotos de todo o rito/Culto)"
         },
         fifteen: { 
-            base: 450, 
+            base: 650, 
             hoursIncluded: 2, 
             hourPrice: 250, 
             label: "15 Anos",
-            composition: "Making-of + Recepção + Valsa",
-            description: "Tratamento de imagem estilo editorial para debutantes. Cobrimos os detalhes do vestido, a maquiagem, a valsa e a balada com uma estética jovem e moderna." 
+            composition: "2h de evento (até 80 fotos)",
+            description: "2h de evento (até 80 fotos cobre Making-of; Recepção; Valsa e Balada com estética editorial/jovem)" 
         }, 
         graduation: { 
             base: 800, 
+            hoursIncluded: 4,
+            hourPrice: 250,
             label: "Formatura",
             composition: "Colação de Grau + Baile",
-            description: "Cobertura exclusiva com foco total no formando. Diferente da cobertura da turma, nós somos sua sombra, garantindo fotos com a família, amigos e todos os momentos da sua conquista." 
+            description: "Colação de Grau + Baile (Cobertura exclusiva tipo sombra acompanhando o formando)" 
         },
+        video_highlight: { fixed: 350, label: "Vídeo Highlight (30s a 1min)" },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
     commercial: {
         comm_photo: { 
             unit: 20, 
-            label: "Comércio (Fotos)",
-            composition: "Pack de Fotos em Alta Resolução",
-            description: "Fotografia publicitária pensada para cardápios, catálogos e e-commerce. Iluminação que valoriza a textura e as cores do seu produto para aumentar vendas." 
+            label: "Comércio (Apenas Fotos)",
+            composition: "Fotos em Alta Resolução",
+            description: "Catálogos; e-commerce; pratos e produtos em alta resolução" 
         },
         comm_video: { 
             unit: 500, 
-            label: "Comércio (Vídeo)",
+            label: "Comércio (Apenas Vídeo)",
             composition: "Vídeos Verticais (Reels/TikTok)",
-            description: "Produção de vídeos curtos com edição ágil, transições modernas e trilha sonora em alta. Foco total em retenção de audiência e engajamento nas redes sociais." 
+            description: "Vídeos verticais de impacto para Reels/TikTok (edição ágil; transições e música)" 
         },
         comm_combo: { 
-            videoBase: 700, 
+            videoBase: 600, 
             label: "Combo (Foto + Vídeo)",
-            composition: "10 Fotos + 1 Reel",
-            // CORREÇÃO: Valor do vídeo adicional atualizado de R$ 350 para R$ 500
-            description: "O pacote completo para posicionamento digital. Inclui 10 fotos tratadas e 1 Reel editado. (Adicionais: R$ 20/foto e R$ 500/vídeo)." 
+            composition: "10 Fotos tratadas + 1 Vídeo Reel",
+            description: "10 Fotos tratadas + 1 Vídeo Reel editado" 
         },
-        realtime: { fixed: 300, label: "Receber material na hora" }
+        realtime: { fixed: 600, label: "Receber material na hora" }
     },
     studio: {
         studio_photo: { 
             unit: 25, 
             label: "Estúdio (Fotos)",
-            composition: "Sessão em Fundo Infinito",
-            description: "Sessão em estúdio profissional com fundo infinito e iluminação de cinema controlada. Perfeito para retratos corporativos, moda ou produtos que exigem perfeição técnica." 
+            composition: "Retratos e produtos",
+            description: "Retratos corporativos; ensaios de moda ou fotografia de produtos" 
         },
         studio_video: { 
             base: 350, 
             hoursIncluded: 2, 
-            hourPrice: 250, 
+            hourPrice: 175, 
             label: "Estúdio (Vídeo)",
-            composition: "Gravação com Iluminação Profissional",
-            description: "Ideal para Videocasts, Cursos Online ou Institucionais. Ambiente acústico tratado e setup pronto para gravar conteúdos densos com qualidade de TV." 
+            composition: "2 horas de gravação",
+            description: "2 horas de gravação (Ideal para videocasts; cursos online ou institucionais)" 
         },
     },
     video_production: {
-        photo_cap: { unit: 25, label: "Fotos", composition: "Cobertura fotográfica", description: "Fotos em alta resolução." },
-        cam_cap: { fixed: 350, label: "Gravação com câmera", composition: "Câmera Profissional", description: "Captação de vídeo de alta qualidade com equipamento profissional." },
-        mobile_cap: { fixed: 200, label: "Gravação com celular", composition: "iPhone/Smartphone", description: "Captação dinâmica focada em redes sociais." },
-        drone: { fixed: 250, label: "Drone (Aéreo)", composition: "1 Bateria (Aprox. 20min)", description: "Imagens aéreas." },
-        edit_30s: { unit: 150, label: "Edição (30s)", composition: "Edição até 30s", description: "Edição de vídeo para redes sociais." },
-        edit_1min: { unit: 250, label: "Edição (1 min)", composition: "Edição até 1min", description: "Edição de vídeo para redes sociais." },
+        photo_cap: { unit: 25, label: "Fotos", composition: "Alta resolução", description: "Alta resolução" },
+        cam_cap: { base: 350, hoursIncluded: 2, hourPrice: 175, label: "Gravação com câmera", composition: "Valor por 2 horas", description: "Valor por 2 horas (Adicional R$175/h | R$300 p/ PJ)" },
+        mobile_cap: { base: 200, hoursIncluded: 2, hourPrice: 100, label: "Gravação com celular", composition: "Valor por 2 horas", description: "Valor por 2 horas (Adicional R$100/h | R$150 p/ PJ)" },
+        drone: { unit: 250, label: "Drone (Aéreo)", composition: "Por bateria (aprox. 20 min)", description: "Por bateria (aprox. 20 min de voo)" },
+        edit_30s: { unit: 150, label: "Edição de Vídeo (Até 30s)", composition: "Por vídeo entregue", description: "Por vídeo entregue" },
+        edit_1min: { unit: 250, label: "Edição de Vídeo (Até 1 min)", composition: "Por vídeo entregue", description: "Por vídeo entregue" },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
     custom: {

@@ -1,11 +1,13 @@
 
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import QuoteView from './pages/QuoteView';
-import WelcomeView from './pages/WelcomeView';
-import IntroView from './pages/IntroView';
-import ConfirmationView from './pages/ConfirmationView';
-import AdminDashboard from './pages/AdminDashboard';
+
+const QuoteView = lazy(() => import('./pages/QuoteView'));
+const WelcomeView = lazy(() => import('./pages/WelcomeView'));
+const IntroView = lazy(() => import('./pages/IntroView'));
+const ConfirmationView = lazy(() => import('./pages/ConfirmationView'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
 import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
@@ -40,7 +42,8 @@ const App: React.FC = () => {
     addDrone: false,
     droneQty: 0,
     addRealTime: false,
-    selectionMode: 'duration'
+    selectionMode: 'duration',
+    projectType: 'personal'
   });
 
   useLayoutEffect(() => {
@@ -151,7 +154,7 @@ const App: React.FC = () => {
       <div className="relative z-10">
         {/* Renderiza o conteúdo apenas quando o Splash sai */}
         {!showSplash && !isLoading && (
-            <>
+            <Suspense fallback={<Loading text="Carregando..." />}>
             {/* 1. TELA DE CONFIRMAÇÃO */}
             {view === 'confirmation' && (
                 <ConfirmationView 
@@ -202,7 +205,7 @@ const App: React.FC = () => {
                   onExit={() => setView('welcome')}
                 />
             )}
-            </>
+            </Suspense>
         )}
       </div>
     </main>

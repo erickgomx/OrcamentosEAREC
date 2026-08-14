@@ -270,7 +270,10 @@ export const useQuoteLogic = ({
   const handlePrevStep = () => {
       if (currentStep > 0) {
           setDirection(-1);
-          setCurrentStep(prev => prev - 1);
+          setCurrentStep(prev => {
+              if (prev === 2 && category === 'video_production') return 0;
+              return prev - 1;
+          });
       } else {
           onBack();
       }

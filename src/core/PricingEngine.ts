@@ -101,6 +101,20 @@ export class PricingEngine {
     if (serviceId === 'graduation') {
       total += table.graduation.base;
       breakdown.push({ label: table.graduation.label, value: table.graduation.base, type: 'base' });
+      
+      // Formatura não tem horas inclusas definidas na regra antiga, mas vamos assumir que cobra as horas se for modo 'duration' e hours > 0
+      // Mas no PDF está "Valor Base: 800.00 | Adicional/Hora Extra: 250.00/h"
+      // Se hours estiver preenchido e for maior que 0 (assumindo que o pacote base tem duração fixa ou não, vamos considerar que base é 0h incluídas, e as horas extras são a partir da duração que passar da base. 
+      // Ops, a formatura é "Colação + Baile", que não tem duração fixa.
+      // Se hours > 0 (supondo que o input de hours existe), a gente soma?
+      // Melhor olhar como hoursIncluded é tratado. Adicionei hoursIncluded: 0. Então as hours digitadas seriam extras. 
+      if (state.selectionMode === 'duration' && hours > table.graduation.hoursIncluded) {
+         const extraVal = (hours - table.graduation.hoursIncluded) * table.graduation.hourPrice;
+         if(extraVal > 0) {
+             total += extraVal;
+             breakdown.push({ label: `Horas Extras (+${hours}h)`, value: extraVal, type: 'addon' });
+         }
+      }
     } else {
       // Birthday / Fifteen / Baptism / Party / Event
       let ref;
@@ -194,12 +208,12 @@ export class PricingEngine {
         breakdown.push({ label: table.studio_video.label, value: table.studio_video.base, type: 'base' });
       }
     } else {
-      const baseHour = 350; // Valor fixo para locação de estúdio
+      const baseHour = table.studio_video.base; // Valor fixo para locação de estúdio (350)
       total += baseHour;
       breakdown.push({ label: `Sessão Estúdio (2h)`, value: baseHour, type: 'base' });
       
       if (hours > 2) {
-        const extraVal = (hours - 2) * 200;
+        const extraVal = (hours - 2) * table.studio_video.hourPrice; // 175
         total += extraVal;
         breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
       }
@@ -213,56 +227,60 @@ export class PricingEngine {
     const table = AppConfig.PRICING_TABLE.video_production;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
+    
+    const isPJ = state.projectType === 'commercial';
 
     if (qty > 0) {
-      const val = qty * table.photo_cap.unit;
+      const unitPrice = isPJ ? 30 : table.photo_cap.unit;
+      const val = qty * unitPrice;
       total += val;
       breakdown.push({ label: `${table.photo_cap.label} (${qty}x)`, value: val, type: 'base' });
     }
 
     if (camCapHours > 0) { 
-      total += table.cam_cap.fixed; 
-      breakdown.push({ label: `${table.cam_cap.label} (Base 2h)`, value: table.cam_cap.fixed, type: 'base' }); 
+      const basePrice = isPJ ? 600 : table.cam_cap.base;
+      const hourPrice = isPJ ? 300 : table.cam_cap.hourPrice;
+      total += basePrice; 
+      breakdown.push({ label: `${table.cam_cap.label} (Base 2h)`, value: basePrice, type: 'base' }); 
       if (camCapHours > 2) {
-          const extraVal = (camCapHours - 2) * 200;
+          const extraVal = (camCapHours - 2) * hourPrice;
           total += extraVal;
           breakdown.push({ label: `${table.cam_cap.label} Extras (+${camCapHours - 2}h)`, value: extraVal, type: 'addon' });
       }
     }
 
     if (mobileCapHours > 0) { 
-      total += table.mobile_cap.fixed; 
-      breakdown.push({ label: `${table.mobile_cap.label} (Base 2h)`, value: table.mobile_cap.fixed, type: 'base' }); 
+      const basePrice = isPJ ? 300 : table.mobile_cap.base;
+      const hourPrice = isPJ ? 150 : table.mobile_cap.hourPrice;
+      total += basePrice; 
+      breakdown.push({ label: `${table.mobile_cap.label} (Base 2h)`, value: basePrice, type: 'base' }); 
       if (mobileCapHours > 2) {
-          const extraVal = (mobileCapHours - 2) * 150;
+          const extraVal = (mobileCapHours - 2) * hourPrice;
           total += extraVal;
           breakdown.push({ label: `${table.mobile_cap.label} Extras (+${mobileCapHours - 2}h)`, value: extraVal, type: 'addon' });
       }
     }
     
     if (edit30sQty > 0) {
-      const val = edit30sQty * table.edit_30s.unit;
+      const unitPrice = isPJ ? 180 : table.edit_30s.unit;
+      const val = edit30sQty * unitPrice;
       total += val;
       breakdown.push({ label: `${table.edit_30s.label} (${edit30sQty}x)`, value: val, type: 'base' });
     }
 
     if (edit1minQty > 0) {
-      const val = edit1minQty * table.edit_1min.unit;
+      const unitPrice = isPJ ? 300 : table.edit_1min.unit;
+      const val = edit1minQty * unitPrice;
       total += val;
       breakdown.push({ label: `${table.edit_1min.label} (${edit1minQty}x)`, value: val, type: 'base' });
     }
 
     // Drone can also be added here directly
-    if (droneQty > 0) { 
-      const val = droneQty * table.drone.fixed; 
-      total += val; 
-      breakdown.push({ label: `${table.drone.label} (${droneQty} baterias)`, value: val, type: 'base' }); 
-    }
-
-    if (state.projectType === 'commercial' && total > 0) {
-      const commercialAddon = total * 0.20;
-      total += commercialAddon;
-      breakdown.push({ label: "Licença Comercial (+20%)", value: commercialAddon, type: 'addon' });
+    if (droneQty > 0) {
+      const unitPrice = isPJ ? 300 : table.drone.unit;
+      const val = droneQty * unitPrice;
+      total += val;
+      breakdown.push({ label: `${table.drone.label} (${droneQty} baterias)`, value: val, type: 'base' });
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };
@@ -280,7 +298,7 @@ export class PricingEngine {
     const isCommercialStudio = category === 'commercial' && commercialMode === 'studio';
     
     if (addDrone && !isCommercialStudio && (category === 'wedding' || category === 'social' || category === 'commercial')) {
-       const dronePrice = AppConfig.PRICING_TABLE.video_production.drone.fixed;
+       const dronePrice = AppConfig.PRICING_TABLE.video_production.drone.unit;
        currentResult.totalPrice += dronePrice;
        currentResult.breakdown.push({ label: AppConfig.TEXTS.LABELS.ADD_DRONE, value: dronePrice, type: 'addon' });
     }

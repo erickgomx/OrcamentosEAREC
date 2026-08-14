@@ -311,10 +311,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
               </motion.div>
             )}
                  {/* CAIXA DE DETALHES DO SERVIÇO SELECIONADO (Fixed acima do rodapé) */}
-            {category !== 'custom' && (
+            {category !== 'custom' && viewMode !== 'categories' && (
                 <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="fixed bottom-[170px] md:bottom-[140px] left-0 right-0 z-50 pointer-events-none flex flex-col items-center text-center justify-end"
                 >
                     {/* Background gradient escuro para leitura, atado à caixa de detalhes */}
@@ -422,7 +423,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <ProductionControlItem 
                                 icon={Camera} 
                                 title="Fotos" 
-                                desc="R$ 25 / foto" 
+                                desc={projectType === 'commercial' ? "R$ 30 / foto" : "R$ 25 / foto"} 
                                 value={qty} 
                                 setter={setQty} 
                                 min={10} 
@@ -431,7 +432,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <ProductionControlItem 
                                 icon={Video} 
                                 title="Gravação com câmera" 
-                                desc="R$ 350 base (2h)" 
+                                desc={projectType === 'commercial' ? "R$ 600 base (2h)" : "R$ 350 base (2h)"} 
                                 value={camCapHours} 
                                 setter={setCamCapHours} 
                                 min={2} 
@@ -440,7 +441,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <ProductionControlItem 
                                 icon={Video} 
                                 title="Gravação com celular" 
-                                desc="R$ 200 base (2h)" 
+                                desc={projectType === 'commercial' ? "R$ 300 base (2h)" : "R$ 200 base (2h)"} 
                                 value={mobileCapHours} 
                                 setter={setMobileCapHours} 
                                 min={2} 
@@ -449,7 +450,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <ProductionControlItem 
                                 icon={Zap} 
                                 title="Edição (30s)" 
-                                desc="R$ 150 / vídeo" 
+                                desc={projectType === 'commercial' ? "R$ 180 / vídeo" : "R$ 150 / vídeo"} 
                                 value={edit30sQty} 
                                 setter={setEdit30sQty} 
                                 min={1} 
@@ -458,7 +459,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <ProductionControlItem 
                                 icon={Zap} 
                                 title="Edição (1 min)" 
-                                desc="R$ 250 / vídeo" 
+                                desc={projectType === 'commercial' ? "R$ 300 / vídeo" : "R$ 250 / vídeo"} 
                                 value={edit1minQty} 
                                 setter={setEdit1minQty} 
                                 min={1} 
@@ -467,7 +468,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <ProductionControlItem 
                                 icon={PlaneTakeoff} 
                                 title="Drone (Aéreo)" 
-                                desc="R$ 250 / bateria" 
+                                desc={projectType === 'commercial' ? "R$ 300 / bateria" : "R$ 250 / bateria"} 
                                 value={droneQty} 
                                 setter={setDroneQty} 
                                 min={1} 

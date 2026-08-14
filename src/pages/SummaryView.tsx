@@ -298,9 +298,9 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                             >
                                 <ShieldCheck size={16} className="text-green-500 mt-0.5 shrink-0" />
                                 <p className="text-xs text-neutral-400 leading-relaxed">
-                                    {paymentMethod === 'Pix' && <>Pagamento de <strong>50% na assinatura</strong> para reserva da data e <strong>50% na entrega</strong> do material.</>}
+                                    {paymentMethod === 'Pix' && <>Pagamento de <strong>50% para marcar</strong> e <strong>50% até a data de realização</strong> do serviço.</>}
                                     {paymentMethod === 'Cartão' && <>Parcelamento em até <strong>12x no cartão de crédito</strong> (consultar taxas da maquininha).</>}
-                                    {paymentMethod === 'Espécie' && <>Pagamento de <strong>50% na assinatura</strong> e 50% na entrega do material.</>}
+                                    {paymentMethod === 'Espécie' && <>Pagamento de <strong>50% para marcar</strong> e <strong>50% até a data de realização</strong> do serviço.</>}
                                 </p>
                             </motion.div>
                         </div>
