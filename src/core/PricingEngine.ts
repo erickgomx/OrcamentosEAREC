@@ -199,10 +199,16 @@ export class PricingEngine {
 
     if (selectionMode === 'quantity') {
       if (serviceId === 'studio_photo') {
-        // Usa o preço unitário do contexto para consistência com o admin
-        const val = qty * ctx.photoUnitPrice;
-        total += val;
-        breakdown.push({ label: `${table.studio_photo.label} (${qty}x)`, value: val, type: 'base' });
+        if (qty >= 13) {
+          const val = 250 + ((qty - 13) * ctx.photoUnitPrice);
+          total += val;
+          breakdown.push({ label: `${table.studio_photo.label} (${qty}x - Promoção)`, value: val, type: 'base' });
+        } else {
+          // Usa o preço unitário do contexto para consistência com o admin
+          const val = qty * ctx.photoUnitPrice;
+          total += val;
+          breakdown.push({ label: `${table.studio_photo.label} (${qty}x)`, value: val, type: 'base' });
+        }
       } else {
         total += table.studio_video.base;
         breakdown.push({ label: table.studio_video.label, value: table.studio_video.base, type: 'base' });

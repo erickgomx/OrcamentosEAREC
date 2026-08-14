@@ -136,7 +136,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   
   const isDroneQuantity = category === 'video_production' && serviceId === 'drone';
   const isVideoQuantity = serviceId === 'comm_video' || serviceId === 'edit_only';
-  const minQty = (serviceId === 'comm_photo' ? 5 : (serviceId === 'comm_video' ? 1 : (serviceId === 'studio_photo' ? 8 : (category === 'video_production' ? 1 : 10))));
+  const minQty = (serviceId === 'comm_photo' ? 5 : (serviceId === 'comm_video' ? 1 : (serviceId === 'studio_photo' ? 7 : (category === 'video_production' ? 1 : 10))));
   const getIncrementPrice = (type: string) => {
     if (type === 'combo_photo') return projectType === 'commercial' ? 30 : 25;
     if (type === 'combo_video') return 350;
@@ -286,6 +286,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.comm_photo.label} price="R$ 25 / foto" composition={TABLE.commercial.comm_photo.composition} desc={TABLE.commercial.comm_photo.description} />
                         <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.comm_video.label} price="R$ 350 / vídeo" composition={TABLE.commercial.comm_video.composition} desc={TABLE.commercial.comm_video.description} highlight />
                         <ServiceCard active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo')} onInfo={setInfoData} icon={Zap} title={TABLE.commercial.comm_combo.label} price="R$ 600 base" composition={TABLE.commercial.comm_combo.composition} desc={TABLE.commercial.comm_combo.description} highlight />
+                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   {category === 'studio' && (
@@ -576,6 +577,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
+                        {category === 'studio' && serviceId === 'studio_photo' && qty >= 13 && (
+                            <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shadow-lg z-10">
+                                Promoção
+                            </div>
+                        )}
 
                         <div 
                             className="flex items-center gap-3 mb-8 relative group cursor-pointer"

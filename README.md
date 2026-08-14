@@ -147,3 +147,13 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
 
 ---
 *Desenvolvido com excelência para EAREC Mídia.*
+
+## 📅 Últimas Atualizações
+
+### [14/08/2026] Refinamento Lógico e Visual
+* **Painel de Comercial vs Pessoal:** A lógica de cálculo do motor de preços (`PricingEngine`) foi corrigida para aplicar corretamente os valores extras baseados na escolha do tipo de projeto (Comercial vs Pessoa Física).
+* **Tooltips de Preço:** O componente `PriceTooltip` nos botões de soma agora exibe o valor correto do acréscimo de serviços (ex: H/Extra de estúdio para R$ 175) de forma dinâmica ao invés de ficar travado em R$ 0.
+* **Layout Adaptativo (Estúdio):** Quando o usuário seleciona a categoria Estúdio e a visualização é de "Tempo de Cobertura", a caixa de "Quantidade" foi removida para simplificar a visualização, evitando redundância.
+* **Textos de Pagamento:** Os textos explicativos para os métodos de pagamento **Pix** e **Espécie** foram atualizados no SummaryView para: "Pagamento de 50% para marcar e 50% até a data de realização do serviço."
+* **Card Personalizado:** Adicionado o card "Personalizado" na seção "Comercial".
+* **Promoção de Fotos Estúdio:** Mínimo de fotos alterado para 7. Ao atingir 13 ou mais fotos, o valor da 13ª fica cravado em 250 (preço promocional) com um selo "Promoção" aparecendo no seletor de quantidade.
