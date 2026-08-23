@@ -68,8 +68,8 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                                 <MousePointerClick size={24} className="text-white md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-center mb-1">
-                                    <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold leading-none">1.</span>
+                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                    <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">1.</span>
                                     Iniciar
                                 </h3>
                                 <p className="text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
@@ -90,8 +90,8 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                                 <SlidersHorizontal size={24} className="text-white md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-center mb-1">
-                                    <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold leading-none">2.</span>
+                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                    <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">2.</span>
                                     Configure
                                 </h3>
                                 <p className="text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
@@ -112,8 +112,8 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                                 <MessageCircle size={24} className="text-white md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-center mb-1">
-                                    <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold leading-none">3.</span>
+                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                    <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">3.</span>
                                     Finalize no WhatsApp
                                 </h3>
                                 <p className="text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
