@@ -1,103 +1,127 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Play } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
+import { ArrowRight, Instagram, Zap, Play } from 'lucide-react';
 import Logo from '../components/ui/Logo';
-import { pageSlideVariants, slideFadeItem } from '../lib/animations';
-
-/**
- * IntroView.tsx
- * -------------
- * Primeira tela minimalista da EAREC.
- * Foco visual cinematográfico com o mínimo de texto possível.
- */
 
 interface IntroViewProps {
-  onSelectPortfolio: () => void;
-  onSelectQuote: () => void;
+  onContinue: () => void;
+  onQuickStart: () => void;
 }
 
-const IntroView: React.FC<IntroViewProps> = ({ onSelectPortfolio, onSelectQuote }) => {
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08, 
+      delayChildren: 0.05    
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 }, 
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" } 
+  }
+};
+
+const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
   return (
-    <motion.div 
-      variants={pageSlideVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-4 sm:px-6 py-12"
-    >
-      {/* Glows de Fundo Sutis */}
-      <div className="absolute top-1/4 -right-20 w-[450px] h-[450px] bg-red-900/10 blur-[140px] rounded-full pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-1/4 -left-20 w-[450px] h-[450px] bg-red-950/15 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
+    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
+      
+      {/* GLOWS DE FUNDO (Red Spotlights) - Intensidade Reduzida para visual mais clean */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-900/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-900/05 blur-[120px] rounded-full pointer-events-none mix-blend-screen translate-y-1/2 -translate-x-1/2" />
 
-      {/* Container Central com Mínimo de Texto */}
-      <div className="relative z-10 w-full max-w-md text-center flex flex-col items-center">
-        
-        {/* Logo EAREC */}
-        <motion.div variants={slideFadeItem} className="flex justify-center mb-8 sm:mb-10">
-          <Logo className="w-56 sm:w-72" animate={true} />
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 w-full max-w-lg text-center"
+      >
+        {/* Logo Animada */}
+        <motion.div variants={itemVariants} className="flex justify-center mb-8 md:mb-10">
+          <Logo className="w-64 md:w-80" animate />
         </motion.div>
 
-        {/* Pergunta Direta */}
-        <motion.div variants={slideFadeItem} className="mb-8 sm:mb-10 px-2">
-          <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-serif font-light leading-snug drop-shadow-md">
-            Você já conhece nosso trabalho<br className="hidden sm:inline" /> ou deseja um orçamento?
-          </h1>
-        </motion.div>
+        {/* Grupo de Ações com Sombra Difusa ao Fundo */}
+        <div className="relative"> 
+            {/* Sombra escura difusa atrás dos botões */}
+            <div className="absolute inset-0 bg-black/80 blur-3xl rounded-full scale-110 opacity-90 pointer-events-none" />
+            <div className="relative z-10 flex flex-col gap-5 p-2">
+                
+                <motion.div variants={itemVariants} className="mb-4">
+                    <h2 className="text-white text-lg md:text-xl font-serif leading-snug drop-shadow-md">
+                        Você já conhece nosso trabalho<br/> ou deseja fazer um orçamento?
+                    </h2>
+                </motion.div>
 
-        {/* Duas Opções Minimalistas */}
-        <div className="w-full flex flex-col gap-3.5 px-2">
-          
-          {/* Opção 1: Conhecer Trabalho */}
-          <motion.div variants={slideFadeItem}>
-            <motion.button 
-              onClick={onSelectPortfolio}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full cursor-pointer group relative rounded-2xl overflow-hidden py-4 px-6 border border-white/15 hover:border-white/40 bg-neutral-900/80 hover:bg-neutral-800/90 transition-all duration-300 shadow-xl flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white group-hover:bg-red-600 transition-colors shrink-0">
-                  <Play size={18} className="ml-0.5 fill-current" />
-                </div>
-                <span className="text-base sm:text-lg font-medium text-white group-hover:text-red-100 transition-colors">
-                  Conhecer Trabalho
-                </span>
-              </div>
-              <ArrowRight size={18} className="text-neutral-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-            </motion.button>
-          </motion.div>
+                {/* Opção 1: Orçamento (Antigo Rápido) */}
+                <motion.div variants={itemVariants}>
+                    <p className="text-neutral-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-medium font-sans">Fazer Orçamento</p>
+                    <motion.div 
+                        onClick={onQuickStart} 
+                        className="cursor-pointer group relative rounded-2xl overflow-hidden transition-all shadow-2xl border border-white/20 hover:border-white/60"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                         {/* Fundo Gradiente Deep Red/Black */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#2a0a0a] to-[#111] opacity-90" />
+                        
+                        <div className="relative z-20 w-full flex items-center justify-center gap-3 py-5 px-6">
+                            <Zap size={24} className="text-neutral-200 group-hover:text-white transition-colors" />
+                            <span className="font-sans font-medium text-base md:text-lg text-neutral-100 group-hover:text-white transition-colors tracking-wide">
+                                Iniciar Orçamento
+                            </span>
+                            <ArrowRight size={18} className="ml-auto opacity-50 text-neutral-400 group-hover:opacity-100 group-hover:translate-x-1 transition-all absolute right-6" />
+                        </div>
+                    </motion.div>
+                </motion.div>
 
-          {/* Divisor */}
-          <motion.div variants={slideFadeItem} className="flex items-center gap-4 my-0.5 opacity-40">
-            <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent flex-1" />
-            <span className="text-[10px] tracking-[0.2em] text-neutral-400 uppercase font-mono">Ou</span>
-            <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent flex-1" />
-          </motion.div>
+                {/* Divisor Silver */}
+                <motion.div variants={itemVariants} className="flex items-center gap-4 opacity-60 my-2">
+                    <div className="h-px bg-gradient-to-r from-transparent via-white/40 to-transparent flex-1" />
+                    <span className="text-[10px] tracking-[0.2em] text-neutral-300 uppercase font-medium font-sans">Ou</span>
+                    <div className="h-px bg-gradient-to-r from-transparent via-white/40 to-transparent flex-1" />
+                </motion.div>
 
-          {/* Opção 2: Iniciar Orçamento */}
-          <motion.div variants={slideFadeItem}>
-            <motion.button 
-              onClick={onSelectQuote}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full cursor-pointer group relative rounded-2xl overflow-hidden py-4 px-6 border border-red-600/40 hover:border-red-500 bg-gradient-to-r from-[#200808] to-neutral-900 transition-all duration-300 shadow-xl shadow-red-950/20 hover:shadow-[0_0_25px_rgba(220,38,38,0.3)] flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-md">
-                  <Sparkles size={18} />
-                </div>
-                <span className="text-base sm:text-lg font-medium text-white group-hover:text-red-100 transition-colors">
-                  Iniciar Orçamento
-                </span>
-              </div>
-              <ArrowRight size={18} className="text-red-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
-            </motion.button>
-          </motion.div>
-
+                {/* Opção 2: Instagram */}
+                <motion.div variants={itemVariants}>
+                    <p className="text-neutral-400 text-[10px] uppercase tracking-[0.2em] mb-3 font-medium font-sans">Conhecer Trabalho</p>
+                    <motion.a 
+                        href="https://www.instagram.com/earecmidia/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="relative group block w-full rounded-2xl overflow-hidden border border-white/20 hover:border-white/60 transition-colors duration-500 shadow-[0_0_20px_rgba(220,38,38,0.1)]"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                        {/* Background Gradiente Vinho */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#1a0a0a] via-[#330a0a] to-[#1a0a0a] opacity-100" />
+                        
+                        {/* Brilho Metálico Prateado no Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+                        <div className="relative z-20 w-full flex items-center justify-center gap-3 py-5 px-6">
+                            <Instagram size={24} className="text-neutral-200 group-hover:text-white transition-colors" />
+                            <span className="font-sans font-medium text-base md:text-lg text-neutral-100 group-hover:text-white transition-colors tracking-wide">
+                                Instagram EAREC
+                            </span>
+                            <ArrowRight size={18} className="ml-auto opacity-50 text-neutral-400 group-hover:opacity-100 group-hover:translate-x-1 transition-all absolute right-6" />
+                        </div>
+                    </motion.a>
+                </motion.div>
+            </div>
         </div>
 
-      </div>
-    </motion.div>
+        <motion.p variants={itemVariants} className="mt-10 text-neutral-500/50 text-[10px] tracking-[0.4em] uppercase font-medium drop-shadow-sm font-sans">
+            Experiência de Cinema
+        </motion.p>
+
+      </motion.div>
+    </div>
   );
 };
 

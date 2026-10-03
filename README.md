@@ -1,240 +1,159 @@
-# 🔴 EAREC | Produtora Audiovisual & Orçamento Facilitado
+# 🔴 EAREC | Orçamento Facilitado
 
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-007ACC?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-007ACC?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-000000?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)](https://www.earec.com.br/)
 
 ---
 
 ### **"High-End Audiovisual Experience"**
-Plataforma web oficial da **EAREC Produtora Audiovisual**, projetada com estética cinematográfica e foco em conversão:
-1. **Primeira Tela (Escolha Inicial):** Apresenta ao visitante a opção direta de conhecer o trabalho da produtora ou iniciar imediatamente uma simulação de orçamento.
-2. **Página de Portfólio Renovada (`/portfolio`):** Interface limpa, minimalista e rápida, com o vídeo de apresentação (showreel) em destaque, galeria de outros trabalhos e botão dedicado para o Instagram oficial ao final.
-3. **Orçamento Facilitado (`/orcamentos`):** Ferramenta interativa de cálculo de propostas comerciais em tempo real com envio formatado para o WhatsApp.
-4. **Transições Fluidas:** Elementos deslizam e desaparecem suavemente com *stagger*, dando lugar aos novos itens da tela seguinte com elegância cinematográfica.
-
-* Site Oficial: **[www.earec.com.br](https://www.earec.com.br)**  
-* Portfólio & Showreel: **[www.earec.com.br/portfolio](https://www.earec.com.br/portfolio)**  
-* Orçamentador Direto: **[www.earec.com.br/orcamentos](https://www.earec.com.br/orcamentos)**  
+Uma plataforma de orçamentos projetada para encantar clientes premium. Muito além de uma calculadora, o sistema oferece uma **experiência imersiva e cinematográfica** desde o primeiro contato, refletindo a qualidade visual das produções da EAREC.
 
 ---
 
-## 🌐 Estrutura de Rotas e Navegação
+## ✨ Features Principais
 
-A aplicação adota um roteador SPA customizado e ultraleve ([`src/hooks/useRouter.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/hooks/useRouter.ts)) integrado com a *HTML5 History API*:
-
-| Rota | Descrição | Componente Principal |
-| :--- | :--- | :--- |
-| `/` ou `/home` | **Primeira Tela (Decisão Inicial):** Pergunta direta *"Você já conhece nosso trabalho ou deseja fazer um orçamento?"* com 2 opções de acesso limpo. | [`IntroView.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/pages/IntroView.tsx) |
-| `/portfolio` ou `/portfólio` | **Página de Portfólio:** Vídeo showreel oficial em 4K, grade de Outros Trabalhos (Casamentos, Comerciais, Eventos, Estúdio & Drone) e botão de acesso ao Instagram no rodapé. | [`PortfolioView.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/pages/PortfolioView.tsx) |
-| `/orcamentos` ou `/orçamentos` | **Orçamento Facilitado:** Simulador de valores, seleção de pacotes, cálculo de frete e envio no WhatsApp. | [`ConfirmationView`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/pages/ConfirmationView.tsx) $\rightarrow$ [`QuoteView`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/pages/QuoteView.tsx) |
-| `/orcamentos?cat=wedding` | Abre o orçamentador já com a categoria específica pré-selecionada (*wedding*, *commercial*, *social*, *studio*, *video_production*). | [`QuoteView.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/pages/QuoteView.tsx) |
-| `/admin` | **Painel de Controle:** Ajuste de preços base, taxa de quilômetro e diárias em tempo real. | [`AdminDashboard.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/pages/AdminDashboard.tsx) |
-
----
-
-## 🎬 Fluxo do Usuário e Transições Fluidas
-
-### 1. Primeira Tela (`IntroView.tsx`)
-Ao acessar o site pela raiz (`/`), o visitante visualiza uma tela ultralimpa com o mínimo de texto possível:
-* Logotipo cinematográfico EAREC.
-* Pergunta central direta: *"Você já conhece nosso trabalho ou deseja um orçamento?"*
-* **Opção 1 - Conhecer Trabalho:** Direciona para `/portfolio`.
-* **Opção 2 - Iniciar Orçamento:** Direciona para `/orcamentos`.
-
-### 2. Página de Portfólio (`PortfolioView.tsx`)
-Design limpo, minimalista e 100% focado no visual:
-* **Fundo Filmstrip 3D Sutil:** Ativo de forma suave e cinematográfica em todo o site.
-* **Barra Superior Discreta:** Botão para voltar à tela inicial (`← Início`) e logotipo centralizado.
-* **Vídeo Showreel (Apresentação):**
-  * Player HTML5 widescreen (16:9) apontando para o arquivo local `public/showreel.mp4`.
-  * HUD Viewfinder minimalista com *timecode* ativo.
-  * Controles de reprodução: Play/Pause, Ativar/Silenciar Som e Tela Cheia.
-* **Galeria de Destaques do Instagram (@earecmidia):**
-  * Mídias reais salvas localmente em `public/portfolio/instagram/` (4 Vídeos Reels verticais e 3 Ensaios Fotográficos).
-  * Modal/Lightbox otimizado com viewport seguro: proporção `aspect-[9/16]` e altura máxima limitada para que nenhum controle suma da tela.
-  * Múltiplas formas de saída: botão superior fixo ("Fechar Esc"), botão explícito "Sair" na barra de rodapé, clique no fundo escuro e tecla `Esc`. Trava o scroll da página enquanto ativo.
-* **Seção de Encerramento (Instagram Oficial):**
-  * Destaque direto: *"Acompanhe Nosso Instagram"* com botão **"@earecmidia"**.
-* **Único Botão Fixo de Orçamento:**
-  * Botão flutuante sutil no canto inferior direito (`fixed bottom-6 right-6`), discreto e sempre ao alcance enquanto o usuário navega pelo portfólio.
-
-### 3. Transições Fluidas (Framer Motion)
-Configuradas em [`src/lib/animations.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/lib/animations.ts) com `pageSlideVariants` e `slideFadeItem`:
-* Ao sair de uma tela, os itens deslizam suavemente para o lado com fade out e desfoque sutil (`filter: blur`).
-* Ao entrar na próxima tela, os itens deslizam em cascata (*staggerChildren: 0.08s*) surgindo de forma sequencial e fluida.
+*   **🎬 Cinematic UX:** Fundo dinâmico com FilmStrips, transições de estado, feedback tátil e animações suaves.
+*   **⚡ Modo Rápido:** Opção de "Orçamento Flash" para usuários que desejam pular a introdução e ir direto aos valores.
+*   **💰 Precificação Dinâmica:** Motor de cálculo (`PricingEngine`) em tempo real que considera tipo de evento, horas, quantidade de mídia e adicionais.
+*   **🗺️ Logística Inteligente:** Integração com OpenStreetMap (Nominatim) para cálculo automático de frete baseado na distância real de condução. Ajustado para ser responsivo e bem apresentado em dispositivos móveis.
+*   **📅 Validação de Agenda:** Integração segura com Google Calendar (suporte a .env).
+*   **✍️ Assinatura Digital:** Modal de assinatura manuscrita para aprovação formal.
+*   **🔐 Painel Administrativo:** Área segura para ajuste de preços base sem necessidade de deploy.
+*   **📱 Mobile First:** Design responsivo e otimizado para qualquer dispositivo.
 
 ---
 
-## 🗺️ Mapa Interativo e Logística (Google Maps Gratuito)
+## 🏗 Arquitetura do Projeto
 
-O modal de seleção de localidade ([`LocationMapModal.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/components/ui/LocationMapModal.tsx)) funciona **100% gratuitamente sem necessidade de chave de API**:
+O projeto segue uma arquitetura **SPA (Single Page Application)** leve com separação clara de responsabilidades (SOLID).
 
-* **Camada Principal:** **Google Maps Roadmap** (`https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}`). Renderização rápida, estética familiar do Google e detalhes completos de ruas do Brasil.
-* **Redundância Automática (Fallback):** Caso a rede local do usuário oscile, o Leaflet alterna automaticamente para o **OpenStreetMap oficial**.
-* **Geocodificação Reversa:** Ao arrastar o marcador vermelho no mapa, o endereço e cidade são detectados instantaneamente via Nominatim.
-* **Cálculo de Frete:** A distância de deslocamento a partir da base (Goianinha/RN) é calculada com fator de tortuosidade rodoviária (1.35x a distância geodésica linear) e multiplicada pela taxa por KM definida no `AppConfig` ou Admin.
-
----
-
-## ⚡ Otimizações de Carregamento & Performance
-
-Para garantir carregamento instantâneo, alto padrão cinematográfico e navegação sem engasgos:
-* **Entrada Imediata da Tela Inicial (`IntroView`):** Carregada estaticamente no bundle inicial, eliminando qualquer tela preta ou spinner ao acessar o site.
-* **Prefetching em Segundo Plano:** Assim que o visitante visualiza a tela inicial, o navegador pré-carrega em background as páginas de Portfólio e Orçamento, tornando o clique instantâneo.
-* **Calibração de Transições (Buffer Suave de 1,5s Totais):** Ao calcular orçamentos ou submeter dados, o ciclo de transição ocorre em 1,5s totais (1.2s de loading + 0.3s de fade out ágil), evitando sensações de lentidão ou telas travadas.
-* **Aceleração por GPU no Filmstrip 3D:** Remoção de filtros pesados de ruído fractal SVG (`feTurbulence`) e compartilhamento de um único gradiente estático para todos os 36 quadros, mantendo 60 FPS estáveis mesmo em dispositivos modestos.
-* **Cache HTTP Imutável na Vercel (`vercel.json`):** Headers com `max-age=31536000, immutable` para assets JS/CSS compilados e cache otimizado para vídeos e imagens.
-* **CSS Não-Bloqueante:** Estilos do Leaflet carregados com `rel="preload"`, liberando o navegador para renderizar a interface de imediato.
-
----
-
-## 🏗 Estrutura de Diretórios
+### 📂 Estrutura de Diretórios
 
 ```bash
-├── public/                   # Arquivos estáticos servidos na raiz da Vercel
-│   ├── showreel.mp4          # Vídeo padrão de apresentação (local)
-│   └── README.md
+src/
+├── components/           # Blocos de Construção da UI
+│   ├── quote/            # Componentes de Negócio (Lógica de Venda)
+│   │   ├── UpsellList    # Seletor visual de serviços e adicionais
+│   │   ├── StickyFooter  # Barra de totalização e ação
+│   │   ├── SignatureModal# Canvas de assinatura
+│   │   └── Moodboard     # Galeria visual (Parallax)
+│   └── ui/               # Design System (Botões, Inputs, Logos, FilmStrips)
 │
-├── src/
-│   ├── assets/               # Imagens e logos locais
-│   │   └── logo.png
-│   │
-│   ├── components/
-│   │   ├── quote/            # Componentes específicos do orçamentador
-│   │   │   ├── UpsellList    # Seletor visual de serviços e adicionais
-│   │   │   ├── StickyFooter  # Barra fixa inferior com totais e botões de ação
-│   │   │   ├── SignatureModal# Canvas para assinatura manuscrita do cliente
-│   │   │   └── Moodboard     # Galeria com efeito cross-parallax
-│   │   │
-│   │   └── ui/               # Componentes visuais do Design System
-│   │       ├── Button.tsx    # Botão padrão com variantes e estados
-│   │       ├── Loading.tsx   # Tela de carregamento com logo pulsante
-│   │       ├── LocationMapModal.tsx # Modal interativo com Google Maps (gratuito)
-│   │       └── Logo.tsx      # SVG animado oficial da marca EAREC
-│   │
-│   ├── config/
-│   │   ├── AppConfig.ts      # Singleton: preços, textos, showreel e telefones
-│   │   └── EnvConfig.ts      # Leitor seguro de variáveis de ambiente
-│   │
-│   ├── core/
-│   │   └── PricingEngine.ts  # Motor de cálculo matemático de preços
-│   │
-│   ├── data/
-│   │   └── mock.ts           # Configuração inicial e dados mockados
-│   │
-│   ├── hooks/
-│   │   ├── useQuoteLogic.ts  # Toda a máquina de estado do orçamentador
-│   │   └── useRouter.ts      # Roteador SPA com suporte a rotas /, /portfolio e /orcamentos
-│   │
-│   ├── lib/
-│   │   ├── animations.ts     # Variantes centralizadas do Framer Motion (pageSlide, slideFadeItem)
-│   │   ├── maps.ts           # Algoritmo de cálculo de distância (Haversine)
-│   │   └── utils.ts          # Formatadores de moeda (BRL), delays e classes
-│   │
-│   ├── pages/
-│   │   ├── IntroView.tsx     # Primeira Tela: Decisão (Conhecer Trabalho vs Iniciar Orçamento)
-│   │   ├── PortfolioView.tsx # Página de Portfólio Limpa: Showreel + Outros Trabalhos + Instagram
-│   │   ├── HomeView.tsx      # Reexportação para PortfolioView (retrocompatibilidade)
-│   │   ├── ConfirmationView.tsx # Tela tutorial explicativa ("Como Funciona?")
-│   │   ├── WelcomeView.tsx   # Wizard de captação de dados do cliente
-│   │   ├── QuoteView.tsx     # Configurador de pacotes e adicionais
-│   │   ├── SummaryView.tsx   # Resumo contratual e forma de pagamento
-│   │   ├── SuccessView.tsx   # Tela de sucesso com link formatado de WhatsApp
-│   │   └── AdminDashboard.tsx# Painel restrito para alteração de tabelas de preço
-│   │
-│   ├── services/
-│   │   ├── AuthService.ts    # Validação de credenciais do painel admin
-│   │   ├── CalendarService.ts# Verificação de disponibilidade de agenda
-│   │   └── LocationService.ts# Cálculo de frete e coordenadas
-│   │
-│   └── types/
-│       └── index.ts          # Tipos e interfaces de domínio (TypeScript)
+├── config/               # Configurações Estáticas
+│   └── AppConfig.ts      # Singleton com textos, branding e tabelas de preço
 │
-├── vercel.json               # Regra de rewrites SPA para a Vercel
-├── vite.config.ts            # Configuração do empacotador Vite
-├── package.json              # Dependências e script de build com fallbacks físicos
-└── index.html                # HTML raiz com fontes, Tailwind e metatags OpenGraph
+├── core/                 # Lógica de Negócio Pura
+│   └── PricingEngine.ts  # Motor de cálculo de preços (Strategy Pattern)
+│
+├── data/                 # Camada de Dados
+│   └── mock.ts           # Configurações iniciais e placeholders
+│
+├── lib/                  # Utilitários
+│   ├── animations.ts     # Variantes do Framer Motion centralizadas
+│   └── utils.ts          # Formatadores e helpers
+│
+├── pages/                # Telas Principais (Views)
+│   ├── IntroView.tsx     # Landing page com opções (Instagram/Rápido/Normal)
+│   ├── WelcomeView.tsx   # Wizard de captação de dados
+│   ├── QuoteView.tsx     # Configurador de Orçamento
+│   ├── SummaryView.tsx   # Resumo do Pedido e Pagamento
+│   ├── SuccessView.tsx   # Mensagem final e link WhatsApp
+│   └── AdminDashboard.tsx# Painel de controle protegido
+│
+├── services/             # Serviços Externos
+│   ├── AuthService.ts    # Autenticação Admin
+│   ├── CalendarService.ts# Google Calendar API
+│   └── LocationService.ts# OpenStreetMap / Nominatim API
+│
+└── types/                # Definições de Tipo (TypeScript)
+    └── index.ts          # Interfaces centrais (ClientData, QuoteData)
 ```
 
 ---
 
-## 🚀 Deploy na Vercel e Prevenção de Erro 404
+## 🔄 Fluxo de Dados (State Machine)
 
-### Como garantimos que o F5 nunca quebre em nenhuma rota:
-Em SPAs (Single Page Applications) construídas com Vite, rotas como `/orcamentos`, `/portfolio` ou `/home` são virtuais e gerenciadas pelo JavaScript no navegador. Se o usuário recarregar (F5) ou acessar o link diretamente na Vercel, o servidor procura um arquivo físico correspondente.
+A aplicação não utiliza rotas tradicionais (`react-router`). O estado `view` em `App.tsx` controla o fluxo:
 
-Para solucionar isso definitivamente, implementamos uma **dupla camada de proteção**:
-1. **[`vercel.json`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/vercel.json):**
-   ```json
-   {
-     "rewrites": [
-       {
-         "source": "/(.*)",
-         "destination": "/"
-       }
-     ]
-   }
-   ```
-2. **[`package.json`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/package.json):** O script de build gera automaticamente cópias estáticas no diretório `dist/`:
-   * `dist/portfolio.html`
-   * `dist/orcamentos.html`
-   * `dist/404.html` (o arquivo padrão que a Vercel entrega quando uma rota não existe)
-
-Dessa forma, a página **nunca** exibe tela de erro 404 na Vercel, seja em `/orcamentos`, `/portfolio` ou em qualquer subrota.
+1.  **`intro`**: Tela inicial de boas-vindas com fundo de filmstrip e opção de Orçamento Rápido.
+2.  **`welcome`**: Coleta dados do cliente (Nome, Local, Data). Valida disponibilidade.
+3.  **`quote`**: Onde a mágica acontece. O usuário monta o pacote. 
+    *   *Nota:* O fundo de FilmStrip é ocultado aqui para foco total nos valores.
+4.  **`summary`**: Revisão final, edição de dados e escolha de pagamento.
+5.  **`success`**: Gera a mensagem formatada para o WhatsApp. O fundo de FilmStrip retorna para o encerramento.
 
 ---
 
-## 🛠️ Comandos de Desenvolvimento
+## ⚙️ Configuração e Instalação
+
+### Pré-requisitos
+*   Node.js 18+
+*   NPM ou Yarn
+
+### Instalação
 
 ```bash
-# Instalar dependências
+# Clone o repositório
+git clone https://github.com/seu-usuario/earec-proposals.git
+
+# Instale as dependências
 npm install
 
-# Rodar servidor de desenvolvimento local
+# Inicie o servidor de desenvolvimento
 npm run dev
-
-# Gerar build de produção e criar fallbacks estáticos (portfolio.html, orcamentos.html, 404.html)
-npm run build
-
-# Visualizar o build de produção localmente
-npm run preview
 ```
 
----
+### Configuração de APIs (Segurança)
 
-## 📝 Guia Rápido de Manutenção
+Nunca insira chaves de API diretamente no código fonte. Para habilitar recursos reais, utilize variáveis de ambiente.
+Crie um arquivo `.env` na raiz do projeto (se utilizar Vite ou similar):
 
-### 1. Alterar o Vídeo de Apresentação
-Em [`src/config/AppConfig.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/config/AppConfig.ts), localize `SHOWREEL.VIDEO_URL`:
-- Para usar arquivo local: coloque em `public/showreel.mp4` e use `"/showreel.mp4"`.
-- Para usar CDN ou Vercel Blob: insira o link direto do MP4.
+```env
+VITE_GOOGLE_API_KEY=SuaChaveAqui
+VITE_GOOGLE_CALENDAR_ID=SeuIDDeCalendario
+```
 
-### 2. Alterar o Link do Instagram ou WhatsApp
-Em [`src/config/AppConfig.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/config/AppConfig.ts):
-- Instagram: `BRAND.INSTAGRAM_URL` (padrão: `https://www.instagram.com/earecmidia/`)
-- WhatsApp: `BRAND.WHATSAPP` (padrão: `5584981048857`)
-
-### 3. Alterar Preços de Pacotes ou Serviços
-Os preços padrão estão todos centralizados na tabela `PRICING_TABLE` do [`src/config/AppConfig.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/config/AppConfig.ts). Basta editar os valores numéricos sem precisar mexer em nenhum componente visual.
-
-### 4. Acessar o Painel Admin
-Acesse diretamente `www.earec.com.br/admin` (ou clique no ícone de cadeado na tela inicial do orçamentador). A senha de acesso pode ser verificada ou alterada em [`src/services/AuthService.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/services/AuthService.ts).
+*   **Google Calendar:** Se as chaves acima não forem fornecidas, o sistema rodará em **Modo Simulação** (Mock), permitindo o uso da interface sem integração real.
+*   **Mapas:** O sistema utiliza OpenStreetMap (Nominatim), que é gratuito e não requer chave para uso moderado.
 
 ---
 
-## 🎨 Identidade Visual e Tokens
+## 🚀 Deploy / Atualizações Online
 
-* **Cores:**
-  * 🌑 Fundo: `#0a0a0a` (Deep Cinematic Black)
-  * 🔴 Marca / Destaques: `#DC2626` (Red Brand Glow)
-* **Tipografia:**
-  * *Playfair Display*: Títulos de impacto e estética editorial de cinema.
-  * *Inter*: Tipografia de alta legibilidade para tabelas, botões e valores.
-  * *Michroma*: Detalhes técnicos, HUD e marcadores de foco.
+Quando usar uma plataforma de preview/deploy automático (como Google AI Studio Build ou Vercel):
+* O **Preview** reflete o ambiente de desenvolvimento em tempo real.
+* O **Link Compartilhado (Produção)** precisa ser atualizado manualmente em alguns casos. Para refletir as novas alterações em produção, vá na opção de **Share / Export** (ou Deploy) da plataforma novamente para forçar um novo build e distribuição.
 
 ---
-*EAREC Produtora Audiovisual • Cinema, Comerciais, Casamentos e Conteúdo de Alto Impacto.*
+
+## 🔒 Segurança e Admin
+
+O painel administrativo (`/admin` acessível via ícone de cadeado na tela de Welcome) permite alterar os preços base (Km, Taxa de Estúdio, etc.) em tempo de execução.
+
+> **Nota:** A senha padrão está definida no arquivo `src/services/AuthService.ts`. Recomenda-se alterá-la para produção.
+
+---
+
+## 🎨 Identidade Visual
+
+*   **Tipografia:**
+    *   *Playfair Display*: Títulos e Ênfases (Elegância).
+    *   *Inter*: Interface e Textos (Legibilidade).
+*   **Cores:**
+    *   🌑 Fundo: `Neutral-950` (#0a0a0a) - "Deep Black"
+    *   🔴 Marca: `Brand-Red` (#DC2626) - Acentos e Calls-to-Action.
+
+---
+*Desenvolvido com excelência para EAREC Mídia.*
+
+## 📅 Últimas Atualizações
+
+### [14/08/2026] Refinamento Lógico e Visual
+* **Painel de Comercial vs Pessoal:** A lógica de cálculo do motor de preços (`PricingEngine`) foi corrigida para aplicar corretamente os valores extras baseados na escolha do tipo de projeto (Comercial vs Pessoa Física).
+* **Tooltips de Preço:** O componente `PriceTooltip` nos botões de soma agora exibe o valor correto do acréscimo de serviços (ex: H/Extra de estúdio para R$ 175) de forma dinâmica ao invés de ficar travado em R$ 0.
+* **Layout Adaptativo (Estúdio):** Quando o usuário seleciona a categoria Estúdio e a visualização é de "Tempo de Cobertura", a caixa de "Quantidade" foi removida para simplificar a visualização, evitando redundância.
+* **Textos de Pagamento:** Os textos explicativos para os métodos de pagamento **Pix** e **Espécie** foram atualizados no SummaryView para: "Pagamento de 50% para marcar e 50% até a data de realização do serviço."
+* **Card Personalizado:** Adicionado o card "Personalizado" na seção "Comercial".
+* **Promoção de Fotos Estúdio:** Mínimo de fotos alterado para 7. Ao atingir 13 ou mais fotos, o valor da 13ª fica cravado em 250 (preço promocional) com um selo "Promoção" aparecendo no seletor de quantidade.
