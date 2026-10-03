@@ -1,26 +1,32 @@
-
 import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, Home as HomeIcon } from 'lucide-react';
 
 const QuoteView = lazy(() => import('./pages/QuoteView'));
 const WelcomeView = lazy(() => import('./pages/WelcomeView'));
 const IntroView = lazy(() => import('./pages/IntroView'));
 const ConfirmationView = lazy(() => import('./pages/ConfirmationView'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const HomeView = lazy(() => import('./pages/HomeView'));
 
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
 import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
-import { ClientData, QuoteData, QuoteState, ViewState } from './types';
+import { ClientData, QuoteData, QuoteState, ViewState, ServiceCategory } from './types';
 import { mockQuote } from './data/mock';
 import { delay } from './lib/utils';
 import { AppConfig } from './config/AppConfig';
+import { useRouter } from './hooks/useRouter';
 
 const App: React.FC = () => {
-  // Splash inicia true
-  const [showSplash, setShowSplash] = useState(true);
+  const router = useRouter();
+
+  // Splash Screen aparece apenas no fluxo do orçamentador ou na primeira carga de /orcamentos
+  const [showSplash, setShowSplash] = useState(() => {
+    return router.activeRoute === 'orcamentos';
+  });
   
-  // View inicia em 'confirmation', mas só aparece após o splash sair
+  // Controle de views internas do orçamentador
   const [view, setView] = useState<ViewState>('confirmation');
   
   const [isLoading, setIsLoading] = useState(false);
@@ -58,24 +64,54 @@ const App: React.FC = () => {
     }
   }, [clientData]);
 
-  // Controle do Splash Screen
+  // Atualiza o título da página de acordo com a rota ativa
   useEffect(() => {
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+    if (router.activeRoute === 'home') {
+      document.title = "EAREC | Produtora Audiovisual & Cinema";
+    } else if (router.activeRoute === 'orcamentos') {
+      document.title = "EAREC | Orçamento Facilitado";
+    } else if (router.activeRoute === 'admin') {
+      document.title = "EAREC | Painel Administrativo";
     }
-    window.scrollTo(0, 0);
-    
-    // Aumentado levemente para 2.5s para garantir leitura
-    const timer = setTimeout(() => setShowSplash(false), 2500); 
-    return () => clearTimeout(timer);
-  }, []);
+  }, [router.activeRoute]);
+
+  // Se rota mudar e tiver parâmetro ?cat=...
+  useEffect(() => {
+    const cat = router.params.get('cat');
+    if (cat && ['wedding', 'social', 'commercial', 'studio', 'video_production', 'custom'].includes(cat)) {
+      setQuoteState(prev => ({ ...prev, category: cat as ServiceCategory }));
+    }
+  }, [router.params]);
+
+  // Controle do Splash Screen quando entra em /orcamentos
+  useEffect(() => {
+    if (router.activeRoute === 'orcamentos' && showSplash) {
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+      
+      const timer = setTimeout(() => setShowSplash(false), 2200); 
+      return () => clearTimeout(timer);
+    }
+  }, [router.activeRoute, showSplash]);
+
+  const handleNavigateToQuote = (category?: string) => {
+    if (category) {
+      setQuoteState(prev => ({ ...prev, category: category as ServiceCategory }));
+      router.navigate(`/orcamentos?cat=${category}`);
+    } else {
+      router.navigate('/orcamentos');
+    }
+    setShowSplash(false);
+    setView('confirmation');
+  };
 
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    setQuoteState(prev => ({ ...prev, category: null }));
-    await delay(2000); 
+    await delay(1500); 
     setIsLoading(false);
     setView('quote');
     window.scrollTo(0, 0);
@@ -88,7 +124,6 @@ const App: React.FC = () => {
         date: '', 
         contact: ''
     });
-    setQuoteState(prev => ({ ...prev, category: null }));
     setIsQuickMode(true);
     setIsLoading(true);
     setIsQuoteSuccess(false);
@@ -107,107 +142,146 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  const handleGoHome = () => {
+    router.navigate('/');
+    setView('confirmation');
+  };
+
   return (
     <main className="w-full min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
-      {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
+      
+      {/* Background Decorativo Film Strips (no Orçamentador) */}
+      {router.activeRoute === 'orcamentos' && (view !== 'quote' || isQuoteSuccess) && (
+        <BackgroundFilmStrips />
+      )}
 
-      {/* SPLASH SCREEN (Prioridade Máxima Z-Index 100) */}
-      <AnimatePresence mode="wait">
-        {showSplash && (
-          <motion.div 
-            key="splash"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
-          >
-             <div className="flex flex-col items-center justify-center w-full h-full p-4">
-               <motion.div
-                 initial={{ scale: 0.8, opacity: 0 }}
-                 animate={{ scale: 1, opacity: 1 }}
-                 transition={{ duration: 0.8, ease: "easeOut" }}
-                 className="mb-4"
-               >
-                  <Logo className="w-64 md:w-96" animate={true} />
-               </motion.div>
+      {/* ROTA 1: HOME (Landing Page Cinematográfica com Vídeo de Apresentação) */}
+      {router.activeRoute === 'home' && (
+        <Suspense fallback={<Loading text="Carregando EAREC Cinema..." />}>
+          <HomeView onNavigateToQuote={handleNavigateToQuote} />
+        </Suspense>
+      )}
 
-               <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.5 }}
-                  className="flex flex-col items-center"
-               >
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-500 font-sans font-medium text-sm md:text-base tracking-[0.4em] uppercase">
-                    Orçamento Facilitado
-                  </p>
-               </motion.div>
-             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ROTA 2: ADMIN */}
+      {router.activeRoute === 'admin' && (
+        <Suspense fallback={<Loading text="Carregando Painel..." />}>
+          <AdminDashboard 
+            currentConfig={config}
+            onUpdateConfig={handleAdminUpdate}
+            onExit={handleGoHome}
+          />
+        </Suspense>
+      )}
 
-      <AnimatePresence>
-        {isLoading && <Loading key="loader" />}
-      </AnimatePresence>
+      {/* ROTA 3: ORÇAMENTOS (/orcamentos ou /orçamentos) */}
+      {router.activeRoute === 'orcamentos' && (
+        <>
+          {/* SPLASH SCREEN */}
+          <AnimatePresence mode="wait">
+            {showSplash && (
+              <motion.div 
+                key="splash"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0, filter: 'blur(10px)' }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
+                className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
+              >
+                 <div className="flex flex-col items-center justify-center w-full h-full p-4">
+                   <motion.div
+                     initial={{ scale: 0.8, opacity: 0 }}
+                     animate={{ scale: 1, opacity: 1 }}
+                     transition={{ duration: 0.8, ease: "easeOut" }}
+                     className="mb-4"
+                   >
+                      <Logo className="w-64 md:w-96" animate={true} />
+                   </motion.div>
 
-      <div className="relative z-10">
-        {/* Renderiza o conteúdo apenas quando o Splash sai */}
-        {!showSplash && !isLoading && (
-            <Suspense fallback={<Loading text="Carregando..." />}>
-            {/* 1. TELA DE CONFIRMAÇÃO */}
-            {view === 'confirmation' && (
-                <ConfirmationView 
-                    onContinue={() => setView('intro')}
-                />
+                   <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7, duration: 0.5 }}
+                      className="flex flex-col items-center"
+                   >
+                      <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
+                      <p className="text-neutral-500 font-sans font-medium text-sm md:text-base tracking-[0.4em] uppercase">
+                        Orçamento Facilitado
+                      </p>
+                   </motion.div>
+                 </div>
+              </motion.div>
             )}
+          </AnimatePresence>
 
-            {/* 2. MENU PRINCIPAL (INTRO) */}
-            {view === 'intro' && (
-                <IntroView 
+          <AnimatePresence>
+            {isLoading && <Loading key="loader" />}
+          </AnimatePresence>
+
+          {/* BARRA SUPERIOR DISCRETA DE RETORNO À HOME (SEMPRE ACESSÍVEL) */}
+          {!showSplash && !isLoading && (
+            <div className="fixed top-4 left-4 z-40">
+              <button
+                onClick={handleGoHome}
+                className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/80 hover:bg-neutral-800 border border-white/10 hover:border-white/30 text-neutral-300 hover:text-white text-xs font-medium tracking-wider backdrop-blur-md shadow-lg transition-all active:scale-95 group"
+                title="Voltar para a página inicial com vídeo"
+              >
+                <HomeIcon size={14} className="group-hover:-translate-x-0.5 transition-transform text-red-500" />
+                <span>Início / Vídeo</span>
+              </button>
+            </div>
+          )}
+
+          <div className="relative z-10">
+            {!showSplash && !isLoading && (
+              <Suspense fallback={<Loading text="Carregando..." />}>
+                
+                {/* 1. TELA DE CONFIRMAÇÃO */}
+                {view === 'confirmation' && (
+                  <ConfirmationView 
+                    onContinue={() => setView('intro')}
+                  />
+                )}
+
+                {/* 2. MENU PRINCIPAL (INTRO) */}
+                {view === 'intro' && (
+                  <IntroView 
                     onContinue={() => {
-                        setIsQuickMode(false);
-                        setView('welcome');
+                      setIsQuickMode(false);
+                      setView('welcome');
                     }}
                     onQuickStart={handleQuickStart}
-                />
-            )}
+                  />
+                )}
 
-            {/* 3. WIZARD (WELCOME) */}
-            {view === 'welcome' && (
-                <WelcomeView 
-                  onStart={handleStart} 
-                  onAdminClick={() => setView('admin')}
-                  onBack={() => setView(isQuickMode ? 'quote' : 'intro')} 
-                />
-            )}
+                {/* 3. WIZARD (WELCOME) */}
+                {view === 'welcome' && (
+                  <WelcomeView 
+                    onStart={handleStart} 
+                    onAdminClick={() => router.navigate('/admin')}
+                    onBack={() => setView(isQuickMode ? 'quote' : 'intro')} 
+                  />
+                )}
 
-            {/* 4. CONFIGURADOR (QUOTE) */}
-            {view === 'quote' && clientData && (
-                <QuoteView 
-                  clientData={clientData} 
-                  onUpdateClientData={setClientData}
-                  config={config}
-                  onBack={() => setView(isQuickMode ? 'intro' : 'welcome')}
-                  quoteState={quoteState}
-                  setQuoteState={setQuoteState}
-                  onSuccess={() => setIsQuoteSuccess(true)}
-                  isQuickMode={isQuickMode}
-                  onRequestForm={handleRequestForm}
-                />
-            )}
+                {/* 4. CONFIGURADOR (QUOTE) */}
+                {view === 'quote' && clientData && (
+                  <QuoteView 
+                    clientData={clientData} 
+                    onUpdateClientData={setClientData}
+                    config={config}
+                    onBack={() => setView(isQuickMode ? 'intro' : 'welcome')}
+                    quoteState={quoteState}
+                    setQuoteState={setQuoteState}
+                    onSuccess={() => setIsQuoteSuccess(true)}
+                    isQuickMode={isQuickMode}
+                    onRequestForm={handleRequestForm}
+                  />
+                )}
 
-            {/* 5. ADMIN */}
-            {view === 'admin' && (
-                <AdminDashboard 
-                  currentConfig={config}
-                  onUpdateConfig={handleAdminUpdate}
-                  onExit={() => setView('welcome')}
-                />
+              </Suspense>
             )}
-            </Suspense>
-        )}
-      </div>
+          </div>
+        </>
+      )}
+
     </main>
   );
 };
