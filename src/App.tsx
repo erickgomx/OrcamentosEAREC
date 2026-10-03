@@ -2,9 +2,9 @@ import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'rea
 import { AnimatePresence, motion } from 'framer-motion';
 import { Home as HomeIcon, Film } from 'lucide-react';
 
+import IntroView from './pages/IntroView';
 const QuoteView = lazy(() => import('./pages/QuoteView'));
 const WelcomeView = lazy(() => import('./pages/WelcomeView'));
-const IntroView = lazy(() => import('./pages/IntroView'));
 const PortfolioView = lazy(() => import('./pages/PortfolioView'));
 const ConfirmationView = lazy(() => import('./pages/ConfirmationView'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -157,7 +157,16 @@ const App: React.FC = () => {
     }
   }, [router.params]);
 
-  // Controle do Splash Screen quando entra direto em /orcamentos
+  // Pré-carrega páginas principais em background enquanto o usuário visualiza a tela inicial
+  useEffect(() => {
+    const prefetchTimer = setTimeout(() => {
+      import('./pages/PortfolioView');
+      import('./pages/ConfirmationView');
+    }, 250);
+    return () => clearTimeout(prefetchTimer);
+  }, []);
+
+  // Controle do Splash Screen quando entra direto em /orcamentos (calibrado para 1.2s ágil)
   useEffect(() => {
     if (router.activeRoute === 'orcamentos' && showSplash) {
       if ('scrollRestoration' in history) {
@@ -165,7 +174,7 @@ const App: React.FC = () => {
       }
       window.scrollTo(0, 0);
       
-      const timer = setTimeout(() => setShowSplash(false), 2200); 
+      const timer = setTimeout(() => setShowSplash(false), 1200); 
       return () => clearTimeout(timer);
     }
   }, [router.activeRoute, showSplash]);
@@ -189,18 +198,18 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Início do fluxo com formulário preenchido (com loading de 1.5s)
+  // Início do fluxo com formulário preenchido (loading suave calibrado para 1.5s total de percepção)
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    await delay(1500); // 1.5s de loading suave
+    await delay(1200); // 1.2s de loading + 0.3s transição suave
     setIsLoading(false);
     setView('quote');
     window.scrollTo(0, 0);
   };
 
-  // Início rápido sem pré-cadastro (com loading de 1.5s)
+  // Início rápido sem pré-cadastro
   const handleQuickStart = async () => {
     setClientData({
       name: '', 
@@ -211,7 +220,7 @@ const App: React.FC = () => {
     setIsQuickMode(true);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    await delay(1500); // 1.5s de loading suave
+    await delay(1200); // 1.2s de loading + 0.3s transição suave
     setIsLoading(false);
     setView('quote');
     window.scrollTo(0, 0);
@@ -253,12 +262,10 @@ const App: React.FC = () => {
             exit="exit"
             className="w-full"
           >
-            <Suspense fallback={<Loading text="Carregando EAREC..." />}>
-              <IntroView 
-                onSelectPortfolio={handleNavigateToPortfolio}
-                onSelectQuote={() => handleNavigateToQuote()}
-              />
-            </Suspense>
+            <IntroView 
+              onSelectPortfolio={handleNavigateToPortfolio}
+              onSelectQuote={() => handleNavigateToQuote()}
+            />
           </motion.div>
         )}
 
@@ -323,8 +330,8 @@ const App: React.FC = () => {
                 <motion.div 
                   key="splash"
                   initial={{ opacity: 1 }}
-                  exit={{ opacity: 0, filter: 'blur(10px)' }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  exit={{ opacity: 0, filter: 'blur(6px)' }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
                   className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
                 >
                   <div className="flex flex-col items-center justify-center w-full h-full p-4">

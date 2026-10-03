@@ -80,11 +80,15 @@ O modal de seleção de localidade ([`LocationMapModal.tsx`](file:///e:/Pessoal/
 
 ---
 
-## ⏳ Transições e Animação de Carregamento (Buffer de 1,5s)
+## ⚡ Otimizações de Carregamento & Performance
 
-Para garantir uma percepção de alto padrão cinematográfico e evitar que telas "pisquem" rápido demais em computadores velozes:
-* Ao avançar de etapas com validação ou calcular orçamentos no wizard, a tela de *Loading* permanece visível por **no mínimo 1,5 segundos (1500ms)**.
-* O pulso da logo e a barra de progresso do `Loading.tsx` são sincronizados com esse ciclo de 1,5s.
+Para garantir carregamento instantâneo, alto padrão cinematográfico e navegação sem engasgos:
+* **Entrada Imediata da Tela Inicial (`IntroView`):** Carregada estaticamente no bundle inicial, eliminando qualquer tela preta ou spinner ao acessar o site.
+* **Prefetching em Segundo Plano:** Assim que o visitante visualiza a tela inicial, o navegador pré-carrega em background as páginas de Portfólio e Orçamento, tornando o clique instantâneo.
+* **Calibração de Transições (Buffer Suave de 1,5s Totais):** Ao calcular orçamentos ou submeter dados, o ciclo de transição ocorre em 1,5s totais (1.2s de loading + 0.3s de fade out ágil), evitando sensações de lentidão ou telas travadas.
+* **Aceleração por GPU no Filmstrip 3D:** Remoção de filtros pesados de ruído fractal SVG (`feTurbulence`) e compartilhamento de um único gradiente estático para todos os 36 quadros, mantendo 60 FPS estáveis mesmo em dispositivos modestos.
+* **Cache HTTP Imutável na Vercel (`vercel.json`):** Headers com `max-age=31536000, immutable` para assets JS/CSS compilados e cache otimizado para vídeos e imagens.
+* **CSS Não-Bloqueante:** Estilos do Leaflet carregados com `rel="preload"`, liberando o navegador para renderizar a interface de imediato.
 
 ---
 

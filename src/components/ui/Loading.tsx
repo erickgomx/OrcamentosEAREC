@@ -12,7 +12,7 @@ const Loading: React.FC<LoadingProps> = ({ text = "Gerando Proposta..." }) => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: 'blur(10px)', transition: { duration: 0.8 } }}
+      exit={{ opacity: 0, filter: 'blur(5px)', transition: { duration: 0.3 } }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a]"
     >
       {/* Background Pulse */}

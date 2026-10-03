@@ -28,7 +28,7 @@ export class AppConfig {
     // e defina VIDEO_URL: '/showreel.mp4'. Ou informe a URL direta de um MP4 hospedado (Vercel Blob, CDN, etc).
     VIDEO_URL: "/showreel.mp4",
     FALLBACK_URL: "/showreel.mp4",
-    POSTER_URL: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1920&q=80",
+    POSTER_URL: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1280&q=75",
     TITLE: "EAREC Showreel",
     TAGLINE: "Histórias que emocionam. Imagens que marcam.",
     SUBTITLE: "Produção de filmes comerciais, casamentos memoráveis e coberturas audiovisuais de alto padrão."
