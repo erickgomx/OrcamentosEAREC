@@ -19,7 +19,7 @@ import { useState, useEffect, useCallback } from 'react';
 /**
  * Tipos de rotas principais da aplicação
  */
-export type AppRoute = 'home' | 'orcamentos' | 'admin';
+export type AppRoute = 'home' | 'portfolio' | 'orcamentos' | 'admin';
 
 /**
  * Interface exposta pelo hook para os componentes consumidores
@@ -57,6 +57,16 @@ const normalizePath = (rawPath: string): string => {
 const resolveRoute = (path: string): AppRoute => {
   const normalized = normalizePath(path);
   
+  // Rota de Portfólio (aceita tanto com acento quanto sem)
+  if (
+    normalized === '/portfolio' || 
+    normalized === '/portfólio' || 
+    normalized.startsWith('/portfolio/') || 
+    normalized.startsWith('/portfólio/')
+  ) {
+    return 'portfolio';
+  }
+
   // Rotas de Orçamento (aceita tanto com acento quanto sem)
   if (
     normalized === '/orcamentos' || 
