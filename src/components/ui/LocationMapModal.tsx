@@ -5,10 +5,32 @@ import Button from './Button';
 import { modalVariants } from '../../lib/animations';
 import L from 'leaflet';
 
+/**
+ * LocationMapModal.tsx
+ * --------------------
+ * Modal Interativo de Geolocalização e Seleção de Endereço.
+ * 
+ * CARACTERÍSTICAS PRINCIPAIS:
+ * 1. Camada de Mapas: Utiliza os tiles do Google Maps Roadmap (100% gratuito, sem chave de API),
+ *    com redundância automática para o OpenStreetMap oficial.
+ * 2. Geocodificação Reversa: Ao arrastar o marcador vermelho ou clicar no mapa, busca o nome da rua,
+ *    bairro e cidade através do Nominatim/OpenStreetMap (sem custo).
+ * 3. Busca por Digitação: Permite digitar qualquer cidade ou endereço com busca automática (debounce).
+ * 4. Prevenção de Erros no Leaflet:
+ *    - Limpa o '_leaflet_id' residual do DOM antes de instanciar para evitar o erro
+ *      'Map container is already initialized'.
+ *    - Executa 'map.invalidateSize()' após o término da animação do modal para garantir
+ *      que os blocos do mapa preencham toda a tela sem áreas cinzas.
+ */
+
 interface LocationMapModalProps {
+  /** Se o modal está visível */
   isOpen: boolean;
+  /** Callback para fechar o modal */
   onClose: () => void;
+  /** Callback ao confirmar seleção de um endereço */
   onSelectLocation: (address: string) => void;
+  /** Endereço inicial pré-preenchido */
   initialAddress?: string;
 }
 

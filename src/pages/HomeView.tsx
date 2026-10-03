@@ -23,7 +23,31 @@ import Button from '../components/ui/Button';
 import { AppConfig } from '../config/AppConfig';
 import { fadeInUp, staggerContainer } from '../lib/animations';
 
+/**
+ * HomeView.tsx
+ * ------------
+ * Página Inicial Cinematográfica da EAREC Produtora Audiovisual.
+ * 
+ * ESTRUTURA:
+ * 1. Navbar: Logotipo responsivo, link oficial do Instagram e botão direto "Fazer Orçamento".
+ * 2. Hero Cinematográfico:
+ *    - Moldura HUD Viewfinder com timecode dinâmico e resolução 4K DCI.
+ *    - Player de Vídeo em loop (com áudio mudo por padrão exigido por navegadores).
+ *    - Controles de reprodução: Play/Pause, Ativar/Desativar Som e Modo Tela Cheia.
+ *    - Botões de Ação: "Simular Orçamento Online" e "Falar no WhatsApp".
+ * 3. Seção "O Que Produzimos":
+ *    - 4 Pilares: Filmes de Casamento, Comerciais & Marcas, Eventos Sociais e Estúdio/Drone 4K.
+ *    - Cada card permite ir direto ao configurador com a categoria pré-selecionada.
+ * 4. Diferenciais Técnicos: Padrão DaVinci Resolve, áudio profissional e orçamento transparente.
+ * 5. Banner de Conversão Final e Rodapé com links e créditos.
+ * 
+ * COMO ALTERAR O VÍDEO:
+ * Altere a propriedade SHOWREEL.VIDEO_URL no arquivo 'src/config/AppConfig.ts'.
+ * É possível usar um arquivo local em 'public/showreel.mp4' ou uma URL externa de CDN.
+ */
+
 interface HomeViewProps {
+  /** Função disparada ao clicar para iniciar orçamento, podendo passar a categoria padrão */
   onNavigateToQuote: (category?: string) => void;
 }
 

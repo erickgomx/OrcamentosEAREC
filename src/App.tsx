@@ -18,6 +18,25 @@ import { delay } from './lib/utils';
 import { AppConfig } from './config/AppConfig';
 import { useRouter } from './hooks/useRouter';
 
+/**
+ * App.tsx
+ * -------
+ * Componente Raiz da Aplicação EAREC.
+ * 
+ * ARQUITETURA & GERENCIAMENTO DE ROTAS:
+ * 1. Roteador SPA (useRouter):
+ *    - '/' e '/home': Renderiza a HomeView (Landing Page Cinematográfica com Vídeo).
+ *    - '/orcamentos' e '/orçamentos': Renderiza o fluxo de simulação de orçamento.
+ *    - '/admin': Renderiza o painel de administração de preços.
+ * 2. Transições e Loading Suave:
+ *    - Todas as transições principais exibem a tela de Loading por pelo menos 1,5s (1500ms),
+ *      garantindo consistência visual cinematográfica mesmo quando a máquina do usuário é veloz.
+ * 3. Resiliência a Reloads (F5):
+ *    - O estado do cliente ('clientData') é lido do localStorage com validação de tipo para evitar crashes.
+ *    - A sub-etapa do orçamentador ('view') é preservada via sessionStorage.
+ *    - Arquivos de fallback físico ('orcamentos.html' e '404.html') evitam erro 404 na Vercel.
+ */
+
 const App: React.FC = () => {
   const router = useRouter();
 
