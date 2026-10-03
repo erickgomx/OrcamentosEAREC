@@ -26,8 +26,8 @@ export class AppConfig {
   static readonly SHOWREEL = {
     // 💡 DICA: Para usar um arquivo local, salve seu vídeo na pasta 'public/showreel.mp4'
     // e defina VIDEO_URL: '/showreel.mp4'. Ou informe a URL direta de um MP4 hospedado (Vercel Blob, CDN, etc).
-    VIDEO_URL: "https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-sky-in-a-sunset-26070-large.mp4",
-    FALLBACK_URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    VIDEO_URL: "/showreel.mp4",
+    FALLBACK_URL: "/showreel.mp4",
     POSTER_URL: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1920&q=80",
     TITLE: "EAREC Showreel",
     TAGLINE: "Histórias que emocionam. Imagens que marcam.",

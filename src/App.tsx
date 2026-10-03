@@ -26,17 +26,49 @@ const App: React.FC = () => {
     return router.activeRoute === 'orcamentos';
   });
   
-  // Controle de views internas do orçamentador
-  const [view, setView] = useState<ViewState>('confirmation');
+  // Controle de views internas do orçamentador com persistência de sessão para não quebrar no reload
+  const [view, setView] = useState<ViewState>(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const savedView = sessionStorage.getItem('earec_view') as ViewState;
+        if (savedView && ['confirmation', 'intro', 'welcome', 'quote'].includes(savedView)) {
+          return savedView;
+        }
+      }
+    } catch {}
+    return 'confirmation';
+  });
   
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<QuoteData>(mockQuote);
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
   const [isQuickMode, setIsQuickMode] = useState(false);
 
-  const [clientData, setClientData] = useState<ClientData | null>(() => {
-    const saved = localStorage.getItem('earec_client_data');
-    return saved ? JSON.parse(saved) : null;
+  const [clientData, setClientData] = useState<ClientData>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('earec_client_data') : null;
+      if (saved && saved !== 'undefined' && saved !== 'null') {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            name: parsed.name || '',
+            location: parsed.location || '',
+            date: parsed.date || '',
+            contact: parsed.contact || '',
+            company: parsed.company || '',
+            projectTitle: parsed.projectTitle || ''
+          };
+        }
+      }
+    } catch (e) {
+      console.warn("Erro ao ler localStorage de clientData:", e);
+    }
+    return {
+      name: '',
+      location: '',
+      date: '',
+      contact: ''
+    };
   });
 
   const [quoteState, setQuoteState] = useState<QuoteState>({
@@ -63,6 +95,12 @@ const App: React.FC = () => {
       localStorage.setItem('earec_client_data', JSON.stringify(clientData));
     }
   }, [clientData]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('earec_view', view);
+    } catch {}
+  }, [view]);
 
   // Atualiza o título da página de acordo com a rota ativa
   useEffect(() => {
@@ -96,7 +134,8 @@ const App: React.FC = () => {
     }
   }, [router.activeRoute, showSplash]);
 
-  const handleNavigateToQuote = (category?: string) => {
+  const handleNavigateToQuote = async (category?: string) => {
+    setIsLoading(true);
     if (category) {
       setQuoteState(prev => ({ ...prev, category: category as ServiceCategory }));
       router.navigate(`/orcamentos?cat=${category}`);
@@ -105,13 +144,15 @@ const App: React.FC = () => {
     }
     setShowSplash(false);
     setView('confirmation');
+    await delay(1500); // Exatos 1.5s
+    setIsLoading(false);
   };
 
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    await delay(1500); 
+    await delay(1500); // Exatos 1.5s
     setIsLoading(false);
     setView('quote');
     window.scrollTo(0, 0);
@@ -127,7 +168,7 @@ const App: React.FC = () => {
     setIsQuickMode(true);
     setIsLoading(true);
     setIsQuoteSuccess(false);
-    await delay(800);
+    await delay(1500); // Exatos 1.5s
     setIsLoading(false);
     setView('quote');
     window.scrollTo(0, 0);
@@ -262,7 +303,7 @@ const App: React.FC = () => {
                 )}
 
                 {/* 4. CONFIGURADOR (QUOTE) */}
-                {view === 'quote' && clientData && (
+                {view === 'quote' && (
                   <QuoteView 
                     clientData={clientData} 
                     onUpdateClientData={setClientData}
