@@ -39,27 +39,27 @@ A aplicação adota um roteador SPA customizado e ultraleve ([`src/hooks/useRout
 ## 🎬 Fluxo do Usuário e Transições Fluidas
 
 ### 1. Primeira Tela (`IntroView.tsx`)
-Ao acessar o site pela raiz (`/`), o visitante visualiza uma tela focada e sem distrações com:
+Ao acessar o site pela raiz (`/`), o visitante visualiza uma tela ultralimpa com o mínimo de texto possível:
 * Logotipo cinematográfico EAREC.
-* Pergunta central: *"Você já conhece nosso trabalho ou deseja fazer um orçamento?"*
-* **Opção 1 - Conhecer Nosso Trabalho:** Direciona para `/portfolio`.
-* **Opção 2 - Iniciar Orçamento Online:** Direciona para `/orcamentos`.
+* Pergunta central direta: *"Você já conhece nosso trabalho ou deseja um orçamento?"*
+* **Opção 1 - Conhecer Trabalho:** Direciona para `/portfolio`.
+* **Opção 2 - Iniciar Orçamento:** Direciona para `/orcamentos`.
 
 ### 2. Página de Portfólio (`PortfolioView.tsx`)
-Totalmente reprojetada para ser limpa e de fácil acesso:
-* **Barra Superior Discreta:** Botão para voltar à tela inicial (`← Início`) e botão de ação direta (`Fazer Orçamento`).
+Design limpo, minimalista e 100% focado no visual:
+* **Fundo Filmstrip 3D Sutil:** Ativo de forma suave e cinematográfica em todo o site.
+* **Barra Superior Discreta:** Botão para voltar à tela inicial (`← Início`) e logotipo centralizado.
 * **Vídeo Showreel (Apresentação):**
-  * Player HTML5 responsivo widescreen (16:9) apontando para o arquivo local `public/showreel.mp4`.
-  * HUD Viewfinder de câmera de cinema com *timecode* ativo e indicação 4K DCI / 24FPS.
-  * Controles de reprodução: Play/Pause, Ativar/Silenciar Som e Modo Tela Cheia.
-* **Outros Trabalhos:**
-  * Filtros de categoria rápidos (*Todos*, *Casamentos*, *Comerciais*, *Eventos*, *Drone & Estúdio*).
-  * Cards visuais limpos com fotos em alta definição, badges de estilo e tags de produção.
-  * Cada card possui um botão direto que abre o orçamentador com a categoria já selecionada.
+  * Player HTML5 widescreen (16:9) apontando para o arquivo local `public/showreel.mp4`.
+  * HUD Viewfinder minimalista com *timecode* ativo.
+  * Controles de reprodução: Play/Pause, Ativar/Silenciar Som e Tela Cheia.
+* **Galeria de Destaques do Instagram (@earecmidia):**
+  * Mídias reais salvas localmente em `public/portfolio/instagram/` (4 Vídeos Reels e 3 Ensaios Fotográficos).
+  * Modal/Lightbox em tela cheia com carrossel de fotos, reprodução de vídeo com áudio e link para o post original.
 * **Seção de Encerramento (Instagram Oficial):**
-  * Conforme solicitado, ao final da página há um destaque convidativo: *"Quer conhecer mais sobre o nosso trabalho?"*
-  * Botão de alto contraste: **"Acessar Instagram @earecmidia"** (`https://www.instagram.com/earecmidia/`).
-  * Botões adicionais para simulação de orçamento e contato direto no WhatsApp.
+  * Destaque direto: *"Acompanhe Nosso Instagram"* com botão **"@earecmidia"**.
+* **Único Botão Fixo de Orçamento:**
+  * Botão flutuante sutil no canto inferior direito (`fixed bottom-6 right-6`), discreto e sempre ao alcance enquanto o usuário navega pelo portfólio.
 
 ### 3. Transições Fluidas (Framer Motion)
 Configuradas em [`src/lib/animations.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/lib/animations.ts) com `pageSlideVariants` e `slideFadeItem`:

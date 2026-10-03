@@ -235,10 +235,8 @@ const App: React.FC = () => {
   return (
     <main className="w-full min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
       
-      {/* Background Decorativo Film Strips (apenas no Orçamentador) */}
-      {router.activeRoute === 'orcamentos' && (view !== 'quote' || isQuoteSuccess) && (
-        <BackgroundFilmStrips />
-      )}
+      {/* Background Filmstrip Sutil em Todo o Site */}
+      <BackgroundFilmStrips />
 
       {/* ROTEAMENTO SPA COM TRANSIÇÃO FLUIDA ENTRE TELAS (AnimatePresence mode="wait") */}
       <AnimatePresence mode="wait">

@@ -121,13 +121,10 @@ const BackgroundFilmStrips: React.FC = () => {
 
       {/* 
           RODA ESQUERDA 
-          - Wrapper 1: Posicionamento e Escala (Tailwind)
-          - Wrapper 2: Rotação 3D (Inline Style) - Isso previne conflito de transforms
-          
-          UPDATE: Scale massivo para 0.85 (Mobile) / 1.0 (Tablet)
-          UPDATE: Position ajustado para -80px para mostrar mais as rodas (Menos escondidas)
+          - Wrapper 1: Posicionamento e Escala (Tailwind) com opacidade sutil
+          - Wrapper 2: Rotação 3D (Inline Style)
       */}
-      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] transition-all duration-1000 origin-left">
+      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] transition-all duration-1000 origin-left opacity-70">
           <div style={{ transform: 'rotateY(25deg) rotateZ(-8deg)' }}>
              <FilmWheel3D speed={80} direction="normal" />
           </div>
@@ -135,9 +132,9 @@ const BackgroundFilmStrips: React.FC = () => {
 
       {/* 
           RODA DIREITA
-          Simétrico à esquerda.
+          Simétrico à esquerda com opacidade sutil.
       */}
-      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] transition-all duration-1000 origin-right">
+      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] transition-all duration-1000 origin-right opacity-70">
           <div style={{ transform: 'rotateY(-25deg) rotateZ(5deg)' }}>
              <FilmWheel3D speed={100} direction="reverse" />
           </div>
