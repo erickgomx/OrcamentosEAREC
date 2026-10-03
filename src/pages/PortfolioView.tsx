@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
@@ -9,11 +10,6 @@ import {
   ArrowRight, 
   ArrowLeft,
   Sparkles, 
-  Clapperboard, 
-  Film, 
-  Video, 
-  Camera, 
-  MessageCircle, 
   Instagram, 
   ExternalLink,
   ChevronLeft,
@@ -37,7 +33,12 @@ import instagramMediaData from '../data/instagramMedia.json';
  * 3. Sem botões de orçamento repetidos pela página:
  *    Apenas UM botão fixo sutil, flutuante e discreto para prosseguir para o orçamento.
  * 4. Galeria com mídias reais do Instagram (@earecmidia) salvas localmente.
- * 5. Botão oficial de acesso ao Instagram no final.
+ * 5. Modal / Lightbox seguro e acessível:
+ *    - Tecla ESC fecha imediatamente.
+ *    - Clique no fundo fecha imediatamente.
+ *    - Botão "Fechar" fixo de alto contraste no canto superior.
+ *    - Botão "Sair" explícito no rodapé do player.
+ *    - Proporção 9:16 vertical perfeita para os Reels sem quebrar a tela.
  */
 
 interface PortfolioViewProps {
@@ -61,7 +62,7 @@ export interface InstagramMediaItem {
 }
 
 const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateToQuote }) => {
-  // Controle do Player de Vídeo Showreel
+  // Controle do Player de Vídeo Showreel Principal
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -75,6 +76,13 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
   const [selectedItem, setSelectedItem] = useState<InstagramMediaItem | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
+  // Garante que o componente está montado no DOM antes de usar createPortal
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Timecode dinâmico estilo viewfinder de cinema
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -85,6 +93,25 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
     }, 100);
     return () => clearInterval(interval);
   }, []);
+
+  // Fechamento via Tecla ESC e trava de scroll do fundo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    };
+    if (selectedItem) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedItem]);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -140,9 +167,9 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
       initial="initial"
       animate="animate"
       exit="exit"
-      className="w-full min-h-screen text-neutral-100 selection:bg-brand-DEFAULT selection:text-white font-sans overflow-x-hidden relative pb-24"
+      className="w-full min-h-screen text-neutral-100 selection:bg-brand-DEFAULT selection:text-white font-sans overflow-x-hidden relative pb-28"
     >
-      {/* 1. NAVBAR MINIMALISTA (SEM BOTÃO DE ORÇAMENTO REPETIDO) */}
+      {/* 1. NAVBAR MINIMALISTA */}
       <header className="sticky top-0 z-40 w-full bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/10 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           <button
@@ -158,20 +185,18 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
             <Logo className="w-32 sm:w-40" animate={false} />
           </div>
 
-          {/* Espaçador simétrico para manter o logo perfeitamente centralizado */}
           <div className="w-[70px]" />
         </div>
       </header>
 
-      {/* 2. VÍDEO DE APRESENTAÇÃO (DIRETO AO PONTO, SEM BADGE "SHOWREEL OFICIAL", MÍNIMO DE TEXTO) */}
+      {/* 2. VÍDEO SHOWREEL LIMPO (SEM BADGE, MÍNIMO DE TEXTO) */}
       <section className="relative pt-6 pb-12 sm:pt-10 sm:pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col items-center">
         
-        {/* Player de Vídeo em Destaque */}
         <motion.div 
           variants={slideFadeItem}
           className="w-full relative group rounded-3xl overflow-hidden border border-white/15 shadow-[0_20px_80px_rgba(0,0,0,0.85)] bg-black"
         >
-          {/* HUD Viewfinder Discreto */}
+          {/* HUD Viewfinder */}
           <div className="absolute inset-0 pointer-events-none z-20 p-4 sm:p-6 flex flex-col justify-between opacity-60">
             <div className="flex justify-between items-start text-[10px] font-mono tracking-widest text-neutral-400">
               <div className="flex items-center gap-2">
@@ -203,7 +228,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none z-10" />
 
-            {/* Controles Flutuantes de Reprodução */}
+            {/* Controles Flutuantes */}
             <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-30 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <button
@@ -241,10 +266,9 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
 
       </section>
 
-      {/* 3. GALERIA DE TRABALHOS (MÍDIAS REAIS DO INSTAGRAM, VISUALMENTE LIMPO) */}
+      {/* 3. GALERIA DE TRABALHOS (MÍDIAS REAIS DO INSTAGRAM) */}
       <section className="py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
         
-        {/* Título Enxuto (Sem Parágrafos Longos) */}
         <motion.div variants={slideFadeItem} className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif text-white">
             Trabalhos Recentes
@@ -274,7 +298,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
           ))}
         </motion.div>
 
-        {/* Grade Visual das Mídias (Sem Botões Repetidos de Orçamento) */}
+        {/* Grade de Mídias */}
         <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {instagramItems.map((item) => (
@@ -289,7 +313,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
                 transition={{ duration: 0.25 }}
                 className="rounded-3xl bg-neutral-900/60 border border-white/10 overflow-hidden flex flex-col justify-between group shadow-xl hover:border-white/30 transition-colors"
               >
-                {/* Imagem / Capa Clicável */}
+                {/* Capa Clicável */}
                 <div 
                   onClick={() => openModal(item)}
                   className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-950 cursor-pointer"
@@ -339,14 +363,13 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
                   </div>
                 </div>
 
-                {/* Rodapé do Card com Link Externo */}
+                {/* Rodapé do Card */}
                 <div className="p-4 flex items-center justify-between text-xs text-neutral-400 border-t border-white/5">
                   <button
                     onClick={() => openModal(item)}
                     className="text-neutral-300 hover:text-white transition-colors flex items-center gap-1.5 text-xs font-mono"
                   >
                     <span>Ver em Tela Cheia</span>
-                    <Maximize2 size={12} />
                   </button>
 
                   <a
@@ -367,7 +390,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
 
       </section>
 
-      {/* 4. SEÇÃO FINAL: CONHECER MAIS NO INSTAGRAM (MÍNIMO DE TEXTO, SEM BOTÃO DE ORÇAMENTO DUPLICADO) */}
+      {/* 4. SEÇÃO FINAL: INSTAGRAM OFICIAL */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center border-t border-white/10">
         <motion.div 
           variants={slideFadeItem}
@@ -399,121 +422,177 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onBackToHome, onNavigateT
         </motion.div>
       </section>
 
-      {/* 5. MODAL / LIGHTBOX CLEAN */}
-      <AnimatePresence>
-        {selectedItem && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-full max-w-3xl max-h-[90vh] bg-neutral-900 border border-white/15 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+      {/* ============================================================== */}
+      {/* 5. MODAL / LIGHTBOX SEGURO, FLUIDO E RESILIENTE (VIA PORTAL)   */}
+      {/* Renderizado diretamente no body para ficar imune a transforms */}
+      {/* ============================================================== */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {selectedItem && (
+            <div 
+              onClick={(e) => {
+                // Clicar fora da caixa fecha imediatamente
+                if (e.target === e.currentTarget) closeModal();
+              }}
+              className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-2xl overflow-y-auto"
             >
-              {/* Fechar */}
+              {/* BOTÃO GLOBAL FIXO DE FECHAR NO CANTO SUPERIOR (NUNCA É COBERTO) */}
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 z-30 p-2 rounded-full bg-black/60 hover:bg-black text-white border border-white/20 transition-all"
-                title="Fechar"
+                className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[120] flex items-center gap-2 px-4 py-2.5 rounded-full bg-neutral-900/90 hover:bg-red-600 border border-white/20 text-white text-xs font-mono tracking-wider shadow-2xl backdrop-blur-md transition-all active:scale-95 group cursor-pointer"
+                title="Fechar (Esc)"
               >
-                <X size={18} />
+                <X size={16} className="group-hover:rotate-90 transition-transform" />
+                <span>Fechar (Esc)</span>
               </button>
 
-              {/* Mídia */}
-              <div className="relative bg-black flex items-center justify-center overflow-hidden min-h-[350px] md:min-h-[500px]">
-                {selectedItem.type === 'video' ? (
-                  <video
-                    src={selectedItem.mediaUrl}
-                    poster={selectedItem.coverUrl}
-                    controls
-                    autoPlay
-                    loop
-                    className="max-h-[75vh] w-full object-contain"
-                  />
-                ) : (
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    {selectedItem.gallery && selectedItem.gallery.length > 0 ? (
-                      <>
-                        <img
-                          src={selectedItem.gallery[galleryIndex]}
-                          alt={selectedItem.title}
-                          className="max-h-[75vh] w-full object-contain"
-                        />
-                        {selectedItem.gallery.length > 1 && (
-                          <>
-                            <button
-                              onClick={() => setGalleryIndex((prev) => (prev > 0 ? prev - 1 : selectedItem.gallery!.length - 1))}
-                              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20"
-                            >
-                              <ChevronLeft size={20} />
-                            </button>
-                            <button
-                              onClick={() => setGalleryIndex((prev) => (prev < selectedItem.gallery!.length - 1 ? prev + 1 : 0))}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20"
-                            >
-                              <ChevronRight size={20} />
-                            </button>
-                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/70 border border-white/10 text-xs font-mono text-white">
-                              {galleryIndex + 1} / {selectedItem.gallery.length}
-                            </div>
-                          </>
-                        )}
-                      </>
-                    ) : (
-                      <img
+              {/* CAIXA DO CONTEÚDO */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className={`relative bg-neutral-950 border border-white/15 rounded-3xl overflow-hidden shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col my-auto ${
+                  selectedItem.type === 'video' 
+                    ? 'w-full max-w-[380px] sm:max-w-[420px]' 
+                    : 'w-full max-w-2xl'
+                }`}
+              >
+                {/* ÁREA VISUAL */}
+                <div className="relative w-full bg-black flex items-center justify-center overflow-hidden">
+                  {selectedItem.type === 'video' ? (
+                    /* Vídeo Reel Vertical Adaptado */
+                    <div className="relative w-full flex items-center justify-center bg-black aspect-[9/16] max-h-[70vh]">
+                      <video
                         src={selectedItem.mediaUrl}
-                        alt={selectedItem.title}
-                        className="max-h-[75vh] w-full object-contain"
+                        poster={selectedItem.coverUrl}
+                        controls
+                        autoPlay
+                        loop
+                        playsInline
+                        className="w-full h-full object-contain"
                       />
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Barra Inferior Discreta */}
-              <div className="p-4 sm:p-5 flex items-center justify-between border-t border-white/10 bg-neutral-900/90">
-                <div>
-                  <h3 className="text-base sm:text-lg font-serif text-white">
-                    {selectedItem.title}
-                  </h3>
-                  <span className="text-[10px] font-mono text-neutral-400 uppercase">
-                    {selectedItem.categoryLabel}
-                  </span>
+                    </div>
+                  ) : (
+                    /* Ensaio de Fotos */
+                    <div className="relative w-full aspect-[4/5] sm:aspect-[1/1] max-h-[68vh] flex items-center justify-center bg-black">
+                      {selectedItem.gallery && selectedItem.gallery.length > 0 ? (
+                        <>
+                          <img
+                            src={selectedItem.gallery[galleryIndex]}
+                            alt={selectedItem.title}
+                            className="w-full h-full object-contain select-none"
+                          />
+                          {selectedItem.gallery.length > 1 && (
+                            <>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setGalleryIndex((prev) => (prev > 0 ? prev - 1 : selectedItem.gallery!.length - 1));
+                                }}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 transition-all active:scale-95"
+                                title="Foto anterior"
+                              >
+                                <ChevronLeft size={20} />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setGalleryIndex((prev) => (prev < selectedItem.gallery!.length - 1 ? prev + 1 : 0));
+                                }}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 transition-all active:scale-95"
+                                title="Próxima foto"
+                              >
+                                <ChevronRight size={20} />
+                              </button>
+                              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/75 border border-white/10 text-xs font-mono text-white">
+                                {galleryIndex + 1} / {selectedItem.gallery.length}
+                              </div>
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <img
+                          src={selectedItem.mediaUrl}
+                          alt={selectedItem.title}
+                          className="w-full h-full object-contain"
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
 
-                <a
-                  href={selectedItem.instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="py-2 px-3.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-mono flex items-center gap-1.5 transition-all"
-                >
-                  <Instagram size={13} className="text-red-400" />
-                  <span>Ver no Instagram</span>
-                  <ExternalLink size={12} />
-                </a>
-              </div>
+                {/* BARRA INFERIOR COM BOTÕES CLAROS DE AÇÃO */}
+                <div className="p-4 flex items-center justify-between border-t border-white/10 bg-neutral-900/95 gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm sm:text-base font-serif text-white truncate">
+                      {selectedItem.title}
+                    </h3>
+                    <span className="text-[10px] font-mono text-neutral-400 uppercase">
+                      {selectedItem.categoryLabel}
+                    </span>
+                  </div>
 
+                  <div className="flex items-center gap-2 shrink-0">
+                    <a
+                      href={selectedItem.instagramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-1.5 px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-mono flex items-center gap-1.5 transition-all"
+                      title="Ver no Instagram"
+                    >
+                      <Instagram size={13} className="text-red-400" />
+                      <span className="hidden sm:inline">Instagram</span>
+                      <ExternalLink size={11} />
+                    </a>
+
+                    {/* Botão Sair Explícito */}
+                    <button
+                      onClick={closeModal}
+                      className="py-1.5 px-3.5 rounded-full bg-red-600 hover:bg-red-500 text-white text-xs font-mono transition-all font-medium cursor-pointer"
+                    >
+                      Sair
+                    </button>
+                  </div>
+                </div>
+
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {/* ============================================================== */}
+      {/* 6. BOTÃO FLUTUANTE QUE SEGUE A NAVEGAÇÃO DO USUÁRIO NA PÁGINA  */}
+      {/* Ancorado diretamente no viewport (body) via createPortal       */}
+      {/* ============================================================== */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {!selectedItem && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              transition={{ duration: 0.25 }}
+              className="fixed bottom-6 right-6 z-50 pointer-events-auto"
+            >
+              <motion.button
+                onClick={() => onNavigateToQuote()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-red-500/40 hover:border-red-500 text-white text-xs sm:text-sm font-medium tracking-wide shadow-[0_4px_25px_rgba(220,38,38,0.35)] backdrop-blur-md transition-all group cursor-pointer"
+                title="Iniciar simulação de orçamento online"
+              >
+                <Sparkles size={14} className="text-red-500 group-hover:rotate-12 transition-transform" />
+                <span>Fazer Orçamento</span>
+                <ArrowRight size={13} className="text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+              </motion.button>
             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* ============================================================== */}
-      {/* 6. ÚNICO BOTÃO FIXO SUTIL PARA PROSSEGUIR PARA O ORÇAMENTO     */}
-      {/* ============================================================== */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <motion.button
-          onClick={() => onNavigateToQuote()}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-red-500/40 hover:border-red-500 text-white text-xs sm:text-sm font-medium tracking-wide shadow-[0_4px_25px_rgba(220,38,38,0.35)] backdrop-blur-md transition-all group"
-          title="Iniciar simulação de orçamento online"
-        >
-          <Sparkles size={14} className="text-red-500 group-hover:rotate-12 transition-transform" />
-          <span>Fazer Orçamento</span>
-          <ArrowRight size={13} className="text-neutral-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-        </motion.button>
-      </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
     </motion.div>
   );

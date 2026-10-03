@@ -54,8 +54,9 @@ Design limpo, minimalista e 100% focado no visual:
   * HUD Viewfinder minimalista com *timecode* ativo.
   * Controles de reprodução: Play/Pause, Ativar/Silenciar Som e Tela Cheia.
 * **Galeria de Destaques do Instagram (@earecmidia):**
-  * Mídias reais salvas localmente em `public/portfolio/instagram/` (4 Vídeos Reels e 3 Ensaios Fotográficos).
-  * Modal/Lightbox em tela cheia com carrossel de fotos, reprodução de vídeo com áudio e link para o post original.
+  * Mídias reais salvas localmente em `public/portfolio/instagram/` (4 Vídeos Reels verticais e 3 Ensaios Fotográficos).
+  * Modal/Lightbox otimizado com viewport seguro: proporção `aspect-[9/16]` e altura máxima limitada para que nenhum controle suma da tela.
+  * Múltiplas formas de saída: botão superior fixo ("Fechar Esc"), botão explícito "Sair" na barra de rodapé, clique no fundo escuro e tecla `Esc`. Trava o scroll da página enquanto ativo.
 * **Seção de Encerramento (Instagram Oficial):**
   * Destaque direto: *"Acompanhe Nosso Instagram"* com botão **"@earecmidia"**.
 * **Único Botão Fixo de Orçamento:**
