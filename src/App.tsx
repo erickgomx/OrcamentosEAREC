@@ -56,7 +56,7 @@ const App: React.FC = () => {
     category: null, 
     serviceId: 'wedding_base',
     hours: 2,
-    qty: 10,
+    qty: 8,
     videoQty: 0, 
     addDrone: false,
     droneQty: 0,

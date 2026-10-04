@@ -160,8 +160,8 @@ export class AppConfig {
         studio_photo: { 
             unit: 25, 
             label: "Estúdio (Fotos)",
-            composition: "7 fotos: R$ 150 | 13 fotos: R$ 250",
-            description: "Fotografia profissional de estúdio. Desconto especial: 7 fotos por R$ 150 ou 13 fotos por R$ 250." 
+            composition: "7 fotos: R$ 150 ou 13 fotos: R$ 250",
+            description: "Fotografia profissional de estúdio (R$ 25/foto). Desconto especial: 7 fotos por R$ 150 ou 13 fotos por R$ 250." 
         },
         studio_video: { 
             base: 350, 

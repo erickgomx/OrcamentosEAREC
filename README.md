@@ -243,6 +243,11 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
   * Rodapé Fixo (`StickyFooter`): Destaque elegante para o "Valor Estimado", tipografia de valor total de alto impacto (`text-2xl sm:text-3xl md:text-4xl font-price`) e botão de ação rápido.
 * **Resumo e Checkout Elegantes (`SummaryView.tsx`):** Textos descritivos, discriminador de itens e CTA de confirmação reescalonados para clareza máxima de entendimento pelo cliente.
 
+### [04/10/2026] Tabela de Fotos do Estúdio: R$ 25/foto com Desconto em 7 e 13 Fotos
+* **Regra de Precificação Estúdio:** Cada foto custa R$ 25 (`qty * 25`), e o desconto é ativado estritamente nos pacotes de **7 fotos (R$ 150)** e **13 fotos (R$ 250)** (e R$ 25 por foto adicional acima de 13).
+* **Eliminação de Curvas Arbitrárias:** Removidas interpolações artificiais (como R$ 170 para 8, R$ 190 para 9, etc.), garantindo coerência matemática total: 1 a 6 fotos = R$ 25/cada; 7 fotos = R$ 150; 8 a 12 fotos = R$ 25/cada (R$ 200 a R$ 300); 13 fotos = R$ 250; 14+ fotos = R$ 250 + R$ 25 por foto extra.
+* **Badge Dinâmico e Tooltip em Tempo Real:** Atualizado o tooltip para indicar incremento fixo de `+ R$ 25` e badge no seletor que destaca visualmente quando os descontos de 7 e 13 fotos estão ativos.
+
 ### [04/10/2026] Botão do Próximo Passo Sempre Visível na Tela
 * **Barra Fixa com Botão de Próximo Passo Permanente:** O rodapé de navegação (`StickyFooter`) agora está fixado no rodapé da viewport (`fixed bottom-0 left-0 right-0 z-40`), mantendo o botão do próximo passo permanentemente acessível durante todas as etapas do configurador (`Passo 1: Categoria`, `Passo 2: Serviço`, `Passo 3: Detalhes`). O usuário nunca mais precisa rolar até o fim da página para avançar.
 * **Layout Compacto e Ergonômico:** Reformulado em linha horizontal (`flex items-center justify-between`) para smartphones com apenas ~65px de altura e suporte a safe area (`env(safe-area-inset-bottom)`), deixando a visualização do conteúdo desobstruída.

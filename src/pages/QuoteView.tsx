@@ -215,11 +215,11 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                           if (mode) actions.setSelectionMode(mode); 
                           // Reset to minimums when explicitly selecting a new package
                           if (quoteState.category === 'commercial') {
-                              if (id === 'comm_photo') actions.setQty(5);
+                              if (id === 'comm_photo') actions.setQty(8);
                               else if (id === 'comm_video') actions.setQty(1);
                               else if (id === 'comm_combo') { actions.setQty(10); actions.setVideoQty(1); }
                           } else if (quoteState.category === 'studio' && id === 'studio_photo') {
-                              actions.setQty(8);
+                              actions.setQty(7);
                           } else if (quoteState.category === 'video_production') {
                               // Reset all addon controls to 0 initially
                               actions.setQty(0);
@@ -230,7 +230,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                               actions.setEdit1minQty(0);
                               actions.setDroneQty(0);
                           } else {
-                              actions.setQty(10);
+                              actions.setQty(8);
                           }
                           actions.setHours(2);
                       }}

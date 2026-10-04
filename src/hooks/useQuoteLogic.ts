@@ -224,18 +224,18 @@ export const useQuoteLogic = ({
         actions.setEdit1minQty(0);
         
         if (category === 'commercial') {
-            if (newServiceId === 'comm_photo') actions.setQty(5);
+            if (newServiceId === 'comm_photo') actions.setQty(8);
             else if (newServiceId === 'comm_video') actions.setQty(1);
         } else if (category === 'studio' && newServiceId === 'studio_photo') {
-            actions.setQty(8);
+            actions.setQty(7);
         } else if (category === 'video_production') {
             actions.setQty(0);
             actions.setVideoQty(0);
         } else if (category === 'social') {
-            actions.setQty(10);
+            actions.setQty(8);
             actions.setVideoQty(0);
         } else {
-            actions.setQty(10);
+            actions.setQty(8);
         }
       }
       
@@ -441,11 +441,12 @@ export const useQuoteLogic = ({
        if (serviceId === 'comm_combo') metricLabel = `${qty} Fotos + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
        else if (serviceId === 'comm_video' || serviceId === 'social_video') metricLabel = `${qty} Vídeo${qty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
        else if (category === 'social') {
-           metricLabel = `${qty} Fotos (Base 10)`;
+           metricLabel = `${qty} Fotos (Mínimo 8)`;
            if (videoQty > 0) {
                metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
            }
        }
+       else if (serviceId === 'studio_photo') metricLabel = qty === 7 ? '7 Fotos (Desconto R$ 150)' : qty === 13 ? '13 Fotos (Promoção R$ 250)' : `${qty} Fotos`;
        else metricLabel = `${qty} Unidades`;
   }
   if (category === 'wedding' && selectionMode === 'duration' && hours === 2) metricLabel = "Pacote Completo";

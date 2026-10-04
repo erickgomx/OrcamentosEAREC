@@ -136,18 +136,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
   
   const isDroneQuantity = category === 'video_production' && serviceId === 'drone';
   const isVideoQuantity = serviceId === 'comm_video' || serviceId === 'edit_only' || serviceId === 'social_video';
-  const minQty = (serviceId === 'comm_photo' ? 5 : (serviceId === 'comm_video' || serviceId === 'social_video' ? 1 : (serviceId === 'studio_photo' ? 7 : (category === 'video_production' ? 1 : 10))));
+  const minQty = isVideoQuantity || isDroneQuantity ? 1 : (serviceId === 'studio_photo' ? 7 : 8);
   const getIncrementPrice = (type: string) => {
     if (type === 'combo_photo') return 20;
     if (type === 'combo_video') return videoDevice === 'camera' ? 600 : 350;
     if (type === 'qty') {
         if (serviceId === 'comm_photo') return 20;
-        if (serviceId === 'studio_photo') {
-            if (qty < 7) return 0;
-            if (qty >= 7 && qty < 12) return 20;
-            if (qty === 12) return 10; // 240 para 250
-            return 25; // Acima de 13
-        }
+        if (serviceId === 'studio_photo') return 25;
         if (serviceId === 'comm_video' || serviceId === 'social_video') return videoDevice === 'camera' ? 600 : 350;
         if (category === 'social') return 25;
         if (category === 'video_production' && serviceId === 'drone') return projectType === 'commercial' ? 300 : 250;
@@ -282,9 +277,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
                   {category === 'social' && (
                     <>
-                        <ServiceCard index={0} active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "A partir de R$ 250"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Mínimo 10 fotos inclusas"} desc={TABLE.social.birthday.description} />
-                        <ServiceCard index={1} active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "A partir de R$ 250"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Mínimo 10 fotos inclusas"} desc={TABLE.social.social_event.description} highlight />
-                        <ServiceCard index={2} active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "A partir de R$ 250"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "Mínimo 10 fotos inclusas"} desc={TABLE.social.social_party.description} highlight />
+                        <ServiceCard index={0} active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "A partir de R$ 200"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Mínimo 8 fotos inclusas"} desc={TABLE.social.birthday.description} />
+                        <ServiceCard index={1} active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "A partir de R$ 200"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Mínimo 8 fotos inclusas"} desc={TABLE.social.social_event.description} highlight />
+                        <ServiceCard index={2} active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "A partir de R$ 200"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "Mínimo 8 fotos inclusas"} desc={TABLE.social.social_party.description} highlight />
                         <ServiceCard 
                             index={3} 
                             active={serviceId === 'social_video'} 
@@ -790,7 +785,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         {category === 'studio' && serviceId === 'studio_photo' && (
                             <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow-lg z-10 flex items-center gap-1">
                                 <Sparkles size={11} />
-                                {qty === 7 ? "Desconto (R$ 150)" : qty >= 13 ? "Promoção (R$ 250)" : "Estúdio Profissional"}
+                                {qty === 7 ? "Desconto Especial (R$ 150)" : qty === 13 ? "Promoção Especial (R$ 250)" : qty > 13 ? "Promoção (R$ 250 + R$ 25/extra)" : "R$ 25 / foto"}
                             </div>
                         )}
 

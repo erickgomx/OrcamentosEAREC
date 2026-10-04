@@ -139,11 +139,11 @@ export class PricingEngine {
           breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
         }
       } else {
-        // Cobrança por foto: Base de 10 fotos por R$ 250 ("A partir de R$ 250")
-        const photoQty = Math.max(10, qty || 10);
-        const val = 250 + ((photoQty - 10) * ctx.photoUnitPrice);
+        // Cobrança por foto: Mínimo geral de 8 fotos a R$ 25 cada
+        const photoQty = Math.max(8, qty || 8);
+        const val = photoQty * ctx.photoUnitPrice;
         total += val;
-        breakdown.push({ label: `${ref.label} (${photoQty} Fotos - Base 10)`, value: val, type: 'base' });
+        breakdown.push({ label: `${ref.label} (${photoQty} Fotos - Mínimo 8)`, value: val, type: 'base' });
       }
     }
 
@@ -170,10 +170,11 @@ export class PricingEngine {
     let total = 0;
 
     if (serviceId === 'comm_photo') {
-      // FIX: Usa o preço unitário específico de comercial (20) em vez do global (25)
-      const val = qty * table.comm_photo.unit;
+      // FIX: Mínimo geral de 8 fotos a R$ 20 cada
+      const photoQty = Math.max(8, qty || 8);
+      const val = photoQty * table.comm_photo.unit;
       total += val;
-      breakdown.push({ label: `${table.comm_photo.label} (${qty}x)`, value: val, type: 'base' });
+      breakdown.push({ label: `${table.comm_photo.label} (${photoQty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_video') {
       const isCamera = state.videoDevice === 'camera';
@@ -220,27 +221,21 @@ export class PricingEngine {
 
     if (selectionMode === 'quantity') {
       if (serviceId === 'studio_photo') {
+        const photoQty = Math.max(7, qty || 7);
         let val = 0;
         let labelDesc = "";
-        if (qty <= 7) {
+        if (photoQty === 7) {
           val = 150;
           labelDesc = `${table.studio_photo.label} (7 fotos - Desconto R$ 150)`;
-        } else if (qty >= 13) {
-          val = 250 + ((qty - 13) * 25);
-          labelDesc = qty === 13 
-            ? `${table.studio_photo.label} (13 fotos - Promoção R$ 250)`
-            : `${table.studio_photo.label} (${qty} fotos - Pacote 13F + ${qty - 13} adicionais)`;
+        } else if (photoQty === 13) {
+          val = 250;
+          labelDesc = `${table.studio_photo.label} (13 fotos - Promoção R$ 250)`;
+        } else if (photoQty > 13) {
+          val = 250 + ((photoQty - 13) * 25);
+          labelDesc = `${table.studio_photo.label} (${photoQty} fotos - Pacote 13F + ${photoQty - 13} adicionais)`;
         } else {
-          // Progressão consistente entre 7 (150) e 13 (250)
-          const stepPrices: Record<number, number> = {
-            8: 170,
-            9: 190,
-            10: 210,
-            11: 230,
-            12: 240
-          };
-          val = stepPrices[qty] || (150 + (qty - 7) * 20);
-          labelDesc = `${table.studio_photo.label} (${qty} fotos)`;
+          val = photoQty * 25;
+          labelDesc = `${table.studio_photo.label} (${photoQty} fotos)`;
         }
         total += val;
         breakdown.push({ label: labelDesc, value: val, type: 'base' });
