@@ -46,10 +46,10 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col items-center sm:items-end w-full sm:w-auto"
               >
-                <span className="text-neutral-500 text-[10px] uppercase tracking-widest mb-0.5">Valor Estimado</span>
-                <div className="text-2xl md:text-3xl font-price font-bold text-white flex items-baseline gap-2">
+                <span className="text-neutral-400 text-xs uppercase tracking-wider font-semibold mb-0.5">Valor Estimado</span>
+                <div className="text-2xl sm:text-3xl md:text-4xl font-price font-bold text-white flex items-baseline gap-2">
                   <AnimatedPrice value={totalPrice} />
-                  <span className="text-xs font-sans text-neutral-600 font-normal">BRL</span>
+                  <span className="text-xs sm:text-sm font-sans text-neutral-500 font-medium">BRL</span>
                 </div>
               </motion.div>
             )}
@@ -62,14 +62,14 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
                 onClick={onApprove}
                 disabled={disabled}
                 className={cn(
-                    "flex items-center justify-center gap-3 transition-all duration-300 w-full sm:w-auto", // Full width on mobile
+                    "flex items-center justify-center gap-3 transition-all duration-300 w-full sm:w-auto", 
                     !disabled ? "shadow-[0_0_25px_rgba(220,38,38,0.4)]" : "opacity-50 cursor-not-allowed shadow-none grayscale",
-                    !showPrice ? "px-12 py-5 text-lg" : "px-6 py-3.5 md:px-8 md:py-4"
+                    !showPrice ? "px-10 py-4 sm:px-12 sm:py-5 text-base sm:text-lg" : "px-7 py-3.5 sm:px-9 sm:py-4"
                 )}
             >
-                <span className="font-medium whitespace-nowrap text-sm md:text-base">{customLabel || "Continuar"}</span> 
-                <div className={cn("p-1 rounded-full shrink-0", disabled ? "bg-white/5" : "bg-white/20")}>
-                    <ChevronRight size={16} />
+                <span className="font-bold whitespace-nowrap text-base sm:text-lg tracking-wide">{customLabel || "Continuar"}</span> 
+                <div className={cn("p-1.5 rounded-full shrink-0", disabled ? "bg-white/5" : "bg-white/20")}>
+                    <ChevronRight size={18} />
                 </div>
             </Button>
           </div>

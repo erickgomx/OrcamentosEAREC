@@ -16,7 +16,7 @@ import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 
 // Animations
-import { wizardStepVariants, modalVariants, backdropVariants } from '../lib/animations';
+import { wizardStepVariants, modalVariants, backdropVariants, organicItemVariants, staggerContainer } from '../lib/animations';
 
 // Logic Hook
 import { useQuoteLogic } from '../hooks/useQuoteLogic';
@@ -73,8 +73,14 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-[#0a0a0a] -z-10" />
 
       {/* HEADER: PROGRESS & NAV */}
-      <div className="pt-6 md:pt-8 px-4 md:px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20">
-          <div className="w-full relative flex justify-center items-center mb-6">
+      <motion.div 
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="pt-6 md:pt-8 px-4 md:px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20"
+      >
+          <motion.div variants={organicItemVariants} className="w-full relative flex justify-center items-center mb-6">
                <button 
                   onClick={actions.handlePrevStep} 
                   className="absolute left-0 p-2 md:p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all flex items-center gap-1.5"
@@ -92,31 +98,32 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                >
                   <Logo className="w-48 sm:w-56 md:w-64 opacity-90" />
                </button>
-          </div>
+          </motion.div>
 
           {/* Progress Bar */}
-          <div className="w-full max-w-xs mb-2 h-1 bg-white/10 rounded-full overflow-hidden">
+          <motion.div variants={organicItemVariants} className="w-full max-w-xs mb-2 h-1 bg-white/10 rounded-full overflow-hidden">
              <motion.div 
                  className="h-full bg-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.5)] origin-left"
                  initial={{ width: "0%" }}
                  animate={{ width: `${((state.currentStep + 1) / state.steps.length) * 100}%` }}
                  transition={{ duration: 0.5, ease: "easeInOut" }}
              />
-          </div>
+          </motion.div>
           
           {/* Badge de Categoria Interativo */}
           <AnimatePresence>
             {state.currentStep > 0 && quoteState.category && (
                  <motion.button
+                    variants={organicItemVariants}
                     initial={{ opacity: 0, y: 10, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     onClick={() => actions.setIsCategoryMenuOpen(true)}
-                    className="mt-5 flex items-center gap-3 px-5 py-2 rounded-full bg-neutral-900/80 backdrop-blur-md border border-white/10 shadow-xl shadow-black/40 hover:border-brand-DEFAULT/30 transition-all duration-500 group relative overflow-hidden"
+                    className="mt-5 flex items-center gap-3 px-5 py-2.5 rounded-full bg-neutral-900/90 backdrop-blur-md border border-white/10 shadow-xl shadow-black/40 hover:border-brand-DEFAULT/40 transition-all duration-300 group relative overflow-hidden"
                  >
                     <div className="relative flex items-center justify-center w-3 h-3">
                         <motion.div 
-                            className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.9)]"
+                            className="w-2.5 h-2.5 rounded-full bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.9)]"
                             animate={{ opacity: [1, 0.6, 1] }}
                             transition={{ 
                                 duration: 3, 
@@ -125,19 +132,19 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                             }}
                         />
                     </div>
-                    <div className="h-3 w-px bg-white/10 group-hover:bg-white/20 transition-colors" />
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-neutral-400 font-medium group-hover:text-white transition-colors">
+                    <div className="h-3.5 w-px bg-white/15 group-hover:bg-white/30 transition-colors" />
+                    <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-neutral-300 font-semibold group-hover:text-white transition-colors">
                         {state.categoryLabels[quoteState.category]}
                     </span>
-                    <ChevronsUpDown size={14} className="text-neutral-500 group-hover:text-white transition-colors ml-1" />
+                    <ChevronsUpDown size={16} className="text-neutral-400 group-hover:text-white transition-colors ml-1" />
                  </motion.button>
             )}
           </AnimatePresence>
 
-          <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-widest mt-2 opacity-60">
+          <motion.p variants={organicItemVariants} className="text-xs sm:text-sm text-neutral-400 font-mono uppercase tracking-widest mt-3 opacity-80 font-medium">
                 {state.steps[state.currentStep].title}
-          </p>
-      </div>
+          </motion.p>
+      </motion.div>
 
       {/* MAIN CONTENT: WIZARD STEP */}
       <div className="flex-1 w-full max-w-5xl mx-auto relative px-8 pb-48 flex flex-col justify-center">

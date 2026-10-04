@@ -8,7 +8,7 @@ import LocationMapModal from '../components/ui/LocationMapModal';
 import { ClientData } from '../types';
 import { CalendarService } from '../services/CalendarService';
 import { cn } from '../lib/utils';
-import { wizardStepVariants } from '../lib/animations';
+import { wizardStepVariants, organicItemVariants } from '../lib/animations';
 
 interface WelcomeViewProps {
   onStart: (data: ClientData) => void;
@@ -312,16 +312,16 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                 >
                     <div className="flex flex-col items-center text-center space-y-8">
                         
-                        <div className="space-y-2">
+                        <motion.div variants={organicItemVariants} className="space-y-2">
                             <h2 className="text-2xl md:text-3xl font-serif text-white leading-tight">
                                 {currentStepData.title}
                             </h2>
                             <p className="text-neutral-400 text-sm md:text-base font-light">
                                 {currentStepData.subtitle}
                             </p>
-                        </div>
+                        </motion.div>
 
-                        <div className="w-full relative" onKeyDown={handleKeyDown}>
+                        <motion.div variants={organicItemVariants} className="w-full relative" onKeyDown={handleKeyDown}>
                             <SmartInput 
                                 autoFocus
                                 icon={currentStepData.icon}
@@ -354,9 +354,9 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                                     <Info size={10} /> O valor do frete será calculado automaticamente.
                                 </p>
                             )}
-                        </div>
+                        </motion.div>
 
-                        <div className="w-full pt-4">
+                        <motion.div variants={organicItemVariants} className="w-full pt-4">
                             <Button 
                                 onClick={handleNext}
                                 disabled={!isStepValid()}
@@ -370,7 +370,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                                 <span className="mr-2">{isLastStep ? "Gerar Orçamento" : "Continuar"}</span>
                                 <ArrowRight size={20} />
                             </Button>
-                        </div>
+                        </motion.div>
 
                     </div>
                 

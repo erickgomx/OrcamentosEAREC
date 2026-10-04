@@ -60,22 +60,28 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index }: any) 
     <motion.div 
         custom={index}
         variants={{ 
-            hidden: { opacity: 0, y: 25, scale: 0.96, filter: 'blur(6px)' }, 
-            visible: (i) => ({ 
+            hidden: { opacity: 0, y: 26, scale: 0.96, filter: 'blur(6px)' }, 
+            visible: (i: number = 0) => ({ 
                 opacity: 1, 
                 y: 0, 
                 scale: 1,
                 filter: 'blur(0px)',
-                transition: { delay: i * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] } 
+                transition: { delay: i * 0.045, duration: 0.48, ease: [0.16, 1, 0.3, 1] } 
             }),
-            exit: { opacity: 0, y: -15, scale: 0.96, filter: 'blur(6px)', transition: { duration: 0.25 } }
+            exit: (i: number = 0) => ({ 
+                opacity: 0, 
+                y: -20, 
+                scale: 0.96, 
+                filter: 'blur(6px)', 
+                transition: { delay: (5 - Math.min(i, 5)) * 0.035, duration: 0.28, ease: [0.32, 0, 0.67, 0] } 
+            })
         }}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden backdrop-blur-md",
+            "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[145px] sm:min-h-[175px] md:min-h-[200px] overflow-hidden backdrop-blur-md",
             active 
                 ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
@@ -87,15 +93,15 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index }: any) 
         )} />
         
         <div className={cn(
-            "p-4 rounded-full mb-1 transition-all duration-300",
-            active ? "bg-brand-DEFAULT/10 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.2)]" : "bg-white/5 text-neutral-400 group-hover:bg-white/10 group-hover:text-white"
+            "p-3 sm:p-4 rounded-2xl mb-2 transition-all duration-300",
+            active ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
         )}>
-            <Icon size={26} strokeWidth={1.5} />
+            <Icon size={28} strokeWidth={1.5} className="sm:w-8 sm:h-8" />
         </div>
-        <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-2">
+        <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1">
             <p className={cn(
-                "text-[10px] sm:text-[11px] md:text-sm font-medium whitespace-normal leading-tight break-words transition-colors duration-300",
-                active ? "text-white" : "text-neutral-400 group-hover:text-neutral-300"
+                "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300",
+                active ? "text-white" : "text-neutral-300 group-hover:text-white"
             )}>
                 {label}
             </p>
@@ -105,7 +111,7 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index }: any) 
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="text-[9px] md:text-xs text-neutral-400 font-normal leading-tight"
+                        className="text-[11px] sm:text-xs text-neutral-400 font-normal leading-snug mt-1"
                     >
                         {desc}
                     </motion.p>
@@ -793,7 +799,7 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
     return (
         <div className={cn(
-            "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 md:p-5 rounded-3xl border transition-all duration-300 relative overflow-hidden",
+            "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 relative overflow-hidden",
             isAdded 
                 ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)]" 
                 : "bg-white/[0.02] border-white/5 hover:border-white/10"
@@ -805,31 +811,31 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
             <div className="flex items-center gap-4 w-full sm:w-auto relative z-10 flex-1">
                 <div className={cn(
-                    "p-3 rounded-full transition-colors shrink-0", 
-                    isAdded ? "bg-brand-DEFAULT/10 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)]" : "bg-white/5 text-neutral-400"
+                    "p-3 rounded-2xl transition-colors shrink-0", 
+                    isAdded ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300"
                 )}>
-                    <Icon size={22} strokeWidth={1.5} />
+                    <Icon size={24} strokeWidth={1.5} />
                 </div>
                 <div className="text-left">
-                    <h4 className="text-white font-medium text-base md:text-lg leading-tight">{title}</h4>
-                    <p className="text-[10px] md:text-[11px] text-neutral-400 font-medium mt-1 uppercase tracking-wider">{desc}</p>
+                    <h4 className="text-white font-semibold text-base sm:text-lg leading-tight">{title}</h4>
+                    <p className="text-xs sm:text-sm text-neutral-400 font-medium mt-1">{desc}</p>
                 </div>
             </div>
             
-            <div className="w-full sm:w-[160px] md:w-[180px] relative z-10 shrink-0">
+            <div className="w-full sm:w-[170px] md:w-[190px] relative z-10 shrink-0">
                 {!isAdded ? (
                     <button 
                         onClick={() => setter?.(min)}
-                        className="w-full py-3 sm:py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-colors border border-white/5 flex justify-center items-center gap-2"
+                        className="w-full py-3 sm:py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm sm:text-base font-semibold transition-colors border border-white/10 flex justify-center items-center gap-2"
                     >
-                        <Plus size={16} /> Adicionar
+                        <Plus size={18} /> Adicionar
                     </button>
                 ) : (
-                    <div className="flex items-center justify-between w-full bg-black/40 rounded-2xl p-1.5 border border-white/5">
+                    <div className="flex items-center justify-between w-full bg-black/40 rounded-2xl p-1.5 border border-white/10">
                         <ControlBtn onClick={() => setter?.(value > min ? value - step : 0)} icon={Minus} />
-                        <div className="text-center flex-1">
-                            <span className="text-lg font-bold text-white leading-none"><AnimatedNumber value={value} /></span>
-                            <span className="block text-[9px] text-neutral-500 uppercase font-bold mt-0.5 tracking-widest">{unitLabel}</span>
+                        <div className="text-center flex-1 px-1">
+                            <span className="text-xl sm:text-2xl font-bold font-price text-white leading-none"><AnimatedNumber value={value} /></span>
+                            <span className="block text-[10px] sm:text-xs text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider">{unitLabel}</span>
                         </div>
                         <ControlBtn onClick={() => setter?.(value + step)} icon={Plus} active />
                     </div>
@@ -848,7 +854,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden w-full box-border backdrop-blur-md",
+            "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[150px] sm:min-h-[180px] md:min-h-[210px] overflow-hidden w-full box-border backdrop-blur-md",
             active 
                 ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50 z-10" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
@@ -856,8 +862,8 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
     >
         {highlight && (
             <div className={cn(
-                "absolute top-0 left-0 text-[8px] md:text-[9px] font-bold px-2 py-1 md:px-3 md:py-1 rounded-br-2xl uppercase tracking-widest z-20 transition-colors duration-300",
-                active ? "bg-brand-DEFAULT text-white" : "bg-white/10 text-neutral-400 group-hover:text-neutral-300"
+                "absolute top-0 left-0 text-[10px] sm:text-[11px] font-bold px-2.5 py-1 uppercase tracking-widest z-20 rounded-br-2xl transition-colors duration-300",
+                active ? "bg-brand-DEFAULT text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]" : "bg-white/10 text-neutral-300 group-hover:text-white"
             )}>
                 Popular
             </div>
@@ -865,23 +871,23 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
 
         {/* Small Elegant Indicator */}
         <div className={cn(
-            "absolute top-3 right-3 w-2 h-2 rounded-full transition-all duration-500 z-20",
+            "absolute top-3 right-3 w-2.5 h-2.5 rounded-full transition-all duration-500 z-20",
             active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
         )} />
         
         <div className={cn(
-            "p-4 rounded-full mb-1 transition-all duration-300",
+            "p-3.5 sm:p-4 rounded-2xl mb-2 transition-all duration-300",
             active 
-                ? "bg-white/10 text-white" 
-                : "bg-white/5 text-neutral-400 group-hover:bg-white/10 group-hover:text-white"
+                ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
+                : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
         )}>
-            <Icon size={26} strokeWidth={1.5} />
+            <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
         </div>
         
-        <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-2 flex flex-col items-center">
+        <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
             <h4 className={cn(
-                "text-[10px] sm:text-[11px] md:text-sm font-medium whitespace-normal leading-tight break-words transition-colors duration-300", 
-                active ? "text-white" : "text-neutral-400 group-hover:text-neutral-300"
+                "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
+                active ? "text-white" : "text-neutral-300 group-hover:text-white"
             )}>
                 {title}
             </h4>
@@ -894,7 +900,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
                         animate={{ opacity: 1, height: "auto", filter: 'blur(0px)' }}
                         exit={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
                         transition={{ duration: 0.3 }}
-                        className="text-[9px] sm:text-[10px] md:text-[11px] text-brand-DEFAULT font-medium leading-tight pt-2"
+                        className="text-[11px] sm:text-xs md:text-sm text-brand-DEFAULT font-medium leading-normal pt-1.5"
                     >
                         {composition}
                     </motion.p>
@@ -902,11 +908,11 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             </AnimatePresence>
         </div>
 
-        {/* Espaçador para empurrar o preço para baixo quando inativo (se necessário pelo layout) */}
+        {/* Espaçador para empurrar o preço para baixo quando inativo */}
         {!active && <div className="grow" />}
 
         <div className="w-full pt-3 border-t border-white/5 mt-auto">
-            <p className={cn("text-[10px] sm:text-[11px] md:text-sm font-bold font-price tracking-widest uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-500 group-hover:text-neutral-400")}>
+            <p className={cn("text-sm sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-400 group-hover:text-neutral-200")}>
                 {price}
             </p>
         </div>
@@ -921,14 +927,14 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: 
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex flex-col items-center justify-center p-4 sm:p-6 rounded-3xl border transition-all select-none relative gap-2 sm:gap-3 h-full group box-border backdrop-blur-md", 
+            "cursor-pointer flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all select-none relative gap-2 sm:gap-3 h-full group box-border backdrop-blur-md min-h-[140px] sm:min-h-[160px]", 
             active 
                 ? "bg-brand-DEFAULT/15 border-brand-DEFAULT shadow-[0_0_25px_rgba(220,38,38,0.25)] ring-1 ring-brand-DEFAULT" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
         <button 
-          className="absolute top-3 left-3 text-neutral-600 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
+          className="absolute top-3 left-3 text-neutral-500 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
           onClick={(e) => {
              e.stopPropagation();
              if (onInfo && desc) onInfo({ title: label, desc, price: formatCurrency(price) });
@@ -939,21 +945,21 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: 
 
         <div className={cn(
             "absolute top-3 right-3 w-6 h-6 rounded-full border flex items-center justify-center transition-all", 
-            active ? "bg-brand-DEFAULT border-brand-DEFAULT" : "border-white/10 bg-black/20"
+            active ? "bg-brand-DEFAULT border-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.6)]" : "border-white/15 bg-black/30"
         )}>
             {active && <Check size={14} className="text-white" />}
         </div>
 
         <div className={cn(
-            "p-4 rounded-full mb-1 transition-all duration-300", 
-            active ? "bg-white/20 text-white" : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
+            "p-3.5 sm:p-4 rounded-2xl mb-1 transition-all duration-300", 
+            active ? "bg-white/20 text-white" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
         )}>
-           <Icon size={28} />
+           <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
         </div>
         
         <div className="space-y-1 text-center px-0 sm:px-1 w-full">
-            <p className={cn("text-[11px] sm:text-xs md:text-sm font-medium whitespace-normal leading-tight break-words", active ? "text-white" : "text-neutral-300")}>{label}</p>
-            <p className="text-[9px] md:text-xs text-brand-DEFAULT font-bold font-price bg-brand-DEFAULT/10 py-1 px-2 md:px-3 rounded-full inline-block mt-1 whitespace-nowrap">
+            <p className={cn("text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words", active ? "text-white" : "text-neutral-200")}>{label}</p>
+            <p className="text-xs sm:text-sm text-brand-DEFAULT font-bold font-price bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block mt-1.5 whitespace-nowrap">
                 + {formatCurrency(price)}
             </p>
         </div>

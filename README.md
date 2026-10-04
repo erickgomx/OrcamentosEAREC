@@ -157,6 +157,27 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
 
 ## 📅 Últimas Atualizações
 
+### [04/10/2026] Harmonização e Equilíbrio Visual: Textos, Cards e Botões
+* **Eliminação de Textos Microscópicos:** Remoção de tamanhos ilegíveis em telas menores (`text-[8px]`, `text-[9px]`, `text-[10px]`), substituídos por tamanhos confortáveis e responsivos (`text-xs sm:text-sm` e `text-sm sm:text-base`).
+* **Cards e Módulos Proporcionais (`UpsellList.tsx`):**
+  * `CategoryCard`: Altura mínima balanceada (`min-h-[145px] sm:min-h-[175px] md:min-h-[200px]`), ícones ampliados com fundo contrastante suave e descrições perfeitamente legíveis.
+  * `ServiceCard` & `AddonCard`: Hierarquia clara entre título do pacote, descrição da composição e badges de preço (`font-price`) e destaque ("Popular").
+  * `ProductionControlItem`: Contadores de horas, fotos e vídeos com tipografia generosa e botões de incremento/decremento com áreas de toque acessíveis.
+* **Harmonização de Botões e CTAs (`Button.tsx`, `StickyFooter.tsx`, `IntroView.tsx`):**
+  * Ajuste em todos os tamanhos (`sm`, `md`, `lg`) com tipografia nítida e padding equilibrado.
+  * Botões principais da página inicial ("Iniciar Orçamento" e "Instagram EAREC") com hierarquia nobre e ícones alinhados.
+  * Rodapé Fixo (`StickyFooter`): Destaque elegante para o "Valor Estimado", tipografia de valor total de alto impacto (`text-2xl sm:text-3xl md:text-4xl font-price`) e botão de ação rápido.
+* **Resumo e Checkout Elegantes (`SummaryView.tsx`):** Textos descritivos, discriminador de itens e CTA de confirmação reescalonados para clareza máxima de entendimento pelo cliente.
+
+### [04/10/2026] API Gratuita do Google, Saída Individual Orgânica & Otimização de Performance
+* **API Gratuita do Google (Google Maps Tiles):** Integração restaurada e otimizada da camada de mapa oficial do Google Maps Roadmap (`https://{s}.google.com/vt/lyrs=m...` via subdomínios `mt0` a `mt3`), 100% gratuita, sem necessidade de chave paga ou fatura, com `preconnect` no `index.html` para latência zero e fallback dinâmico para OpenStreetMap.
+* **Saída Individual Orgânica por Elemento (Sem Bloco Rígido):** A página não sai mais como um bloco retangular estático. Cada componente filho (Badge, Logotipo, Título, Botões de Ação, Cards de Serviços, Divisores, Inputs e Rodapé) possui sua própria animação física com aceleração orgânica (`CINE_EASE_ORGANIC [0.32, 0, 0.67, 0]`) e desfoque óptico, saindo em efeito cascata escalonado (`staggerChildren: 0.045, staggerDirection: -1`).
+* **Entrada Cinematográfica Suave:** Os elementos entram em cascata física natural (`[0.16, 1, 0.3, 1]`), proporcionando uma experiência de movimento contínuo e vivo.
+* **Otimização Extrema de Performance & Leveza:**
+  * **Code Splitting Inteligente no Vite (`manualChunks`):** Separação em chunks dedicados (`vendor-react`, `vendor-motion`, `vendor-map`, `vendor-icons`), reduzindo o tempo de carregamento inicial e otimizando o cache de navegador via HTTP/2.
+  * **Aceleração por Hardware (GPU):** Regras de aceleração via `.gpu-accelerated` e aceleração composicional no CSS (`translate3d(0,0,0)`, `will-change`).
+  * **Cache em Memória de Logística:** `LocationService` agora guarda consultas de geolocalização e distâncias em cache (`Map`), eliminando requisições duplicadas e tornando cálculos repetidos instantâneos.
+
 ### [04/10/2026] Renovação Visual & Sistema de Animações Fluidas Deslizantes
 * **Física Cinematográfica e Curva Bezier (`CINE_EASE [0.16, 1, 0.3, 1]`):** Novo motor de animações com curvas de desaceleração suave, física elástica (Spring) e desfoque óptico (`filter: blur`) coordenado em entradas e saídas.
 * **Transição Bidirecional Deslizante entre Rotas (`/inicio` <-> `/orcamento`):** Navegação fluida que detecta avanço ou retorno, deslizando as telas para a esquerda ao avançar e para a direita ao voltar (`pageSlideVariants` com `routeDirection`).

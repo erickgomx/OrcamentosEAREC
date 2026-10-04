@@ -316,22 +316,22 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 {/* TOPO DO TICKET */}
                                 <div className="bg-brand-DEFAULT/10 p-6 border-b border-white/10 flex justify-between items-start">
                                     <div>
-                                        <p className="text-[10px] text-brand-DEFAULT uppercase tracking-[0.2em] font-bold mb-1">Serviço Principal</p>
-                                        <h3 className="text-xl md:text-2xl text-white font-serif leading-none">{summaryDetails.serviceName}</h3>
-                                        <p className="text-neutral-400 text-xs mt-1">{summaryDetails.metricLabel}</p>
+                                        <p className="text-xs sm:text-sm text-brand-DEFAULT uppercase tracking-[0.2em] font-bold mb-1">Serviço Principal</p>
+                                        <h3 className="text-xl sm:text-2xl md:text-3xl text-white font-serif leading-tight">{summaryDetails.serviceName}</h3>
+                                        <p className="text-neutral-300 text-xs sm:text-sm mt-1 font-medium">{summaryDetails.metricLabel}</p>
                                     </div>
                                     <button 
                                         onClick={handleEditPackage}
-                                        className="p-2 bg-white/5 rounded-lg border border-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                                        className="p-2.5 bg-white/5 rounded-xl border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
                                         title="Alterar pacote"
                                     >
-                                        <FileText size={20} className="text-white opacity-80" />
+                                        <FileText size={20} className="text-white opacity-90" />
                                     </button>
                                 </div>
 
                                 {/* LISTA DE ITENS */}
                                 <div className="p-6 space-y-4 bg-dots-pattern">
-                                    <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-2 border-b border-white/5 pb-2">Detalhamento</p>
+                                    <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2 font-semibold">Detalhamento</p>
                                     
                                     <div className="space-y-3">
                                         {priceBreakdown.map((item, idx) => (
@@ -340,23 +340,23 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                     {item.type === 'addon' && onRemoveAddon && (
                                                         <button 
                                                             onClick={() => onRemoveAddon(item.label)} 
-                                                            className="text-neutral-600 hover:text-red-500 transition-colors mt-0.5"
+                                                            className="text-neutral-500 hover:text-red-500 transition-colors mt-0.5"
                                                             title="Remover Item"
                                                         >
-                                                            <Trash2 size={20} />
+                                                            <Trash2 size={18} />
                                                         </button>
                                                     )}
                                                     <span className={cn(
-                                                        "text-sm leading-tight",
-                                                        item.type === 'base' ? "text-white font-medium" : "text-neutral-400",
+                                                        "text-sm sm:text-base leading-snug",
+                                                        item.type === 'base' ? "text-white font-medium" : "text-neutral-300",
                                                         item.type === 'freight' && "italic"
                                                     )}>
                                                         {item.label}
                                                     </span>
                                                 </div>
                                                 <span className={cn(
-                                                    "text-sm font-mono",
-                                                    item.value === 0 ? "text-green-500 text-xs uppercase font-bold mt-0.5" : "text-white"
+                                                    "text-sm sm:text-base font-price font-semibold",
+                                                    item.value === 0 ? "text-green-400 text-xs uppercase font-bold mt-0.5" : "text-white"
                                                 )}>
                                                     {item.label.includes("A consultar") 
                                                             ? "Consultar" 
@@ -375,29 +375,29 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
                                     {/* TOTAL */}
                                     <div className="flex justify-between items-end">
-                                        <span className="text-sm text-neutral-500 font-medium uppercase tracking-widest">Valor Total</span>
+                                        <span className="text-sm sm:text-base text-neutral-400 font-semibold uppercase tracking-wider">Valor Total</span>
                                         <div className="text-right">
-                                            <span className="text-3xl md:text-4xl text-brand-DEFAULT font-price font-bold tracking-tight block leading-none">
+                                            <span className="text-3xl sm:text-4xl text-brand-DEFAULT font-price font-bold tracking-tight block leading-none">
                                                 <AnimatedPrice value={totalPrice} />
                                             </span>
-                                            <span className="text-[10px] text-neutral-500 uppercase font-medium">Moeda: BRL</span>
+                                            <span className="text-xs text-neutral-500 uppercase font-medium mt-1 inline-block">Moeda: BRL</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* AÇÃO */}
-                                <div className="p-4 bg-neutral-900 border-t border-white/5">
+                                <div className="p-4 sm:p-5 bg-neutral-900 border-t border-white/5">
                                     <Button 
                                         onClick={onProceedToSign}
                                         size="lg" 
-                                        className="w-full shadow-[0_0_30px_rgba(220,38,38,0.2)] py-4 text-base tracking-wide flex items-center justify-center gap-2"
+                                        className="w-full shadow-[0_0_30px_rgba(220,38,38,0.3)] py-4 text-base sm:text-lg font-bold tracking-wider flex items-center justify-center gap-3"
                                     >
-                                        <PenTool size={18} />
+                                        <PenTool size={20} />
                                         <span>CONFIRMAR ORÇAMENTO</span>
                                     </Button>
-                                    <div className="mt-3 text-center flex items-center justify-center gap-1.5 opacity-50">
-                                        <Copyright size={10} className="text-neutral-500" />
-                                        <p className="text-[9px] text-neutral-500 uppercase tracking-widest">EAREC Audiovisual Experience</p>
+                                    <div className="mt-3 text-center flex items-center justify-center gap-1.5 opacity-60">
+                                        <Copyright size={12} className="text-neutral-500" />
+                                        <p className="text-[10px] sm:text-xs text-neutral-500 uppercase tracking-widest font-medium">EAREC Audiovisual Experience</p>
                                     </div>
                                 </div>
 

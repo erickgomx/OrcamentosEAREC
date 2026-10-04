@@ -12,6 +12,9 @@ export class LocationService {
     lon: -35.2227
   };
 
+  // Cache em memória para requisições repetidas (resposta instantânea e economia de rede)
+  private static cache = new Map<string, number>();
+
   /**
    * Calcula a distância de condução estimada (com fator de tortuosidade)
    */
@@ -19,8 +22,13 @@ export class LocationService {
     const cleanDest = destination.trim();
     if (!cleanDest || cleanDest.length < 3) return 0;
 
+    const normalizedKey = cleanDest.toLowerCase();
+    if (this.cache.has(normalizedKey)) {
+      return this.cache.get(normalizedKey)!;
+    }
+
     try {
-        const query = cleanDest.toLowerCase().includes('brasil') ? cleanDest : `${cleanDest}, Brasil`;
+        const query = normalizedKey.includes('brasil') ? cleanDest : `${cleanDest}, Brasil`;
         
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
         
@@ -41,8 +49,11 @@ export class LocationService {
 
             // Fator de correção para estradas (1.35x a linha reta)
             const drivingFactor = 1.35;
+            const finalDistance = Math.round(straightDistance * drivingFactor);
             
-            return Math.round(straightDistance * drivingFactor);
+            // Salva em cache para uso subsequente
+            this.cache.set(normalizedKey, finalDistance);
+            return finalDistance;
         }
     } catch (error) {
         console.error("LocationService Error:", error);

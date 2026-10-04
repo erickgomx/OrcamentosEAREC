@@ -12,34 +12,110 @@ import { Variants } from 'framer-motion';
 export const CINE_EASE = [0.16, 1, 0.3, 1] as const;
 export const CINE_EASE_OUT = [0.22, 1, 0.36, 1] as const;
 export const CINE_EASE_IN = [0.7, 0, 0.84, 0] as const;
+export const CINE_EASE_ORGANIC = [0.32, 0, 0.67, 0] as const;
 
-// Transição fluida de slide lateral e fade com blur para rotas (/inicio <-> /orcamento <-> /admin)
+// Transição orquestrada de página: o container não apaga como bloco único;
+// ele orquestra a saída e entrada fluida individual de cada elemento filho
+export const pageContainerVariants: Variants = {
+  initial: {
+    opacity: 1,
+  },
+  animate: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.065,
+      delayChildren: 0.02,
+    }
+  },
+  exit: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.045,
+      staggerDirection: -1, // Os últimos elementos saem primeiro, efeito cascata orgânico
+    }
+  }
+};
+
+// pageSlideVariants compatível: orquestra a saída individual de cada elemento da rota
 export const pageSlideVariants: Variants = {
+  initial: {
+    opacity: 1,
+  },
+  animate: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.065,
+      delayChildren: 0.02,
+    }
+  },
+  exit: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.045,
+      staggerDirection: -1,
+    }
+  }
+};
+
+// Item individual orgânico com física cinematográfica, deslizamento e desfoque óptico
+export const organicItemVariants: Variants = {
   initial: (direction: number = 1) => ({
     opacity: 0,
-    x: direction > 0 ? 50 : -50,
-    scale: 0.985,
-    filter: 'blur(8px)'
+    y: direction >= 0 ? 32 : -32,
+    scale: 0.98,
+    filter: 'blur(8px)',
   }),
   animate: {
     opacity: 1,
-    x: 0,
+    y: 0,
     scale: 1,
     filter: 'blur(0px)',
     transition: {
-      duration: 0.45,
-      ease: CINE_EASE
+      duration: 0.52,
+      ease: CINE_EASE,
     }
   },
   exit: (direction: number = 1) => ({
     opacity: 0,
-    x: direction > 0 ? -50 : 50,
-    scale: 0.985,
-    filter: 'blur(8px)',
+    y: direction >= 0 ? -24 : 24,
+    scale: 0.97,
+    filter: 'blur(6px)',
     transition: {
-      duration: 0.35,
-      ease: CINE_EASE_OUT
+      duration: 0.3,
+      ease: CINE_EASE_ORGANIC,
     }
+  })
+};
+
+// Card individual para listas e grids (ex: categorias, serviços e pacotes)
+export const organicCardVariants: Variants = {
+  hidden: { 
+    opacity: 0, 
+    y: 26, 
+    scale: 0.96, 
+    filter: 'blur(6px)' 
+  },
+  visible: (i: number = 0) => ({ 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: { 
+      delay: i * 0.045, 
+      duration: 0.48, 
+      ease: CINE_EASE 
+    } 
+  }),
+  exit: (i: number = 0) => ({ 
+    opacity: 0, 
+    y: -20, 
+    scale: 0.96, 
+    filter: 'blur(6px)', 
+    transition: { 
+      delay: (6 - Math.min(i, 6)) * 0.03, 
+      duration: 0.28, 
+      ease: CINE_EASE_ORGANIC 
+    } 
   })
 };
 
@@ -47,9 +123,15 @@ export const pageSlideVariants: Variants = {
 export const wizardStepVariants: Variants = {
   enter: (direction: number = 1) => ({
     opacity: 0,
-    x: direction > 0 ? 70 : -70,
-    scale: 0.97,
-    filter: 'blur(8px)'
+    x: direction > 0 ? 50 : -50,
+    scale: 0.98,
+    filter: 'blur(8px)',
+    transition: {
+      staggerChildren: 0.045,
+      delayChildren: 0.03,
+      duration: 0.45,
+      ease: CINE_EASE
+    }
   }),
   center: {
     zIndex: 1,
@@ -59,18 +141,22 @@ export const wizardStepVariants: Variants = {
     filter: 'blur(0px)',
     transition: {
       duration: 0.45,
-      ease: CINE_EASE
+      ease: CINE_EASE,
+      staggerChildren: 0.045,
+      delayChildren: 0.03
     }
   },
   exit: (direction: number = 1) => ({
     zIndex: 0,
     opacity: 0,
-    x: direction > 0 ? -70 : 70,
-    scale: 0.97,
+    x: direction > 0 ? -50 : 50,
+    scale: 0.98,
     filter: 'blur(8px)',
     transition: {
-      duration: 0.35,
-      ease: CINE_EASE_OUT
+      duration: 0.32,
+      ease: CINE_EASE_OUT,
+      staggerChildren: 0.035,
+      staggerDirection: -1
     }
   })
 };
@@ -79,15 +165,17 @@ export const wizardStepVariants: Variants = {
 export const fadeInUp: Variants = {
   hidden: { 
     opacity: 0, 
-    y: 25, 
-    filter: 'blur(6px)' 
+    y: 26, 
+    filter: 'blur(6px)',
+    scale: 0.98
   },
   visible: { 
     opacity: 1, 
     y: 0,
     filter: 'blur(0px)',
+    scale: 1,
     transition: { 
-      duration: 0.45, 
+      duration: 0.48, 
       ease: CINE_EASE 
     }
   },
@@ -95,27 +183,28 @@ export const fadeInUp: Variants = {
     opacity: 0,
     y: -20,
     filter: 'blur(6px)',
+    scale: 0.98,
     transition: { 
-      duration: 0.3, 
-      ease: CINE_EASE_OUT 
+      duration: 0.28, 
+      ease: CINE_EASE_ORGANIC 
     }
   }
 };
 
 // Container escalonado para orquestração de listas e cards
 export const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 1 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.04
+      staggerChildren: 0.05,
+      delayChildren: 0.02
     }
   },
   exit: {
-    opacity: 0,
+    opacity: 1,
     transition: {
-      staggerChildren: 0.04,
+      staggerChildren: 0.035,
       staggerDirection: -1
     }
   }

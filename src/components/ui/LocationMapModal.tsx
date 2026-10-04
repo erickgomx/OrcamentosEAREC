@@ -44,77 +44,114 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
 
     // Pequeno delay para garantir que o DOM renderizou o container
     const timer = setTimeout(() => {
-        if (mapContainerRef.current && !mapInstanceRef.current) {
-            // 1. Cria o mapa
-            // Coordenadas iniciais: Goianinha/RN (Fallback)
-            const initialLat = -6.2662; 
-            const initialLng = -35.2227;
-
-            const map = L.map(mapContainerRef.current).setView([initialLat, initialLng], 13);
-            
-            // 2. Adiciona TileLayer (Tema CLARO - CartoDB Positron)
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-                subdomains: 'abcd',
-                maxZoom: 19
-            }).addTo(map);
-
-            // 3. Ícone Personalizado
-            const customIcon = L.divIcon({
-                className: 'bg-transparent',
-                html: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#DC2626" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin drop-shadow-lg"><path d="M20 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>`,
-                iconSize: [36, 36],
-                iconAnchor: [18, 36],
-            });
-
-            // 4. Cria o Marcador Arrastável
-            const marker = L.marker([initialLat, initialLng], { 
-                draggable: true,
-                icon: customIcon 
-            }).addTo(map);
-
-            markerRef.current = marker;
-            mapInstanceRef.current = map;
-
-            // 5. Tenta pegar geolocalização do usuário se não tiver endereço inicial
-            if (!initialAddress && navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        const { latitude, longitude } = pos.coords;
-                        map.setView([latitude, longitude], 15);
-                        marker.setLatLng([latitude, longitude]);
-                        fetchAddress(latitude, longitude); 
-                    },
-                    () => {
-                        fetchAddress(initialLat, initialLng); 
-                    }
-                );
-            } else if (initialAddress) {
-                // Se tiver endereço inicial, tenta buscar as coordenadas dele (Busca inicial)
-                handleSearch(initialAddress, map, marker);
-            } else {
-                fetchAddress(initialLat, initialLng);
+        if (mapContainerRef.current) {
+            // Evita erro 'Map container is already initialized' no Leaflet
+            // @ts-ignore
+            if (mapContainerRef.current._leaflet_id) {
+                // @ts-ignore
+                delete mapContainerRef.current._leaflet_id;
             }
 
-            // 6. Event Listener: Arrastar Marcador
-            marker.on('dragend', async (e) => {
-                const { lat, lng } = e.target.getLatLng();
-                await fetchAddress(lat, lng);
-            });
+            if (!mapInstanceRef.current) {
+                // 1. Cria o mapa
+                // Coordenadas iniciais: Goianinha/RN (Fallback)
+                const initialLat = -6.2662; 
+                const initialLng = -35.2227;
 
-            // 7. Event Listener: Clicar no Mapa
-            map.on('click', async (e) => {
-                const { lat, lng } = e.latlng;
-                marker.setLatLng([lat, lng]);
-                await fetchAddress(lat, lng);
-            });
+                const map = L.map(mapContainerRef.current, {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView([initialLat, initialLng], 14);
+                
+                // 2. TileLayer: Google Maps Roadmap (100% gratuito, sem necessidade de chave paga, ultrarrápido)
+                const googleRoadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: '&copy; Google Maps'
+                });
+
+                // Fallback: OpenStreetMap oficial caso Google Maps esteja indisponível
+                const osmFallback = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                });
+
+                googleRoadmap.on('tileerror', () => {
+                    if (!map.hasLayer(osmFallback)) {
+                        osmFallback.addTo(map);
+                    }
+                });
+
+                googleRoadmap.addTo(map);
+
+                // Força redimensionamento correto do container
+                map.invalidateSize();
+                setTimeout(() => map.invalidateSize(), 150);
+                setTimeout(() => map.invalidateSize(), 400);
+
+                // 3. Ícone Personalizado Cinematográfico
+                const customIcon = L.divIcon({
+                    className: 'bg-transparent',
+                    html: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#DC2626" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin drop-shadow-lg"><path d="M20 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>`,
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 36],
+                });
+
+                // 4. Cria o Marcador Arrastável
+                const marker = L.marker([initialLat, initialLng], { 
+                    draggable: true,
+                    icon: customIcon 
+                }).addTo(map);
+
+                markerRef.current = marker;
+                mapInstanceRef.current = map;
+
+                // 5. Tenta pegar geolocalização do usuário se não tiver endereço inicial
+                if (!initialAddress && navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            const { latitude, longitude } = pos.coords;
+                            map.setView([latitude, longitude], 15);
+                            marker.setLatLng([latitude, longitude]);
+                            map.invalidateSize();
+                            fetchAddress(latitude, longitude); 
+                        },
+                        () => {
+                            fetchAddress(initialLat, initialLng); 
+                        },
+                        { timeout: 5000 }
+                    );
+                } else if (initialAddress) {
+                    handleSearch(initialAddress, map, marker);
+                } else {
+                    fetchAddress(initialLat, initialLng);
+                }
+
+                // 6. Event Listener: Arrastar Marcador
+                marker.on('dragend', async (e) => {
+                    const { lat, lng } = e.target.getLatLng();
+                    await fetchAddress(lat, lng);
+                });
+
+                // 7. Event Listener: Clicar no Mapa
+                map.on('click', async (e) => {
+                    const { lat, lng } = e.latlng;
+                    marker.setLatLng([lat, lng]);
+                    await fetchAddress(lat, lng);
+                });
+            }
         }
-    }, 100);
+    }, 150);
 
     return () => {
         clearTimeout(timer);
         if (mapInstanceRef.current) {
-            mapInstanceRef.current.remove();
+            try {
+                mapInstanceRef.current.off();
+                mapInstanceRef.current.remove();
+            } catch (err) {
+                console.warn("Leaflet cleanup error:", err);
+            }
             mapInstanceRef.current = null;
         }
     };
