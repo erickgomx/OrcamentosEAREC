@@ -125,7 +125,7 @@ export class AppConfig {
             unitMobile: 350, 
             unitCamera: 600, 
             label: "Vídeo Social (Mobile ou Câmera)",
-            composition: "Mobile (R$ 350) | Câmera (R$ 600)",
+            composition: "Mobile (R$ 350) ou Câmera (R$ 600)",
             description: "Cobertura em vídeo para aniversários e eventos sociais. Escolha entre gravação Mobile (R$ 350) ou Câmera (R$ 600)."
         },
         video_highlight: { fixed: 350, label: "Vídeo Highlight (30s a 1min)" },
@@ -143,7 +143,7 @@ export class AppConfig {
             unitMobile: 350,
             unitCamera: 600,
             label: "Comércio (Apenas Vídeo)",
-            composition: "Vídeo Mobile Entregue",
+            composition: "Vídeo Mobile ou Câmera Entregue",
             description: "Vídeos verticais de impacto para Reels/TikTok. Escolha entre gravação Mobile (R$ 350) ou Câmera (R$ 600)." 
         },
         comm_combo: { 
@@ -151,7 +151,7 @@ export class AppConfig {
             videoBaseMobile: 600,
             videoBaseCamera: 850,
             label: "Comércio (Pacote Foto + Vídeo)",
-            composition: "10 Fotos tratadas + 1 Vídeo Reel",
+            composition: "10 Fotos tratadas + 1 Vídeo Reel (Mobile ou Câmera)",
             description: "10 Fotos tratadas em alta resolução + 1 Vídeo Reel. Escolha entre gravação Mobile ou Câmera." 
         },
         realtime: { fixed: 600, label: "Receber material na hora" }

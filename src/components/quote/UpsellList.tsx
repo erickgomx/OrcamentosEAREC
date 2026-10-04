@@ -300,7 +300,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.social.social_video.description} 
                             highlight 
                             extraContent={
-                                <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 gap-1 w-full max-w-[200px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -316,6 +316,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     >
                                         Mobile (350)
                                     </button>
+                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -352,7 +353,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.commercial.comm_video.description} 
                             highlight 
                             extraContent={
-                                <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 gap-1 w-full max-w-[200px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -368,6 +369,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     >
                                         Mobile (350)
                                     </button>
+                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -398,7 +400,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.commercial.comm_combo.description} 
                             highlight 
                             extraContent={
-                                <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 gap-1 w-full max-w-[200px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -414,6 +416,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     >
                                         Mobile (600)
                                     </button>
+                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -707,7 +710,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         className="w-full max-w-lg space-y-4"
                    >
                         {/* Seletor Mobile vs Câmera para o Pacote */}
-                        <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-2 border border-white/5">
+                        <div className="flex items-center justify-center bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-2 border border-white/5 gap-1.5">
                             <button
                                 type="button"
                                 onClick={() => setVideoDevice?.('mobile')}
@@ -718,6 +721,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             >
                                 📱 Mobile (R$ 600)
                             </button>
+                            <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
                             <button
                                 type="button"
                                 onClick={() => setVideoDevice?.('camera')}
@@ -815,7 +819,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </div>
 
                         {((category === 'commercial' && serviceId === 'comm_video') || (category === 'social' && serviceId === 'social_video')) && (
-                            <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-white/5">
+                            <div className="flex items-center justify-center bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-white/5 gap-1.5">
                                 <button
                                     type="button"
                                     onClick={() => setVideoDevice?.('mobile')}
@@ -826,6 +830,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 >
                                     📱 Mobile (R$ 350)
                                 </button>
+                                <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
                                 <button
                                     type="button"
                                     onClick={() => setVideoDevice?.('camera')}
