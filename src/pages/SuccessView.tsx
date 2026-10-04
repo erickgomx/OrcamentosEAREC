@@ -28,6 +28,7 @@ interface SuccessViewProps {
       photoQty: number; // Mapeado para qty genérico
       videoQty: number;
       commercialMode?: 'on_location' | 'studio'; // Novo
+      videoDevice?: 'mobile' | 'camera';
   };
 }
 
@@ -91,14 +92,42 @@ Podemos agendar uma conversa?`;
             
             // LÓGICA DE ESCOPO PRECISA
             if (serviceId === 'comm_combo') {
-                escopo = "Combo (10 Fotos + 1 Vídeo)";
+                const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
+                escopo = `Pacote (10 Fotos + 1 Vídeo ${deviceLabel})`;
                 const extraPhotos = photoQty - 10;
                 const extraVideos = videoQty - 1;
                 
                 // Formatação clean para extras dentro do escopo
                 if (extraPhotos > 0) escopo += ` + ${extraPhotos} Fotos Extras`;
-                if (extraVideos > 0) escopo += ` + ${extraVideos} Vídeos Extras`;
+                if (extraVideos > 0) escopo += ` + ${extraVideos} Vídeos Extras (${deviceLabel})`;
             
+            } else if (serviceId === 'comm_video') {
+                const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
+                escopo = `${photoQty} Vídeo(s) Comercial (${deviceLabel})`;
+
+            } else if (serviceId === 'social_video') {
+                const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
+                escopo = `${videoQty || photoQty || 1} Vídeo(s) Social (${deviceLabel})`;
+
+            } else if (quoteDetails.occasion === 'social') {
+                const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
+                if (selectionMode === 'duration') {
+                    escopo = `${hours}h de Cobertura Social`;
+                } else {
+                    escopo = `${photoQty} Fotos Sociais (Base 10)`;
+                }
+                if (videoQty && videoQty > 0) {
+                    escopo += ` + ${videoQty} Vídeo(s) (${deviceLabel})`;
+                }
+
+            } else if (serviceId === 'studio_photo') {
+                if (photoQty === 7) escopo = `7 Fotos no Estúdio (Desconto R$ 150)`;
+                else if (photoQty === 13) escopo = `13 Fotos no Estúdio (Promoção R$ 250)`;
+                else escopo = `${photoQty} Fotos no Estúdio`;
+
+            } else if (serviceId === 'studio_video') {
+                escopo = `${hours}h de Gravação com Câmera no Estúdio`;
+
             } else if (serviceId === 'edit_only') {
                 escopo = `${photoQty} Minuto(s) de Edição`;
             
@@ -110,7 +139,7 @@ Podemos agendar uma conversa?`;
             
             } else {
                 // Modo Quantidade Genérico
-                if (serviceId.includes('video') || serviceId === 'comm_video' || serviceId === 'studio_video') {
+                if (serviceId.includes('video')) {
                     escopo = `${photoQty} Vídeos Produzidos`;
                 } else {
                     escopo = `${photoQty} Fotos Tratadas`;

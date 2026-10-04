@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"const fs = require('fs'); ['404.html','inicio.html','orcamento.html','orcamentos.html','resumo.html','sucesso.html','portfolio.html'].forEach(f => { if(fs.existsSync('dist/index.html')) fs.copyFileSync('dist/index.html', 'dist/' + f); });\"",
+    "build": "vite build && node -e \"const fs = require('fs'); const routes = ['inicio', 'orcamento', 'orcamentos', 'resumo', 'sucesso', 'portfolio', 'admin']; if(fs.existsSync('dist/index.html')) { fs.copyFileSync('dist/index.html', 'dist/404.html'); routes.forEach(r => { fs.copyFileSync('dist/index.html', 'dist/' + r + '.html'); const dir = 'dist/' + r; if(!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); fs.copyFileSync('dist/index.html', dir + '/index.html'); }); }\"",
     "preview": "vite preview"
   },
   "dependencies": {

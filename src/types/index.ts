@@ -16,7 +16,7 @@ export type ServiceCategory = 'wedding' | 'social' | 'commercial' | 'studio' | '
 
 // IDs únicos para cada "Produto" vendável no sistema
 export type ServiceId = 
-  | 'birthday' | 'fifteen' | 'graduation' | 'baptism' | 'social_party' | 'social_event'
+  | 'birthday' | 'fifteen' | 'graduation' | 'baptism' | 'social_party' | 'social_event' | 'social_video'
   | 'wedding_base' | 'wedding_classic' | 'wedding_romance' | 'wedding_essence'
   | 'comm_photo' | 'comm_video' | 'comm_combo'
   | 'studio_photo' | 'studio_video'
@@ -36,6 +36,7 @@ export interface QuoteState {
   selectionMode: 'duration' | 'quantity'; // Define se cobra por tempo ou por entrega
   commercialMode?: 'on_location' | 'studio';
   projectType?: 'commercial' | 'personal'; // Novo: Define local para categoria Comercial
+  videoDevice?: 'mobile' | 'camera'; // Comércio apenas vídeo: 'mobile' (350) ou 'camera' (600)
   camCapHours?: number;
   mobileCapHours?: number;
   edit30sQty?: number;

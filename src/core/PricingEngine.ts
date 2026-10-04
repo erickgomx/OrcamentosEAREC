@@ -93,7 +93,7 @@ export class PricingEngine {
   }
 
   private static calculateSocial(state: QuoteState, ctx: PricingContext): PricingResult {
-    const { serviceId, hours, qty, selectionMode } = state;
+    const { serviceId, hours, qty, selectionMode, videoQty, videoDevice } = state;
     const table = AppConfig.PRICING_TABLE.social;
     const breakdown: PriceBreakdownItem[] = [];
     let total = 0;
@@ -102,19 +102,24 @@ export class PricingEngine {
       total += table.graduation.base;
       breakdown.push({ label: table.graduation.label, value: table.graduation.base, type: 'base' });
       
-      // Formatura não tem horas inclusas definidas na regra antiga, mas vamos assumir que cobra as horas se for modo 'duration' e hours > 0
-      // Mas no PDF está "Valor Base: 800.00 | Adicional/Hora Extra: 250.00/h"
-      // Se hours estiver preenchido e for maior que 0 (assumindo que o pacote base tem duração fixa ou não, vamos considerar que base é 0h incluídas, e as horas extras são a partir da duração que passar da base. 
-      // Ops, a formatura é "Colação + Baile", que não tem duração fixa.
-      // Se hours > 0 (supondo que o input de hours existe), a gente soma?
-      // Melhor olhar como hoursIncluded é tratado. Adicionei hoursIncluded: 0. Então as hours digitadas seriam extras. 
       if (state.selectionMode === 'duration' && hours > table.graduation.hoursIncluded) {
          const extraVal = (hours - table.graduation.hoursIncluded) * table.graduation.hourPrice;
-         if(extraVal > 0) {
+         if (extraVal > 0) {
              total += extraVal;
              breakdown.push({ label: `Horas Extras (+${hours}h)`, value: extraVal, type: 'addon' });
          }
       }
+    } else if (serviceId === 'social_video') {
+      const isCam = videoDevice === 'camera';
+      const unitVal = isCam ? table.social_video.unitCamera : table.social_video.unitMobile;
+      const count = Math.max(1, videoQty || qty || 1);
+      const val = count * unitVal;
+      total += val;
+      breakdown.push({
+        label: `Vídeo Social (${isCam ? 'Câmera' : 'Mobile'}) x${count}`,
+        value: val,
+        type: 'base'
+      });
     } else {
       // Birthday / Fifteen / Baptism / Party / Event
       let ref;
@@ -134,11 +139,25 @@ export class PricingEngine {
           breakdown.push({ label: `Horas Extras (+${hours - ref.hoursIncluded}h)`, value: extraHoursVal, type: 'addon' });
         }
       } else {
-        // Cobrança por foto
-        const val = qty * ctx.photoUnitPrice; // Usa o preço configurado no Admin Context
+        // Cobrança por foto: Base de 10 fotos por R$ 250 ("A partir de R$ 250")
+        const photoQty = Math.max(10, qty || 10);
+        const val = 250 + ((photoQty - 10) * ctx.photoUnitPrice);
         total += val;
-        breakdown.push({ label: `${ref.label} (${qty} Fotos)`, value: val, type: 'base' });
+        breakdown.push({ label: `${ref.label} (${photoQty} Fotos - Base 10)`, value: val, type: 'base' });
       }
+    }
+
+    // Adicional opcional de vídeo no Social (seja mobile ou câmera)
+    if (serviceId !== 'social_video' && videoQty && videoQty > 0) {
+      const isCam = videoDevice === 'camera';
+      const videoUnitPrice = isCam ? 600 : 350;
+      const videoTotal = videoQty * videoUnitPrice;
+      total += videoTotal;
+      breakdown.push({
+        label: `Vídeo Social (${isCam ? 'Câmera' : 'Mobile'}) x${videoQty}`,
+        value: videoTotal,
+        type: 'addon'
+      });
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };
@@ -157,16 +176,19 @@ export class PricingEngine {
       breakdown.push({ label: `${table.comm_photo.label} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_video') {
-      // FIX: Usa o preço unitário específico da tabela (500) em vez do global (videoUnitPrice do contexto)
-      const val = qty * table.comm_video.unit;
+      const isCamera = state.videoDevice === 'camera';
+      const unitPrice = isCamera ? (table.comm_video.unitCamera || 600) : (table.comm_video.unitMobile || 350);
+      const val = qty * unitPrice;
       total += val;
-      breakdown.push({ label: `${table.comm_video.label} (${qty}x)`, value: val, type: 'base' });
+      const deviceName = isCamera ? 'Câmera' : 'Mobile';
+      breakdown.push({ label: `Vídeo Comercial ${deviceName} (${qty}x)`, value: val, type: 'base' });
     }
     else if (serviceId === 'comm_combo') {
-      // 1. Preço Fixo do Pacote (Base 700 para 10F + 1V)
-      const baseVal = table.comm_combo.videoBase;
+      const isCamera = state.videoDevice === 'camera';
+      const baseVal = isCamera ? (table.comm_combo.videoBaseCamera || 850) : (table.comm_combo.videoBaseMobile || 600);
+      const deviceName = isCamera ? 'Câmera' : 'Mobile';
       total += baseVal;
-      breakdown.push({ label: "Combo (10F + 1V)", value: baseVal, type: 'base' });
+      breakdown.push({ label: `Pacote Comercial ${deviceName} (10F + 1V)`, value: baseVal, type: 'base' });
 
       // 2. Fotos Extras (Acima de 10)
       if (qty > 10) {
@@ -178,13 +200,12 @@ export class PricingEngine {
       }
 
       // 3. Vídeos Extras (Acima de 1)
-      // Nota: O prompt pediu explicitamente 350 por vídeo adicional no combo
       if (videoQty > 1) {
           const extraVideos = videoQty - 1;
-          const videoPrice = 350; 
-          const val = extraVideos * videoPrice;
+          const extraVideoPrice = isCamera ? (table.comm_video.unitCamera || 600) : (table.comm_video.unitMobile || 350);
+          const val = extraVideos * extraVideoPrice;
           total += val;
-          breakdown.push({ label: `Vídeos Extras (+${extraVideos})`, value: val, type: 'addon' });
+          breakdown.push({ label: `Vídeos Extras ${deviceName} (+${extraVideos})`, value: val, type: 'addon' });
       }
     }
 
@@ -199,24 +220,38 @@ export class PricingEngine {
 
     if (selectionMode === 'quantity') {
       if (serviceId === 'studio_photo') {
-        if (qty >= 13) {
-          const val = 250 + ((qty - 13) * ctx.photoUnitPrice);
-          total += val;
-          breakdown.push({ label: `${table.studio_photo.label} (${qty}x - Promoção)`, value: val, type: 'base' });
+        let val = 0;
+        let labelDesc = "";
+        if (qty <= 7) {
+          val = 150;
+          labelDesc = `${table.studio_photo.label} (7 fotos - Desconto R$ 150)`;
+        } else if (qty >= 13) {
+          val = 250 + ((qty - 13) * 25);
+          labelDesc = qty === 13 
+            ? `${table.studio_photo.label} (13 fotos - Promoção R$ 250)`
+            : `${table.studio_photo.label} (${qty} fotos - Pacote 13F + ${qty - 13} adicionais)`;
         } else {
-          // Usa o preço unitário do contexto para consistência com o admin
-          const val = qty * ctx.photoUnitPrice;
-          total += val;
-          breakdown.push({ label: `${table.studio_photo.label} (${qty}x)`, value: val, type: 'base' });
+          // Progressão consistente entre 7 (150) e 13 (250)
+          const stepPrices: Record<number, number> = {
+            8: 170,
+            9: 190,
+            10: 210,
+            11: 230,
+            12: 240
+          };
+          val = stepPrices[qty] || (150 + (qty - 7) * 20);
+          labelDesc = `${table.studio_photo.label} (${qty} fotos)`;
         }
+        total += val;
+        breakdown.push({ label: labelDesc, value: val, type: 'base' });
       } else {
         total += table.studio_video.base;
-        breakdown.push({ label: table.studio_video.label, value: table.studio_video.base, type: 'base' });
+        breakdown.push({ label: `${table.studio_video.label} (2h com Câmera)`, value: table.studio_video.base, type: 'base' });
       }
     } else {
-      const baseHour = table.studio_video.base; // Valor fixo para locação de estúdio (350)
+      const baseHour = table.studio_video.base; // Valor fixo para locação de estúdio com câmera (350)
       total += baseHour;
-      breakdown.push({ label: `Sessão Estúdio (2h)`, value: baseHour, type: 'base' });
+      breakdown.push({ label: `Gravação de Vídeo com Câmera no Estúdio (2h)`, value: baseHour, type: 'base' });
       
       if (hours > 2) {
         const extraVal = (hours - 2) * table.studio_video.hourPrice; // 175

@@ -61,8 +61,27 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 hours: quoteState.hours,
                 photoQty: quoteState.qty,
                 videoQty: quoteState.videoQty,
-                commercialMode: state.commercialMode // Passando o modo comercial
+                commercialMode: state.commercialMode,
+                videoDevice: quoteState.videoDevice
             }}
+        />
+      );
+  }
+
+  if (state.viewState === 'summary') {
+      return (
+        <SummaryView 
+            clientData={props.clientData}
+            onUpdateClientData={props.onUpdateClientData}
+            quoteData={state.quoteData}
+            totalPrice={state.totalPrice}
+            paymentMethod={state.paymentMethod}
+            setPaymentMethod={actions.setPaymentMethod}
+            summaryDetails={computed.summaryDetails}
+            priceBreakdown={state.priceBreakdown}
+            onBack={() => actions.setViewState('config')}
+            onConfirm={actions.handleConfirmQuote}
+            onRemoveAddon={actions.handleRemoveAddon}
         />
       );
   }
@@ -144,7 +163,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       </motion.div>
 
       {/* MAIN CONTENT: WIZARD STEP */}
-      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 pb-32 sm:pb-36 flex flex-col items-center">
+      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 flex flex-col items-center">
           <AnimatePresence initial={false} custom={state.direction} mode="wait">
             {state.viewState === 'config' && (
                 <motion.div 
@@ -180,6 +199,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                       setEdit1minQty={actions.setEdit1minQty}
                       projectType={quoteState.projectType || 'personal'}
                       setProjectType={actions.setProjectType}
+                      videoDevice={quoteState.videoDevice || 'mobile'}
+                      setVideoDevice={actions.setVideoDevice}
                       addDrone={quoteState.addDrone} 
                       setAddDrone={actions.setAddDrone}
                       addRealTime={quoteState.addRealTime} 
@@ -294,24 +315,6 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           )}
       </AnimatePresence>
 
-      {/* SUMMARY MODAL/VIEW */}
-      <AnimatePresence>
-         {state.viewState === 'summary' && (
-            <SummaryView 
-                clientData={props.clientData}
-                onUpdateClientData={props.onUpdateClientData}
-                quoteData={state.quoteData}
-                totalPrice={state.totalPrice}
-                paymentMethod={state.paymentMethod}
-                setPaymentMethod={actions.setPaymentMethod}
-                summaryDetails={computed.summaryDetails}
-                priceBreakdown={state.priceBreakdown}
-                onBack={() => actions.setViewState('config')}
-                onConfirm={actions.handleConfirmQuote}
-                onRemoveAddon={actions.handleRemoveAddon}
-            />
-         )}
-      </AnimatePresence>
 
       <LocationMapModal 
         isOpen={state.isMapOpen}

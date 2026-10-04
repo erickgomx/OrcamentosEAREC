@@ -121,6 +121,13 @@ export class AppConfig {
             composition: "Colação de Grau + Baile",
             description: "Colação de Grau + Baile (Cobertura exclusiva tipo sombra acompanhando o formando)" 
         },
+        social_video: { 
+            unitMobile: 350, 
+            unitCamera: 600, 
+            label: "Vídeo Social (Mobile ou Câmera)",
+            composition: "Mobile (R$ 350) | Câmera (R$ 600)",
+            description: "Cobertura em vídeo para aniversários e eventos sociais. Escolha entre gravação Mobile (R$ 350) ou Câmera (R$ 600)."
+        },
         video_highlight: { fixed: 350, label: "Vídeo Highlight (30s a 1min)" },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
@@ -132,16 +139,20 @@ export class AppConfig {
             description: "Catálogos; e-commerce; pratos e produtos em alta resolução" 
         },
         comm_video: { 
-            unit: 500, 
+            unit: 350, 
+            unitMobile: 350,
+            unitCamera: 600,
             label: "Comércio (Apenas Vídeo)",
-            composition: "Vídeos Verticais (Reels/TikTok)",
-            description: "Vídeos verticais de impacto para Reels/TikTok (edição ágil; transições e música)" 
+            composition: "Vídeo Mobile Entregue",
+            description: "Vídeos verticais de impacto para Reels/TikTok. Escolha entre gravação Mobile (R$ 350) ou Câmera (R$ 600)." 
         },
         comm_combo: { 
             videoBase: 600, 
-            label: "Combo (Foto + Vídeo)",
+            videoBaseMobile: 600,
+            videoBaseCamera: 850,
+            label: "Comércio (Pacote Foto + Vídeo)",
             composition: "10 Fotos tratadas + 1 Vídeo Reel",
-            description: "10 Fotos tratadas + 1 Vídeo Reel editado" 
+            description: "10 Fotos tratadas em alta resolução + 1 Vídeo Reel. Escolha entre gravação Mobile ou Câmera." 
         },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
@@ -149,16 +160,16 @@ export class AppConfig {
         studio_photo: { 
             unit: 25, 
             label: "Estúdio (Fotos)",
-            composition: "Retratos e produtos",
-            description: "Retratos corporativos; ensaios de moda ou fotografia de produtos" 
+            composition: "7 fotos: R$ 150 | 13 fotos: R$ 250",
+            description: "Fotografia profissional de estúdio. Desconto especial: 7 fotos por R$ 150 ou 13 fotos por R$ 250." 
         },
         studio_video: { 
             base: 350, 
             hoursIncluded: 2, 
             hourPrice: 175, 
-            label: "Estúdio (Vídeo)",
-            composition: "2 horas de gravação",
-            description: "2 horas de gravação (Ideal para videocasts; cursos online ou institucionais)" 
+            label: "Estúdio (Vídeo com Câmera)",
+            composition: "2h de gravação com câmera",
+            description: "2 horas de gravação profissional com câmera no estúdio (Ideal para videocasts, cursos online ou institucionais)" 
         },
     },
     video_production: {

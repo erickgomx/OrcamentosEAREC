@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="28" fill="#0a0a0a"/>
+  <g transform="translate(-19, 47) scale(0.48)">
+    <text x="65" y="52" font-family="'Michroma', 'Arial Black', -apple-system, sans-serif" font-weight="900" font-size="55" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="2" letter-spacing="-3">EA</text>
+    <circle cx="135" cy="33" r="16" fill="#DC2626"/>
+    <text x="155" y="52" font-family="'Michroma', 'Arial Black', -apple-system, sans-serif" font-weight="700" font-size="50" fill="#DC2626" letter-spacing="-1">REC</text>
+  </g>
+</svg>

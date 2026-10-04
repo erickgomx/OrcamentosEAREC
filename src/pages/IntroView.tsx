@@ -11,66 +11,6 @@ interface IntroViewProps {
   onOpenPortfolio?: () => void;
 }
 
-interface TypewriterTextProps {
-  text: string;
-  speed?: number;
-  delay?: number;
-  className?: string;
-}
-
-const TypewriterText: React.FC<TypewriterTextProps> = ({ 
-  text, 
-  speed = 36, 
-  delay = 250,
-  className = "" 
-}) => {
-  const [displayedText, setDisplayedText] = useState('');
-  const [isTypingComplete, setIsTypingComplete] = useState(false);
-
-  useEffect(() => {
-    setDisplayedText('');
-    setIsTypingComplete(false);
-
-    let charIndex = 0;
-    let intervalId: NodeJS.Timeout | null = null;
-
-    const startTimeout = setTimeout(() => {
-      intervalId = setInterval(() => {
-        if (charIndex < text.length) {
-          charIndex++;
-          setDisplayedText(text.slice(0, charIndex));
-        } else {
-          setIsTypingComplete(true);
-          if (intervalId) clearInterval(intervalId);
-        }
-      }, speed);
-    }, delay);
-
-    return () => {
-      clearTimeout(startTimeout);
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [text, speed, delay]);
-
-  return (
-    <h2 className={className}>
-      <span>{displayedText}</span>
-      <motion.span
-        animate={{ opacity: isTypingComplete ? 0 : [1, 0, 1] }}
-        transition={{ 
-          duration: 0.8, 
-          repeat: isTypingComplete ? 0 : Infinity, 
-          ease: "easeInOut" 
-        }}
-        className={cn(
-          "inline-block w-[2.5px] h-[1.1em] ml-1.5 align-middle bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)] rounded-full",
-          isTypingComplete ? "opacity-0" : "opacity-100"
-        )}
-      />
-    </h2>
-  );
-};
-
 const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenPortfolio }) => {
   return (
     <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
@@ -98,12 +38,11 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
         <div className="relative"> 
             <div className="relative z-10 flex flex-col gap-6 p-2">
                 
-                {/* Texto com Efeito de Digitação Cinematográfico */}
+                {/* Texto Inicial Elegante e Fluido (Sem animações pesadas que causem lag) */}
                 <motion.div variants={organicItemVariants} className="mb-2">
-                    <TypewriterText 
-                        text="Você já conhece nosso trabalho ou deseja fazer um orçamento?"
-                        className="text-white text-xl sm:text-2xl md:text-3xl font-serif leading-snug drop-shadow-md min-h-[3.6rem] sm:min-h-[4.2rem]"
-                    />
+                    <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-serif leading-snug drop-shadow-md">
+                        Você já conhece nosso trabalho ou deseja fazer um orçamento?
+                    </h2>
                 </motion.div>
 
                 {/* Opção 1: Iniciar Orçamento (Sólido, Elegante com Texto Rigorosamente Centralizado) */}

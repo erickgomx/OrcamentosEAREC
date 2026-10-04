@@ -93,10 +93,17 @@ const resolveRoute = (path: string): AppRoute => {
   return customSlug || 'inicio';
 };
 
+const getInitialPath = (): string => {
+  if (typeof window === 'undefined') return '/inicio';
+  if (window.location.hash) {
+    const hashClean = window.location.hash.replace(/^#\/?/, '/');
+    if (hashClean && hashClean !== '/') return hashClean;
+  }
+  return window.location.pathname || '/inicio';
+};
+
 export const useRouter = (): RouterState => {
-  const [currentPath, setCurrentPath] = useState<string>(() =>
-    typeof window !== 'undefined' ? window.location.pathname : '/inicio'
-  );
+  const [currentPath, setCurrentPath] = useState<string>(getInitialPath);
 
   const [searchParams, setSearchParams] = useState<URLSearchParams>(() =>
     typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
@@ -105,12 +112,21 @@ export const useRouter = (): RouterState => {
   // Ouve evento popstate do navegador (botão voltar / avançar)
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
+      let p = window.location.pathname;
+      if (window.location.hash) {
+        const hashClean = window.location.hash.replace(/^#\/?/, '/');
+        if (hashClean && hashClean !== '/') p = hashClean;
+      }
+      setCurrentPath(p);
       setSearchParams(new URLSearchParams(window.location.search));
     };
 
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
   }, []);
 
   /**

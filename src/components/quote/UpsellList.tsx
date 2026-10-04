@@ -49,6 +49,7 @@ interface UpsellListProps {
   selectionMode: 'duration' | 'quantity'; setSelectionMode: (m: 'duration' | 'quantity') => void;
   isQuickMode?: boolean; onContactRequest: () => void;
   commercialMode: 'on_location' | 'studio'; setCommercialMode: (m: 'on_location' | 'studio') => void;
+  videoDevice?: 'mobile' | 'camera'; setVideoDevice?: (d: 'mobile' | 'camera') => void;
 }
 
 const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: any) => (
@@ -113,7 +114,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
     selectionMode, setSelectionMode,
     isQuickMode = false,
     onContactRequest,
-    commercialMode, setCommercialMode, projectType, setProjectType
+    commercialMode, setCommercialMode, projectType, setProjectType,
+    videoDevice = 'mobile', setVideoDevice
   } = props;
 
   const [infoData, setInfoData] = useState<{ title: string; desc: string; price: string } | null>(null);
@@ -133,14 +135,21 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
   
   const isDroneQuantity = category === 'video_production' && serviceId === 'drone';
-  const isVideoQuantity = serviceId === 'comm_video' || serviceId === 'edit_only';
-  const minQty = (serviceId === 'comm_photo' ? 5 : (serviceId === 'comm_video' ? 1 : (serviceId === 'studio_photo' ? 7 : (category === 'video_production' ? 1 : 10))));
+  const isVideoQuantity = serviceId === 'comm_video' || serviceId === 'edit_only' || serviceId === 'social_video';
+  const minQty = (serviceId === 'comm_photo' ? 5 : (serviceId === 'comm_video' || serviceId === 'social_video' ? 1 : (serviceId === 'studio_photo' ? 7 : (category === 'video_production' ? 1 : 10))));
   const getIncrementPrice = (type: string) => {
-    if (type === 'combo_photo') return projectType === 'commercial' ? 30 : 25;
-    if (type === 'combo_video') return 350;
+    if (type === 'combo_photo') return 20;
+    if (type === 'combo_video') return videoDevice === 'camera' ? 600 : 350;
     if (type === 'qty') {
-        if (serviceId === 'comm_photo' || serviceId === 'studio_photo') return projectType === 'commercial' ? 30 : 25;
-        if (serviceId === 'comm_video') return 350;
+        if (serviceId === 'comm_photo') return 20;
+        if (serviceId === 'studio_photo') {
+            if (qty < 7) return 0;
+            if (qty >= 7 && qty < 12) return 20;
+            if (qty === 12) return 10; // 240 para 250
+            return 25; // Acima de 13
+        }
+        if (serviceId === 'comm_video' || serviceId === 'social_video') return videoDevice === 'camera' ? 600 : 350;
+        if (category === 'social') return 25;
         if (category === 'video_production' && serviceId === 'drone') return projectType === 'commercial' ? 300 : 250;
         if (category === 'video_production' && serviceId === 'edit_only') return projectType === 'commercial' ? 180 : 150;
     }
@@ -164,8 +173,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
   const isCustomBundle = false; // Removido para usar o grid padrão
   
-  const showDuration = (selectionMode === 'duration') && !['custom_bundle'].includes(serviceId) && category !== 'video_production';
-  const showQuantity = !['custom_bundle'].includes(serviceId) && (selectionMode === 'quantity' || category === 'commercial') && category !== 'video_production';
+  const showDuration = (selectionMode === 'duration') && !['custom_bundle'].includes(serviceId) && category !== 'video_production' && serviceId !== 'social_video';
+  const showQuantity = !['custom_bundle'].includes(serviceId) && (selectionMode === 'quantity' || category === 'commercial' || serviceId === 'social_video') && category !== 'video_production';
   const showDroneAddon = !['studio'].includes(category) && !['custom_bundle', 'edit_only', 'drone'].includes(serviceId);
   const isCombo = category === 'commercial' && serviceId === 'comm_combo';
 
@@ -273,25 +282,184 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
                   {category === 'social' && (
                     <>
-                        <ServiceCard index={0} active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Pague apenas pelo que amar."} desc={TABLE.social.birthday.description} />
-                        <ServiceCard index={1} active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Ideal para grandes eventos."} desc={TABLE.social.social_event.description} highlight />
-                        <ServiceCard index={2} active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "A melhor cobertura."} desc={TABLE.social.social_party.description} highlight />
-                        
-                        <ServiceCard index={3} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
+                        <ServiceCard index={0} active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "A partir de R$ 250"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Mínimo 10 fotos inclusas"} desc={TABLE.social.birthday.description} />
+                        <ServiceCard index={1} active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "A partir de R$ 250"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Mínimo 10 fotos inclusas"} desc={TABLE.social.social_event.description} highlight />
+                        <ServiceCard index={2} active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "A partir de R$ 250"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "Mínimo 10 fotos inclusas"} desc={TABLE.social.social_party.description} highlight />
+                        <ServiceCard 
+                            index={3} 
+                            active={serviceId === 'social_video'} 
+                            onClick={() => {
+                                handleServiceSelect('social_video');
+                                if (!videoQty || videoQty < 1) setVideoQty?.(1);
+                            }} 
+                            onInfo={setInfoData} 
+                            icon={Video} 
+                            title={TABLE.social.social_video.label} 
+                            price={videoDevice === 'camera' ? "R$ 600 / vídeo" : "R$ 350 / vídeo"} 
+                            composition={videoDevice === 'camera' ? "Câmera Cinema Entregue" : "Vídeo Mobile Entregue"} 
+                            desc={TABLE.social.social_video.description} 
+                            highlight 
+                            extraContent={
+                                <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 gap-1 w-full max-w-[200px] mx-auto mt-1">
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setVideoDevice?.('mobile');
+                                        }}
+                                        className={cn(
+                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
+                                            videoDevice === 'mobile'
+                                                ? "bg-brand-DEFAULT text-white shadow-sm"
+                                                : "text-neutral-400 hover:text-white"
+                                        )}
+                                    >
+                                        Mobile (350)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setVideoDevice?.('camera');
+                                        }}
+                                        className={cn(
+                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
+                                            videoDevice === 'camera'
+                                                ? "bg-brand-DEFAULT text-white shadow-sm"
+                                                : "text-neutral-400 hover:text-white"
+                                        )}
+                                    >
+                                        Câmera (600)
+                                    </button>
+                                </div>
+                            }
+                        />
+                        <ServiceCard index={4} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   {category === 'commercial' && (
                     <>
-                        <ServiceCard index={0} active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.comm_photo.label} price="R$ 25 / foto" composition={TABLE.commercial.comm_photo.composition} desc={TABLE.commercial.comm_photo.description} />
-                        <ServiceCard index={1} active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.comm_video.label} price="R$ 350 / vídeo" composition={TABLE.commercial.comm_video.composition} desc={TABLE.commercial.comm_video.description} highlight />
-                        <ServiceCard index={2} active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo')} onInfo={setInfoData} icon={Zap} title={TABLE.commercial.comm_combo.label} price="R$ 600 base" composition={TABLE.commercial.comm_combo.composition} desc={TABLE.commercial.comm_combo.description} highlight />
+                        <ServiceCard index={0} active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.comm_photo.label} price="R$ 20 / foto" composition={TABLE.commercial.comm_photo.composition} desc={TABLE.commercial.comm_photo.description} />
+                        <ServiceCard 
+                            index={1} 
+                            active={serviceId === 'comm_video'} 
+                            onClick={() => handleServiceSelect('comm_video')} 
+                            onInfo={setInfoData} 
+                            icon={Video} 
+                            title={TABLE.commercial.comm_video.label} 
+                            price={videoDevice === 'camera' ? "R$ 600 / vídeo" : "R$ 350 / vídeo"} 
+                            composition={videoDevice === 'camera' ? "Câmera Cinema Entregue" : "Vídeo Mobile Entregue"} 
+                            desc={TABLE.commercial.comm_video.description} 
+                            highlight 
+                            extraContent={
+                                <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 gap-1 w-full max-w-[200px] mx-auto mt-1">
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setVideoDevice?.('mobile');
+                                        }}
+                                        className={cn(
+                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
+                                            videoDevice === 'mobile'
+                                                ? "bg-brand-DEFAULT text-white shadow-sm"
+                                                : "text-neutral-400 hover:text-white"
+                                        )}
+                                    >
+                                        Mobile (350)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setVideoDevice?.('camera');
+                                        }}
+                                        className={cn(
+                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
+                                            videoDevice === 'camera'
+                                                ? "bg-brand-DEFAULT text-white shadow-sm"
+                                                : "text-neutral-400 hover:text-white"
+                                        )}
+                                    >
+                                        Câmera (600)
+                                    </button>
+                                </div>
+                            }
+                        />
+                        <ServiceCard 
+                            index={2} 
+                            active={serviceId === 'comm_combo'} 
+                            onClick={() => handleServiceSelect('comm_combo')} 
+                            onInfo={setInfoData} 
+                            icon={Zap} 
+                            title="Pacote (Foto + Vídeo)" 
+                            price={videoDevice === 'camera' ? "R$ 850 base" : "A partir de R$ 600"} 
+                            composition={videoDevice === 'camera' ? "10 Fotos tratadas + 1 Vídeo Câmera" : "10 Fotos tratadas + 1 Vídeo Mobile"} 
+                            desc={TABLE.commercial.comm_combo.description} 
+                            highlight 
+                            extraContent={
+                                <div className="flex bg-black/50 p-1 rounded-xl border border-white/10 gap-1 w-full max-w-[200px] mx-auto mt-1">
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setVideoDevice?.('mobile');
+                                        }}
+                                        className={cn(
+                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
+                                            videoDevice === 'mobile'
+                                                ? "bg-brand-DEFAULT text-white shadow-sm"
+                                                : "text-neutral-400 hover:text-white"
+                                        )}
+                                    >
+                                        Mobile (600)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setVideoDevice?.('camera');
+                                        }}
+                                        className={cn(
+                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
+                                            videoDevice === 'camera'
+                                                ? "bg-brand-DEFAULT text-white shadow-sm"
+                                                : "text-neutral-400 hover:text-white"
+                                        )}
+                                    >
+                                        Câmera (850)
+                                    </button>
+                                </div>
+                            }
+                        />
                         <ServiceCard index={3} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   {category === 'studio' && (
                     <>
-                        <ServiceCard index={0} active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.studio.studio_photo.label} price="R$ 200 base" composition={TABLE.studio.studio_photo.composition} desc={TABLE.studio.studio_photo.description} />
-                        <ServiceCard index={1} active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video')} onInfo={setInfoData} icon={Video} title={TABLE.studio.studio_video.label} price="R$ 350 base" composition={TABLE.studio.studio_video.composition} desc={TABLE.studio.studio_video.description} highlight />
+                        <ServiceCard 
+                            index={0} 
+                            active={serviceId === 'studio_photo'} 
+                            onClick={() => handleServiceSelect('studio_photo', 'quantity')} 
+                            onInfo={setInfoData} 
+                            icon={Camera} 
+                            title={TABLE.studio.studio_photo.label} 
+                            price="A partir de R$ 150" 
+                            composition={TABLE.studio.studio_photo.composition} 
+                            desc={TABLE.studio.studio_photo.description} 
+                        />
+                        <ServiceCard 
+                            index={1} 
+                            active={serviceId === 'studio_video'} 
+                            onClick={() => handleServiceSelect('studio_video', 'duration')} 
+                            onInfo={setInfoData} 
+                            icon={Video} 
+                            title={TABLE.studio.studio_video.label} 
+                            price="R$ 350 base (2h)" 
+                            composition={TABLE.studio.studio_video.composition} 
+                            desc={TABLE.studio.studio_video.description} 
+                            highlight 
+                        />
                         <ServiceCard index={2} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
@@ -531,13 +699,37 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     </motion.div>
                 )}
 
-                {/* --- SELETOR DUPLO PARA COMBO (Foto + Vídeo) --- */}
+                {/* --- SELETOR DUPLO PARA PACOTE (Foto + Vídeo) --- */}
                 {isCombo && setVideoQty && (
                    <motion.div 
                         key="combo-selector"
                         variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
                         className="w-full max-w-lg space-y-4"
                    >
+                        {/* Seletor Mobile vs Câmera para o Pacote */}
+                        <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-2 border border-white/5">
+                            <button
+                                type="button"
+                                onClick={() => setVideoDevice?.('mobile')}
+                                className={cn(
+                                    "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                    videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                )}
+                            >
+                                📱 Mobile (R$ 600)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setVideoDevice?.('camera')}
+                                className={cn(
+                                    "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                    videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                )}
+                            >
+                                📷 Câmera (R$ 850)
+                            </button>
+                        </div>
+
                         {/* Seletor de Fotos */}
                         <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
@@ -591,14 +783,15 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
-                        {category === 'studio' && serviceId === 'studio_photo' && qty >= 13 && (
-                            <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shadow-lg z-10">
-                                Promoção
+                        {category === 'studio' && serviceId === 'studio_photo' && (
+                            <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow-lg z-10 flex items-center gap-1">
+                                <Sparkles size={11} />
+                                {qty === 7 ? "Desconto (R$ 150)" : qty >= 13 ? "Promoção (R$ 250)" : "Estúdio Profissional"}
                             </div>
                         )}
 
                         <div 
-                            className="flex items-center gap-3 mb-8 relative group cursor-pointer"
+                            className="flex items-center gap-3 mb-6 relative group cursor-pointer"
                             onClick={() => setInfoData({ 
                                 title: isDroneQuantity ? "Quantidade de Baterias" : "Quantidade", 
                                 desc: isDroneQuantity 
@@ -621,6 +814,31 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                              <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
                         </div>
 
+                        {((category === 'commercial' && serviceId === 'comm_video') || (category === 'social' && serviceId === 'social_video')) && (
+                            <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-white/5">
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoDevice?.('mobile')}
+                                    className={cn(
+                                        "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                        videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    📱 Mobile (R$ 350)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoDevice?.('camera')}
+                                    className={cn(
+                                        "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                        videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    📷 Câmera (R$ 600)
+                                </button>
+                            </div>
+                        )}
+
                         <div className="flex items-center justify-between w-full gap-8 px-4">
                             <ControlBtn onClick={() => setQty(Math.max(minQty, qty - 1))} icon={Minus} />
                             <div className="text-center">
@@ -628,7 +846,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     <AnimatedNumber value={qty} />
                                 </span>
                                 <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">
-                                    {isDroneQuantity ? "Baterias" : "Unidades"}
+                                    {isDroneQuantity ? "Baterias" : isVideoQuantity ? "Vídeos" : "Fotos"}
                                 </span>
                             </div>
                             <div className="flex flex-col items-center gap-2 group relative">
@@ -639,6 +857,91 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* SELETOR DE VÍDEO PARA EVENTOS SOCIAIS (Mobile ou Câmera) */}
+            {category === 'social' && serviceId !== 'social_video' && (
+                <motion.div 
+                    variants={fadeInUp} 
+                    initial="hidden"
+                    animate="visible"
+                    className="w-full max-w-lg bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+                >
+                    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
+                    
+                    <div className="flex items-center gap-2 mb-2">
+                        <Video className="text-brand-DEFAULT" size={20} />
+                        <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                            Deseja Incluir Vídeo?
+                        </h3>
+                    </div>
+                    <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                        Adicione gravação de vídeo para registrar momentos marcantes do evento.
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+                        <button
+                            type="button"
+                            onClick={() => setVideoQty?.(0)}
+                            className={cn(
+                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                (!videoQty || videoQty === 0)
+                                    ? "bg-white/10 border-white/30 text-white shadow-sm"
+                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <span className="font-semibold">Sem Vídeo</span>
+                            <span className="text-[10px] text-neutral-500">Apenas fotos</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setVideoDevice?.('mobile');
+                                setVideoQty?.(Math.max(1, videoQty || 1));
+                            }}
+                            className={cn(
+                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                videoQty > 0 && videoDevice === 'mobile'
+                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
+                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <span className="font-semibold">📱 Mobile</span>
+                            <span className="text-[10px] opacity-80">+R$ 350</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setVideoDevice?.('camera');
+                                setVideoQty?.(Math.max(1, videoQty || 1));
+                            }}
+                            className={cn(
+                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                videoQty > 0 && videoDevice === 'camera'
+                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
+                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <span className="font-semibold">📷 Câmera</span>
+                            <span className="text-[10px] opacity-80">+R$ 600</span>
+                        </button>
+                    </div>
+
+                    {videoQty > 0 && (
+                        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between w-full px-2">
+                            <span className="text-xs text-neutral-300 font-medium">
+                                Quantidade de vídeos:
+                            </span>
+                            <div className="flex items-center gap-3">
+                                <ControlBtn onClick={() => setVideoQty?.(Math.max(1, videoQty - 1))} icon={Minus} />
+                                <span className="font-price font-bold text-white text-lg w-6 text-center">{videoQty}</span>
+                                <ControlBtn onClick={() => setVideoQty?.(videoQty + 1)} icon={Plus} active />
+                            </div>
+                        </div>
+                    )}
+                </motion.div>
+            )}
 
             {/* 2. ADDONS (Drone / RealTime) */}
             {(category === 'wedding' || category === 'social' || category === 'commercial' || category === 'video_production') && (
@@ -845,7 +1148,7 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
     );
 };
 
-const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight, index = 0 }: any) => (
+const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight, index = 0, extraContent }: any) => (
     <motion.div 
         layout="position"
         custom={index}
@@ -855,21 +1158,21 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-between p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
+            "group relative flex flex-col items-center justify-between pt-7 pb-4 px-3 sm:pt-6 sm:pb-5 sm:px-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
             active 
                 ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
-        {/* Tag / Ícone de Destaque "Popular" - Posicionado EXCLUSIVAMENTE à direita do card */}
+        {/* Tag / Ícone de Destaque "Popular" - Posicionado EXCLUSIVAMENTE à direita do card sem sobreposição */}
         {highlight && (
             <div className={cn(
-                "absolute top-0 right-0 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-all duration-300 flex items-center gap-1 shadow-sm",
+                "absolute top-0 right-0 text-[8px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-all duration-300 flex items-center gap-1 shadow-sm",
                 active 
                     ? "bg-brand-DEFAULT text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
                     : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
             )}>
-                <Sparkles size={11} className={active ? "text-white" : "text-amber-400"} />
+                <Sparkles size={10} className={active ? "text-white" : "text-amber-400"} />
                 <span>Popular</span>
             </div>
         )}
@@ -877,33 +1180,33 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {/* Botão de Ajuda / Detalhes Rápidos - Posicionado à esquerda do card */}
         {onInfo && desc && (
             <button 
-              className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/10 rounded-full"
+              className="absolute top-2 left-2 sm:top-3 sm:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-1 sm:p-1.5 hover:bg-white/10 rounded-full"
               onClick={(e) => {
                  e.stopPropagation();
                  onInfo({ title, desc, price });
               }}
               title="Ver detalhes do pacote"
             >
-                <HelpCircle size={16} strokeWidth={2} />
+                <HelpCircle size={15} strokeWidth={2} className="sm:w-4 sm:h-4" />
             </button>
         )}
 
         {/* Indicador de Seleção Ativa (aparece nos cards sem a tag Popular) */}
         {!highlight && (
             <div className={cn(
-                "absolute top-3 right-3 w-2.5 h-2.5 rounded-full transition-all duration-500 z-20",
+                "absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all duration-500 z-20",
                 active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
             )} />
         )}
         
         <div className="w-full flex flex-col items-center">
             <div className={cn(
-                "p-3.5 sm:p-4 rounded-2xl mb-2 transition-all duration-300",
+                "p-2.5 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl mb-1.5 sm:mb-2 transition-all duration-300",
                 active 
                     ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
                     : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
             )}>
-                <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
+                <Icon size={22} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
             </div>
             
             <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
@@ -922,17 +1225,24 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
                             animate={{ opacity: 1, height: "auto", filter: 'blur(0px)' }}
                             exit={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
                             transition={{ duration: 0.3 }}
-                            className="text-[11px] sm:text-xs md:text-sm text-brand-DEFAULT font-medium leading-normal pt-1.5"
+                            className="text-[11px] sm:text-xs md:text-sm text-brand-DEFAULT font-medium leading-normal pt-1"
                         >
                             {composition}
                         </motion.p>
                     )}
                 </AnimatePresence>
+
+                {/* Conteúdo Extra (Ex: Seletor Mobile vs Câmera quando ativo) */}
+                {active && extraContent && (
+                    <div className="w-full mt-2" onClick={(e) => e.stopPropagation()}>
+                        {extraContent}
+                    </div>
+                )}
             </div>
         </div>
 
-        <div className="w-full pt-3 border-t border-white/5 mt-3">
-            <p className={cn("text-sm sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-400 group-hover:text-neutral-200")}>
+        <div className="w-full pt-2.5 sm:pt-3 border-t border-white/5 mt-2.5 sm:mt-3">
+            <p className={cn("text-xs sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-400 group-hover:text-neutral-200")}>
                 {price}
             </p>
         </div>

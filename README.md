@@ -198,6 +198,31 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
   * **Cálculo de Delay por Índice (`custom={index}`):** Todos os cards de categorias (`CategoryCard`), serviços (`ServiceCard`), adicionais (`AddonCard`) e pacotes customizados (`ProductionControlItem`) agora recebem índices ordinais explícitos (0, 1, 2, 3...) com delay incremental de 80ms (`delay: i * 0.08`), surgindo em cascata cinematográfica suave e orgânica independente de re-layouts do DOM.
   * **Chaveamento Dinâmico de Grid (`services-grid-${category}`):** O container de grid foi chaveado com a categoria ativa, garantindo que a animação gradativa seja disparada novamente a cada troca de categoria.
 
+### [04/10/2026] Rodapé sem Sobreposição, Pacotes Comerciais (Mobile/Câmera), Descontos Estúdio e Ícone Oficial
+* **Visibilidade Natural do Valor Estimado (Sem Bloqueio de Conteúdo):**
+  * O rodapé com o "Valor Estimado" e o botão de ação foi transformado de uma barra fixa flutuante (`fixed bottom-0`) para um módulo integrado ao fluxo natural ao final da tela (`w-full relative mt-8 pb-10`).
+  * O usuário não precisa mais "puxar" ou lutar contra o overscroll elástico do celular para ler os cards de adicionais e logística: ao rolar até o final da tela, o valor estimado e o botão surgem limpos e sem obstruir nenhum texto.
+* **Transição de "Combo" para "Pacote (Foto + Vídeo)" & Seletor de Câmera:**
+  * Substituído o termo "Combo" por **"Pacote (Foto + Vídeo)"**, com preço de vitrine **"A partir de R$ 600"**.
+  * Chaveamento dinâmico entre gravação **Mobile (R$ 600 base)** e **Câmera Profissional (R$ 850 base)** disponível tanto no card quanto na etapa de configuração de quantidades.
+  * Fotos adicionais calculadas a R$ 20/foto e vídeos adicionais ajustados de acordo com o dispositivo (R$ 350 para Mobile, R$ 600 para Câmera).
+* **Descontos Progressivos em Estúdio (Fotos e Vídeo com Câmera):**
+  * Tabela de fotos de estúdio com preços promocionais explícitos: **R$ 150,00 para 7 fotos** e **R$ 250,00 para 13 fotos**, com badges de destaque de "Desconto" e "Promoção".
+  * Especificação clara de que o serviço de vídeo de estúdio inclui **2h de gravação profissional com câmera** (R$ 350 base / R$ 175h extra).
+* **Ícone do Site Idêntico à Logomarca (Favicon Oficial EA ● REC):**
+  * Criado o arquivo vetorial `public/favicon.svg` e atualizados os links `<link rel="icon">` e `<link rel="apple-touch-icon">` em `index.html` com a tipografia estendida **EA**, o ponto de gravação vermelho centralizado (**●**) e a sigla **REC** em vermelho.
+
+### [04/10/2026] Otimização Mobile, Remoção de Lag na Home & Seletor de Câmera Comercial
+* **Ajuste Fino de Cards Mobile (Sem Sobreposição de Badge):**
+  * O selo **Popular** (`Sparkles`) foi miniaturizado em telas móveis (`text-[8px] sm:text-[10px] px-2 py-0.5`), mantendo posição estrita no canto superior direito.
+  * O espaçamento superior interno dos cards (`ServiceCard`) em dispositivos móveis foi aumentado para `pt-7`, garantindo que o ícone centralizado e o conteúdo comecem bem abaixo da tag, eliminando qualquer colisão visual.
+* **Remoção da Animação de Digitação (Zero Lag / 60 FPS):**
+  * Substituído o componente de efeito typewriter da tela inicial (`IntroView`) por tipografia semântica limpa (`h2`) com animação única de entrada (`fadeInUp`), erradicando re-renderizações por caractere via `setInterval` que causavam travamentos em smartphones.
+* **Comércio - Apenas Vídeo (Mobile vs Câmera):**
+  * Especificação clara de que o pacote base de vídeo comercial é **Mobile (R$ 350 por vídeo entregue)**.
+  * Adicionado seletor interativo tanto no próprio card do serviço quanto na etapa de configuração de quantidade (Passo 2), permitindo alternar instantaneamente entre **Mobile (R$ 350)** e **Câmera Profissional (R$ 600)**.
+  * Integração completa no `PricingEngine`, no cálculo de incrementos (`getIncrementPrice`), no detalhamento da proposta (`breakdown`) e nas mensagens de checkout do WhatsApp.
+
 ### [04/10/2026] Correções de UX: Teclado Virtual Mobile, Isolamento de Logo e Código de Pedido Dinâmico
 * **Eliminação de Container Fixo e Degradê Conflitante:** Removida a antiga caixa fixa (`fixed bottom-[170px]`) e o degradê de fundo de 450px em `UpsellList.tsx`, que colidia e ficava sobreposto aos cards das fileiras inferiores (ex: Casamento, Social, Comercial) em telas móveis e ao rolar a página.
 * **Painel Integrado no Fluxo Natural do Layout:** Os detalhes e a descrição completa do pacote selecionado agora são renderizados em um painel dedicado logo abaixo do grid de cards (`mt-4 sm:mt-6`), garantindo que os cards nunca mais sobreponham o texto explicativo.
@@ -217,6 +242,21 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
   * Botões principais da página inicial ("Iniciar Orçamento" e "Instagram EAREC") com hierarquia nobre e ícones alinhados.
   * Rodapé Fixo (`StickyFooter`): Destaque elegante para o "Valor Estimado", tipografia de valor total de alto impacto (`text-2xl sm:text-3xl md:text-4xl font-price`) e botão de ação rápido.
 * **Resumo e Checkout Elegantes (`SummaryView.tsx`):** Textos descritivos, discriminador de itens e CTA de confirmação reescalonados para clareza máxima de entendimento pelo cliente.
+
+### [04/10/2026] Sistema de Rotas Completo, Opção de Vídeo no Social (Mobile/Câmera) e Correção de Rolagem
+* **Sistema de Rotas Universal (Multi-ambiente):**
+  * Roteamento SPA completo e independente para todas as páginas: `/inicio`, `/orcamento`, `/resumo`, `/sucesso`, `/portfolio`, `/admin`.
+  * Criação de regras de reescrita Apache (`.htaccess` e `public/.htaccess`) e Netlify/Cloudflare (`_redirects`).
+  * Geração automática no `npm run build` de diretórios físicos estáticos em `dist/` (`dist/inicio/index.html`, `dist/orcamento/index.html`, `dist/resumo/index.html`, `dist/sucesso/index.html`, etc.) garantindo carregamento direto e recarregamento (F5) sem erro 404 em qualquer servidor web.
+  * Suporte híbrido no hook `useRouter` tanto para HTML5 History API (`pushState`/`popState`) quanto para fallback hash (`#/orcamento`).
+* **Categoria Social: Opção de Vídeo (Mobile vs Câmera) & Base de 10 Fotos:**
+  * Nos cards de eventos sociais por unidade, o texto foi atualizado de "R$ 25/unidade" para **"A partir de R$ 250"**, referente ao pack base mínimo de 10 fotos (com fotos extras a R$ 25 cada).
+  * Adicionada a opção para o cliente incluir **Vídeo Social**: seletor inteligente entre **Sem Vídeo**, **📱 Mobile (+R$ 350)** e **📷 Câmera (+R$ 600)** com controle de quantidade.
+  * Card dedicado de "Vídeo Social" no Step 2 e seletor intuitivo no Step 3 de configuração.
+  * Integração no motor de cálculo (`PricingEngine`), etiquetas do resumo (`SummaryView`) e escopo gerado para o WhatsApp (`SuccessView`).
+* **Correção do Bug de Informações ao Rolar a Tela:**
+  * Eliminado o estado e listener de `onScroll` que disparavam re-renderizações a cada pixel rolado.
+  * Estabilização de `clientData` e `tempData` com fallbacks persistentes ao `localStorage`, impedindo que nome, data ou localização pisquem ou sumam ao rolar a página.
 
 ### [04/10/2026] API Gratuita do Google, Saída Individual Orgânica & Otimização de Performance
 * **API Gratuita do Google (Google Maps Tiles):** Integração restaurada e otimizada da camada de mapa oficial do Google Maps Roadmap (`https://{s}.google.com/vt/lyrs=m...` via subdomínios `mt0` a `mt3`), 100% gratuita, sem necessidade de chave paga ou fatura, com `preconnect` no `index.html` para latência zero e fallback dinâmico para OpenStreetMap.

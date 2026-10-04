@@ -41,9 +41,15 @@ const App: React.FC = () => {
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
   const [isQuickMode, setIsQuickMode] = useState(false);
 
-  const [clientData, setClientData] = useState<ClientData | null>(() => {
-    const saved = localStorage.getItem('earec_client_data');
-    return saved ? JSON.parse(saved) : null;
+  const [clientData, setClientData] = useState<ClientData>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('earec_client_data') : null;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch {}
+    return { name: '', location: '', date: '', contact: '' };
   });
 
   const [quoteState, setQuoteState] = useState<QuoteState>({
@@ -51,12 +57,13 @@ const App: React.FC = () => {
     serviceId: 'wedding_base',
     hours: 2,
     qty: 10,
-    videoQty: 1, 
+    videoQty: 0, 
     addDrone: false,
     droneQty: 0,
     addRealTime: false,
     selectionMode: 'duration',
-    projectType: 'personal'
+    projectType: 'personal',
+    videoDevice: 'mobile'
   });
 
   useLayoutEffect(() => {
@@ -89,15 +96,23 @@ const App: React.FC = () => {
     }
   }, [showSplash]);
 
-  // Normalização de URL na barra de endereços (garante /inicio ou /orcamento limpos)
+  // Normalização de URL na barra de endereços (garante URLs limpas para todas as rotas)
   useEffect(() => {
-    if (router.currentPath === '/' || router.currentPath === '/home') {
+    const p = router.currentPath;
+    if (p === '/' || p === '/home') {
       router.navigate('/inicio', true);
-    } else if (
-      router.activeRoute === 'orcamento' && 
-      router.currentPath !== '/orcamento'
-    ) {
+    } else if (router.activeRoute === 'inicio' && p !== '/inicio') {
+      router.navigate('/inicio', true);
+    } else if (router.activeRoute === 'orcamento' && p !== '/orcamento') {
       router.navigate('/orcamento', true);
+    } else if (router.activeRoute === 'resumo' && p !== '/resumo') {
+      router.navigate('/resumo', true);
+    } else if (router.activeRoute === 'sucesso' && p !== '/sucesso') {
+      router.navigate('/sucesso', true);
+    } else if (router.activeRoute === 'portfolio' && p !== '/portfolio') {
+      router.navigate('/portfolio', true);
+    } else if (router.activeRoute === 'admin' && p !== '/admin') {
+      router.navigate('/admin', true);
     }
   }, [router.currentPath, router.activeRoute, router.navigate]);
 
@@ -114,7 +129,7 @@ const App: React.FC = () => {
   };
 
   const handleQuickStart = () => {
-    if (!clientData) {
+    if (!clientData.name) {
       setClientData({
         name: '', 
         location: '', 
@@ -147,12 +162,13 @@ const App: React.FC = () => {
       serviceId: 'wedding_base',
       hours: 2,
       qty: 10,
-      videoQty: 1, 
+      videoQty: 0, 
       addDrone: false,
       droneQty: 0,
       addRealTime: false,
       selectionMode: 'duration',
-      projectType: 'personal'
+      projectType: 'personal',
+      videoDevice: 'mobile'
     });
     setIsQuoteSuccess(false);
     setQuoteSubView('quote');

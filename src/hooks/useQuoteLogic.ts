@@ -192,6 +192,7 @@ export const useQuoteLogic = ({
       if (category === 'studio' && serviceId === 'studio_photo') actions.setSelectionMode('quantity');
       if (category === 'studio' && serviceId === 'studio_video') actions.setSelectionMode('duration');
       if (category === 'social' && serviceId === 'graduation') actions.setSelectionMode('duration');
+      if (category === 'social' && serviceId === 'social_video') actions.setSelectionMode('quantity');
   }, [category, serviceId]);
 
   // === EFFECT: RESET ON CATEGORY CHANGE ===
@@ -230,6 +231,9 @@ export const useQuoteLogic = ({
         } else if (category === 'video_production') {
             actions.setQty(0);
             actions.setVideoQty(0);
+        } else if (category === 'social') {
+            actions.setQty(10);
+            actions.setVideoQty(0);
         } else {
             actions.setQty(10);
         }
@@ -238,7 +242,10 @@ export const useQuoteLogic = ({
       if (category === 'commercial' && serviceId === 'comm_combo') {
           actions.setQty(10);      
           actions.setVideoQty(1);  
-      } else {
+      } else if (category === 'social' && serviceId === 'social_video') {
+          actions.setQty(1);
+          actions.setVideoQty(1);
+      } else if (category !== 'social') {
           actions.setVideoQty(0);
       }
   }, [category, serviceId]);
@@ -346,9 +353,12 @@ export const useQuoteLogic = ({
 
   const handleRemoveAddon = (addonName: string) => {
       const name = addonName.toLowerCase();
-      if (name.includes('drone')) actions.setAddDrone(false);
-        actions.setDroneQty(0);
+      if (name.includes('drone')) {
+          actions.setAddDrone(false);
+          actions.setDroneQty(0);
+      }
       if (name.includes('tempo real')) actions.setAddRealTime(false);
+      if (name.includes('vídeo') || name.includes('video')) actions.setVideoQty(0);
       if (name.includes('horas extras')) actions.setHours(2); 
   };
 
@@ -379,12 +389,13 @@ export const useQuoteLogic = ({
       serviceId: 'wedding_base',
       hours: 2,
       qty: 10,
-      videoQty: 1, 
+      videoQty: 0, 
       addDrone: false,
       droneQty: 0,
       addRealTime: false,
       selectionMode: 'duration',
-      projectType: 'personal'
+      projectType: 'personal',
+      videoDevice: 'mobile'
     });
 
     // 3. Força viewState de volta para o configurador
@@ -405,13 +416,36 @@ export const useQuoteLogic = ({
     }
   }, [setQuoteState, onResetQuote]);
 
+  const setVideoDevice = useCallback((videoDevice: 'mobile' | 'camera') => {
+    setQuoteState(prev => ({ ...prev, videoDevice }));
+  }, [setQuoteState]);
+
   // === COMPUTED: LABELS & DETAILS ===
-  const serviceLabel = category ? AppConfig.getServiceLabel(category, serviceId) : '';
+  const serviceLabel = category 
+    ? (category === 'commercial' && serviceId === 'comm_video'
+        ? `Comércio (Vídeo ${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
+        : category === 'commercial' && serviceId === 'comm_combo'
+        ? `Pacote Comercial (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
+        : category === 'social' && serviceId === 'social_video'
+        ? `Vídeo Social (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
+        : AppConfig.getServiceLabel(category, serviceId))
+    : '';
+
   let metricLabel = '';
   if (selectionMode === 'duration') {
        metricLabel = `${hours}h de Cobertura`;
+       if (category === 'social' && videoQty > 0) {
+           metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+       }
   } else {
-       if (serviceId === 'comm_combo') metricLabel = `${qty} Fotos + ${videoQty} Vídeos`;
+       if (serviceId === 'comm_combo') metricLabel = `${qty} Fotos + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+       else if (serviceId === 'comm_video' || serviceId === 'social_video') metricLabel = `${qty} Vídeo${qty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+       else if (category === 'social') {
+           metricLabel = `${qty} Fotos (Base 10)`;
+           if (videoQty > 0) {
+               metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+           }
+       }
        else metricLabel = `${qty} Unidades`;
   }
   if (category === 'wedding' && selectionMode === 'duration' && hours === 2) metricLabel = "Pacote Completo";
@@ -421,6 +455,9 @@ export const useQuoteLogic = ({
   if (addDrone && (['wedding','social','commercial'].includes(category || ''))) activeAddons.push('Drone (Aéreo)');
   if (quoteState.droneQty && quoteState.droneQty > 0) activeAddons.push(`Drone (${quoteState.droneQty} Baterias)`);
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
+  if (category === 'social' && serviceId !== 'social_video' && videoQty > 0) {
+      activeAddons.push(`Vídeo Social (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`);
+  }
 
   const getFooterLabel = () => {
     if (currentStep === 0) return "Escolher Serviço"; 
@@ -462,7 +499,8 @@ export const useQuoteLogic = ({
         handleSignatureSuccess,
         handleRemoveAddon,
         handleContactRequest,
-        handleResetQuote
+        handleResetQuote,
+        setVideoDevice
     },
     computed: {
         serviceLabel,

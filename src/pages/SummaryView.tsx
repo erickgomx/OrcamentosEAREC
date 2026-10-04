@@ -66,9 +66,20 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   const [showContent, setShowContent] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
-  const [tempData, setTempData] = useState<ClientData>(clientData);
+  const [tempData, setTempData] = useState<ClientData>(() => {
+    let localData: Partial<ClientData> = {};
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('earec_client_data') : null;
+      if (saved) localData = JSON.parse(saved);
+    } catch {}
+    return {
+      name: clientData?.name || localData.name || '',
+      location: clientData?.location || localData.location || '',
+      date: clientData?.date || localData.date || '',
+      contact: clientData?.contact || localData.contact || ''
+    };
+  });
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
-  const [hasScrolled, setHasScrolled] = useState(false);
   
   const today = new Date().toISOString().split('T')[0];
 
@@ -78,16 +89,21 @@ const SummaryView: React.FC<SummaryViewProps> = ({
       }
   };
 
-  // Sincroniza dados apenas quando NÃO está editando
+  // Sincroniza dados apenas quando NÃO está editando e vieram novos dados
   useEffect(() => { 
-      if (!isEditing) {
-          setTempData(clientData); 
+      if (!isEditing && clientData) {
+          setTempData(prev => ({
+              name: clientData.name || prev.name || '',
+              location: clientData.location || prev.location || '',
+              date: clientData.date || prev.date || '',
+              contact: clientData.contact || prev.contact || ''
+          })); 
       }
   }, [clientData, isEditing]);
 
   // Animação de entrada atrasada para permitir a transição do modal anterior
   useEffect(() => {
-    const timer = setTimeout(() => { setShowContent(true); }, 800); 
+    const timer = setTimeout(() => { setShowContent(true); }, 500); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -122,7 +138,11 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   };
   
   const handleLocationSelect = (address: string) => {
-      setTempData(prev => ({ ...prev, location: address }));
+      setTempData(prev => {
+          const next = { ...prev, location: address };
+          onUpdateClientData(next);
+          return next;
+      });
   };
 
   const formatDateSafe = (dateString: string) => {
@@ -142,7 +162,6 @@ const SummaryView: React.FC<SummaryViewProps> = ({
   return (
     <div 
         className="fixed inset-0 z-50 bg-[#0a0a0a] overflow-y-auto"
-        onScroll={(e) => setHasScrolled(e.currentTarget.scrollTop > 50)}
     >
       <AnimatePresence>
         {!showContent && (
@@ -226,13 +245,13 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                     <InfoField label="Nome / Empresa" icon={User} editing={isEditing}>
                                         {isEditing ? (
                                             <input name="name" value={tempData.name} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="Nome completo" />
-                                        ) : clientData.name}
+                                        ) : (tempData.name || clientData.name || "A definir")}
                                     </InfoField>
 
                                     <InfoField label="Data do Evento" icon={Calendar} editing={isEditing}>
                                         {isEditing ? (
                                             <input name="date" type="date" min={today} value={getInputDateValue(tempData.date)} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors [&::-webkit-calendar-picker-indicator]:invert" />
-                                        ) : formatDateSafe(clientData.date)}
+                                        ) : formatDateSafe(tempData.date || clientData.date)}
                                     </InfoField>
 
                                     <InfoField label="Localização" icon={MapPin} editing={isEditing}>
@@ -241,13 +260,13 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                 <input name="location" value={tempData.location} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 pr-8 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="Cidade ou Endereço" />
                                                 <button onClick={() => setIsMapOpen(true)} className="absolute right-0 top-1 text-neutral-500 hover:text-brand-DEFAULT"><MapIcon size={16} /></button>
                                             </div>
-                                        ) : (clientData.location || "A definir")}
+                                        ) : (tempData.location || clientData.location || "A definir")}
                                     </InfoField>
 
                                     <InfoField label="WhatsApp" icon={Phone} editing={isEditing}>
                                         {isEditing ? (
                                             <input name="contact" type="tel" value={tempData.contact} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="(00) 00000-0000" />
-                                        ) : (clientData.contact || "A definir")}
+                                        ) : (tempData.contact || clientData.contact || "A definir")}
                                     </InfoField>
                                 </div>
                             </div>
