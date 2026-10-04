@@ -6,7 +6,7 @@ import { cn } from '../../lib/utils';
 import { AppConfig } from '../../config/AppConfig';
 import AnimatedNumber from '../ui/AnimatedNumber';
 
-import { fadeInUp, staggerContainer, modalVariants } from '../../lib/animations';
+import { fadeInUp, staggerContainer, modalVariants, cardItemVariants } from '../../lib/animations';
 import { createPortal } from 'react-dom';
 
 const infoModalVariants = {
@@ -51,31 +51,10 @@ interface UpsellListProps {
   commercialMode: 'on_location' | 'studio'; setCommercialMode: (m: 'on_location' | 'studio') => void;
 }
 
-
-
-
-
-
-const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index }: any) => (
+const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: any) => (
     <motion.div 
         custom={index}
-        variants={{ 
-            hidden: { opacity: 0, y: 26, scale: 0.96, filter: 'blur(6px)' }, 
-            visible: (i: number = 0) => ({ 
-                opacity: 1, 
-                y: 0, 
-                scale: 1,
-                filter: 'blur(0px)',
-                transition: { delay: i * 0.045, duration: 0.48, ease: [0.16, 1, 0.3, 1] } 
-            }),
-            exit: (i: number = 0) => ({ 
-                opacity: 0, 
-                y: -20, 
-                scale: 0.96, 
-                filter: 'blur(6px)', 
-                transition: { delay: (5 - Math.min(i, 5)) * 0.035, duration: 0.28, ease: [0.32, 0, 0.67, 0] } 
-            })
-        }}
+        variants={cardItemVariants}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
@@ -202,12 +181,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
       {viewMode === 'categories' && (
         <motion.div
           key="categories-view"
+          variants={staggerContainer}
           initial="hidden"
           animate="visible"
           exit="hidden"
           className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto pb-32"
         >
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
+            <motion.div variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
                 {categories.map((cat, i) => (
                     <CategoryCard 
                         key={cat.id}
@@ -217,7 +197,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         index={i}
                     />
                 ))}
-            </div>
+            </motion.div>
         </motion.div>
       )}
       {viewMode === 'services' && (
@@ -275,7 +255,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
             {!isCustomBundle && (
               <motion.div 
-                  key="services-grid"
+                  key={`services-grid-${category}`}
                   variants={staggerContainer}
                   initial="hidden"
                   animate="visible"
@@ -283,40 +263,41 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
               >
                   {category === 'wedding' && (
                     <>
-                        <ServiceCard active={serviceId === 'wedding_base'} onClick={() => handleServiceSelect('wedding_base')} onInfo={setInfoData} icon={Heart} title={TABLE.wedding.wedding_base.label} price={formatCurrency(TABLE.wedding.wedding_base.base)} composition={TABLE.wedding.wedding_base.composition} desc={TABLE.wedding.wedding_base.description} />
-                        <ServiceCard active={serviceId === 'wedding_classic'} onClick={() => handleServiceSelect('wedding_classic')} onInfo={setInfoData} icon={Sparkles} title={TABLE.wedding.wedding_classic.label} price={formatCurrency(TABLE.wedding.wedding_classic.base)} composition={TABLE.wedding.wedding_classic.composition} desc={TABLE.wedding.wedding_classic.description} />
-                        <ServiceCard active={serviceId === 'wedding_romance'} onClick={() => handleServiceSelect('wedding_romance')} onInfo={setInfoData} icon={Hand} title={TABLE.wedding.wedding_romance.label} price={formatCurrency(TABLE.wedding.wedding_romance.base)} composition={TABLE.wedding.wedding_romance.composition} desc={TABLE.wedding.wedding_romance.description} highlight />
-                        <ServiceCard active={serviceId === 'wedding_essence'} onClick={() => handleServiceSelect('wedding_essence')} onInfo={setInfoData} icon={Gem} title={TABLE.wedding.wedding_essence.label} price={formatCurrency(TABLE.wedding.wedding_essence.base)} composition={TABLE.wedding.wedding_essence.composition} desc={TABLE.wedding.wedding_essence.description} highlight />
+                        <ServiceCard index={0} active={serviceId === 'wedding_base'} onClick={() => handleServiceSelect('wedding_base')} onInfo={setInfoData} icon={Heart} title={TABLE.wedding.wedding_base.label} price={formatCurrency(TABLE.wedding.wedding_base.base)} composition={TABLE.wedding.wedding_base.composition} desc={TABLE.wedding.wedding_base.description} />
+                        <ServiceCard index={1} active={serviceId === 'wedding_classic'} onClick={() => handleServiceSelect('wedding_classic')} onInfo={setInfoData} icon={Sparkles} title={TABLE.wedding.wedding_classic.label} price={formatCurrency(TABLE.wedding.wedding_classic.base)} composition={TABLE.wedding.wedding_classic.composition} desc={TABLE.wedding.wedding_classic.description} />
+                        <ServiceCard index={2} active={serviceId === 'wedding_romance'} onClick={() => handleServiceSelect('wedding_romance')} onInfo={setInfoData} icon={Hand} title={TABLE.wedding.wedding_romance.label} price={formatCurrency(TABLE.wedding.wedding_romance.base)} composition={TABLE.wedding.wedding_romance.composition} desc={TABLE.wedding.wedding_romance.description} highlight />
+                        <ServiceCard index={3} active={serviceId === 'wedding_essence'} onClick={() => handleServiceSelect('wedding_essence')} onInfo={setInfoData} icon={Gem} title={TABLE.wedding.wedding_essence.label} price={formatCurrency(TABLE.wedding.wedding_essence.base)} composition={TABLE.wedding.wedding_essence.composition} desc={TABLE.wedding.wedding_essence.description} highlight />
                         
-                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
+                        <ServiceCard index={4} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   {category === 'social' && (
                     <>
-                        <ServiceCard active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Pague apenas pelo que amar."} desc={TABLE.social.birthday.description} />
-                        <ServiceCard active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Ideal para grandes eventos."} desc={TABLE.social.social_event.description} highlight />
-                        <ServiceCard active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "A melhor cobertura."} desc={TABLE.social.social_party.description} highlight />
+                        <ServiceCard index={0} active={serviceId === 'birthday'} onClick={() => handleServiceSelect('birthday', selectionMode || 'duration')} onInfo={setInfoData} icon={Gift} title={TABLE.social.birthday.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.birthday.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.birthday.composition : "Pague apenas pelo que amar."} desc={TABLE.social.birthday.description} />
+                        <ServiceCard index={1} active={serviceId === 'social_event'} onClick={() => handleServiceSelect('social_event', selectionMode || 'duration')} onInfo={setInfoData} icon={Users} title={TABLE.social.social_event.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_event.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_event.composition : "Ideal para grandes eventos."} desc={TABLE.social.social_event.description} highlight />
+                        <ServiceCard index={2} active={serviceId === 'social_party'} onClick={() => handleServiceSelect('social_party', selectionMode || 'duration')} onInfo={setInfoData} icon={GlassWater} title={TABLE.social.social_party.label} price={selectionMode === 'duration' ? formatCurrency(TABLE.social.social_party.base) : "R$ 25,00 / unidade"} composition={selectionMode === 'duration' ? TABLE.social.social_party.composition : "A melhor cobertura."} desc={TABLE.social.social_party.description} highlight />
                         
-                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
+                        <ServiceCard index={3} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   {category === 'commercial' && (
                     <>
-                        <ServiceCard active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.comm_photo.label} price="R$ 25 / foto" composition={TABLE.commercial.comm_photo.composition} desc={TABLE.commercial.comm_photo.description} />
-                        <ServiceCard active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.comm_video.label} price="R$ 350 / vídeo" composition={TABLE.commercial.comm_video.composition} desc={TABLE.commercial.comm_video.description} highlight />
-                        <ServiceCard active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo')} onInfo={setInfoData} icon={Zap} title={TABLE.commercial.comm_combo.label} price="R$ 600 base" composition={TABLE.commercial.comm_combo.composition} desc={TABLE.commercial.comm_combo.description} highlight />
-                        <ServiceCard active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
+                        <ServiceCard index={0} active={serviceId === 'comm_photo'} onClick={() => handleServiceSelect('comm_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.commercial.comm_photo.label} price="R$ 25 / foto" composition={TABLE.commercial.comm_photo.composition} desc={TABLE.commercial.comm_photo.description} />
+                        <ServiceCard index={1} active={serviceId === 'comm_video'} onClick={() => handleServiceSelect('comm_video')} onInfo={setInfoData} icon={Video} title={TABLE.commercial.comm_video.label} price="R$ 350 / vídeo" composition={TABLE.commercial.comm_video.composition} desc={TABLE.commercial.comm_video.description} highlight />
+                        <ServiceCard index={2} active={serviceId === 'comm_combo'} onClick={() => handleServiceSelect('comm_combo')} onInfo={setInfoData} icon={Zap} title={TABLE.commercial.comm_combo.label} price="R$ 600 base" composition={TABLE.commercial.comm_combo.composition} desc={TABLE.commercial.comm_combo.description} highlight />
+                        <ServiceCard index={3} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   {category === 'studio' && (
                     <>
-                        <ServiceCard active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.studio.studio_photo.label} price="R$ 200 base" composition={TABLE.studio.studio_photo.composition} desc={TABLE.studio.studio_photo.description} />
-                        <ServiceCard active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video')} onInfo={setInfoData} icon={Video} title={TABLE.studio.studio_video.label} price="R$ 350 base" composition={TABLE.studio.studio_video.composition} desc={TABLE.studio.studio_video.description} highlight />
+                        <ServiceCard index={0} active={serviceId === 'studio_photo'} onClick={() => handleServiceSelect('studio_photo')} onInfo={setInfoData} icon={Camera} title={TABLE.studio.studio_photo.label} price="R$ 200 base" composition={TABLE.studio.studio_photo.composition} desc={TABLE.studio.studio_photo.description} />
+                        <ServiceCard index={1} active={serviceId === 'studio_video'} onClick={() => handleServiceSelect('studio_video')} onInfo={setInfoData} icon={Video} title={TABLE.studio.studio_video.label} price="R$ 350 base" composition={TABLE.studio.studio_video.composition} desc={TABLE.studio.studio_video.description} highlight />
+                        <ServiceCard index={2} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
                   )}
                   
                   {category === 'custom' && (
-                      <motion.div variants={fadeInUp} className="!w-full !max-w-none col-span-3 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
+                      <motion.div variants={cardItemVariants} custom={0} className="!w-full !max-w-none col-span-3 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
                           <Star className="mx-auto text-brand-DEFAULT mb-4" size={32} />
                           <h3 className="font-serif text-2xl text-white mb-2">Projeto Personalizado</h3>
                           <p className="text-neutral-400 mb-6 text-lg">Descreva sua necessidade específica no WhatsApp.</p>
@@ -450,6 +431,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
                         <div className="grid grid-cols-1 gap-3 md:gap-4 w-full">
                             <ProductionControlItem 
+                                index={0}
                                 icon={Camera} 
                                 title="Fotos" 
                                 desc={projectType === 'commercial' ? "R$ 30 / foto" : "R$ 25 / foto"} 
@@ -459,6 +441,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 unitLabel="Fotos" 
                             />
                             <ProductionControlItem 
+                                index={1}
                                 icon={Video} 
                                 title="Gravação com câmera" 
                                 desc={projectType === 'commercial' ? "R$ 600 base (2h)" : "R$ 350 base (2h)"} 
@@ -468,6 +451,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 unitLabel="Horas" 
                             />
                             <ProductionControlItem 
+                                index={2}
                                 icon={Video} 
                                 title="Gravação com celular" 
                                 desc={projectType === 'commercial' ? "R$ 300 base (2h)" : "R$ 200 base (2h)"} 
@@ -477,6 +461,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 unitLabel="Horas" 
                             />
                             <ProductionControlItem 
+                                index={3}
                                 icon={Zap} 
                                 title="Edição (30s)" 
                                 desc={projectType === 'commercial' ? "R$ 180 / vídeo" : "R$ 150 / vídeo"} 
@@ -486,6 +471,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 unitLabel="Vídeos" 
                             />
                             <ProductionControlItem 
+                                index={4}
                                 icon={Zap} 
                                 title="Edição (1 min)" 
                                 desc={projectType === 'commercial' ? "R$ 300 / vídeo" : "R$ 250 / vídeo"} 
@@ -495,6 +481,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 unitLabel="Vídeos" 
                             />
                             <ProductionControlItem 
+                                index={5}
                                 icon={PlaneTakeoff} 
                                 title="Drone (Aéreo)" 
                                 desc={projectType === 'commercial' ? "R$ 300 / bateria" : "R$ 250 / bateria"} 
@@ -667,6 +654,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 >
                     {showDroneAddon && (
                         <AddonCard 
+                            index={0}
                             label="Drone (Aéreo)" 
                             price={250} 
                             icon={PlaneTakeoff} 
@@ -677,6 +665,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         />
                     )}
                     <AddonCard 
+                        index={showDroneAddon ? 1 : 0}
                         label="Receber material na hora" 
                         price={realTimePrice} 
                         icon={Clock} 
@@ -802,11 +791,14 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
   </motion.button>
 );
 
-const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, step = 1, unitLabel }: any) => {
+const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, step = 1, unitLabel, index = 0 }: any) => {
     const isAdded = (value || 0) > 0;
 
     return (
-        <div className={cn(
+        <motion.div 
+            custom={index}
+            variants={cardItemVariants}
+            className={cn(
             "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 relative overflow-hidden",
             isAdded 
                 ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)]" 
@@ -849,41 +841,43 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
                     </div>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 };
 
-const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight }: any) => (
+const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight, index = 0 }: any) => (
     <motion.div 
-        layout 
-        variants={fadeInUp}
+        layout="position"
+        custom={index}
+        variants={cardItemVariants}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-between p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md",
+            "group relative flex flex-col items-center justify-between p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
             active 
                 ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
+        {/* Tag / Ícone de Destaque "Popular" - Posicionado EXCLUSIVAMENTE à direita do card */}
         {highlight && (
             <div className={cn(
-                "absolute top-0 left-0 text-[10px] sm:text-[11px] font-bold px-2.5 py-1 uppercase tracking-widest z-20 rounded-br-2xl transition-colors duration-300",
-                active ? "bg-brand-DEFAULT text-white shadow-[0_0_10px_rgba(220,38,38,0.5)]" : "bg-white/10 text-neutral-300 group-hover:text-white"
+                "absolute top-0 right-0 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-all duration-300 flex items-center gap-1 shadow-sm",
+                active 
+                    ? "bg-brand-DEFAULT text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
+                    : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
             )}>
-                Popular
+                <Sparkles size={11} className={active ? "text-white" : "text-amber-400"} />
+                <span>Popular</span>
             </div>
         )}
 
-        {/* Botão de Ajuda / Detalhes Rápidos */}
+        {/* Botão de Ajuda / Detalhes Rápidos - Posicionado à esquerda do card */}
         {onInfo && desc && (
             <button 
-              className={cn(
-                 "absolute text-neutral-500 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/10 rounded-full",
-                 highlight ? "top-2.5 right-7" : "top-2.5 left-2.5"
-              )}
+              className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/10 rounded-full"
               onClick={(e) => {
                  e.stopPropagation();
                  onInfo({ title, desc, price });
@@ -894,11 +888,13 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             </button>
         )}
 
-        {/* Indicador de Seleção Ativa */}
-        <div className={cn(
-            "absolute top-3 right-3 w-2.5 h-2.5 rounded-full transition-all duration-500 z-20",
-            active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
-        )} />
+        {/* Indicador de Seleção Ativa (aparece nos cards sem a tag Popular) */}
+        {!highlight && (
+            <div className={cn(
+                "absolute top-3 right-3 w-2.5 h-2.5 rounded-full transition-all duration-500 z-20",
+                active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
+            )} />
+        )}
         
         <div className="w-full flex flex-col items-center">
             <div className={cn(
@@ -943,9 +939,10 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
     </motion.div>
 );
 
-const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: any) => (
+const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, index = 0 }: any) => (
     <motion.div 
-        variants={fadeInUp}
+        custom={index}
+        variants={cardItemVariants}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}

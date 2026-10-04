@@ -8,7 +8,6 @@ import { ClientData, QuoteData, QuoteState, ServiceCategory } from '../types';
 // Components
 import UpsellList from '../components/quote/UpsellList';
 import StickyFooter from '../components/quote/StickyFooter';
-import SignatureModal from '../components/quote/SignatureModal';
 import LocationMapModal from '../components/ui/LocationMapModal';
 import SummaryView from './SummaryView';
 import SuccessView from './SuccessView';
@@ -307,18 +306,11 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 summaryDetails={computed.summaryDetails}
                 priceBreakdown={state.priceBreakdown}
                 onBack={() => actions.setViewState('config')}
-                onProceedToSign={() => actions.setIsModalOpen(true)}
+                onConfirm={actions.handleConfirmQuote}
                 onRemoveAddon={actions.handleRemoveAddon}
             />
          )}
       </AnimatePresence>
-      
-      <SignatureModal 
-        isOpen={state.isModalOpen}
-        onClose={() => actions.setIsModalOpen(false)}
-        onConfirm={actions.handleSignatureSuccess}
-        totalValue={formatCurrency(state.totalPrice)}
-      />
 
       <LocationMapModal 
         isOpen={state.isMapOpen}

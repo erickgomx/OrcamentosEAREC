@@ -6,6 +6,7 @@ const WelcomeView = lazy(() => import('./pages/WelcomeView'));
 const IntroView = lazy(() => import('./pages/IntroView'));
 const ConfirmationView = lazy(() => import('./pages/ConfirmationView'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const PortfolioView = lazy(() => import('./pages/PortfolioView'));
 
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
@@ -155,14 +156,18 @@ const App: React.FC = () => {
     const prev = prevRouteRef.current;
     const curr = router.activeRoute;
     if (prev !== curr) {
-      if (prev === 'inicio' && curr === 'orcamento') {
+      if (prev === 'inicio' && (curr === 'orcamento' || curr === 'portfolio' || curr === 'admin')) {
         setRouteDirection(1);
-      } else if (prev === 'orcamento' && curr === 'inicio') {
+      } else if (prev === 'portfolio' && curr === 'orcamento') {
+        setRouteDirection(1);
+      } else if (curr === 'inicio') {
+        setRouteDirection(-1);
+      } else if (prev === 'orcamento' && curr === 'portfolio') {
         setRouteDirection(-1);
       } else if (curr === 'admin') {
         setRouteDirection(1);
       } else {
-        setRouteDirection(-1);
+        setRouteDirection(1);
       }
       prevRouteRef.current = curr;
     }
@@ -233,12 +238,13 @@ const App: React.FC = () => {
                       router.navigate('/orcamento');
                     }}
                     onQuickStart={handleQuickStart}
+                    onOpenPortfolio={() => router.navigate('/portfolio')}
                   />
                 </motion.div>
               )}
 
-              {/* 2. ROTA /ORCAMENTO */}
-              {router.activeRoute === 'orcamento' && (
+              {/* 2. ROTA /ORCAMENTO, /RESUMO, /SUCESSO */}
+              {(router.activeRoute === 'orcamento' || router.activeRoute === 'resumo' || router.activeRoute === 'sucesso') && (
                 <motion.div
                   key="route-orcamento"
                   custom={routeDirection}
@@ -271,7 +277,25 @@ const App: React.FC = () => {
                 </motion.div>
               )}
 
-              {/* 3. ROTA /ADMIN */}
+              {/* 3. ROTA /PORTFOLIO */}
+              {router.activeRoute === 'portfolio' && (
+                <motion.div
+                  key="route-portfolio"
+                  custom={routeDirection}
+                  variants={pageSlideVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="w-full"
+                >
+                  <PortfolioView 
+                    onNavigateHome={() => router.navigate('/inicio')}
+                    onStartQuote={() => router.navigate('/orcamento')}
+                  />
+                </motion.div>
+              )}
+
+              {/* 4. ROTA /ADMIN */}
               {router.activeRoute === 'admin' && (
                 <motion.div
                   key="route-admin"

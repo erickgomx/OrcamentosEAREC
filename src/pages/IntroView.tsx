@@ -1,15 +1,77 @@
-import React from 'react';
-import { motion, Variants } from 'framer-motion';
-import { ArrowRight, Instagram, Zap, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowRight, Instagram, Zap } from 'lucide-react';
 import Logo from '../components/ui/Logo';
-import { CINE_EASE, organicItemVariants, pageContainerVariants } from '../lib/animations';
+import { cn } from '../lib/utils';
+import { organicItemVariants, pageContainerVariants } from '../lib/animations';
 
 interface IntroViewProps {
   onContinue: () => void;
   onQuickStart: () => void;
+  onOpenPortfolio?: () => void;
 }
 
-const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
+interface TypewriterTextProps {
+  text: string;
+  speed?: number;
+  delay?: number;
+  className?: string;
+}
+
+const TypewriterText: React.FC<TypewriterTextProps> = ({ 
+  text, 
+  speed = 36, 
+  delay = 250,
+  className = "" 
+}) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+
+  useEffect(() => {
+    setDisplayedText('');
+    setIsTypingComplete(false);
+
+    let charIndex = 0;
+    let intervalId: NodeJS.Timeout | null = null;
+
+    const startTimeout = setTimeout(() => {
+      intervalId = setInterval(() => {
+        if (charIndex < text.length) {
+          charIndex++;
+          setDisplayedText(text.slice(0, charIndex));
+        } else {
+          setIsTypingComplete(true);
+          if (intervalId) clearInterval(intervalId);
+        }
+      }, speed);
+    }, delay);
+
+    return () => {
+      clearTimeout(startTimeout);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [text, speed, delay]);
+
+  return (
+    <h2 className={className}>
+      <span>{displayedText}</span>
+      <motion.span
+        animate={{ opacity: isTypingComplete ? 0 : [1, 0, 1] }}
+        transition={{ 
+          duration: 0.8, 
+          repeat: isTypingComplete ? 0 : Infinity, 
+          ease: "easeInOut" 
+        }}
+        className={cn(
+          "inline-block w-[2.5px] h-[1.1em] ml-1.5 align-middle bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)] rounded-full",
+          isTypingComplete ? "opacity-0" : "opacity-100"
+        )}
+      />
+    </h2>
+  );
+};
+
+const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenPortfolio }) => {
   return (
     <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
       
@@ -24,17 +86,7 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
         exit="exit"
         className="relative z-10 w-full max-w-lg text-center my-auto py-8"
       >
-        {/* Badge de Apresentação Cinematográfica */}
-        <motion.div variants={organicItemVariants} className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-lg shadow-black/40">
-            <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.9)] animate-pulse" />
-            <span className="text-xs sm:text-sm font-sans text-neutral-300 tracking-[0.2em] uppercase font-semibold">
-              Cinema & Produção Audiovisual
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Logo Animada com Glow Suave */}
+        {/* Logo Animada com Glow Suave (Sem badge superior por excesso) */}
         <motion.div variants={organicItemVariants} className="flex justify-center mb-8 md:mb-10">
           <div className="relative">
             <div className="absolute inset-0 bg-brand-DEFAULT/10 blur-2xl rounded-full scale-110 pointer-events-none" />
@@ -46,13 +98,15 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
         <div className="relative"> 
             <div className="relative z-10 flex flex-col gap-6 p-2">
                 
+                {/* Texto com Efeito de Digitação Cinematográfico */}
                 <motion.div variants={organicItemVariants} className="mb-2">
-                    <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-serif leading-snug drop-shadow-md">
-                        Você já conhece nosso trabalho<br/> ou deseja fazer um orçamento?
-                    </h2>
+                    <TypewriterText 
+                        text="Você já conhece nosso trabalho ou deseja fazer um orçamento?"
+                        className="text-white text-xl sm:text-2xl md:text-3xl font-serif leading-snug drop-shadow-md min-h-[3.6rem] sm:min-h-[4.2rem]"
+                    />
                 </motion.div>
 
-                {/* Opção 1: Iniciar Orçamento (Sólido, Elegante e com Micro-interações) */}
+                {/* Opção 1: Iniciar Orçamento (Sólido, Elegante com Texto Rigorosamente Centralizado) */}
                 <motion.div variants={organicItemVariants}>
                     <p className="text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.2em] mb-2.5 font-semibold font-sans">
                         Simulador Instantâneo
@@ -64,14 +118,14 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
                         whileTap={{ scale: 0.98 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
-                        <div className="relative z-20 w-full flex items-center justify-center gap-4 py-5 px-6 sm:py-6 sm:px-8">
-                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-brand-DEFAULT/20 group-hover:border-brand-DEFAULT/40 transition-colors duration-300 shrink-0">
+                        <div className="relative z-20 w-full flex items-center justify-between py-5 px-5 sm:py-6 sm:px-7">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-brand-DEFAULT/20 group-hover:border-brand-DEFAULT/40 transition-colors duration-300 shrink-0">
                                 <Zap size={22} className="text-neutral-200 group-hover:text-brand-DEFAULT group-hover:scale-110 transition-all duration-300" />
                             </div>
-                            <span className="font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-100 group-hover:text-white transition-colors tracking-wide">
+                            <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-100 group-hover:text-white transition-colors tracking-wide px-2">
                                 Iniciar Orçamento
                             </span>
-                            <div className="ml-auto flex items-center gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">
                                 <ArrowRight size={20} className="text-neutral-400 group-hover:text-white group-hover:translate-x-1.5 transition-transform duration-300" />
                             </div>
                         </div>
@@ -85,7 +139,7 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
                     <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1" />
                 </motion.div>
 
-                {/* Opção 2: Instagram EAREC (Sólido, Refinado) */}
+                {/* Opção 2: Instagram EAREC (Sólido, Refinado com Texto Rigorosamente Centralizado) */}
                 <motion.div variants={organicItemVariants}>
                     <p className="text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.2em] mb-2.5 font-semibold font-sans">
                         Portfólio & Bastidores
@@ -99,14 +153,14 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
                         whileTap={{ scale: 0.98 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
-                        <div className="relative z-20 w-full flex items-center justify-center gap-4 py-5 px-6 sm:py-6 sm:px-8">
-                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-colors duration-300 shrink-0">
+                        <div className="relative z-20 w-full flex items-center justify-between py-5 px-5 sm:py-6 sm:px-7">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-colors duration-300 shrink-0">
                                 <Instagram size={22} className="text-neutral-200 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
                             </div>
-                            <span className="font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-100 group-hover:text-white transition-colors tracking-wide">
+                            <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-100 group-hover:text-white transition-colors tracking-wide px-2">
                                 Instagram EAREC
                             </span>
-                            <div className="ml-auto flex items-center gap-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">
                                 <ArrowRight size={20} className="text-neutral-400 group-hover:text-white group-hover:translate-x-1.5 transition-transform duration-300" />
                             </div>
                         </div>
@@ -115,9 +169,21 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart }) => {
             </div>
         </div>
 
-        <motion.p variants={organicItemVariants} className="mt-10 text-neutral-400/80 text-xs sm:text-sm tracking-[0.3em] uppercase font-medium drop-shadow-sm font-sans">
-            Experiência de Cinema • EAREC Mídia
-        </motion.p>
+        {/* Rodapé com Link para Portfólio */}
+        <motion.div variants={organicItemVariants} className="mt-10 flex items-center justify-center gap-3 text-neutral-400 text-xs sm:text-sm font-sans">
+            <span className="tracking-[0.25em] uppercase font-medium">Experiência de Cinema</span>
+            {onOpenPortfolio && (
+              <>
+                <span className="text-white/20">•</span>
+                <button 
+                  onClick={onOpenPortfolio}
+                  className="tracking-[0.2em] uppercase font-bold text-neutral-300 hover:text-white transition-colors underline underline-offset-4 decoration-brand-DEFAULT/70 hover:decoration-brand-DEFAULT"
+                >
+                  Portfólio
+                </button>
+              </>
+            )}
+        </motion.div>
 
       </motion.div>
     </div>

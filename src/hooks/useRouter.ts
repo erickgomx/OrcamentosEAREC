@@ -3,19 +3,23 @@
  * ------------
  * Hook de Roteamento SPA nativo (Single Page Application) customizado para a EAREC.
  * 
+ * - 0ms de latência (transições instantâneas em memória).
+ * - Sem recarregamento de página (pushState / popState).
+ * - Suporta rotas fixas e rotas dinâmicas para qualquer página futura (ex: /portfolio, /sobre, etc.).
+ * 
  * ROTAS PRINCIPAIS:
- * - '/inicio' (e aliases '/', '/home', '/início'):
- *   Tela de recepção minimalista da EAREC com opções de Iniciar Orçamento e Instagram.
- * - '/orcamento' (e aliases '/orçamento', '/orcamentos', '/orçamentos', '/quote'):
- *   Simulador e configurador comercial completo da EAREC.
- * - '/admin':
- *   Painel de controle protegido para alteração de tabelas de preços e KM.
+ * - '/inicio' (e aliases '/', '/home', '/início'): Landing minimalista
+ * - '/orcamento': Configurador e simulador de serviços
+ * - '/resumo': Tela de revisão do orçamento
+ * - '/sucesso': Confirmação e link para WhatsApp
+ * - '/portfolio': Galeria e vitrine de produções
+ * - '/admin': Painel administrativo protegido
  */
 
 import { useState, useEffect, useCallback } from 'react';
 
 /** Tipos de rotas reconhecidas */
-export type AppRoute = 'inicio' | 'orcamento' | 'admin';
+export type AppRoute = 'inicio' | 'orcamento' | 'resumo' | 'sucesso' | 'admin' | 'portfolio' | string;
 
 export interface RouterState {
   currentPath: string;
@@ -46,7 +50,22 @@ const normalizePath = (rawPath: string): string => {
 const resolveRoute = (path: string): AppRoute => {
   const normalized = normalizePath(path);
 
-  // Rota de Orçamento (aceita com/sem acento, singular ou plural)
+  // Início / Home
+  if (normalized === '/' || normalized === '/inicio' || normalized === '/início' || normalized === '/home') {
+    return 'inicio';
+  }
+
+  // Resumo do Orçamento
+  if (normalized === '/resumo' || normalized === '/orcamento/resumo' || normalized === '/orçamento/resumo') {
+    return 'resumo';
+  }
+
+  // Confirmação / Sucesso
+  if (normalized === '/sucesso' || normalized === '/orcamento/sucesso' || normalized === '/orçamento/sucesso') {
+    return 'sucesso';
+  }
+
+  // Configurador de Orçamento (aceita com/sem acento, singular ou plural)
   if (
     normalized === '/orcamento' ||
     normalized === '/orçamento' ||
@@ -54,11 +73,14 @@ const resolveRoute = (path: string): AppRoute => {
     normalized === '/orçamentos' ||
     normalized.startsWith('/orcamento/') ||
     normalized.startsWith('/orçamento/') ||
-    normalized.startsWith('/orcamentos/') ||
-    normalized.startsWith('/orçamentos/') ||
     normalized === '/quote'
   ) {
     return 'orcamento';
+  }
+
+  // Portfólio
+  if (normalized === '/portfolio' || normalized === '/portfólio') {
+    return 'portfolio';
   }
 
   // Rota Administrativa
@@ -66,8 +88,9 @@ const resolveRoute = (path: string): AppRoute => {
     return 'admin';
   }
 
-  // Padrão: Tela Inicial (/inicio, /início, /, /home)
-  return 'inicio';
+  // Rota dinâmica/slug para qualquer página futura (ex: /sobre, /contato, /termos)
+  const customSlug = normalized.replace(/^\//, '');
+  return customSlug || 'inicio';
 };
 
 export const useRouter = (): RouterState => {

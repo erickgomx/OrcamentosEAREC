@@ -9,10 +9,10 @@ interface LogoProps {
 
 const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) => (
   <svg 
-    viewBox="60 -5 240 70" 
+    viewBox="60 -10 240 85" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
-    className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10"
+    className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10 overflow-visible"
     aria-label="EAREC Logo"
   >
     <motion.text 
@@ -31,17 +31,18 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       EA
     </motion.text>
     
-    {/* Ripple Effect Behind */}
+    {/* Ripple Effect Behind (Tamanho diminuído para 1.7x e com transformOrigin centralizado para não cortar) */}
     <motion.circle 
       cx="135" 
       cy="33" 
       r="16" 
       stroke="#DC2626"
-      strokeWidth="2"
+      strokeWidth="1.5"
       fill="transparent"
-      initial={{ scale: 0.5, opacity: 0 }}
-      animate={{ scale: [1, 2.5], opacity: [0, 0.3, 0] }}
-      transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: shouldAnimate ? 0.8 : 0 }}
+      style={{ transformOrigin: "135px 33px" }}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: [1, 1.7], opacity: [0.35, 0] }}
+      transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut", delay: shouldAnimate ? 0.8 : 0 }}
     />
     
     {/* Pulse Circle */}
@@ -50,7 +51,8 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       cy="33" 
       r="16" 
       fill="#DC2626" 
-      className="drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]"
+      className="drop-shadow-[0_0_12px_rgba(220,38,38,0.7)]"
+      style={{ transformOrigin: "135px 33px" }}
       initial={shouldAnimate ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ 
@@ -70,9 +72,9 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       fill="transparent"
       stroke="#ffffff"
       strokeWidth="1.5"
+      style={{ transformOrigin: "135px 33px", mixBlendMode: 'overlay' }}
       animate={{ opacity: [0.1, 0.6, 0.1], scale: [0.95, 1.05, 0.95] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      style={{ mixBlendMode: 'overlay' }}
     />
     
     <motion.text 
@@ -130,7 +132,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
       animate="visible"
       variants={containerVariants}
       onClick={handleClick}
-      className={cn("relative select-none cursor-pointer overflow-visible rounded-xl group px-2 py-1 flex items-center justify-center", className)}
+      className={cn("relative select-none cursor-pointer overflow-visible rounded-xl group px-2 py-2 flex items-center justify-center", className)}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >

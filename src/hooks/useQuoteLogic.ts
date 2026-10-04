@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ClientData, QuoteData, QuoteState, PricingContext, ServiceCategory, ServiceId } from '../types';
 import { AppConfig } from '../config/AppConfig';
 import { PricingEngine } from '../core/PricingEngine';
@@ -29,8 +29,49 @@ export const useQuoteLogic = ({
   isQuickMode = false
 }: UseQuoteLogicProps) => {
   
-  // === STATE: VIEW & NAVIGATION ===
-  const [viewState, setViewState] = useState<ViewState>('config');
+  // === STATE: VIEW & NAVIGATION COM SINCRONIZAÇÃO DE ROTA ===
+  const [viewState, setViewState] = useState<ViewState>(() => {
+    if (typeof window !== 'undefined') {
+      const p = window.location.pathname.toLowerCase();
+      if (p === '/resumo' || p.includes('/resumo')) return 'summary';
+      if (p === '/sucesso' || p.includes('/sucesso')) return 'success';
+    }
+    return 'config';
+  });
+
+  const updateViewState = useCallback((nextState: ViewState, pushToHistory = true) => {
+    setViewState(nextState);
+    if (pushToHistory && typeof window !== 'undefined') {
+      const current = window.location.pathname.toLowerCase();
+      let target = '/orcamento';
+      if (nextState === 'summary') target = '/resumo';
+      else if (nextState === 'success') target = '/sucesso';
+
+      if (current !== target) {
+        window.history.pushState({}, '', target);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+    }
+  }, []);
+
+  // Ouve popstate do navegador (botão voltar / avançar) para sincronizar o passo visual
+  useEffect(() => {
+    const handlePop = () => {
+      if (typeof window === 'undefined') return;
+      const path = window.location.pathname.toLowerCase();
+      if (path === '/resumo' || path.includes('/resumo')) {
+        setViewState('summary');
+      } else if (path === '/sucesso' || path.includes('/sucesso')) {
+        setViewState('success');
+      } else if (path === '/orcamento' || path === '/orçamento' || path === '/inicio' || path === '/') {
+        setViewState('config');
+      }
+    };
+
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
@@ -38,8 +79,8 @@ export const useQuoteLogic = ({
   // === STATE: LOCAL UI ===
   const [paymentMethod, setPaymentMethod] = useState<string>('Pix');
   const [distance, setDistance] = useState<number>(0);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Signature Modal
-  const [isMapOpen, setIsMapOpen] = useState(false);     // Map Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
   
   // === STATE: NAME CAPTURE (Quick Mode) ===
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
@@ -243,7 +284,7 @@ export const useQuoteLogic = ({
       } else {
           if (category === 'custom') {
               onSuccess(); 
-              setViewState('success');
+              updateViewState('success');
               window.scrollTo({ top: 0, behavior: 'smooth' });
           } else {
               // --- VALIDAÇÃO DE LOCALIZAÇÃO (FORÇAR INPUT) ---
@@ -262,7 +303,7 @@ export const useQuoteLogic = ({
                   setIsNameModalOpen(true);
                   return;
               }
-              setViewState('summary');
+              updateViewState('summary');
           }
       }
   };
@@ -284,19 +325,21 @@ export const useQuoteLogic = ({
       onUpdateClientData({ ...clientData, name: tempName });
       setIsNameModalOpen(false);
 
-      if (pendingAction === 'next_step') setViewState('summary');
+      if (pendingAction === 'next_step') updateViewState('summary');
       else if (pendingAction === 'custom_project') openWhatsappAction('custom_project', tempName);
       else if (pendingAction === 'commercial_custom') openWhatsappAction('commercial_custom', tempName);
       
       setPendingAction(null);
   };
 
-  const handleSignatureSuccess = (signatureData: string) => {
+  const handleConfirmQuote = (_signatureData?: string) => {
     setIsModalOpen(false);
     onSuccess();
-    setViewState('success');
+    updateViewState('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleSignatureSuccess = handleConfirmQuote;
 
   const handleRemoveAddon = (addonName: string) => {
       const name = addonName.toLowerCase();
@@ -364,9 +407,11 @@ export const useQuoteLogic = ({
     },
     actions: {
         ...actions,
+        setViewState: updateViewState,
         handleNextStep,
         handlePrevStep,
         handleConfirmName,
+        handleConfirmQuote,
         handleSignatureSuccess,
         handleRemoveAddon,
         handleContactRequest

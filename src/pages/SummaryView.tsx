@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Copyright, CreditCard, ArrowLeft, PenTool, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown, Sparkles, ShieldCheck } from 'lucide-react';
+import { Calendar, Copyright, CreditCard, ArrowLeft, CheckCircle, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown, Sparkles, ShieldCheck } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import AnimatedPrice from '../components/ui/AnimatedPrice';
@@ -30,7 +30,8 @@ interface SummaryViewProps {
   paymentMethod: string;
   setPaymentMethod: (method: string) => void;
   onBack: () => void;
-  onProceedToSign: () => void;
+  onConfirm?: () => void;
+  onProceedToSign?: () => void;
   summaryDetails: SummaryDetails;
   priceBreakdown?: PriceItem[];
   onRemoveAddon?: (addonName: string) => void;
@@ -60,7 +61,7 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, children, icon: Icon, edit
 
 const SummaryView: React.FC<SummaryViewProps> = ({ 
   clientData, onUpdateClientData, quoteData, totalPrice, paymentMethod,
-  setPaymentMethod, onBack, onProceedToSign, summaryDetails, priceBreakdown = [], onRemoveAddon
+  setPaymentMethod, onBack, onConfirm, onProceedToSign, summaryDetails, priceBreakdown = [], onRemoveAddon
 }) => {
   const [showContent, setShowContent] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -388,11 +389,11 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 {/* AÇÃO */}
                                 <div className="p-4 sm:p-5 bg-neutral-900 border-t border-white/5">
                                     <Button 
-                                        onClick={onProceedToSign}
+                                        onClick={onConfirm || onProceedToSign}
                                         size="lg" 
                                         className="w-full shadow-[0_0_30px_rgba(220,38,38,0.3)] py-4 text-base sm:text-lg font-bold tracking-wider flex items-center justify-center gap-3"
                                     >
-                                        <PenTool size={20} />
+                                        <CheckCircle size={22} className="text-white" />
                                         <span>CONFIRMAR ORÇAMENTO</span>
                                     </Button>
                                     <div className="mt-3 text-center flex items-center justify-center gap-1.5 opacity-60">

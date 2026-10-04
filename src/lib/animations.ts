@@ -87,22 +87,39 @@ export const organicItemVariants: Variants = {
   })
 };
 
-// Card individual para listas e grids (ex: categorias, serviços e pacotes)
-export const organicCardVariants: Variants = {
+// Card individual para listas e grids com suporte total a enter/center e hidden/visible (elimina conflitos de animação)
+export const cardItemVariants: Variants = {
   hidden: { 
     opacity: 0, 
-    y: 26, 
-    scale: 0.96, 
-    filter: 'blur(6px)' 
+    y: 28, 
+    scale: 0.95, 
+    filter: 'blur(8px)' 
+  },
+  enter: { 
+    opacity: 0, 
+    y: 28, 
+    scale: 0.95, 
+    filter: 'blur(8px)' 
   },
   visible: (i: number = 0) => ({ 
     opacity: 1, 
     y: 0, 
-    scale: 1,
+    scale: 1, 
     filter: 'blur(0px)',
     transition: { 
-      delay: i * 0.045, 
-      duration: 0.48, 
+      delay: (typeof i === 'number' ? i : 0) * 0.08, 
+      duration: 0.5, 
+      ease: CINE_EASE 
+    } 
+  }),
+  center: (i: number = 0) => ({ 
+    opacity: 1, 
+    y: 0, 
+    scale: 1, 
+    filter: 'blur(0px)',
+    transition: { 
+      delay: (typeof i === 'number' ? i : 0) * 0.08, 
+      duration: 0.5, 
       ease: CINE_EASE 
     } 
   }),
@@ -112,12 +129,14 @@ export const organicCardVariants: Variants = {
     scale: 0.96, 
     filter: 'blur(6px)', 
     transition: { 
-      delay: (6 - Math.min(i, 6)) * 0.03, 
+      delay: (6 - Math.min(typeof i === 'number' ? i : 0, 6)) * 0.03, 
       duration: 0.28, 
       ease: CINE_EASE_ORGANIC 
     } 
   })
 };
+
+export const organicCardVariants: Variants = cardItemVariants;
 
 // Transição de etapas do Wizard e Configurador (passos deslizantes com direção natural)
 export const wizardStepVariants: Variants = {

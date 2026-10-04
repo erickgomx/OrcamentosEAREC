@@ -19,8 +19,9 @@ Uma plataforma de orçamentos projetada para encantar clientes premium. Muito al
 *   **💰 Precificação Dinâmica:** Motor de cálculo (`PricingEngine`) em tempo real que considera tipo de evento, horas, quantidade de mídia e adicionais.
 *   **🗺️ Logística Inteligente:** Integração com OpenStreetMap (Nominatim) para cálculo automático de frete baseado na distância real de condução. Ajustado para ser responsivo e bem apresentado em dispositivos móveis.
 *   **📅 Validação de Agenda:** Integração segura com Google Calendar (suporte a .env).
-*   **✍️ Assinatura Digital:** Modal de assinatura manuscrita para aprovação formal.
+*   **⚡ Aprovação Imediata:** Confirmação direta do orçamento com geração instantânea do ticket e despacho para WhatsApp, eliminando atritos de assinatura.
 *   **🔐 Painel Administrativo:** Área segura para ajuste de preços base sem necessidade de deploy.
+*   **✨ Cards Cinematográficos & Badges Perfeitos:** Cards com cantos perfeitamente recortados (`overflow-hidden`), botão de informações à esquerda e selo **Popular** (`Sparkles`) posicionado exclusivamente à direita, sem sobreposições ou vazamentos.
 *   **📱 Mobile First:** Design responsivo e otimizado para qualquer dispositivo.
 
 ---
@@ -37,7 +38,6 @@ src/
 │   ├── quote/            # Componentes de Negócio (Lógica de Venda)
 │   │   ├── UpsellList    # Seletor visual de serviços e adicionais
 │   │   ├── StickyFooter  # Barra de totalização e ação
-│   │   ├── SignatureModal# Canvas de assinatura
 │   │   └── Moodboard     # Galeria visual (Parallax)
 │   └── ui/               # Design System (Botões, Inputs, Logos, FilmStrips)
 │
@@ -73,22 +73,33 @@ src/
 
 ---
 
-## 🔄 Sistema de Rotas SPA Nativo & Fluxo de Navegação
+## 🔄 Sistema de Rotas SPA Modular & Extensibilidade de Novas Páginas
 
-A aplicação adota um **Roteador SPA Nativo de alta performance** (`useRouter`), operando via API de histórico do navegador (`pushState` e `popState`) sem recarregar a página:
+A aplicação adota um **Roteador SPA Nativo de alta performance** ([`useRouter`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/hooks/useRouter.ts)), operando via HTML5 History API (`pushState` e `popstate`). 
 
-* **`/inicio`** (e aliases `/`, `/home`, `/início`): Página inicial minimalista e cinematográfica. Apresenta os botões de ação com cores sólidas e sem degradês:
-  * **"Iniciar Orçamento"**: Conduz diretamente para o configurador `/orcamento`.
-  * **"Instagram EAREC"**: Link direto para o portfólio oficial.
-* **`/orcamento`** (e aliases `/orçamento`, `/orcamentos`, `/quote`): Configurador e simulador comercial completo:
-  * **Etapa 0 (Categorias)**: Botão no topo esquerdo com rótulo claro `← Início` e logo interativa para retornar a `/inicio` a qualquer momento.
-  * **Configurador (`QuoteView`)**: Escolha de formatos, horas, fotos, vídeos e adicionais.
-  * **Formulário de Dados (`WelcomeView`)**: Acessível sob demanda via modal/wizard.
-  * **Resumo e Assinatura (`SummaryView` & `SignatureModal`)**: Resumo detalhado e assinatura formal.
-* **`/admin`**: Painel seguro para ajuste de tabelas de preços, valores por KM e simulações.
+### ⚡ O roteamento deixa o site mais lento?
+**Não! Pelo contrário:**
+1. **0ms de Latência de Rede:** Não há recarregamento completo da página (full page reload). Ao mudar de rota, apenas o componente React alvo é renderizado em memória.
+2. **Code-Splitting Inteligente (`React.lazy` + `Suspense`):** Cada página gera um chunk JavaScript separado. O visitante baixa apenas o que precisa, deixando a carga inicial até mais rápida do que ter tudo em uma única URL monolítica.
+3. **Deep Linking & Compartilhamento:** Permite enviar links diretos pelo WhatsApp ou redes sociais (ex: `site.com.br/portfolio` ou `site.com.br/orcamento`).
+4. **Histórico Nativo do Navegador:** Os botões nativos de "Voltar" e "Avançar" do navegador e do celular funcionam perfeitamente sem perder o estado.
+
+### 🌐 Rotas Disponíveis
+
+* **`/inicio`** (aliases `/`, `/home`): Landing page cinematográfica com efeito typewriter, botões de ação e acesso rápido.
+* **`/orcamento`** (aliases `/quote`): Configurador interativo com cálculo em tempo real de horas, diárias, fotos e vídeos.
+* **`/resumo`**: Tela de revisão com detalhamento financeiro, cálculo de frete e seleção de pagamento.
+* **`/sucesso`**: Tela de confirmação e geração de código de pedido único com despacho para WhatsApp.
+* **`/portfolio`**: Vitrine audiovisual cinematográfica demonstrando produções, depoimentos e métricas.
+* **`/admin`**: Painel seguro para ajuste dinâmico de tabelas de preços e KM.
+
+### 🧩 Como criar novas páginas no futuro (3 passos simples):
+1. Crie a tela em `src/pages/SuaPagina.tsx`.
+2. Em [`src/hooks/useRouter.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/hooks/useRouter.ts), adicione o identificador da rota no tipo `AppRoute` e no mapeamento de pathnames.
+3. Em [`src/App.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/App.tsx), importe via `lazy(() => import('./pages/SuaPagina'))` e adicione o bloco condicional dentro do `<AnimatePresence>`.
 
 > **Suporte a Refresh / F5 e Hospedagem:**
-> O arquivo `vercel.json` garante reescrita para a raiz em qualquer rota, e o comando `npm run build` gera automaticamente fallbacks estáticos (`404.html`, `inicio.html`, `orcamento.html`, `orcamentos.html`).
+> O arquivo `vercel.json` garante reescrita para a raiz em qualquer rota, e o comando `npm run build` gera automaticamente fallbacks estáticos (`404.html`, `inicio.html`, `orcamento.html`, `orcamentos.html`, `resumo.html`, `sucesso.html`, `portfolio.html`).
 
 ---
 
@@ -166,11 +177,26 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
 * **Comportamento Puro no Clique da Logo (`Logo.tsx` & `QuoteView.tsx`):**
   * Removido o botão de navegação que envolvia a Logo no cabeçalho do configurador.
   * O clique sobre o logotipo agora executa estritamente a animação de brilho e revela a assinatura *"Revelando seu melhor"*, sem navegar para a home ou reiniciar o estado do usuário.
-* **Código de Pedido Dinâmico, Aleatório e Legível (`utils.ts`, `mock.ts`, `App.tsx`, `SummaryView.tsx`, `SuccessView.tsx`):**
-  * Implementada a função `generateOrderCode()`, que cria identificadores exclusivos, amigáveis e fáceis de ditar/ler (ex: `EA-4829`, `EA-7154`), eliminando o ID fixo antigo (`X92`).
-  * O código é sincronizado e exibido no Resumo (`SummaryView`), no Ticket Final (`SuccessView`) e incluído de forma clara na mensagem pronta do WhatsApp (`✨ OLÁ! NOVA PROPOSTA GERADA (Pedido: #EA-XXXX)`).
+### [04/10/2026] Otimização da Animação da Logo & Remoção da Página de Assinatura
+* **Ajuste da Animação de Pulsar da Logomarca (`Logo.tsx`):**
+  * Reduzida a escala máxima do anel de expansão/pulso de `2.5x` para `1.7x`, criando um efeito de pulso luminoso mais sofisticado, contido e cinematográfico.
+  * Adicionado `transformOrigin: "135px 33px"` garantindo expansão perfeitamente concêntrica a partir do centro do círculo REC.
+  * O `viewBox` do SVG foi ampliado para `60 -10 240 85` e recebeu `overflow-visible`, garantindo margem inferior confortável para que a animação e o brilho nunca sejam cortados ou truncados.
+* **Remoção da Página de Assinatura (`QuoteView.tsx`, `SummaryView.tsx`, `useQuoteLogic.ts`):**
+  * Removido o modal e canvas de desenho de assinatura manuscrita (`SignatureModal.tsx`), eliminando fricção e etapas burocráticas no funil de contratação.
+  * O botão no resumo (`SummaryView`) agora confirma o orçamento diretamente via `onConfirm`/`handleConfirmQuote`, conduzindo o usuário imediatamente ao ticket final (`SuccessView`) com o link pronto para envio no WhatsApp.
+  * Bundle final otimizado com redução de tamanho graças ao tree-shaking das dependências de assinatura.
 
-### [04/10/2026] Correção de Bug: Sobreposição de Cards e Texto Explicativo de Pacotes
+### [04/10/2026] Tipografia Typewriter, Alinhamento de Botões, Limpeza Visual e Cards em Cascata
+* **Remoção de Badge Superior por Excesso (`IntroView.tsx`):** Removido o badge "Cinema & Produção Audiovisual" acima do logotipo, simplificando a composição da página inicial e destacando a logomarca da EAREC.
+* **Centralização Matemática dos Textos dos Botões (`IntroView.tsx`):** Os botões "Iniciar Orçamento" e "Instagram EAREC" agora possuem elementos laterais com larguras perfeitamente idênticas (`w-11 h-11 sm:w-12 sm:h-12`) para o ícone da esquerda e a seta da direita, garantindo que o texto central (`flex-1 text-center`) fique rigorosamente no centro físico do botão em qualquer resolução.
+* **Efeito de Digitação Cinematográfico (`TypewriterText` em `IntroView.tsx`):** O texto *"Você já conhece nosso trabalho ou deseja fazer um orçamento?"* agora surge dinamicamente como se estivesse sendo digitado em tempo real (~36ms por caractere), acompanhado de um cursor pulsante vermelho que se apaga suavemente ao término da digitação, com altura mínima garantida para evitar layout shifts.
+* **Resolução Definitiva do Conflito de Animação dos Cards (`UpsellList.tsx` & `animations.ts`):**
+  * **Compatibilidade Total de Variantes:** `cardItemVariants` agora responde nativamente tanto a `hidden`/`visible` quanto a `enter`/`center`, eliminando conflitos de propagação originados pelo `wizardStepVariants` do configurador.
+  * **Cálculo de Delay por Índice (`custom={index}`):** Todos os cards de categorias (`CategoryCard`), serviços (`ServiceCard`), adicionais (`AddonCard`) e pacotes customizados (`ProductionControlItem`) agora recebem índices ordinais explícitos (0, 1, 2, 3...) com delay incremental de 80ms (`delay: i * 0.08`), surgindo em cascata cinematográfica suave e orgânica independente de re-layouts do DOM.
+  * **Chaveamento Dinâmico de Grid (`services-grid-${category}`):** O container de grid foi chaveado com a categoria ativa, garantindo que a animação gradativa seja disparada novamente a cada troca de categoria.
+
+### [04/10/2026] Correções de UX: Teclado Virtual Mobile, Isolamento de Logo e Código de Pedido Dinâmico
 * **Eliminação de Container Fixo e Degradê Conflitante:** Removida a antiga caixa fixa (`fixed bottom-[170px]`) e o degradê de fundo de 450px em `UpsellList.tsx`, que colidia e ficava sobreposto aos cards das fileiras inferiores (ex: Casamento, Social, Comercial) em telas móveis e ao rolar a página.
 * **Painel Integrado no Fluxo Natural do Layout:** Os detalhes e a descrição completa do pacote selecionado agora são renderizados em um painel dedicado logo abaixo do grid de cards (`mt-4 sm:mt-6`), garantindo que os cards nunca mais sobreponham o texto explicativo.
 * **Aprimoramento Estrutural em `ServiceCard`:**
