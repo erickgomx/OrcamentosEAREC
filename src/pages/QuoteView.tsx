@@ -163,7 +163,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       </motion.div>
 
       {/* MAIN CONTENT: WIZARD STEP */}
-      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 flex flex-col items-center">
+      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 pb-32 sm:pb-40 flex flex-col items-center">
           <AnimatePresence initial={false} custom={state.direction} mode="wait">
             {state.viewState === 'config' && (
                 <motion.div 
@@ -248,17 +248,15 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
 
       {/* FOOTER NAVIGATION */}
       {state.viewState === 'config' && (
-        <div className="opacity-100 transition-all duration-300">
-            <StickyFooter 
-                totalPrice={state.totalPrice} 
-                onApprove={actions.handleNextStep} 
-                isApproved={false}
-                highlight={true}
-                showPrice={state.currentStep !== 0} 
-                disabled={computed.isNextDisabled}
-                customLabel={computed.footerLabel} 
-            />
-        </div>
+        <StickyFooter 
+            totalPrice={state.totalPrice} 
+            onApprove={actions.handleNextStep} 
+            isApproved={false}
+            highlight={true}
+            showPrice={state.currentStep !== 0} 
+            disabled={computed.isNextDisabled}
+            customLabel={computed.footerLabel} 
+        />
       )}
 
       {/* MENU CASCATA (DROPDOWN MODAL) */}

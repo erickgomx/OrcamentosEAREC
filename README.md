@@ -243,6 +243,12 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
   * Rodapé Fixo (`StickyFooter`): Destaque elegante para o "Valor Estimado", tipografia de valor total de alto impacto (`text-2xl sm:text-3xl md:text-4xl font-price`) e botão de ação rápido.
 * **Resumo e Checkout Elegantes (`SummaryView.tsx`):** Textos descritivos, discriminador de itens e CTA de confirmação reescalonados para clareza máxima de entendimento pelo cliente.
 
+### [04/10/2026] Botão do Próximo Passo Sempre Visível na Tela
+* **Barra Fixa com Botão de Próximo Passo Permanente:** O rodapé de navegação (`StickyFooter`) agora está fixado no rodapé da viewport (`fixed bottom-0 left-0 right-0 z-40`), mantendo o botão do próximo passo permanentemente acessível durante todas as etapas do configurador (`Passo 1: Categoria`, `Passo 2: Serviço`, `Passo 3: Detalhes`). O usuário nunca mais precisa rolar até o fim da página para avançar.
+* **Layout Compacto e Ergonômico:** Reformulado em linha horizontal (`flex items-center justify-between`) para smartphones com apenas ~65px de altura e suporte a safe area (`env(safe-area-inset-bottom)`), deixando a visualização do conteúdo desobstruída.
+* **Espaçamento Inferior Seguro:** Adicionado `pb-32 sm:pb-40` no contêiner principal para que todos os textos, cartões e disclaimers rolem completamente acima do rodapé flutuante, sem qualquer sobreposição.
+* **Rótulos e Estados Informativos:** No Passo 1, o botão orienta "Selecione uma Categoria" e, ao clicar, transforma-se instantaneamente em "Escolher Serviço" com o gradiente e brilho ativados.
+
 ### [04/10/2026] Sistema de Rotas Completo, Opção de Vídeo no Social (Mobile/Câmera) e Correção de Rolagem
 * **Sistema de Rotas Universal (Multi-ambiente):**
   * Roteamento SPA completo e independente para todas as páginas: `/inicio`, `/orcamento`, `/resumo`, `/sucesso`, `/portfolio`, `/admin`.

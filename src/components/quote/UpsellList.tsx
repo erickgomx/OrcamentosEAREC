@@ -194,7 +194,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto pb-32"
+          className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto pb-6 sm:pb-8"
         >
             <motion.div variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
                 {categories.map((cat, i) => (
@@ -215,7 +215,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="space-y-6 sm:space-y-8 w-full flex flex-col items-center pb-8 sm:pb-12"
+          className="space-y-6 sm:space-y-8 w-full flex flex-col items-center pb-6 sm:pb-8"
         >
                 
             {category === 'commercial' && commercialMode && (
@@ -556,7 +556,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
       {/* === STEP 3: CONFIGURATION (DETAILS) === */}
       {viewMode === 'config' && (
-        <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500 flex flex-col items-center">
+        <div className="space-y-8 animate-in fade-in slide-in-from-right-8 duration-500 flex flex-col items-center pb-6 sm:pb-8">
             
             {/* 1. QUANTITY / DURATION CONTROLS */}
             <AnimatePresence mode="wait">

@@ -460,11 +460,11 @@ export const useQuoteLogic = ({
   }
 
   const getFooterLabel = () => {
-    if (currentStep === 0) return "Escolher Serviço"; 
+    if (currentStep === 0) return category ? "Escolher Serviço" : "Selecione uma Categoria"; 
     if (currentStep === 1) return "Configurar Detalhes";
     if (currentStep === 2) {
         if (category === 'custom') return "Solicitar";
-        return "Ir para Resumo"; // Texto alterado conforme solicitado
+        return "Ir para Resumo";
     }
     return "Continuar";
   };
