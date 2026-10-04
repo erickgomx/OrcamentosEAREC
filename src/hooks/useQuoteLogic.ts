@@ -14,6 +14,7 @@ interface UseQuoteLogicProps {
   onSuccess: () => void;
   onBack: () => void;
   isQuickMode?: boolean;
+  onResetQuote?: () => void;
 }
 
 export type ViewState = 'config' | 'summary' | 'success';
@@ -26,12 +27,14 @@ export const useQuoteLogic = ({
   setQuoteState,
   onSuccess,
   onBack,
-  isQuickMode = false
+  isQuickMode = false,
+  onResetQuote
 }: UseQuoteLogicProps) => {
   
   // === STATE: VIEW & NAVIGATION COM SINCRONIZAÇÃO DE ROTA ===
   const [viewState, setViewState] = useState<ViewState>(() => {
-    if (typeof window !== 'undefined') {
+    // Só entra direto em 'summary' ou 'success' se houver um serviço selecionado
+    if (typeof window !== 'undefined' && quoteState?.category) {
       const p = window.location.pathname.toLowerCase();
       if (p === '/resumo' || p.includes('/resumo')) return 'summary';
       if (p === '/sucesso' || p.includes('/sucesso')) return 'success';
@@ -358,6 +361,50 @@ export const useQuoteLogic = ({
       }
   };
 
+  const handleResetQuote = useCallback(() => {
+    // 1. Limpa sub-etapas internas do configurador
+    setCurrentStep(0);
+    setDirection(-1);
+    setDistance(0);
+    setPaymentMethod('Pix');
+    setTempName('');
+    setPendingAction(null);
+    setIsModalOpen(false);
+    setIsMapOpen(false);
+    setIsNameModalOpen(false);
+    
+    // 2. Reseta o estado comercial da cotação
+    setQuoteState({
+      category: null, 
+      serviceId: 'wedding_base',
+      hours: 2,
+      qty: 10,
+      videoQty: 1, 
+      addDrone: false,
+      droneQty: 0,
+      addRealTime: false,
+      selectionMode: 'duration',
+      projectType: 'personal'
+    });
+
+    // 3. Força viewState de volta para o configurador
+    setViewState('config');
+
+    // 4. Sincroniza a URL do navegador para /orcamento sem reload
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname !== '/orcamento') {
+        window.history.pushState({}, '', '/orcamento');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 5. Invoca callback pai se fornecido
+    if (onResetQuote) {
+      onResetQuote();
+    }
+  }, [setQuoteState, onResetQuote]);
+
   // === COMPUTED: LABELS & DETAILS ===
   const serviceLabel = category ? AppConfig.getServiceLabel(category, serviceId) : '';
   let metricLabel = '';
@@ -414,7 +461,8 @@ export const useQuoteLogic = ({
         handleConfirmQuote,
         handleSignatureSuccess,
         handleRemoveAddon,
-        handleContactRequest
+        handleContactRequest,
+        handleResetQuote
     },
     computed: {
         serviceLabel,

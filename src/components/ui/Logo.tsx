@@ -31,7 +31,7 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       EA
     </motion.text>
     
-    {/* Ripple Effect Behind (Tamanho diminuído para 1.7x e com transformOrigin centralizado para não cortar) */}
+    {/* Ripple Effect Behind - Loop suave e contínuo sem piscar */}
     <motion.circle 
       cx="135" 
       cy="33" 
@@ -40,9 +40,18 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       strokeWidth="1.5"
       fill="transparent"
       style={{ transformOrigin: "135px 33px" }}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: [1, 1.7], opacity: [0.35, 0] }}
-      transition={{ duration: 2.2, repeat: Infinity, ease: "easeOut", delay: shouldAnimate ? 0.8 : 0 }}
+      initial={{ scale: 1, opacity: 0 }}
+      animate={{ 
+        scale: [1, 1.35, 1.7], 
+        opacity: [0, 0.38, 0] 
+      }}
+      transition={{ 
+        duration: 2.4, 
+        repeat: Infinity, 
+        ease: "easeInOut",
+        times: [0, 0.35, 1],
+        delay: shouldAnimate ? 0.8 : 0 
+      }}
     />
     
     {/* Pulse Circle */}

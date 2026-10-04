@@ -140,6 +140,26 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  const handleResetQuote = () => {
+    setConfig(prev => ({ ...prev, id: generateOrderCode() }));
+    setQuoteState({
+      category: null, 
+      serviceId: 'wedding_base',
+      hours: 2,
+      qty: 10,
+      videoQty: 1, 
+      addDrone: false,
+      droneQty: 0,
+      addRealTime: false,
+      selectionMode: 'duration',
+      projectType: 'personal'
+    });
+    setIsQuoteSuccess(false);
+    setQuoteSubView('quote');
+    router.navigate('/orcamento');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Garante dados de cliente válidos ao abrir /orcamento diretamente
   const activeClientData: ClientData = clientData || {
     name: '',
@@ -272,6 +292,7 @@ const App: React.FC = () => {
                       onSuccess={() => setIsQuoteSuccess(true)}
                       isQuickMode={isQuickMode}
                       onRequestForm={handleRequestForm}
+                      onResetQuote={handleResetQuote}
                     />
                   )}
                 </motion.div>

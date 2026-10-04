@@ -22,6 +22,8 @@ Uma plataforma de orçamentos projetada para encantar clientes premium. Muito al
 *   **⚡ Aprovação Imediata:** Confirmação direta do orçamento com geração instantânea do ticket e despacho para WhatsApp, eliminando atritos de assinatura.
 *   **🔐 Painel Administrativo:** Área segura para ajuste de preços base sem necessidade de deploy.
 *   **✨ Cards Cinematográficos & Badges Perfeitos:** Cards com cantos perfeitamente recortados (`overflow-hidden`), botão de informações à esquerda e selo **Popular** (`Sparkles`) posicionado exclusivamente à direita, sem sobreposições ou vazamentos.
+*   **🔴 Logomarca EAREC Fluida:** Animação de pulso e *ripple* com ciclo de opacidade fechado (`[0, 0.38, 0]`), eliminando qualquer corte ou piscada (*flicker*) no reinício do loop.
+*   **🔄 Reinício Limpo de Orçamento:** O botão "Configurar novo pedido" redefine o formulário para o Passo 0, gera um novo código de pedido e direciona a rota para `/orcamento` instantaneamente via React State, sem recarregar a página ou reabrir propostas antigas.
 *   **📱 Mobile First:** Design responsivo e otimizado para qualquer dispositivo.
 
 ---

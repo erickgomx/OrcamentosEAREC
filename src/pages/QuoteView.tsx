@@ -31,6 +31,7 @@ interface QuoteViewProps {
   isQuickMode?: boolean;
   onRequestForm?: () => void; 
   onNavigateHome?: () => void;
+  onResetQuote?: () => void;
 }
 
 const QuoteView: React.FC<QuoteViewProps> = (props) => {
@@ -44,7 +45,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   if (state.viewState === 'success') {
       return (
         <SuccessView 
-            onReset={() => window.location.reload()} 
+            onReset={actions.handleResetQuote} 
             clientData={props.clientData}
             totalPrice={state.totalPrice}
             orderId={props.config.id}
