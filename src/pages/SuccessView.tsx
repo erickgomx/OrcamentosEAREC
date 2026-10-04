@@ -13,6 +13,7 @@ interface SuccessViewProps {
   onReset: () => void;
   clientData: ClientData;
   totalPrice: number;
+  orderId?: string;
   quoteDetails?: {
       occasion: ServiceCategory;
       customOccasionText?: string;
@@ -30,8 +31,9 @@ interface SuccessViewProps {
   };
 }
 
-const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPrice, quoteDetails }) => {
+const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPrice, quoteDetails, orderId }) => {
   const whatsappNumber = AppConfig.BRAND.WHATSAPP;
+  const finalOrderId = orderId || 'EA-2026';
   
   // Estado para capturar nome caso esteja faltando
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
@@ -133,7 +135,7 @@ Podemos agendar uma conversa?`;
             }
 
             // MENSAGEM FINAL FORMATADA
-            message = `✨ OLÁ! NOVA PROPOSTA GERADA
+            message = `✨ OLÁ! NOVA PROPOSTA GERADA (Pedido: #${finalOrderId})
 Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a disponibilidade.
 
 🗓️ AGENDA
@@ -356,7 +358,7 @@ Poderiam confirmar a reserva desta data?`;
                     </span>
                     <span className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium">Aguardando Envio</span>
                  </div>
-                 <span className="text-[9px] text-neutral-700 font-mono">ID: {new Date().getTime().toString().slice(-4)}</span>
+                 <span className="text-[11px] text-neutral-400 font-mono font-medium tracking-wider">Pedido: #{finalOrderId}</span>
             </div>
         </motion.div>
 

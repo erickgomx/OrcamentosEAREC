@@ -1,5 +1,6 @@
 
 import { QuoteData } from '../types';
+import { generateOrderCode } from '../lib/utils';
 
 /**
  * ARQUIVO DE DADOS (MOCK)
@@ -11,8 +12,8 @@ import { QuoteData } from '../types';
  */
 
 export const mockQuote: QuoteData = {
-  // ID interno do orçamento (gerado dinamicamente com o ano atual)
-  id: `EAREC-${new Date().getFullYear()}-X92`,
+  // ID exclusivo do orçamento (gerado aleatoriamente e amigável para leitura, ex: EA-7842)
+  id: generateOrderCode(),
   
   // Dados padrão do cliente (estes dados são apenas placeholders, 
   // pois serão substituídos pelo que o usuário digitar na WelcomeView)

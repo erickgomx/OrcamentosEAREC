@@ -94,7 +94,11 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
 const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) => {
   const [isShining, setIsShining] = useState(false);
   
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     if (!isShining) {
         setIsShining(true);
         setTimeout(() => setIsShining(false), 2000); 

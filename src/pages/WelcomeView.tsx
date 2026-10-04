@@ -52,10 +52,17 @@ const SmartInput = ({
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, [value, minLength, externalStatus]);
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Garante que o input fique visível e centralizado na área útil ao abrir o teclado virtual no celular
+    setTimeout(() => {
+      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 250);
+  };
+
   return (
     <div className="group relative w-full">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-brand-DEFAULT transition-colors">
-          <Icon size={24} strokeWidth={1.5} />
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-brand-DEFAULT transition-colors pointer-events-none">
+          <Icon size={22} strokeWidth={1.5} className="sm:w-6 sm:h-6" />
       </div>
       
       <input 
@@ -66,8 +73,9 @@ const SmartInput = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onFocus={handleFocus}
         className={cn(
-            "w-full bg-white/5 border border-white/10 rounded-xl py-6 pl-14 pr-14 text-lg md:text-xl text-white placeholder:text-neutral-600 focus:outline-none focus:border-brand-DEFAULT/50 focus:bg-white/10 transition-all selection:bg-brand-DEFAULT selection:text-white",
+            "w-full bg-white/5 border border-white/10 rounded-xl py-4 sm:py-5 pl-12 sm:pl-14 pr-12 sm:pr-14 text-base sm:text-lg md:text-xl text-white placeholder:text-neutral-600 focus:outline-none focus:border-brand-DEFAULT/50 focus:bg-white/10 transition-all selection:bg-brand-DEFAULT selection:text-white",
             status === 'error' && "border-red-500/50 text-red-100 bg-red-900/10",
             className
         )}
@@ -255,10 +263,10 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
   };
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-6 py-12">
+    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-start sm:justify-center relative overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-6 sm:py-12">
       
       {/* Botão Voltar Absoluto */}
-      <div className="fixed top-8 left-8 z-[60]">
+      <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-[60]">
         <button 
             onClick={handleBackStep}
             className="text-neutral-500 hover:text-white flex items-center gap-2 transition-colors text-xs uppercase tracking-wider bg-black/20 p-2.5 rounded-full hover:bg-white/10 border border-transparent hover:border-white/10"
@@ -266,15 +274,16 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
              {currentStep === 0 ? <ArrowLeft size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
-       <div className="relative z-10 w-full max-w-lg flex flex-col items-center">
+
+      <div className="relative z-10 w-full max-w-lg flex flex-col items-center my-auto">
         {/* LOGO & PROGRESS */}
         <motion.div 
             initial={{ opacity: 0, y: -20 }} 
             animate={{ opacity: 1, y: 0 }} 
-            className="mb-12 text-center w-full"
+            className="mb-6 sm:mb-10 text-center w-full"
         >
-            <div className="flex justify-center mb-8">
-                <Logo className="w-48 md:w-56" />
+            <div className="flex justify-center mb-4 sm:mb-6">
+                <Logo className="w-36 sm:w-44 md:w-56" />
             </div>
             {/* Progress Bar Minimalista */}
             <div className="flex items-center gap-2 max-w-[200px] mx-auto">
@@ -289,14 +298,11 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                     </div>
                 ))}
             </div>
-            <p className="text-[10px] text-neutral-500 font-mono mt-3 uppercase tracking-widest">
+            <p className="text-[10px] text-neutral-500 font-mono mt-2.5 uppercase tracking-widest">
                 Passo {currentStep + 1} de {steps.length}
             </p>
         
         </motion.div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-lg flex flex-col items-center">
 
         {/* STEP CONTENT (WIZARD) */}
         <div className="w-full relative flex flex-col justify-center">
@@ -310,13 +316,13 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                     exit="exit"
                     className="w-full"
                 >
-                    <div className="flex flex-col items-center text-center space-y-8">
+                    <div className="flex flex-col items-center text-center space-y-6 sm:space-y-8">
                         
-                        <motion.div variants={organicItemVariants} className="space-y-2">
-                            <h2 className="text-2xl md:text-3xl font-serif text-white leading-tight">
+                        <motion.div variants={organicItemVariants} className="space-y-1.5 sm:space-y-2">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-white leading-tight">
                                 {currentStepData.title}
                             </h2>
-                            <p className="text-neutral-400 text-sm md:text-base font-light">
+                            <p className="text-neutral-400 text-xs sm:text-sm md:text-base font-light">
                                 {currentStepData.subtitle}
                             </p>
                         </motion.div>

@@ -48,6 +48,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
             onReset={() => window.location.reload()} 
             clientData={props.clientData}
             totalPrice={state.totalPrice}
+            orderId={props.config.id}
             quoteDetails={{
                 occasion: quoteState.category as any,
                 customOccasionText: computed.serviceLabel,
@@ -91,13 +92,9 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                      <span className="text-xs uppercase tracking-wider font-medium pr-1 hidden sm:inline">Início</span>
                    )}
                </button>
-               <button 
-                  onClick={() => onNavigateHome ? onNavigateHome() : props.onBack()} 
-                  className="cursor-pointer hover:opacity-80 transition-opacity focus:outline-none"
-                  title="Ir para página inicial"
-               >
+               <div className="flex justify-center items-center">
                   <Logo className="w-48 sm:w-56 md:w-64 opacity-90" />
-               </button>
+               </div>
           </motion.div>
 
           {/* Progress Bar */}
@@ -147,7 +144,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       </motion.div>
 
       {/* MAIN CONTENT: WIZARD STEP */}
-      <div className="flex-1 w-full max-w-5xl mx-auto relative px-8 pb-48 flex flex-col justify-center">
+      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 pb-32 sm:pb-36 flex flex-col items-center">
           <AnimatePresence initial={false} custom={state.direction} mode="wait">
             {state.viewState === 'config' && (
                 <motion.div 

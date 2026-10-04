@@ -69,3 +69,12 @@ export const smoothScrollTo = (elementId: string, duration: number = 1200) => {
 
     requestAnimationFrame(animation);
 };
+
+/**
+ * Gera um código de pedido aleatório elegante, exclusivo e fácil de ler (ex: EA-7842)
+ * Evita sequências confusas ou caracteres ilegíveis para proporcionar uma leitura rápida e clara.
+ */
+export const generateOrderCode = (): string => {
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
+  return `EA-${randomNum}`;
+};

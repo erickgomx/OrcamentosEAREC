@@ -12,7 +12,7 @@ import Logo from './components/ui/Logo';
 import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
 import { ClientData, QuoteData, QuoteState } from './types';
 import { mockQuote } from './data/mock';
-import { delay } from './lib/utils';
+import { delay, generateOrderCode } from './lib/utils';
 import { AppConfig } from './config/AppConfig';
 import { useRouter } from './hooks/useRouter';
 import { pageSlideVariants } from './lib/animations';
@@ -33,7 +33,10 @@ const App: React.FC = () => {
   const [quoteSubView, setQuoteSubView] = useState<'quote' | 'welcome'>('quote');
   
   const [isLoading, setIsLoading] = useState(false);
-  const [config, setConfig] = useState<QuoteData>(mockQuote);
+  const [config, setConfig] = useState<QuoteData>(() => ({
+    ...mockQuote,
+    id: generateOrderCode()
+  }));
   const [isQuoteSuccess, setIsQuoteSuccess] = useState(false);
   const [isQuickMode, setIsQuickMode] = useState(false);
 
@@ -99,6 +102,7 @@ const App: React.FC = () => {
 
   const handleStart = async (data: ClientData) => {
     setClientData(data);
+    setConfig(prev => ({ ...prev, id: generateOrderCode() }));
     setIsLoading(true);
     setIsQuoteSuccess(false);
     setQuoteState(prev => ({ ...prev, category: null }));
@@ -117,6 +121,7 @@ const App: React.FC = () => {
         contact: ''
       });
     }
+    setConfig(prev => ({ ...prev, id: generateOrderCode() }));
     setQuoteState(prev => ({ ...prev, category: null }));
     setIsQuickMode(true);
     setIsQuoteSuccess(false);

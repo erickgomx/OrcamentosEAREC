@@ -157,6 +157,27 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
 
 ## 📅 Últimas Atualizações
 
+### [04/10/2026] Otimização Mobile do Teclado, Interação da Logo & Código Aleatório de Pedido
+* **Resolução do Teclado Mobile no Input (`WelcomeView.tsx` & `index.html`):**
+  * Adicionado `interactive-widget=resizes-content` na meta tag `viewport` para gerenciamento nativo do espaço com o teclado virtual no celular.
+  * Removido `overflow-hidden` rígido e centralização forçada que empurrava o input para fora do viewport. Container agora possui rolagem vertical natural (`overflow-y-auto`) e alinhamento inteligente `my-auto`.
+  * Auto-rolagem suave (`scrollIntoView`) ao focar no campo de digitação para garantir visibilidade e centralização imediata acima do teclado.
+  * Padding e espaçamentos do formulário calibrados para telas móveis.
+* **Comportamento Puro no Clique da Logo (`Logo.tsx` & `QuoteView.tsx`):**
+  * Removido o botão de navegação que envolvia a Logo no cabeçalho do configurador.
+  * O clique sobre o logotipo agora executa estritamente a animação de brilho e revela a assinatura *"Revelando seu melhor"*, sem navegar para a home ou reiniciar o estado do usuário.
+* **Código de Pedido Dinâmico, Aleatório e Legível (`utils.ts`, `mock.ts`, `App.tsx`, `SummaryView.tsx`, `SuccessView.tsx`):**
+  * Implementada a função `generateOrderCode()`, que cria identificadores exclusivos, amigáveis e fáceis de ditar/ler (ex: `EA-4829`, `EA-7154`), eliminando o ID fixo antigo (`X92`).
+  * O código é sincronizado e exibido no Resumo (`SummaryView`), no Ticket Final (`SuccessView`) e incluído de forma clara na mensagem pronta do WhatsApp (`✨ OLÁ! NOVA PROPOSTA GERADA (Pedido: #EA-XXXX)`).
+
+### [04/10/2026] Correção de Bug: Sobreposição de Cards e Texto Explicativo de Pacotes
+* **Eliminação de Container Fixo e Degradê Conflitante:** Removida a antiga caixa fixa (`fixed bottom-[170px]`) e o degradê de fundo de 450px em `UpsellList.tsx`, que colidia e ficava sobreposto aos cards das fileiras inferiores (ex: Casamento, Social, Comercial) em telas móveis e ao rolar a página.
+* **Painel Integrado no Fluxo Natural do Layout:** Os detalhes e a descrição completa do pacote selecionado agora são renderizados em um painel dedicado logo abaixo do grid de cards (`mt-4 sm:mt-6`), garantindo que os cards nunca mais sobreponham o texto explicativo.
+* **Aprimoramento Estrutural em `ServiceCard`:**
+  * Estrutura flex interna em `justify-between` com altura proporcional (`min-h-[160px] sm:min-h-[190px] md:min-h-[220px]`).
+  * Inclusão de botão discreto com ícone de ajuda (`HelpCircle`) para consulta rápida dos detalhes completos do pacote via modal popup.
+* **Harmonização do Container em `QuoteView.tsx`:** Otimização dos paddings laterais e inferiores (`px-4 sm:px-6 md:px-8 pb-32 sm:pb-36`) para respiro visual impecável acima do `StickyFooter`.
+
 ### [04/10/2026] Harmonização e Equilíbrio Visual: Textos, Cards e Botões
 * **Eliminação de Textos Microscópicos:** Remoção de tamanhos ilegíveis em telas menores (`text-[8px]`, `text-[9px]`, `text-[10px]`), substituídos por tamanhos confortáveis e responsivos (`text-xs sm:text-sm` e `text-sm sm:text-base`).
 * **Cards e Módulos Proporcionais (`UpsellList.tsx`):**

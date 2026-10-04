@@ -183,7 +183,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     </button>
                     <div className="text-center md:text-right">
                         <h2 className="text-white font-serif text-2xl md:text-3xl">Revisão do Pedido</h2>
-                        <p className="text-neutral-500 text-xs uppercase tracking-widest mt-1">ID: {quoteData.id}</p>
+                        <p className="text-neutral-400 text-xs font-mono uppercase tracking-widest mt-1">Pedido: #{quoteData.id}</p>
                     </div>
                 </motion.div>
 

@@ -226,7 +226,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
           initial="hidden"
           animate="visible"
           exit="hidden"
-          className="space-y-8 w-full flex flex-col items-center pb-48"
+          className="space-y-6 sm:space-y-8 w-full flex flex-col items-center pb-8 sm:pb-12"
         >
                 
             {category === 'commercial' && commercialMode && (
@@ -331,67 +331,75 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
               </motion.div>
             )}
-                 {/* CAIXA DE DETALHES DO SERVIÇO SELECIONADO (Fixed acima do rodapé) */}
-            {category !== 'custom' && viewMode !== 'categories' && (
-                <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="fixed bottom-[170px] md:bottom-[140px] left-0 right-0 z-50 pointer-events-none flex flex-col items-center text-center justify-end"
-                >
-                    {/* Background gradient escuro para leitura, atado à caixa de detalhes */}
-                    <div className="absolute bottom-[-200px] left-0 right-0 h-[450px] bg-gradient-to-t from-neutral-950 via-neutral-950/95 to-transparent -z-10" />
 
-                    <div className="relative z-10 px-4 w-full flex flex-col items-center">
-                        <AnimatePresence mode="wait">
-                        {category === 'video_production' ? (
+            {/* PAINEL DE DETALHES DO PACOTE SELECIONADO (No fluxo natural do layout, logo abaixo dos cards) */}
+            {category !== 'custom' && (
+                <motion.div 
+                    variants={fadeInUp}
+                    className="w-full max-w-3xl mx-auto mt-4 sm:mt-6 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-neutral-900/80 border border-white/10 backdrop-blur-md text-center shadow-xl relative overflow-hidden"
+                >
+                    <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/60 to-transparent" />
+
+                    <AnimatePresence mode="wait">
+                    {category === 'video_production' ? (
                         <motion.div 
                             key="video_prod_details"
-                            initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+                            initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
                             animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
-                            transition={{ duration: 0.4 }}
-                            className="flex flex-col items-center text-center max-w-2xl mx-auto drop-shadow-2xl"
+                            exit={{ opacity: 0, filter: 'blur(6px)', y: -8 }}
+                            transition={{ duration: 0.25 }}
+                            className="flex flex-col items-center text-center space-y-2 max-w-2xl mx-auto"
                         >
-                            <h3 className="text-xl md:text-2xl font-serif text-white mb-2 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-                                Projetos Especiais
-                            </h3>
-                            <p className="text-xs md:text-sm text-neutral-200 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,1)] max-w-md mx-auto">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
+                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-white font-bold">
+                                    Projetos Especiais
+                                </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed max-w-md mx-auto">
                                 Selecione e adicione exatamente os serviços que você precisa.
                             </p>
                         </motion.div>
                     ) : serviceId && (AppConfig.PRICING_TABLE as any)[category]?.[serviceId] ? (
                         <motion.div 
                             key={serviceId}
-                            initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+                            initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
                             animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
-                            transition={{ duration: 0.4 }}
-                            className="flex flex-col items-center text-center max-w-3xl mx-auto drop-shadow-2xl"
+                            exit={{ opacity: 0, filter: 'blur(6px)', y: -8 }}
+                            transition={{ duration: 0.25 }}
+                            className="flex flex-col items-center text-center space-y-2 max-w-3xl mx-auto"
                         >
-                            <h3 className="text-xl md:text-2xl font-serif text-brand-DEFAULT font-bold mb-1 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-                                {(AppConfig.PRICING_TABLE as any)[category][serviceId].label}
-                            </h3>
-                            <p className="text-xs md:text-sm text-neutral-200 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,1)] max-w-lg mx-auto">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
+                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-brand-DEFAULT font-bold">
+                                    {(AppConfig.PRICING_TABLE as any)[category][serviceId].label}
+                                </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-neutral-200 font-normal leading-relaxed max-w-xl mx-auto">
                                 {(AppConfig.PRICING_TABLE as any)[category][serviceId].description}
                             </p>
+                            {(AppConfig.PRICING_TABLE as any)[category][serviceId].composition && (
+                                <div className="pt-1">
+                                    <span className="inline-block text-[11px] sm:text-xs text-brand-DEFAULT bg-brand-DEFAULT/10 border border-brand-DEFAULT/20 px-3 py-1 rounded-full font-medium">
+                                        {(AppConfig.PRICING_TABLE as any)[category][serviceId].composition}
+                                    </span>
+                                </div>
+                            )}
                         </motion.div>
                     ) : (
                         <motion.div 
                             key="empty_selection"
-                            initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
-                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
-                            transition={{ duration: 0.4 }}
-                            className="flex flex-col items-center text-center drop-shadow-2xl"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="py-1"
                         >
-                            <h3 className="text-sm md:text-base font-medium text-white/50 drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-                                Toque em uma opção para ver os detalhes
-                            </h3>
+                            <p className="text-xs sm:text-sm text-neutral-400">
+                                Toque em uma opção acima para ver os detalhes do pacote.
+                            </p>
                         </motion.div>
                     )}
-                        </AnimatePresence>
-                    </div>
+                    </AnimatePresence>
                 </motion.div>
             )}
         </motion.div>
@@ -854,9 +862,9 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[150px] sm:min-h-[180px] md:min-h-[210px] overflow-hidden w-full box-border backdrop-blur-md",
+            "group relative flex flex-col items-center justify-between p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md",
             active 
-                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50 z-10" 
+                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
@@ -869,49 +877,65 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             </div>
         )}
 
-        {/* Small Elegant Indicator */}
+        {/* Botão de Ajuda / Detalhes Rápidos */}
+        {onInfo && desc && (
+            <button 
+              className={cn(
+                 "absolute text-neutral-500 hover:text-white transition-colors z-20 p-1.5 hover:bg-white/10 rounded-full",
+                 highlight ? "top-2.5 right-7" : "top-2.5 left-2.5"
+              )}
+              onClick={(e) => {
+                 e.stopPropagation();
+                 onInfo({ title, desc, price });
+              }}
+              title="Ver detalhes do pacote"
+            >
+                <HelpCircle size={16} strokeWidth={2} />
+            </button>
+        )}
+
+        {/* Indicador de Seleção Ativa */}
         <div className={cn(
             "absolute top-3 right-3 w-2.5 h-2.5 rounded-full transition-all duration-500 z-20",
             active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
         )} />
         
-        <div className={cn(
-            "p-3.5 sm:p-4 rounded-2xl mb-2 transition-all duration-300",
-            active 
-                ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
-                : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
-        )}>
-            <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
-        </div>
-        
-        <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
-            <h4 className={cn(
-                "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
-                active ? "text-white" : "text-neutral-300 group-hover:text-white"
+        <div className="w-full flex flex-col items-center">
+            <div className={cn(
+                "p-3.5 sm:p-4 rounded-2xl mb-2 transition-all duration-300",
+                active 
+                    ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
+                    : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
             )}>
-                {title}
-            </h4>
+                <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
+            </div>
             
-            {/* DESCRIÇÃO BREVE - SÓ APARECE QUANDO ATIVO */}
-            <AnimatePresence mode="wait">
-                {active && (
-                    <motion.p
-                        initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
-                        animate={{ opacity: 1, height: "auto", filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
-                        transition={{ duration: 0.3 }}
-                        className="text-[11px] sm:text-xs md:text-sm text-brand-DEFAULT font-medium leading-normal pt-1.5"
-                    >
-                        {composition}
-                    </motion.p>
-                )}
-            </AnimatePresence>
+            <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
+                <h4 className={cn(
+                    "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
+                    active ? "text-white" : "text-neutral-300 group-hover:text-white"
+                )}>
+                    {title}
+                </h4>
+                
+                {/* DESCRIÇÃO BREVE (COMPOSIÇÃO) - SÓ APARECE QUANDO ATIVO */}
+                <AnimatePresence mode="wait">
+                    {active && composition && (
+                        <motion.p
+                            initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, height: "auto", filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
+                            transition={{ duration: 0.3 }}
+                            className="text-[11px] sm:text-xs md:text-sm text-brand-DEFAULT font-medium leading-normal pt-1.5"
+                        >
+                            {composition}
+                        </motion.p>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
 
-        {/* Espaçador para empurrar o preço para baixo quando inativo */}
-        {!active && <div className="grow" />}
-
-        <div className="w-full pt-3 border-t border-white/5 mt-auto">
+        <div className="w-full pt-3 border-t border-white/5 mt-3">
             <p className={cn("text-sm sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-400 group-hover:text-neutral-200")}>
                 {price}
             </p>
