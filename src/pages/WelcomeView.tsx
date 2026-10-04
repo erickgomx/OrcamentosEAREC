@@ -8,41 +8,13 @@ import LocationMapModal from '../components/ui/LocationMapModal';
 import { ClientData } from '../types';
 import { CalendarService } from '../services/CalendarService';
 import { cn } from '../lib/utils';
+import { wizardStepVariants } from '../lib/animations';
 
 interface WelcomeViewProps {
   onStart: (data: ClientData) => void;
   onAdminClick?: () => void;
   onBack?: () => void;
 }
-
-// Variantes de Animação para o Wizard (Slide Lateral)
-const stepVariants: Variants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 50 : -50,
-    opacity: 0,
-    filter: 'blur(10px)',
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-    filter: 'blur(0px)',
-    transition: {
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1] // Custom ease "cine"
-    }
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 50 : -50,
-    opacity: 0,
-    filter: 'blur(10px)',
-    transition: {
-        duration: 0.4,
-        ease: "easeIn"
-    }
-  })
-};
 
 // Componente de Input Inteligente (Reutilizado e Estilizado)
 const SmartInput = ({ 
@@ -332,7 +304,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
                 <motion.div 
                     key={currentStep}
                     custom={direction}
-                    variants={stepVariants}
+                    variants={wizardStepVariants}
                     initial="enter"
                     animate="center"
                     exit="exit"

@@ -59,13 +59,26 @@ interface UpsellListProps {
 const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index }: any) => (
     <motion.div 
         custom={index}
-        variants={{ hidden: { opacity: 0, y: 20 }, visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1 } }) }}
+        variants={{ 
+            hidden: { opacity: 0, y: 25, scale: 0.96, filter: 'blur(6px)' }, 
+            visible: (i) => ({ 
+                opacity: 1, 
+                y: 0, 
+                scale: 1,
+                filter: 'blur(0px)',
+                transition: { delay: i * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] } 
+            }),
+            exit: { opacity: 0, y: -15, scale: 0.96, filter: 'blur(6px)', transition: { duration: 0.25 } }
+        }}
+        whileHover={{ scale: 1.025, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-500 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden",
+            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden backdrop-blur-md",
             active 
-                ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)] scale-[1.02]" 
-                : "bg-neutral-950/50 border-white/5 hover:border-white/20 hover:bg-neutral-900/80"
+                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
+                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
         <div className={cn(
@@ -504,7 +517,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <div className="flex items-center justify-between w-full gap-8 px-4">
                             <ControlBtn onClick={() => setHours(Math.max(2, hours - 1))} icon={Minus} />
                             <div className="text-center">
-                                <span className="block text-6xl font-serif text-white tracking-tighter mb-2 drop-shadow-lg">
+                                <span className="block text-6xl font-price font-bold text-white tracking-tighter mb-2 drop-shadow-lg">
                                     <AnimatedNumber value={hours} />
                                 </span>
                                 <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">Horas</span>
@@ -536,7 +549,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <div className="flex items-center justify-between w-full gap-8 px-4">
                                 <ControlBtn onClick={() => setQty(Math.max(10, qty - 1))} icon={Minus} />
                                 <div className="text-center">
-                                    <span className="block text-4xl font-serif text-white tracking-tighter mb-1 drop-shadow-lg">
+                                    <span className="block text-4xl font-price font-bold text-white tracking-tighter mb-1 drop-shadow-lg">
                                         <AnimatedNumber value={qty} />
                                     </span>
                                 </div>
@@ -557,7 +570,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <div className="flex items-center justify-between w-full gap-8 px-4">
                                 <ControlBtn onClick={() => setVideoQty(Math.max(1, videoQty - 1))} icon={Minus} />
                                 <div className="text-center">
-                                    <span className="block text-4xl font-serif text-white tracking-tighter mb-1 drop-shadow-lg">
+                                    <span className="block text-4xl font-price font-bold text-white tracking-tighter mb-1 drop-shadow-lg">
                                         <AnimatedNumber value={videoQty} />
                                     </span>
                                 </div>
@@ -610,7 +623,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <div className="flex items-center justify-between w-full gap-8 px-4">
                             <ControlBtn onClick={() => setQty(Math.max(minQty, qty - 1))} icon={Minus} />
                             <div className="text-center">
-                                <span className="block text-6xl font-serif text-white tracking-tighter mb-2 drop-shadow-lg">
+                                <span className="block text-6xl font-price font-bold text-white tracking-tighter mb-2 drop-shadow-lg">
                                     <AnimatedNumber value={qty} />
                                 </span>
                                 <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">
@@ -682,7 +695,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </div>
                     </div>
                     <div className="text-left sm:text-right shrink-0 pl-14 sm:pl-0">
-                         <p className="text-brand-DEFAULT md:text-neutral-400 text-xs md:text-sm font-medium">
+                         <p className="text-brand-DEFAULT md:text-neutral-400 text-xs md:text-sm font-medium font-price">
                              {isQuickMode && distance === 0 
                                 ? "A consultar" 
                                 : `${distance}km • ${travelCost > 0 ? formatCurrency(travelCost) : "Grátis"}`}
@@ -735,7 +748,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                       </p>
                   </div>
                   <div className="bg-brand-DEFAULT/10 py-3 px-6 rounded-full inline-block border border-brand-DEFAULT/20">
-                      <span className="text-brand-DEFAULT font-bold text-lg">{infoData.price}</span>
+                      <span className="text-brand-DEFAULT font-bold font-price text-lg">{infoData.price}</span>
                   </div>
                </motion.div>
             </div>
@@ -752,7 +765,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
 
 const PriceTooltip = ({ value }: { value: number }) => (
-    <div className="absolute -top-8 bg-neutral-800 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-xl">
+    <div className="absolute -top-8 bg-neutral-800 text-white text-[10px] font-price font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 shadow-xl">
         + R$ {value}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-800" />
     </div>
@@ -760,12 +773,15 @@ const PriceTooltip = ({ value }: { value: number }) => (
 
 const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
   <motion.button 
-      whileHover={{ scale: 1.1, backgroundColor: active ? "var(--brand-color)" : "rgba(255,255,255,0.1)" }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={{ scale: 1.08, y: -1 }}
+      whileTap={{ scale: 0.92 }}
+      transition={{ type: "spring", stiffness: 450, damping: 25 }}
       onClick={onClick} 
       className={cn(
-        "w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-colors border",
-        active ? "bg-white/5 border-white/10 text-white" : "bg-transparent border-white/5 text-neutral-500"
+        "w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-all border shadow-lg",
+        active 
+          ? "bg-brand-DEFAULT text-white border-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
+          : "bg-white/[0.04] border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 hover:border-white/20"
       )}
   >
       <Icon size={24}/>
@@ -827,12 +843,15 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
     <motion.div 
         layout 
         variants={fadeInUp}
+        whileHover={{ scale: 1.025, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-500 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden w-full box-border",
+            "group relative flex flex-col items-center justify-center p-3 md:p-6 rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] md:min-h-[220px] overflow-hidden w-full box-border backdrop-blur-md",
             active 
-                ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)] scale-[1.02] z-10" 
-                : "bg-neutral-950/50 border-white/5 hover:border-white/20 hover:bg-neutral-900/80"
+                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50 z-10" 
+                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
         {highlight && (
@@ -887,7 +906,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {!active && <div className="grow" />}
 
         <div className="w-full pt-3 border-t border-white/5 mt-auto">
-            <p className={cn("text-[10px] sm:text-[11px] md:text-sm font-bold tracking-widest uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-500 group-hover:text-neutral-400")}>
+            <p className={cn("text-[10px] sm:text-[11px] md:text-sm font-bold font-price tracking-widest uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-500 group-hover:text-neutral-400")}>
                 {price}
             </p>
         </div>
@@ -897,12 +916,15 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
 const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: any) => (
     <motion.div 
         variants={fadeInUp}
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex flex-col items-center justify-center p-3 sm:p-6 rounded-2xl border transition-all select-none relative gap-2 sm:gap-3 h-full group box-border", 
-            active ? "bg-brand-DEFAULT/10 border-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT" : "bg-neutral-900/40 border-white/5 hover:bg-white/5"
+            "cursor-pointer flex flex-col items-center justify-center p-4 sm:p-6 rounded-3xl border transition-all select-none relative gap-2 sm:gap-3 h-full group box-border backdrop-blur-md", 
+            active 
+                ? "bg-brand-DEFAULT/15 border-brand-DEFAULT shadow-[0_0_25px_rgba(220,38,38,0.25)] ring-1 ring-brand-DEFAULT" 
+                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
         )}
     >
         <button 
@@ -931,7 +953,7 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc }: 
         
         <div className="space-y-1 text-center px-0 sm:px-1 w-full">
             <p className={cn("text-[11px] sm:text-xs md:text-sm font-medium whitespace-normal leading-tight break-words", active ? "text-white" : "text-neutral-300")}>{label}</p>
-            <p className="text-[9px] md:text-xs text-brand-DEFAULT font-bold bg-brand-DEFAULT/10 py-1 px-2 md:px-3 rounded-full inline-block mt-1 whitespace-nowrap">
+            <p className="text-[9px] md:text-xs text-brand-DEFAULT font-bold font-price bg-brand-DEFAULT/10 py-1 px-2 md:px-3 rounded-full inline-block mt-1 whitespace-nowrap">
                 + {formatCurrency(price)}
             </p>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -11,17 +10,27 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
 import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
-import { ClientData, QuoteData, QuoteState, ViewState } from './types';
+import { ClientData, QuoteData, QuoteState } from './types';
 import { mockQuote } from './data/mock';
 import { delay } from './lib/utils';
 import { AppConfig } from './config/AppConfig';
+import { useRouter } from './hooks/useRouter';
+import { pageSlideVariants } from './lib/animations';
 
 const App: React.FC = () => {
-  // Splash inicia true
-  const [showSplash, setShowSplash] = useState(true);
-  
-  // View inicia em 'confirmation', mas só aparece após o splash sair
-  const [view, setView] = useState<ViewState>('confirmation');
+  // Roteamento SPA nativo (suporta /inicio, /orcamento e /admin)
+  const router = useRouter();
+
+  // Splash Screen inteligente: exibe apenas na primeira abertura da sessão
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('earec_splash_shown');
+    }
+    return true;
+  });
+
+  // Sub-etapa interna da rota /orcamento ('quote' configurador ou 'welcome' formulário)
+  const [quoteSubView, setQuoteSubView] = useState<'quote' | 'welcome'>('quote');
   
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<QuoteData>(mockQuote);
@@ -65,36 +74,54 @@ const App: React.FC = () => {
     }
     window.scrollTo(0, 0);
     
-    // Aumentado levemente para 2.5s para garantir leitura
-    const timer = setTimeout(() => setShowSplash(false), 2500); 
-    return () => clearTimeout(timer);
-  }, []);
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+        try {
+          sessionStorage.setItem('earec_splash_shown', 'true');
+        } catch {}
+      }, 2000); 
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
+
+  // Normalização de URL na barra de endereços (garante /inicio ou /orcamento limpos)
+  useEffect(() => {
+    if (router.currentPath === '/' || router.currentPath === '/home') {
+      router.navigate('/inicio', true);
+    } else if (
+      router.activeRoute === 'orcamento' && 
+      router.currentPath !== '/orcamento'
+    ) {
+      router.navigate('/orcamento', true);
+    }
+  }, [router.currentPath, router.activeRoute, router.navigate]);
 
   const handleStart = async (data: ClientData) => {
     setClientData(data);
     setIsLoading(true);
     setIsQuoteSuccess(false);
     setQuoteState(prev => ({ ...prev, category: null }));
-    await delay(2000); 
+    await delay(1000); 
     setIsLoading(false);
-    setView('quote');
+    setQuoteSubView('quote');
     window.scrollTo(0, 0);
   };
 
-  const handleQuickStart = async () => {
-    setClientData({
+  const handleQuickStart = () => {
+    if (!clientData) {
+      setClientData({
         name: '', 
         location: '', 
         date: '', 
         contact: ''
-    });
+      });
+    }
     setQuoteState(prev => ({ ...prev, category: null }));
     setIsQuickMode(true);
-    setIsLoading(true);
     setIsQuoteSuccess(false);
-    await delay(800);
-    setIsLoading(false);
-    setView('quote');
+    setQuoteSubView('quote');
+    router.navigate('/orcamento');
     window.scrollTo(0, 0);
   };
 
@@ -103,15 +130,44 @@ const App: React.FC = () => {
   };
 
   const handleRequestForm = () => {
-    setView('welcome');
+    setQuoteSubView('welcome');
     window.scrollTo(0, 0);
   };
 
+  // Garante dados de cliente válidos ao abrir /orcamento diretamente
+  const activeClientData: ClientData = clientData || {
+    name: '',
+    location: '',
+    date: '',
+    contact: ''
+  };
+
+  // Direção fluida da transição entre rotas (1 avança, -1 retorna)
+  const [routeDirection, setRouteDirection] = useState(1);
+  const prevRouteRef = React.useRef(router.activeRoute);
+
+  useEffect(() => {
+    const prev = prevRouteRef.current;
+    const curr = router.activeRoute;
+    if (prev !== curr) {
+      if (prev === 'inicio' && curr === 'orcamento') {
+        setRouteDirection(1);
+      } else if (prev === 'orcamento' && curr === 'inicio') {
+        setRouteDirection(-1);
+      } else if (curr === 'admin') {
+        setRouteDirection(1);
+      } else {
+        setRouteDirection(-1);
+      }
+      prevRouteRef.current = curr;
+    }
+  }, [router.activeRoute]);
+
   return (
     <main className="w-full min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
-      {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
+      <BackgroundFilmStrips />
 
-      {/* SPLASH SCREEN (Prioridade Máxima Z-Index 100) */}
+      {/* SPLASH SCREEN */}
       <AnimatePresence mode="wait">
         {showSplash && (
           <motion.div 
@@ -152,60 +208,84 @@ const App: React.FC = () => {
       </AnimatePresence>
 
       <div className="relative z-10">
-        {/* Renderiza o conteúdo apenas quando o Splash sai */}
         {!showSplash && !isLoading && (
-            <Suspense fallback={<Loading text="Carregando..." />}>
-            {/* 1. TELA DE CONFIRMAÇÃO */}
-            {view === 'confirmation' && (
-                <ConfirmationView 
-                    onContinue={() => setView('intro')}
-                />
-            )}
-
-            {/* 2. MENU PRINCIPAL (INTRO) */}
-            {view === 'intro' && (
-                <IntroView 
+          <Suspense fallback={<Loading text="Carregando..." />}>
+            <AnimatePresence mode="wait" custom={routeDirection}>
+              {/* 1. ROTA /INICIO */}
+              {router.activeRoute === 'inicio' && (
+                <motion.div
+                  key="route-inicio"
+                  custom={routeDirection}
+                  variants={pageSlideVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="w-full"
+                >
+                  <IntroView 
                     onContinue={() => {
-                        setIsQuickMode(false);
-                        setView('welcome');
+                      setIsQuickMode(false);
+                      router.navigate('/orcamento');
                     }}
                     onQuickStart={handleQuickStart}
-                />
-            )}
+                  />
+                </motion.div>
+              )}
 
-            {/* 3. WIZARD (WELCOME) */}
-            {view === 'welcome' && (
-                <WelcomeView 
-                  onStart={handleStart} 
-                  onAdminClick={() => setView('admin')}
-                  onBack={() => setView(isQuickMode ? 'quote' : 'intro')} 
-                />
-            )}
+              {/* 2. ROTA /ORCAMENTO */}
+              {router.activeRoute === 'orcamento' && (
+                <motion.div
+                  key="route-orcamento"
+                  custom={routeDirection}
+                  variants={pageSlideVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="w-full"
+                >
+                  {quoteSubView === 'welcome' ? (
+                    <WelcomeView 
+                      onStart={handleStart} 
+                      onAdminClick={() => router.navigate('/admin')}
+                      onBack={() => setQuoteSubView('quote')} 
+                    />
+                  ) : (
+                    <QuoteView 
+                      clientData={activeClientData} 
+                      onUpdateClientData={setClientData}
+                      config={config}
+                      onBack={() => router.navigate('/inicio')}
+                      onNavigateHome={() => router.navigate('/inicio')}
+                      quoteState={quoteState}
+                      setQuoteState={setQuoteState}
+                      onSuccess={() => setIsQuoteSuccess(true)}
+                      isQuickMode={isQuickMode}
+                      onRequestForm={handleRequestForm}
+                    />
+                  )}
+                </motion.div>
+              )}
 
-            {/* 4. CONFIGURADOR (QUOTE) */}
-            {view === 'quote' && clientData && (
-                <QuoteView 
-                  clientData={clientData} 
-                  onUpdateClientData={setClientData}
-                  config={config}
-                  onBack={() => setView(isQuickMode ? 'intro' : 'welcome')}
-                  quoteState={quoteState}
-                  setQuoteState={setQuoteState}
-                  onSuccess={() => setIsQuoteSuccess(true)}
-                  isQuickMode={isQuickMode}
-                  onRequestForm={handleRequestForm}
-                />
-            )}
-
-            {/* 5. ADMIN */}
-            {view === 'admin' && (
-                <AdminDashboard 
-                  currentConfig={config}
-                  onUpdateConfig={handleAdminUpdate}
-                  onExit={() => setView('welcome')}
-                />
-            )}
-            </Suspense>
+              {/* 3. ROTA /ADMIN */}
+              {router.activeRoute === 'admin' && (
+                <motion.div
+                  key="route-admin"
+                  custom={routeDirection}
+                  variants={pageSlideVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="w-full"
+                >
+                  <AdminDashboard 
+                    currentConfig={config}
+                    onUpdateConfig={handleAdminUpdate}
+                    onExit={() => router.navigate('/orcamento')}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Suspense>
         )}
       </div>
     </main>

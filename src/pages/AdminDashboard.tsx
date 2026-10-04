@@ -295,7 +295,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ currentConfig, onUpdate
             <h3 className="text-sm font-medium text-brand-DEFAULT mb-4">Simulação Atual</h3>
             <div className="flex justify-between text-sm text-neutral-400">
               <span>Orçamento Básico (Externo + 20 Fotos + 1 Vídeo):</span>
-              <strong className="text-white">
+              <strong className="text-white font-price font-bold">
                 {formatCurrency(formData.basePrice + (20 * formData.photoUnitPrice) + (1 * formData.videoUnitPrice))}
               </strong>
             </div>

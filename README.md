@@ -55,7 +55,7 @@ src/
 │   └── utils.ts          # Formatadores e helpers
 │
 ├── pages/                # Telas Principais (Views)
-│   ├── IntroView.tsx     # Landing page com opções (Instagram/Rápido/Normal)
+│   ├── IntroView.tsx     # Landing page com botões sólidos e minimalistas (Iniciar Orçamento / Instagram EAREC)
 │   ├── WelcomeView.tsx   # Wizard de captação de dados
 │   ├── QuoteView.tsx     # Configurador de Orçamento
 │   ├── SummaryView.tsx   # Resumo do Pedido e Pagamento
@@ -73,16 +73,22 @@ src/
 
 ---
 
-## 🔄 Fluxo de Dados (State Machine)
+## 🔄 Sistema de Rotas SPA Nativo & Fluxo de Navegação
 
-A aplicação não utiliza rotas tradicionais (`react-router`). O estado `view` em `App.tsx` controla o fluxo:
+A aplicação adota um **Roteador SPA Nativo de alta performance** (`useRouter`), operando via API de histórico do navegador (`pushState` e `popState`) sem recarregar a página:
 
-1.  **`intro`**: Tela inicial de boas-vindas com fundo de filmstrip e opção de Orçamento Rápido.
-2.  **`welcome`**: Coleta dados do cliente (Nome, Local, Data). Valida disponibilidade.
-3.  **`quote`**: Onde a mágica acontece. O usuário monta o pacote. 
-    *   *Nota:* O fundo de FilmStrip é ocultado aqui para foco total nos valores.
-4.  **`summary`**: Revisão final, edição de dados e escolha de pagamento.
-5.  **`success`**: Gera a mensagem formatada para o WhatsApp. O fundo de FilmStrip retorna para o encerramento.
+* **`/inicio`** (e aliases `/`, `/home`, `/início`): Página inicial minimalista e cinematográfica. Apresenta os botões de ação com cores sólidas e sem degradês:
+  * **"Iniciar Orçamento"**: Conduz diretamente para o configurador `/orcamento`.
+  * **"Instagram EAREC"**: Link direto para o portfólio oficial.
+* **`/orcamento`** (e aliases `/orçamento`, `/orcamentos`, `/quote`): Configurador e simulador comercial completo:
+  * **Etapa 0 (Categorias)**: Botão no topo esquerdo com rótulo claro `← Início` e logo interativa para retornar a `/inicio` a qualquer momento.
+  * **Configurador (`QuoteView`)**: Escolha de formatos, horas, fotos, vídeos e adicionais.
+  * **Formulário de Dados (`WelcomeView`)**: Acessível sob demanda via modal/wizard.
+  * **Resumo e Assinatura (`SummaryView` & `SignatureModal`)**: Resumo detalhado e assinatura formal.
+* **`/admin`**: Painel seguro para ajuste de tabelas de preços, valores por KM e simulações.
+
+> **Suporte a Refresh / F5 e Hospedagem:**
+> O arquivo `vercel.json` garante reescrita para a raiz em qualquer rota, e o comando `npm run build` gera automaticamente fallbacks estáticos (`404.html`, `inicio.html`, `orcamento.html`, `orcamentos.html`).
 
 ---
 
@@ -140,7 +146,8 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
 
 *   **Tipografia:**
     *   *Playfair Display*: Títulos e Ênfases (Elegância).
-    *   *Inter*: Interface e Textos (Legibilidade).
+    *   *Inter*: Interface, Botões e Textos Correntes.
+    *   *Plus Jakarta Sans* (`font-price`): Tipografia dedicada de alta legibilidade para valores monetários (R$), contadores numéricos (horas, fotos, vídeos) e badges de preço, configurada com `tabular-nums lining-nums` para eliminar irregularidades de numerais antigos.
 *   **Cores:**
     *   🌑 Fundo: `Neutral-950` (#0a0a0a) - "Deep Black"
     *   🔴 Marca: `Brand-Red` (#DC2626) - Acentos e Calls-to-Action.
@@ -149,6 +156,20 @@ O painel administrativo (`/admin` acessível via ícone de cadeado na tela de We
 *Desenvolvido com excelência para EAREC Mídia.*
 
 ## 📅 Últimas Atualizações
+
+### [04/10/2026] Renovação Visual & Sistema de Animações Fluidas Deslizantes
+* **Física Cinematográfica e Curva Bezier (`CINE_EASE [0.16, 1, 0.3, 1]`):** Novo motor de animações com curvas de desaceleração suave, física elástica (Spring) e desfoque óptico (`filter: blur`) coordenado em entradas e saídas.
+* **Transição Bidirecional Deslizante entre Rotas (`/inicio` <-> `/orcamento`):** Navegação fluida que detecta avanço ou retorno, deslizando as telas para a esquerda ao avançar e para a direita ao voltar (`pageSlideVariants` com `routeDirection`).
+* **Etapas do Configurador Deslizantes (`wizardStepVariants`):** Deslizamento direcional nos passos de `QuoteView` e `WelcomeView`, corrigindo e refinando o fluxo de troca de etapas.
+* **Modais com Slide Vertical & Backdrop Blur:** `SignatureModal`, `AddonUpsellModal` e menus flutuantes agora abrem deslizando suavemente de baixo para cima com desfoque de fundo profundo.
+* **Refinamento Estético e Micro-interações:** Cards e botões atualizados com glassmorphism (`backdrop-blur-md`), bordas com iluminação sutil, feedback tátil com molas responsivas e botões de controle otimizados.
+
+### [04/10/2026] Sistema de Rotas (/inicio e /orcamento) & Tipografia de Valores
+* **Roteamento SPA Nativo (`/inicio` e `/orcamento`):** Implementado hook de roteamento leve `useRouter` integrado à History API (`pushState`/`popState`), permitindo URLs diretas `/inicio` e `/orcamento` sem recarregar a página, além de suporte de retorno suave (`← Início` no topo e logo clicável).
+* **Servidor e Deploy Sem Erro 404:** Adicionado `vercel.json` com regra de rewrite e automação no `package.json` para gerar cópias estáticas de fallback (`404.html`, `inicio.html`, `orcamento.html`, `orcamentos.html`).
+* **Nova Fonte para Valores (`font-price`):** Substituídos todos os valores monetários e contadores numéricos que usavam `font-serif` pela nova classe `font-price` baseada em *Plus Jakarta Sans* com numerais alinhados e tabulares.
+* **Botões da Página Inicial Sólidos:** Botões "Iniciar Orçamento" e "Instagram EAREC" com fundo sólido escuro sem degradês ou brilhos exagerados.
+* **Otimização de Splash Screen:** Exibição inteligente apenas na primeira carga da sessão (`sessionStorage`), acelerando instantaneamente a navegação entre rotas.
 
 ### [14/08/2026] Refinamento Lógico e Visual
 * **Painel de Comercial vs Pessoal:** A lógica de cálculo do motor de preços (`PricingEngine`) foi corrigida para aplicar corretamente os valores extras baseados na escolha do tipo de projeto (Comercial vs Pessoa Física).

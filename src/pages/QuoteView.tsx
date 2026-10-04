@@ -15,6 +15,9 @@ import SuccessView from './SuccessView';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 
+// Animations
+import { wizardStepVariants, modalVariants, backdropVariants } from '../lib/animations';
+
 // Logic Hook
 import { useQuoteLogic } from '../hooks/useQuoteLogic';
 
@@ -28,38 +31,14 @@ interface QuoteViewProps {
   onSuccess: () => void;
   isQuickMode?: boolean;
   onRequestForm?: () => void; 
+  onNavigateHome?: () => void;
 }
-
-const stepVariants: Variants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 50 : -50,
-    opacity: 0,
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-    transition: {
-        duration: 0.4,
-        ease: [0.22, 1, 0.36, 1]
-    }
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 50 : -50,
-    opacity: 0,
-    transition: {
-        duration: 0.3,
-        ease: "easeIn"
-    }
-  })
-};
 
 const QuoteView: React.FC<QuoteViewProps> = (props) => {
   // Encapsulated Logic
   const logic = useQuoteLogic(props);
   const { state, actions, computed } = logic;
-  const { quoteState, clientData } = props;
+  const { quoteState, clientData, onNavigateHome } = props;
   const travelCost = state.distance > 0 ? (state.distance * 2 * state.quoteData.pricePerKm) : 0;
 
   // View Routing
@@ -96,10 +75,23 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       {/* HEADER: PROGRESS & NAV */}
       <div className="pt-6 md:pt-8 px-4 md:px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20">
           <div className="w-full relative flex justify-center items-center mb-6">
-               <button onClick={actions.handlePrevStep} className="absolute left-0 p-2 md:p-3 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
-                   <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
+               <button 
+                  onClick={actions.handlePrevStep} 
+                  className="absolute left-0 p-2 md:p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all flex items-center gap-1.5"
+                  title={state.currentStep === 0 ? "Voltar ao Início" : "Voltar etapa"}
+               >
+                   <ArrowLeft className="w-5 h-5" />
+                   {state.currentStep === 0 && (
+                     <span className="text-xs uppercase tracking-wider font-medium pr-1 hidden sm:inline">Início</span>
+                   )}
                </button>
-               <Logo className="w-48 sm:w-56 md:w-64 opacity-90" />
+               <button 
+                  onClick={() => onNavigateHome ? onNavigateHome() : props.onBack()} 
+                  className="cursor-pointer hover:opacity-80 transition-opacity focus:outline-none"
+                  title="Ir para página inicial"
+               >
+                  <Logo className="w-48 sm:w-56 md:w-64 opacity-90" />
+               </button>
           </div>
 
           {/* Progress Bar */}
@@ -154,7 +146,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 <motion.div 
                     key={state.currentStep}
                     custom={state.direction}
-                    variants={stepVariants}
+                    variants={wizardStepVariants}
                     initial="enter"
                     animate="center"
                     exit="exit"
@@ -249,16 +241,15 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           {state.isCategoryMenuOpen && (
               <div className="fixed inset-0 z-[100] flex items-end sm:items-start sm:pt-24 justify-center sm:px-4">
                   <motion.div 
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-neutral-950/80 backdrop-blur-sm"
+                      variants={backdropVariants}
+                      initial="hidden" animate="visible" exit="exit"
+                      className="absolute inset-0 bg-neutral-950/80 backdrop-blur-md"
                       onClick={() => actions.setIsCategoryMenuOpen(false)}
                   />
                   <motion.div
-                      initial={{ opacity: 0, y: 100, scale: 1 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 100, scale: 1 }}
-                      transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                      className="relative bg-neutral-900 border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0"
+                      variants={modalVariants}
+                      initial="hidden" animate="visible" exit="exit"
+                      className="relative bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0"
                   >
  
                       <div className="p-4 bg-white/5 border-b border-white/5 text-center">
@@ -337,16 +328,15 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
         {state.isNameModalOpen && (
              <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
                 <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    variants={backdropVariants}
+                    initial="hidden" animate="visible" exit="exit"
                     className="absolute inset-0 bg-neutral-950/90 backdrop-blur-md"
                     onClick={() => actions.setIsNameModalOpen(false)}
                 />
                 <motion.div
-                    initial={{ opacity: 0, y: 100 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 100 }}
-                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="relative bg-neutral-900 border border-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-sm shadow-2xl"
+                    variants={modalVariants}
+                    initial="hidden" animate="visible" exit="exit"
+                    className="relative bg-neutral-900/95 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-sm shadow-2xl"
                 >
 
                      <button 

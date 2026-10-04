@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plane, Timer, Check, ArrowRight, Sparkles } from 'lucide-react';
 import Button from '../ui/Button';
 import { cn, formatCurrency } from '../../lib/utils';
-import { modalVariants } from '../../lib/animations';
+import { modalVariants, backdropVariants } from '../../lib/animations';
 import AnimatedPrice from '../ui/AnimatedPrice';
 
 interface AddonUpsellModalProps {
@@ -29,9 +29,10 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            variants={backdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="absolute inset-0 bg-black/80 backdrop-blur-2xl"
             onClick={onClose}
           />
@@ -123,7 +124,7 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
               <div className="flex flex-col items-center gap-4">
                 <div className="text-center">
                     <p className="text-[9px] text-neutral-500 uppercase tracking-widest mb-1">Total Estimado</p>
-                    <div className="text-xl text-white font-serif">
+                    <div className="text-xl text-white font-price font-bold">
                         <AnimatedPrice value={totalPrice} />
                     </div>
                 </div>

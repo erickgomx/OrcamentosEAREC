@@ -377,7 +377,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                     <div className="flex justify-between items-end">
                                         <span className="text-sm text-neutral-500 font-medium uppercase tracking-widest">Valor Total</span>
                                         <div className="text-right">
-                                            <span className="text-3xl md:text-4xl text-brand-DEFAULT font-serif block leading-none">
+                                            <span className="text-3xl md:text-4xl text-brand-DEFAULT font-price font-bold tracking-tight block leading-none">
                                                 <AnimatedPrice value={totalPrice} />
                                             </span>
                                             <span className="text-[10px] text-neutral-500 uppercase font-medium">Moeda: BRL</span>

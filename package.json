@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node -e \"const fs = require('fs'); ['404.html','inicio.html','orcamento.html','orcamentos.html'].forEach(f => { if(fs.existsSync('dist/index.html')) fs.copyFileSync('dist/index.html', 'dist/' + f); });\"",
     "preview": "vite preview"
   },
   "dependencies": {

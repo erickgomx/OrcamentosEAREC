@@ -99,11 +99,11 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
 
           {/* Janela do Modal */}
           <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="relative z-20 bg-neutral-900/90 backdrop-blur-xl border-t sm:border border-white/10 rounded-t-3xl sm:rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] w-full sm:max-w-md overflow-hidden pb-10 sm:pb-0"
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="relative z-20 bg-neutral-900/95 backdrop-blur-2xl border-t sm:border border-white/10 rounded-t-3xl sm:rounded-2xl shadow-[0_0_60px_rgba(0,0,0,0.8)] w-full sm:max-w-md overflow-hidden pb-10 sm:pb-0"
           >
             {/* Pull Indicator for Mobile */}
             <div className="w-full flex justify-center pt-4 pb-2 sm:hidden">
@@ -130,7 +130,7 @@ const SignatureModal: React.FC<SignatureModalProps> = ({ isOpen, onClose, onConf
               {/* Valor e Disclaimer Centralizados */}
               <div className="mb-6 space-y-1 text-center bg-white/5 p-4 rounded-xl border border-white/5">
                 <p className="text-[10px] text-neutral-400 uppercase tracking-wide">Valor Total do Contrato</p>
-                <p className="text-3xl text-white font-serif tracking-tight">{totalValue}</p>
+                <p className="text-3xl text-white font-price font-bold tracking-tight">{totalValue}</p>
               </div>
 
               {/* Aviso de Privacidade Centralizado (RESTAURADO) */}

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
-import { formatCurrency } from '../../lib/utils';
+import { formatCurrency, cn } from '../../lib/utils';
 
 interface AnimatedPriceProps {
   value: number;
@@ -10,11 +10,10 @@ interface AnimatedPriceProps {
 
 /**
  * Componente que anima o valor numérico usando Motion Values.
- * Cria o efeito de "rolagem" de números de cassino/banco.
+ * Aplica a tipografia font-price (Plus Jakarta Sans alinhada) com números tabulares.
  */
 const AnimatedPrice: React.FC<AnimatedPriceProps> = ({ value, className }) => {
   // Física ajustada para VELOCIDADE (Snappy/Responsive)
-  // Mass 0.5 (Leve) + Stiffness 250 (Alta tensão) = Mudança rápida
   const spring = useSpring(value, { 
     mass: 0.5, 
     stiffness: 250, 
@@ -27,7 +26,7 @@ const AnimatedPrice: React.FC<AnimatedPriceProps> = ({ value, className }) => {
     spring.set(value);
   }, [value, spring]);
 
-  return <motion.span className={className}>{display}</motion.span>;
+  return <motion.span className={cn("font-price tabular-nums tracking-tight", className)}>{display}</motion.span>;
 };
 
 export default AnimatedPrice;

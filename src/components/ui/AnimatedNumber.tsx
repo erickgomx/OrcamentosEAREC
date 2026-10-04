@@ -1,6 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';
+import { cn } from '../../lib/utils';
 
 interface AnimatedNumberProps {
   value: number;
@@ -10,6 +11,7 @@ interface AnimatedNumberProps {
 /**
  * Componente que anima números inteiros.
  * A animação inicia somente quando o usuário rola a página até o elemento.
+ * Utiliza font-price para alinhar perfeitamente os dígitos tabulares.
  */
 const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ value, className }) => {
   const ref = useRef(null);
@@ -35,7 +37,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ value, className }) => 
     }
   }, [value, spring, isInView]);
 
-  return <motion.span ref={ref} className={className}>{display}</motion.span>;
+  return <motion.span ref={ref} className={cn("font-price tabular-nums", className)}>{display}</motion.span>;
 };
 
 export default AnimatedNumber;
