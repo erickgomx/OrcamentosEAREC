@@ -114,7 +114,7 @@ Podemos agendar uma conversa?`;
                 if (selectionMode === 'duration') {
                     escopo = `${hours}h de Cobertura Social`;
                 } else {
-                    escopo = `${photoQty} Fotos Sociais (Base 10)`;
+                    escopo = `${photoQty} Fotos Sociais (Mínimo 8)`;
                 }
                 if (videoQty && videoQty > 0) {
                     escopo += ` + ${videoQty} Vídeo(s) (${deviceLabel})`;
@@ -123,7 +123,6 @@ Podemos agendar uma conversa?`;
             } else if (serviceId === 'studio_photo') {
                 if (photoQty === 7) escopo = `7 Fotos no Estúdio (Desconto R$ 150)`;
                 else if (photoQty === 13) escopo = `13 Fotos no Estúdio (Promoção R$ 250)`;
-                else if (photoQty > 13) escopo = `${photoQty} Fotos no Estúdio (Pacote 13F + ${photoQty - 13} adicionais)`;
                 else escopo = `${photoQty} Fotos no Estúdio (R$ 25/cada)`;
 
             } else if (serviceId === 'studio_video') {

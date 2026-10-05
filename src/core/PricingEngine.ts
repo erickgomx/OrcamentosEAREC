@@ -230,12 +230,9 @@ export class PricingEngine {
         } else if (photoQty === 13) {
           val = 250;
           labelDesc = `${table.studio_photo.label} (13 fotos - Promoção R$ 250)`;
-        } else if (photoQty > 13) {
-          val = 250 + ((photoQty - 13) * 25);
-          labelDesc = `${table.studio_photo.label} (${photoQty} fotos - Pacote 13F + ${photoQty - 13} adicionais)`;
         } else {
           val = photoQty * 25;
-          labelDesc = `${table.studio_photo.label} (${photoQty} fotos)`;
+          labelDesc = `${table.studio_photo.label} (${photoQty} fotos - R$ 25/un)`;
         }
         total += val;
         breakdown.push({ label: labelDesc, value: val, type: 'base' });

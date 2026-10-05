@@ -785,7 +785,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         {category === 'studio' && serviceId === 'studio_photo' && (
                             <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow-lg z-10 flex items-center gap-1">
                                 <Sparkles size={11} />
-                                {qty === 7 ? "Desconto Especial (R$ 150)" : qty === 13 ? "Promoção Especial (R$ 250)" : qty > 13 ? "Promoção (R$ 250 + R$ 25/extra)" : "R$ 25 / foto"}
+                                {qty === 7 ? "Desconto Especial (R$ 150)" : qty === 13 ? "Promoção Especial (R$ 250)" : "R$ 25 / foto"}
                             </div>
                         )}
 
