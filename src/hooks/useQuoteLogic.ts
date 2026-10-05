@@ -245,7 +245,7 @@ export const useQuoteLogic = ({
       } else if (category === 'social' && serviceId === 'social_video') {
           actions.setQty(1);
           actions.setVideoQty(1);
-      } else if (category !== 'social') {
+      } else if (category !== 'social' && category !== 'wedding') {
           actions.setVideoQty(0);
       }
   }, [category, serviceId]);
@@ -434,7 +434,7 @@ export const useQuoteLogic = ({
   let metricLabel = '';
   if (selectionMode === 'duration') {
        metricLabel = `${hours}h de Cobertura`;
-       if (category === 'social' && videoQty > 0) {
+       if ((category === 'social' || category === 'wedding') && videoQty > 0) {
            metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
        }
   } else {
@@ -449,15 +449,15 @@ export const useQuoteLogic = ({
        else if (serviceId === 'studio_photo') metricLabel = qty === 7 ? '7 Fotos (Desconto R$ 150)' : qty === 13 ? '13 Fotos (Promoção R$ 250)' : `${qty} Fotos`;
        else metricLabel = `${qty} Unidades`;
   }
-  if (category === 'wedding' && selectionMode === 'duration' && hours === 2) metricLabel = "Pacote Completo";
+  if (category === 'wedding' && selectionMode === 'duration' && hours === 2 && (!videoQty || videoQty === 0)) metricLabel = "Pacote Completo";
   if (category === 'custom') metricLabel = 'Sob medida';
 
   const activeAddons = [];
   if (addDrone && (['wedding','social','commercial'].includes(category || ''))) activeAddons.push('Drone (Aéreo)');
   if (quoteState.droneQty && quoteState.droneQty > 0) activeAddons.push(`Drone (${quoteState.droneQty} Baterias)`);
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
-  if (category === 'social' && serviceId !== 'social_video' && videoQty > 0) {
-      activeAddons.push(`Vídeo Social (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`);
+  if ((category === 'social' || category === 'wedding') && serviceId !== 'social_video' && videoQty > 0) {
+      activeAddons.push(`Vídeo (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`);
   }
 
   const getFooterLabel = () => {

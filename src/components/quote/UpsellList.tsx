@@ -168,10 +168,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
   const isCustomBundle = false; // Removido para usar o grid padrão
   
-  const showDuration = (selectionMode === 'duration') && !['custom_bundle'].includes(serviceId) && category !== 'video_production' && serviceId !== 'social_video';
-  const showQuantity = !['custom_bundle'].includes(serviceId) && (selectionMode === 'quantity' || category === 'commercial' || serviceId === 'social_video') && category !== 'video_production';
-  const showDroneAddon = !['studio'].includes(category) && !['custom_bundle', 'edit_only', 'drone'].includes(serviceId);
   const isCombo = category === 'commercial' && serviceId === 'comm_combo';
+  const showDuration = (selectionMode === 'duration') && !['custom_bundle'].includes(serviceId) && category !== 'video_production' && serviceId !== 'social_video';
+  const showQuantity = !['custom_bundle'].includes(serviceId) && !isCombo && (selectionMode === 'quantity' || category === 'commercial' || serviceId === 'social_video') && category !== 'video_production';
+  const showDroneAddon = !['studio'].includes(category) && !['custom_bundle', 'edit_only', 'drone'].includes(serviceId);
 
   const gridClasses = cn(
     "grid grid-cols-2 md:grid-cols-2 gap-2 sm:gap-4 md:gap-6 w-full mx-auto items-stretch",
@@ -858,8 +858,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 )}
             </AnimatePresence>
 
-            {/* SELETOR DE VÍDEO PARA EVENTOS SOCIAIS (Mobile ou Câmera) */}
-            {category === 'social' && serviceId !== 'social_video' && (
+            {/* SELETOR DE VÍDEO PARA EVENTOS SOCIAIS E CASAMENTOS (Mobile ou Câmera) */}
+            {(category === 'social' || category === 'wedding') && serviceId !== 'social_video' && (
                 <motion.div 
                     variants={fadeInUp} 
                     initial="hidden"
@@ -875,7 +875,9 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </h3>
                     </div>
                     <p className="text-xs text-neutral-400 mb-4 max-w-sm">
-                        Adicione gravação de vídeo para registrar momentos marcantes do evento.
+                        {category === 'wedding'
+                            ? "Adicione gravação de vídeo para registrar os melhores momentos da cerimônia."
+                            : "Adicione gravação de vídeo para registrar momentos marcantes do evento."}
                     </p>
 
                     <div className="grid grid-cols-3 gap-2 w-full max-w-md">

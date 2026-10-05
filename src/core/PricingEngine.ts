@@ -89,6 +89,20 @@ export class PricingEngine {
       breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraHoursVal, type: 'addon' });
     }
 
+    // Adicional opcional de vídeo no Casamento (seja mobile ou câmera)
+    const { videoQty, videoDevice } = state;
+    if (videoQty && videoQty > 0) {
+      const isCam = videoDevice === 'camera';
+      const videoUnitPrice = isCam ? 600 : 350;
+      const videoTotal = videoQty * videoUnitPrice;
+      total += videoTotal;
+      breakdown.push({
+        label: `Vídeo Casamento (${isCam ? 'Câmera' : 'Mobile'}) x${videoQty}`,
+        value: videoTotal,
+        type: 'addon'
+      });
+    }
+
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 

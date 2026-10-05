@@ -109,6 +109,13 @@ Podemos agendar uma conversa?`;
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
                 escopo = `${videoQty || photoQty || 1} Vídeo(s) Social (${deviceLabel})`;
 
+            } else if (quoteDetails.occasion === 'wedding') {
+                const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
+                escopo = quoteDetails.serviceName || `${hours}h de Cobertura de Casamento`;
+                if (videoQty && videoQty > 0) {
+                    escopo += ` + ${videoQty} Vídeo(s) (${deviceLabel})`;
+                }
+
             } else if (quoteDetails.occasion === 'social') {
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
                 if (selectionMode === 'duration') {
