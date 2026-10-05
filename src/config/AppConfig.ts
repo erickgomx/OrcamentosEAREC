@@ -67,8 +67,8 @@ export class AppConfig {
         wedding_essence: { 
             base: 1750, 
             label: "Pacote Mais Essência",
-            composition: "Pré (10 Fotos) + Making Of + Casamento (Até 80 Fotos) + Vídeo",
-            description: "Pré-Wedding (10 fotos) + Making Of (10 fotos)+ Casamento (Até 80 fotos) + Vídeo Highlight (Melhores Momentos)" 
+            composition: "Pré (10 Fotos) + Making Of + Casamento (Até 80 Fotos)",
+            description: "Pré-Wedding (10 fotos) + Making Of (10 fotos) + Cobertura da Cerimônia (Até 80 fotos). Vídeo mobile ou câmera disponível sob escolha." 
         },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },

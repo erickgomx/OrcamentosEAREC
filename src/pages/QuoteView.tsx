@@ -62,7 +62,9 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 photoQty: quoteState.qty,
                 videoQty: quoteState.videoQty,
                 commercialMode: state.commercialMode,
-                videoDevice: quoteState.videoDevice
+                videoDevice: quoteState.videoDevice,
+                edit30sQty: quoteState.edit30sQty,
+                edit1minQty: quoteState.edit1minQty
             }}
         />
       );
@@ -229,6 +231,9 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                               actions.setEdit30sQty(0);
                               actions.setEdit1minQty(0);
                               actions.setDroneQty(0);
+                          } else if (quoteState.category === 'wedding') {
+                              actions.setQty(8);
+                              actions.setVideoQty(0);
                           } else {
                               actions.setQty(8);
                           }

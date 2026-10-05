@@ -29,6 +29,8 @@ interface SuccessViewProps {
       videoQty: number;
       commercialMode?: 'on_location' | 'studio'; // Novo
       videoDevice?: 'mobile' | 'camera';
+      edit30sQty?: number;
+      edit1minQty?: number;
   };
 }
 
@@ -134,6 +136,16 @@ Podemos agendar uma conversa?`;
 
             } else if (serviceId === 'studio_video') {
                 escopo = `${hours}h de Gravação com Câmera no Estúdio`;
+                const edits = [];
+                if (quoteDetails.edit30sQty && quoteDetails.edit30sQty > 0) {
+                    edits.push(`${quoteDetails.edit30sQty}x Edição (30s)`);
+                }
+                if (quoteDetails.edit1minQty && quoteDetails.edit1minQty > 0) {
+                    edits.push(`${quoteDetails.edit1minQty}x Edição (1 min)`);
+                }
+                if (edits.length > 0) {
+                    escopo += ` + ${edits.join(' + ')}`;
+                }
 
             } else if (serviceId === 'edit_only') {
                 escopo = `${photoQty} Minuto(s) de Edição`;

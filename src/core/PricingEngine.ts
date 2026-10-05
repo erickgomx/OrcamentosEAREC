@@ -264,6 +264,19 @@ export class PricingEngine {
         total += extraVal;
         breakdown.push({ label: `Horas Extras (+${hours - 2}h)`, value: extraVal, type: 'addon' });
       }
+
+      // Adicionais de Edição de Vídeo no Estúdio
+      const { edit30sQty = 0, edit1minQty = 0 } = state;
+      if (edit30sQty > 0) {
+        const edit30sTotal = edit30sQty * 150;
+        total += edit30sTotal;
+        breakdown.push({ label: `Edição de Vídeo (Até 30s) x${edit30sQty}`, value: edit30sTotal, type: 'addon' });
+      }
+      if (edit1minQty > 0) {
+        const edit1minTotal = edit1minQty * 250;
+        total += edit1minTotal;
+        breakdown.push({ label: `Edição de Vídeo (Até 1 min) x${edit1minQty}`, value: edit1minTotal, type: 'addon' });
+      }
     }
 
     return { totalPrice: total, breakdown, currency: 'BRL' };

@@ -120,7 +120,11 @@ export const useQuoteLogic = ({
   // === HELPERS: STATE SETTERS ===
   const actions = {
       setCategory: (c: ServiceCategory) => {
-          setQuoteState(prev => ({ ...prev, category: c }));
+          setQuoteState(prev => ({ 
+              ...prev, 
+              category: c,
+              videoQty: c === 'wedding' ? 0 : prev.videoQty
+          }));
           
           // Lógica de Navegação:
           // Se estivermos na tela inicial (Step 0), APENAS selecionamos a categoria visualmente.
@@ -245,7 +249,9 @@ export const useQuoteLogic = ({
       } else if (category === 'social' && serviceId === 'social_video') {
           actions.setQty(1);
           actions.setVideoQty(1);
-      } else if (category !== 'social' && category !== 'wedding') {
+      } else if (category === 'wedding') {
+          actions.setVideoQty(0);
+      } else if (category !== 'social') {
           actions.setVideoQty(0);
       }
   }, [category, serviceId]);
@@ -358,7 +364,9 @@ export const useQuoteLogic = ({
           actions.setDroneQty(0);
       }
       if (name.includes('tempo real')) actions.setAddRealTime(false);
-      if (name.includes('vídeo') || name.includes('video')) actions.setVideoQty(0);
+      if (name.includes('vídeo social') || name.includes('vídeo casamento') || name.includes('vídeo (')) actions.setVideoQty(0);
+      if (name.includes('30s')) actions.setEdit30sQty(0);
+      if (name.includes('1min') || name.includes('1 min')) actions.setEdit1minQty(0);
       if (name.includes('horas extras')) actions.setHours(2); 
   };
 
@@ -433,9 +441,19 @@ export const useQuoteLogic = ({
 
   let metricLabel = '';
   if (selectionMode === 'duration') {
-       metricLabel = `${hours}h de Cobertura`;
-       if ((category === 'social' || category === 'wedding') && videoQty > 0) {
-           metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+       if (category === 'studio' && serviceId === 'studio_video') {
+           metricLabel = `${hours}h de Gravação no Estúdio`;
+           if ((quoteState.edit30sQty || 0) > 0) {
+               metricLabel += ` + ${quoteState.edit30sQty}x Edição (30s)`;
+           }
+           if ((quoteState.edit1minQty || 0) > 0) {
+               metricLabel += ` + ${quoteState.edit1minQty}x Edição (1 min)`;
+           }
+       } else {
+           metricLabel = `${hours}h de Cobertura`;
+           if ((category === 'social' || category === 'wedding') && videoQty > 0) {
+               metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+           }
        }
   } else {
        if (serviceId === 'comm_combo') metricLabel = `${qty} Fotos + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
@@ -458,6 +476,14 @@ export const useQuoteLogic = ({
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
   if ((category === 'social' || category === 'wedding') && serviceId !== 'social_video' && videoQty > 0) {
       activeAddons.push(`Vídeo (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`);
+  }
+  if (category === 'studio' && serviceId === 'studio_video') {
+      if (quoteState.edit30sQty && quoteState.edit30sQty > 0) {
+          activeAddons.push(`Edição 30s x${quoteState.edit30sQty}`);
+      }
+      if (quoteState.edit1minQty && quoteState.edit1minQty > 0) {
+          activeAddons.push(`Edição 1min x${quoteState.edit1minQty}`);
+      }
   }
 
   const getFooterLabel = () => {

@@ -409,7 +409,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                                 : "text-neutral-400 hover:text-white"
                                         )}
                                     >
-                                        Mobile (600)
+                                        Mobile (350)
                                     </button>
                                     <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
@@ -425,7 +425,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                                 : "text-neutral-400 hover:text-white"
                                         )}
                                     >
-                                        Câmera (850)
+                                        Câmera (600)
                                     </button>
                                 </div>
                             }
@@ -714,7 +714,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
                                 )}
                             >
-                                📱 Mobile (R$ 600)
+                                📱 Mobile (R$ 350)
                             </button>
                             <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
                             <button
@@ -725,7 +725,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
                                 )}
                             >
-                                📷 Câmera (R$ 850)
+                                📷 Câmera (R$ 600)
                             </button>
                         </div>
 
@@ -939,6 +939,122 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 <ControlBtn onClick={() => setVideoQty?.(Math.max(1, videoQty - 1))} icon={Minus} />
                                 <span className="font-price font-bold text-white text-lg w-6 text-center">{videoQty}</span>
                                 <ControlBtn onClick={() => setVideoQty?.(videoQty + 1)} icon={Plus} active />
+                            </div>
+                        </div>
+                    )}
+                </motion.div>
+            )}
+
+            {/* SELETOR DE EDIÇÃO PARA VÍDEO NO ESTÚDIO (30s ou 1min) */}
+            {category === 'studio' && serviceId === 'studio_video' && (
+                <motion.div 
+                    variants={fadeInUp} 
+                    initial="hidden"
+                    animate="visible"
+                    className="w-full max-w-lg bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+                >
+                    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
+                    
+                    <div className="flex items-center gap-2 mb-2">
+                        <Zap className="text-brand-DEFAULT" size={20} />
+                        <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                            Deseja Incluir Edição?
+                        </h3>
+                    </div>
+                    <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                        Adicione vídeos editados com cortes, cor e áudio finalizados para Reels, TikTok ou YouTube.
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setEdit30sQty?.(0);
+                                setEdit1minQty?.(0);
+                            }}
+                            className={cn(
+                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                (!edit30sQty && !edit1minQty)
+                                    ? "bg-white/10 border-white/30 text-white shadow-sm"
+                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <span className="font-semibold">Sem Edição</span>
+                            <span className="text-[10px] text-neutral-500">Material bruto</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const currentQty = (edit30sQty && edit30sQty > 0) ? edit30sQty : (edit1minQty && edit1minQty > 0) ? edit1minQty : 1;
+                                setEdit1minQty?.(0);
+                                setEdit30sQty?.(currentQty);
+                            }}
+                            className={cn(
+                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                (edit30sQty && edit30sQty > 0)
+                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
+                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <span className="font-semibold">⚡ Até 30s</span>
+                            <span className="text-[10px] opacity-80">+R$ 150/un</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const currentQty = (edit1minQty && edit1minQty > 0) ? edit1minQty : (edit30sQty && edit30sQty > 0) ? edit30sQty : 1;
+                                setEdit30sQty?.(0);
+                                setEdit1minQty?.(currentQty);
+                            }}
+                            className={cn(
+                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                (edit1minQty && edit1minQty > 0)
+                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
+                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                            )}
+                        >
+                            <span className="font-semibold">🎬 Até 1 min</span>
+                            <span className="text-[10px] opacity-80">+R$ 250/un</span>
+                        </button>
+                    </div>
+
+                    {((edit30sQty && edit30sQty > 0) || (edit1minQty && edit1minQty > 0)) && (
+                        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between w-full px-2">
+                            <div className="text-left">
+                                <span className="text-xs text-neutral-300 font-medium block">
+                                    {(edit30sQty && edit30sQty > 0) ? "Vídeos editados (30s):" : "Vídeos editados (1 min):"}
+                                </span>
+                                <span className="text-[10px] text-neutral-500 font-mono">
+                                    {(edit30sQty && edit30sQty > 0) ? "+ R$ 150 por vídeo" : "+ R$ 250 por vídeo"}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <ControlBtn 
+                                    onClick={() => {
+                                        if (edit30sQty && edit30sQty > 0) {
+                                            setEdit30sQty?.(Math.max(1, edit30sQty - 1));
+                                        } else if (edit1minQty && edit1minQty > 0) {
+                                            setEdit1minQty?.(Math.max(1, edit1minQty - 1));
+                                        }
+                                    }} 
+                                    icon={Minus} 
+                                />
+                                <span className="font-price font-bold text-white text-lg w-6 text-center">
+                                    {(edit30sQty && edit30sQty > 0) ? edit30sQty : edit1minQty}
+                                </span>
+                                <ControlBtn 
+                                    onClick={() => {
+                                        if (edit30sQty && edit30sQty > 0) {
+                                            setEdit30sQty?.(edit30sQty + 1);
+                                        } else if (edit1minQty && edit1minQty > 0) {
+                                            setEdit1minQty?.(edit1minQty + 1);
+                                        }
+                                    }} 
+                                    icon={Plus} 
+                                    active 
+                                />
                             </div>
                         </div>
                     )}
