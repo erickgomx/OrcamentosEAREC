@@ -126,7 +126,7 @@ export class PricingEngine {
     } else if (serviceId === 'social_video') {
       const isCam = videoDevice === 'camera';
       const unitVal = isCam ? table.social_video.unitCamera : table.social_video.unitMobile;
-      const count = Math.max(1, videoQty || qty || 1);
+      const count = Math.max(1, qty || 1);
       const val = count * unitVal;
       total += val;
       breakdown.push({

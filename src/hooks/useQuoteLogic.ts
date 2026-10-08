@@ -236,7 +236,7 @@ export const useQuoteLogic = ({
             actions.setQty(0);
             actions.setVideoQty(0);
         } else if (category === 'social') {
-            actions.setQty(8);
+            actions.setQty(newServiceId === 'social_video' ? 1 : 8);
             actions.setVideoQty(0);
         } else {
             actions.setQty(8);
@@ -248,7 +248,7 @@ export const useQuoteLogic = ({
           actions.setVideoQty(1);  
       } else if (category === 'social' && serviceId === 'social_video') {
           actions.setQty(1);
-          actions.setVideoQty(1);
+          actions.setVideoQty(0);
       } else if (category === 'wedding') {
           actions.setVideoQty(0);
       } else if (category !== 'social') {

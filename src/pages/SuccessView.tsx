@@ -109,7 +109,7 @@ Podemos agendar uma conversa?`;
 
             } else if (serviceId === 'social_video') {
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
-                escopo = `${videoQty || photoQty || 1} Vídeo(s) Social (${deviceLabel})`;
+                escopo = `${photoQty || 1} Vídeo(s) Social (${deviceLabel})`;
 
             } else if (quoteDetails.occasion === 'wedding') {
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';

@@ -284,8 +284,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             index={3} 
                             active={serviceId === 'social_video'} 
                             onClick={() => {
-                                handleServiceSelect('social_video');
-                                if (!videoQty || videoQty < 1) setVideoQty?.(1);
+                                handleServiceSelect('social_video', 'quantity');
                             }} 
                             onInfo={setInfoData} 
                             icon={Video} 

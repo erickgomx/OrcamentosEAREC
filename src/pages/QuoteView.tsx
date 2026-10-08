@@ -234,6 +234,14 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                           } else if (quoteState.category === 'wedding') {
                               actions.setQty(8);
                               actions.setVideoQty(0);
+                          } else if (quoteState.category === 'social') {
+                              if (id === 'social_video') {
+                                  actions.setQty(1);
+                                  actions.setVideoQty(0);
+                              } else {
+                                  actions.setQty(8);
+                                  actions.setVideoQty(0);
+                              }
                           } else {
                               actions.setQty(8);
                           }
