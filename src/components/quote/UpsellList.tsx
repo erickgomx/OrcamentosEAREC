@@ -394,41 +394,6 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             composition={videoDevice === 'camera' ? "10 Fotos tratadas + 1 Vídeo Câmera" : "10 Fotos tratadas + 1 Vídeo Mobile"} 
                             desc={TABLE.commercial.comm_combo.description} 
                             highlight 
-                            extraContent={
-                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setVideoDevice?.('mobile');
-                                        }}
-                                        className={cn(
-                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
-                                            videoDevice === 'mobile'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
-                                        )}
-                                    >
-                                        Mobile (350)
-                                    </button>
-                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setVideoDevice?.('camera');
-                                        }}
-                                        className={cn(
-                                            "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
-                                            videoDevice === 'camera'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
-                                        )}
-                                    >
-                                        Câmera (600)
-                                    </button>
-                                </div>
-                            }
                         />
                         <ServiceCard index={3} active={false} onClick={handleCustomProjectClick} onInfo={setInfoData} icon={MessageCircle} title="Personalizado" price="A Consultar" composition="Projeto Especial" desc="Demandas específicas? Fale com nossa equipe." />
                     </>
@@ -704,31 +669,6 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
                         className="w-full max-w-lg space-y-4"
                    >
-                        {/* Seletor Mobile vs Câmera para o Pacote */}
-                        <div className="flex items-center justify-center bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-2 border border-white/5 gap-1.5">
-                            <button
-                                type="button"
-                                onClick={() => setVideoDevice?.('mobile')}
-                                className={cn(
-                                    "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
-                                    videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
-                                )}
-                            >
-                                📱 Mobile (R$ 350)
-                            </button>
-                            <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
-                            <button
-                                type="button"
-                                onClick={() => setVideoDevice?.('camera')}
-                                className={cn(
-                                    "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
-                                    videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
-                                )}
-                            >
-                                📷 Câmera (R$ 600)
-                            </button>
-                        </div>
-
                         {/* Seletor de Fotos */}
                         <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
@@ -759,6 +699,31 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">Vídeos (Base 1)</h3>
                             </div>
 
+                            {/* Seletor Mobile vs Câmera para o Pacote junto ao seletor de quantidade */}
+                            <div className="flex items-center justify-center bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-white/5 gap-1.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoDevice?.('mobile')}
+                                    className={cn(
+                                        "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                        videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    📱 Mobile (R$ 350)
+                                </button>
+                                <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoDevice?.('camera')}
+                                    className={cn(
+                                        "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
+                                        videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    📷 Câmera (R$ 600)
+                                </button>
+                            </div>
+
                             <div className="flex items-center justify-between w-full gap-8 px-4">
                                 <ControlBtn onClick={() => setVideoQty(Math.max(1, videoQty - 1))} icon={Minus} />
                                 <div className="text-center">
@@ -774,6 +739,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </div>
                    </motion.div>
                 )}
+
 
                 {showQuantity && (
                     <motion.div 
