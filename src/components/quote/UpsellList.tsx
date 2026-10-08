@@ -61,7 +61,7 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[145px] sm:min-h-[175px] md:min-h-[200px] overflow-hidden backdrop-blur-md",
+            "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[145px] sm:min-h-[175px] md:min-h-[200px] overflow-hidden backdrop-blur-md",
             active 
                 ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
@@ -73,7 +73,7 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         )} />
         
         <div className={cn(
-            "p-3 sm:p-4 rounded-2xl mb-2 transition-all duration-300",
+            "p-3 sm:p-4 rounded-2xl mb-2 transition-colors duration-200",
             active ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
         )}>
             <Icon size={28} strokeWidth={1.5} className="sm:w-8 sm:h-8" />
@@ -1186,7 +1186,7 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
             custom={index}
             variants={cardItemVariants}
             className={cn(
-            "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 relative overflow-hidden",
+            "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 relative overflow-hidden",
             isAdded 
                 ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)]" 
                 : "bg-white/[0.02] border-white/5 hover:border-white/10"
@@ -1234,7 +1234,6 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
 const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight, index = 0, extraContent }: any) => (
     <motion.div 
-        layout="position"
         custom={index}
         variants={cardItemVariants}
         whileHover={{ scale: 1.025, y: -2 }}
@@ -1242,7 +1241,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "group relative flex flex-col items-center justify-between pt-7 pb-4 px-3 sm:pt-6 sm:pb-5 sm:px-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
+            "group relative flex flex-col items-center justify-between pt-7 pb-4 px-3 sm:pt-6 sm:pb-5 sm:px-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
             active 
                 ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
@@ -1251,7 +1250,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {/* Tag / Ícone de Destaque "Popular" - Posicionado EXCLUSIVAMENTE à direita do card sem sobreposição */}
         {highlight && (
             <div className={cn(
-                "absolute top-0 right-0 text-[8px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-all duration-300 flex items-center gap-1 shadow-sm",
+                "absolute top-0 right-0 text-[8px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-colors duration-200 flex items-center gap-1 shadow-sm",
                 active 
                     ? "bg-brand-DEFAULT text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
                     : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
@@ -1285,7 +1284,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         
         <div className="w-full flex flex-col items-center">
             <div className={cn(
-                "p-2.5 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl mb-1.5 sm:mb-2 transition-all duration-300",
+                "p-2.5 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl mb-1.5 sm:mb-2 transition-colors duration-200",
                 active 
                     ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
                     : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
@@ -1342,7 +1341,7 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, in
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
-            "cursor-pointer flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-all select-none relative gap-2 sm:gap-3 h-full group box-border backdrop-blur-md min-h-[140px] sm:min-h-[160px]", 
+            "cursor-pointer flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 select-none relative gap-2 sm:gap-3 h-full group box-border backdrop-blur-md min-h-[140px] sm:min-h-[160px]", 
             active 
                 ? "bg-brand-DEFAULT/15 border-brand-DEFAULT shadow-[0_0_25px_rgba(220,38,38,0.25)] ring-1 ring-brand-DEFAULT" 
                 : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
@@ -1366,7 +1365,7 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, in
         </div>
 
         <div className={cn(
-            "p-3.5 sm:p-4 rounded-2xl mb-1 transition-all duration-300", 
+            "p-3.5 sm:p-4 rounded-2xl mb-1 transition-colors duration-200", 
             active ? "bg-white/20 text-white" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
         )}>
            <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />

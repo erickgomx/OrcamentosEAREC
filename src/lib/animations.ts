@@ -87,28 +87,25 @@ export const organicItemVariants: Variants = {
   })
 };
 
-// Card individual para listas e grids com suporte total a enter/center e hidden/visible (elimina conflitos de animação)
+// Card individual para listas e grids com suporte total a enter/center e hidden/visible (elimina conflitos de animação e flickering de GPU)
 export const cardItemVariants: Variants = {
   hidden: { 
     opacity: 0, 
-    y: 28, 
-    scale: 0.95, 
-    filter: 'blur(8px)' 
+    y: 20, 
+    scale: 0.96 
   },
   enter: { 
     opacity: 0, 
-    y: 28, 
-    scale: 0.95, 
-    filter: 'blur(8px)' 
+    y: 20, 
+    scale: 0.96 
   },
   visible: (i: number = 0) => ({ 
     opacity: 1, 
     y: 0, 
     scale: 1, 
-    filter: 'blur(0px)',
     transition: { 
-      delay: (typeof i === 'number' ? i : 0) * 0.08, 
-      duration: 0.5, 
+      delay: (typeof i === 'number' ? i : 0) * 0.05, 
+      duration: 0.4, 
       ease: CINE_EASE 
     } 
   }),
@@ -116,21 +113,19 @@ export const cardItemVariants: Variants = {
     opacity: 1, 
     y: 0, 
     scale: 1, 
-    filter: 'blur(0px)',
     transition: { 
-      delay: (typeof i === 'number' ? i : 0) * 0.08, 
-      duration: 0.5, 
+      delay: (typeof i === 'number' ? i : 0) * 0.05, 
+      duration: 0.4, 
       ease: CINE_EASE 
     } 
   }),
   exit: (i: number = 0) => ({ 
     opacity: 0, 
-    y: -20, 
-    scale: 0.96, 
-    filter: 'blur(6px)', 
+    y: -16, 
+    scale: 0.97, 
     transition: { 
-      delay: (6 - Math.min(typeof i === 'number' ? i : 0, 6)) * 0.03, 
-      duration: 0.28, 
+      delay: (6 - Math.min(typeof i === 'number' ? i : 0, 6)) * 0.02, 
+      duration: 0.22, 
       ease: CINE_EASE_ORGANIC 
     } 
   })
