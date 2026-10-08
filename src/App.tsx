@@ -5,7 +5,6 @@ const QuoteView = lazy(() => import('./pages/QuoteView'));
 const WelcomeView = lazy(() => import('./pages/WelcomeView'));
 const IntroView = lazy(() => import('./pages/IntroView'));
 const ConfirmationView = lazy(() => import('./pages/ConfirmationView'));
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const PortfolioView = lazy(() => import('./pages/PortfolioView'));
 
 import Loading from './components/ui/Loading';
@@ -111,8 +110,6 @@ const App: React.FC = () => {
       router.navigate('/sucesso', true);
     } else if (router.activeRoute === 'portfolio' && p !== '/portfolio') {
       router.navigate('/portfolio', true);
-    } else if (router.activeRoute === 'admin' && p !== '/admin') {
-      router.navigate('/admin', true);
     }
   }, [router.currentPath, router.activeRoute, router.navigate]);
 
@@ -144,10 +141,6 @@ const App: React.FC = () => {
     setQuoteSubView('quote');
     router.navigate('/orcamento');
     window.scrollTo(0, 0);
-  };
-
-  const handleAdminUpdate = (newConfig: QuoteData) => {
-    setConfig(newConfig);
   };
 
   const handleRequestForm = () => {
@@ -200,8 +193,6 @@ const App: React.FC = () => {
         setRouteDirection(-1);
       } else if (prev === 'orcamento' && curr === 'portfolio') {
         setRouteDirection(-1);
-      } else if (curr === 'admin') {
-        setRouteDirection(1);
       } else {
         setRouteDirection(1);
       }
@@ -328,25 +319,6 @@ const App: React.FC = () => {
                   <PortfolioView 
                     onNavigateHome={() => router.navigate('/inicio')}
                     onStartQuote={() => router.navigate('/orcamento')}
-                  />
-                </motion.div>
-              )}
-
-              {/* 4. ROTA /ADMIN */}
-              {router.activeRoute === 'admin' && (
-                <motion.div
-                  key="route-admin"
-                  custom={routeDirection}
-                  variants={pageSlideVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="w-full"
-                >
-                  <AdminDashboard 
-                    currentConfig={config}
-                    onUpdateConfig={handleAdminUpdate}
-                    onExit={() => router.navigate('/orcamento')}
                   />
                 </motion.div>
               )}

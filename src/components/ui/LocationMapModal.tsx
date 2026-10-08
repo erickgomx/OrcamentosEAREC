@@ -4,6 +4,7 @@ import { X, MapPin, Check, Loader2, Info, Search, ArrowRight } from 'lucide-reac
 import Button from './Button';
 import { modalVariants } from '../../lib/animations';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface LocationMapModalProps {
   isOpen: boolean;

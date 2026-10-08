@@ -8,7 +8,7 @@ import { ClientData, QuoteData, QuoteState, ServiceCategory } from '../types';
 // Components
 import UpsellList from '../components/quote/UpsellList';
 import StickyFooter from '../components/quote/StickyFooter';
-import LocationMapModal from '../components/ui/LocationMapModal';
+const LocationMapModal = React.lazy(() => import('../components/ui/LocationMapModal'));
 import SummaryView from './SummaryView';
 import SuccessView from './SuccessView';
 import Logo from '../components/ui/Logo';
@@ -319,12 +319,14 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       </AnimatePresence>
 
 
-      <LocationMapModal 
-        isOpen={state.isMapOpen}
-        onClose={() => actions.setIsMapOpen(false)}
-        onSelectLocation={actions.handleUpdateLocation}
-        initialAddress={props.clientData.location}
-      />
+      <React.Suspense fallback={null}>
+        <LocationMapModal 
+          isOpen={state.isMapOpen}
+          onClose={() => actions.setIsMapOpen(false)}
+          onSelectLocation={actions.handleUpdateLocation}
+          initialAddress={props.clientData.location}
+        />
+      </React.Suspense>
 
       {/* NAME CAPTURE MODAL */}
       <AnimatePresence>

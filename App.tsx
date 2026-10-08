@@ -4,7 +4,6 @@ import QuoteView from './src/pages/QuoteView';
 import WelcomeView from './src/pages/WelcomeView';
 import IntroView from './src/pages/IntroView';
 import ConfirmationView from './src/pages/ConfirmationView';
-import AdminDashboard from './src/pages/AdminDashboard';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
 import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
@@ -96,9 +95,6 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  const handleAdminUpdate = (newConfig: QuoteData) => {
-    setConfig(newConfig);
-  };
 
   const handleRequestForm = () => {
     setView('welcome');
@@ -178,7 +174,6 @@ const App: React.FC = () => {
             {view === 'welcome' && (
                 <WelcomeView 
                   onStart={handleStart} 
-                  onAdminClick={() => setView('admin')}
                   onBack={() => setView(isQuickMode ? 'quote' : 'intro')} 
                 />
             )}
@@ -195,15 +190,6 @@ const App: React.FC = () => {
                   onSuccess={() => setIsQuoteSuccess(true)}
                   isQuickMode={isQuickMode}
                   onRequestForm={handleRequestForm}
-                />
-            )}
-
-            {/* 5. ADMIN */}
-            {view === 'admin' && (
-                <AdminDashboard 
-                  currentConfig={config}
-                  onUpdateConfig={handleAdminUpdate}
-                  onExit={() => setView('welcome')}
                 />
             )}
             </>

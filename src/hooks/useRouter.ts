@@ -19,7 +19,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /** Tipos de rotas reconhecidas */
-export type AppRoute = 'inicio' | 'orcamento' | 'resumo' | 'sucesso' | 'admin' | 'portfolio' | string;
+export type AppRoute = 'inicio' | 'orcamento' | 'resumo' | 'sucesso' | 'portfolio' | string;
 
 export interface RouterState {
   currentPath: string;
@@ -83,9 +83,9 @@ const resolveRoute = (path: string): AppRoute => {
     return 'portfolio';
   }
 
-  // Rota Administrativa
+  // Redireciona tentativa de /admin para /inicio
   if (normalized === '/admin' || normalized.startsWith('/admin/')) {
-    return 'admin';
+    return 'inicio';
   }
 
   // Rota dinâmica/slug para qualquer página futura (ex: /sobre, /contato, /termos)

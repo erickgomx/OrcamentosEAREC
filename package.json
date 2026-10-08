@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node -e \"const fs = require('fs'); const routes = ['inicio', 'orcamento', 'orcamentos', 'resumo', 'sucesso', 'portfolio', 'admin']; if(fs.existsSync('dist/index.html')) { fs.copyFileSync('dist/index.html', 'dist/404.html'); routes.forEach(r => { fs.copyFileSync('dist/index.html', 'dist/' + r + '.html'); const dir = 'dist/' + r; if(!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); fs.copyFileSync('dist/index.html', dir + '/index.html'); }); }\"",
+    "build": "vite build && node -e \"const fs = require('fs'); const routes = ['inicio', 'orcamento', 'orcamentos', 'resumo', 'sucesso', 'portfolio']; if(fs.existsSync('dist/index.html')) { fs.copyFileSync('dist/index.html', 'dist/404.html'); routes.forEach(r => { fs.copyFileSync('dist/index.html', 'dist/' + r + '.html'); const dir = 'dist/' + r; if(!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); fs.copyFileSync('dist/index.html', dir + '/index.html'); }); }\"",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -22,6 +22,9 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.29",
+    "tailwindcss": "^3.4.19",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

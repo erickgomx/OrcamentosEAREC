@@ -4,7 +4,7 @@ import { Calendar, Copyright, CreditCard, ArrowLeft, CheckCircle, MapPin, User, 
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 import AnimatedPrice from '../components/ui/AnimatedPrice';
-import LocationMapModal from '../components/ui/LocationMapModal';
+const LocationMapModal = React.lazy(() => import('../components/ui/LocationMapModal'));
 import { QuoteData, ClientData } from '../types';
 import { cn, formatCurrency } from '../lib/utils';
 import { fadeInUp, staggerContainer } from '../lib/animations';
@@ -433,12 +433,14 @@ const SummaryView: React.FC<SummaryViewProps> = ({
         </motion.div>
       )}
 
-      <LocationMapModal 
-        isOpen={isMapOpen}
-        onClose={() => setIsMapOpen(false)}
-        onSelectLocation={handleLocationSelect}
-        initialAddress={tempData.location}
-      />
+      <React.Suspense fallback={null}>
+        <LocationMapModal 
+          isOpen={isMapOpen}
+          onClose={() => setIsMapOpen(false)}
+          onSelectLocation={handleLocationSelect}
+          initialAddress={tempData.location}
+        />
+      </React.Suspense>
     </div>
   );
 };

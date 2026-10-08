@@ -4,7 +4,7 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowRight, Calendar, MapPin, User, Smartphone, CheckCircle2, Loader2, XCircle, AlertCircle, Map as MapIcon, ArrowLeft, Info, ChevronLeft } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
-import LocationMapModal from '../components/ui/LocationMapModal';
+const LocationMapModal = React.lazy(() => import('../components/ui/LocationMapModal'));
 import { ClientData } from '../types';
 import { CalendarService } from '../services/CalendarService';
 import { cn } from '../lib/utils';
@@ -12,7 +12,6 @@ import { wizardStepVariants, organicItemVariants } from '../lib/animations';
 
 interface WelcomeViewProps {
   onStart: (data: ClientData) => void;
-  onAdminClick?: () => void;
   onBack?: () => void;
 }
 
@@ -115,7 +114,7 @@ const SmartInput = ({
   );
 };
 
-const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack }) => {
+const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
   // === STATE MANAGEMENT ===
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0); // 1 = Next, -1 = Back
@@ -385,12 +384,14 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onAdminClick, onBack
         </div>
       </div>
 
-      <LocationMapModal 
-        isOpen={isMapOpen}
-        onClose={() => setIsMapOpen(false)}
-        onSelectLocation={handleLocationSelect}
-        initialAddress={formData.location}
-      />
+      <React.Suspense fallback={null}>
+        <LocationMapModal 
+          isOpen={isMapOpen}
+          onClose={() => setIsMapOpen(false)}
+          onSelectLocation={handleLocationSelect}
+          initialAddress={formData.location}
+        />
+      </React.Suspense>
     </div>
   );
 };

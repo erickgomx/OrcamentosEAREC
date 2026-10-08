@@ -11,49 +11,20 @@
     <link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%230a0a0a'/%3E%3Cg transform='translate(-19, 47) scale(0.48)'%3E%3Ctext x='65' y='52' font-family='sans-serif' font-weight='900' font-size='55' fill='%23FFFFFF' stroke='%23FFFFFF' stroke-width='2' letter-spacing='-3'%3EEA%3C/text%3E%3Ccircle cx='135' cy='33' r='16' fill='%23DC2626'/%3E%3Ctext x='155' y='52' font-family='sans-serif' font-weight='700' font-size='50' fill='%23DC2626' letter-spacing='-1'%3EREC%3C/text%3E%3C/g%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="/favicon.svg" />
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
-              price: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
-            },
-            colors: {
-              brand: {
-                DEFAULT: 'var(--brand-color)', // Token Dinâmico
-                glow: 'var(--brand-glow)',     // Token Dinâmico
-              },
-              neutral: {
-                950: '#0a0a0a', 
-              }
-            },
-            animation: {
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            }
-          },
-        },
-      }
-    </script>
-    <!-- Leaflet CSS (Mapas) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Michroma&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Michroma&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Michroma&display=swap">
+    </noscript>
+
     <!-- Preconnect Google Maps Tiles (API Gratuita de Alta Velocidade) -->
     <link rel="preconnect" href="https://mt0.google.com">
     <link rel="preconnect" href="https://mt1.google.com">
     <link rel="preconnect" href="https://mt2.google.com">
     <link rel="preconnect" href="https://mt3.google.com">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Michroma&display=swap" rel="stylesheet">
     <style>
       :root {
         /* Fallback Tokens */
@@ -98,22 +69,7 @@
       .leaflet-pane { z-index: 10 !important; }
       .leaflet-control { z-index: 20 !important; }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
-    "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
-    "clsx": "https://esm.sh/clsx@^2.1.1",
-    "tailwind-merge": "https://esm.sh/tailwind-merge@^3.4.0",
-    "react-signature-canvas": "https://esm.sh/react-signature-canvas@^1.1.0-alpha.2",
-    "leaflet": "https://esm.sh/leaflet@1.9.4",
-    "react-dom": "https://esm.sh/react-dom@^19.2.3"
-  }
-}
-</script>
+
 <style>
   .text-no-break {
     word-break: normal !important;
