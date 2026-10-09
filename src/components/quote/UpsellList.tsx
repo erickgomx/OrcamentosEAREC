@@ -149,7 +149,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
         if (category === 'video_production' && serviceId === 'edit_only') return projectType === 'commercial' ? 180 : 150;
     }
     if (type === 'hours' || type === 'hour') {
-        if (category === 'wedding') return 300;
+        if (category === 'wedding') return 250;
         if (category === 'social') return 250;
         if (category === 'commercial' && serviceId === 'comm_event') return 250;
         if (category === 'studio') return 175;
