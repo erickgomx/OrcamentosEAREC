@@ -31,6 +31,11 @@ interface SuccessViewProps {
       videoDevice?: 'mobile' | 'camera';
       edit30sQty?: number;
       edit1minQty?: number;
+      droneQty?: number;
+      camCapHours?: number;
+      mobileCapHours?: number;
+      projectType?: 'personal' | 'commercial';
+      priceBreakdown?: { label: string; value: number; type: string }[];
   };
 }
 
@@ -61,8 +66,17 @@ const SuccessView: React.FC<SuccessViewProps> = ({ onReset, clientData, totalPri
 
     if (quoteDetails) {
         const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
-        const addonsText = quoteDetails.addons && quoteDetails.addons.length > 0 
-            ? quoteDetails.addons.join(", ") 
+        
+        // Coleta abrangente de todos os adicionais
+        const addonsList: string[] = [];
+        if (quoteDetails.addons && quoteDetails.addons.length > 0) {
+            addonsList.push(...quoteDetails.addons);
+        }
+        if (quoteDetails.droneQty && quoteDetails.droneQty > 0 && !addonsList.some(a => a.toLowerCase().includes('drone'))) {
+            addonsList.push(`Drone (${quoteDetails.droneQty} Baterias)`);
+        }
+        const addonsText = addonsList.length > 0 
+            ? addonsList.join(", ") 
             : "Nenhum";
 
         if (quoteDetails.occasion === 'custom') {
@@ -92,14 +106,25 @@ Podemos agendar uma conversa?`;
             let escopo = "";
             const { serviceId, selectionMode, hours, photoQty, videoQty, commercialMode } = quoteDetails;
             
-            // LÓGICA DE ESCOPO PRECISA
-            if (serviceId === 'comm_combo') {
+            // LÓGICA DE ESCOPO PRECISA E ABRANGENTE
+            if (quoteDetails.occasion === 'video_production') {
+                const prodItems: string[] = [];
+                const typeLabel = quoteDetails.projectType === 'commercial' ? 'Comercial' : 'Pessoa Física';
+                if (photoQty > 0) prodItems.push(`${photoQty} Fotos`);
+                if (quoteDetails.camCapHours && quoteDetails.camCapHours > 0) prodItems.push(`${quoteDetails.camCapHours}h Gravação (Câmera)`);
+                if (quoteDetails.mobileCapHours && quoteDetails.mobileCapHours > 0) prodItems.push(`${quoteDetails.mobileCapHours}h Gravação (Celular)`);
+                if (quoteDetails.edit30sQty && quoteDetails.edit30sQty > 0) prodItems.push(`${quoteDetails.edit30sQty}x Edição (30s)`);
+                if (quoteDetails.edit1minQty && quoteDetails.edit1minQty > 0) prodItems.push(`${quoteDetails.edit1minQty}x Edição (1 min)`);
+                if (quoteDetails.droneQty && quoteDetails.droneQty > 0) prodItems.push(`${quoteDetails.droneQty} Bateria(s) de Drone`);
+                
+                escopo = `Monte seu Pacote (${typeLabel}): ${prodItems.length > 0 ? prodItems.join(' + ') : 'Personalizado'}`;
+
+            } else if (serviceId === 'comm_combo') {
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
                 escopo = `Pacote (10 Fotos + 1 Vídeo ${deviceLabel})`;
                 const extraPhotos = photoQty - 10;
                 const extraVideos = videoQty - 1;
                 
-                // Formatação clean para extras dentro do escopo
                 if (extraPhotos > 0) escopo += ` + ${extraPhotos} Fotos Extras`;
                 if (extraVideos > 0) escopo += ` + ${extraVideos} Vídeos Extras (${deviceLabel})`;
             
@@ -113,15 +138,33 @@ Podemos agendar uma conversa?`;
 
             } else if (quoteDetails.occasion === 'wedding') {
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
-                escopo = quoteDetails.serviceName || `${hours}h de Cobertura de Casamento`;
-                if (videoQty && videoQty > 0) {
-                    escopo += ` + ${videoQty} Vídeo(s) (${deviceLabel})`;
+                const isEssence = serviceId === 'wedding_essence';
+                const pkgName = AppConfig.PRICING_TABLE.wedding[serviceId as keyof typeof AppConfig.PRICING_TABLE.wedding]?.label || quoteDetails.customOccasionText;
+                
+                if (isEssence) {
+                    escopo = `${pkgName} (1 Vídeo ${deviceLabel} Incluso)`;
+                    if (videoQty && videoQty > 0) {
+                        escopo += ` + ${videoQty} Vídeo(s) Extra(s) (${deviceLabel})`;
+                    }
+                } else {
+                    escopo = `${pkgName}`;
+                    if (videoQty && videoQty > 0) {
+                        escopo += ` + ${videoQty} Vídeo(s) (${deviceLabel})`;
+                    }
+                }
+
+                if (hours > 2) {
+                    escopo += ` + ${hours - 2}h Extras (${hours}h Total)`;
                 }
 
             } else if (quoteDetails.occasion === 'social') {
                 const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
+                const baseHours = serviceId === 'graduation' ? 4 : 2;
                 if (selectionMode === 'duration') {
                     escopo = `${hours}h de Cobertura Social`;
+                    if (hours > baseHours) {
+                        escopo += ` (${baseHours}h base + ${hours - baseHours}h extras)`;
+                    }
                 } else {
                     escopo = `${photoQty} Fotos Sociais (Mínimo 8)`;
                 }
@@ -136,6 +179,9 @@ Podemos agendar uma conversa?`;
 
             } else if (serviceId === 'studio_video') {
                 escopo = `${hours}h de Gravação com Câmera no Estúdio`;
+                if (hours > 2) {
+                    escopo += ` (2h base + ${hours - 2}h extras)`;
+                }
                 const edits = [];
                 if (quoteDetails.edit30sQty && quoteDetails.edit30sQty > 0) {
                     edits.push(`${quoteDetails.edit30sQty}x Edição (30s)`);

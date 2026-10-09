@@ -241,49 +241,43 @@ export const scaleIn: Variants = {
   }
 };
 
-// Modal com slide vertical fluido e física elástica equilibrada
+// Modal com slide vertical fluido e física elástica equilibrada (sem blur filter para evitar piscar de renderização)
 export const modalVariants: Variants = {
   hidden: { 
     opacity: 0, 
-    scale: 0.95, 
-    y: 35, 
-    filter: 'blur(10px)' 
+    scale: 0.96, 
+    y: 20
   },
   visible: { 
     opacity: 1, 
     scale: 1, 
     y: 0,
-    filter: 'blur(0px)',
     transition: { 
-      type: "spring", 
-      stiffness: 380, 
-      damping: 28 
+      duration: 0.25,
+      ease: CINE_EASE
     }
   },
   exit: { 
     opacity: 0, 
     scale: 0.96, 
-    y: 25,
-    filter: 'blur(8px)',
+    y: 15,
     transition: { 
-      duration: 0.22, 
-      ease: CINE_EASE_IN 
+      duration: 0.2, 
+      ease: CINE_EASE_OUT 
     }
   }
 };
 
-// Backdrop de modais com fade e desfoque suave
+// Backdrop de modais com fade suave
 export const backdropVariants: Variants = {
-  hidden: { opacity: 0, backdropFilter: 'blur(0px)' },
+  hidden: { opacity: 0 },
   visible: { 
     opacity: 1, 
-    backdropFilter: 'blur(16px)',
-    transition: { duration: 0.35, ease: "easeOut" }
+    transition: { duration: 0.25, ease: "easeOut" }
   },
   exit: { 
     opacity: 0, 
-    backdropFilter: 'blur(0px)',
-    transition: { duration: 0.25, ease: "easeIn" }
+    transition: { duration: 0.2, ease: "easeIn" }
   }
 };
 

@@ -436,6 +436,8 @@ export const useQuoteLogic = ({
         ? `Pacote Comercial (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
         : category === 'social' && serviceId === 'social_video'
         ? `Vídeo Social (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
+        : category === 'wedding' && serviceId === 'wedding_essence'
+        ? `Pacote Mais Essência (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
         : AppConfig.getServiceLabel(category, serviceId))
     : '';
 
@@ -443,14 +445,33 @@ export const useQuoteLogic = ({
   if (selectionMode === 'duration') {
        if (category === 'studio' && serviceId === 'studio_video') {
            metricLabel = `${hours}h de Gravação no Estúdio`;
+           if (hours > 2) {
+               metricLabel += ` (2h base + ${hours - 2}h extras)`;
+           }
            if ((quoteState.edit30sQty || 0) > 0) {
                metricLabel += ` + ${quoteState.edit30sQty}x Edição (30s)`;
            }
            if ((quoteState.edit1minQty || 0) > 0) {
                metricLabel += ` + ${quoteState.edit1minQty}x Edição (1 min)`;
            }
+       } else if (category === 'wedding') {
+           const isEssence = serviceId === 'wedding_essence';
+           const pkgName = AppConfig.PRICING_TABLE.wedding[serviceId as keyof typeof AppConfig.PRICING_TABLE.wedding]?.label || 'Casamento';
+           metricLabel = isEssence ? `${pkgName} (1 Vídeo Incluso)` : pkgName;
+           if (hours > 2) {
+               metricLabel += ` + ${hours - 2}h Extras (${hours}h Total)`;
+           }
+           if (videoQty > 0) {
+               metricLabel += isEssence
+                   ? ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} Extra${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`
+                   : ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
+           }
        } else {
+           const baseHours = serviceId === 'graduation' ? 4 : 2;
            metricLabel = `${hours}h de Cobertura`;
+           if (hours > baseHours) {
+               metricLabel += ` (${baseHours}h base + ${hours - baseHours}h extras)`;
+           }
            if ((category === 'social' || category === 'wedding') && videoQty > 0) {
                metricLabel += ` + ${videoQty} Vídeo${videoQty > 1 ? 's' : ''} (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'})`;
            }
@@ -467,15 +488,25 @@ export const useQuoteLogic = ({
        else if (serviceId === 'studio_photo') metricLabel = qty === 7 ? '7 Fotos (Desconto R$ 150)' : qty === 13 ? '13 Fotos (Promoção R$ 250)' : `${qty} Fotos`;
        else metricLabel = `${qty} Unidades`;
   }
-  if (category === 'wedding' && selectionMode === 'duration' && hours === 2 && (!videoQty || videoQty === 0)) metricLabel = "Pacote Completo";
   if (category === 'custom') metricLabel = 'Sob medida';
 
-  const activeAddons = [];
+  const activeAddons: string[] = [];
+  // Horas extras como adicional visível
+  if (selectionMode === 'duration') {
+      const baseH = (category === 'social' && serviceId === 'graduation') ? 4 : 2;
+      if (hours > baseH) {
+          activeAddons.push(`Horas Extras (+${hours - baseH}h)`);
+      }
+  }
   if (addDrone && (['wedding','social','commercial'].includes(category || ''))) activeAddons.push('Drone (Aéreo)');
   if (quoteState.droneQty && quoteState.droneQty > 0) activeAddons.push(`Drone (${quoteState.droneQty} Baterias)`);
   if (addRealTime) activeAddons.push('Fotos em Tempo Real');
   if ((category === 'social' || category === 'wedding') && serviceId !== 'social_video' && videoQty > 0) {
-      activeAddons.push(`Vídeo (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`);
+      const isEssence = category === 'wedding' && serviceId === 'wedding_essence';
+      const label = isEssence
+          ? `Vídeo Extra (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`
+          : `Vídeo (${quoteState.videoDevice === 'camera' ? 'Câmera' : 'Mobile'}) x${videoQty}`;
+      activeAddons.push(label);
   }
   if (category === 'studio' && serviceId === 'studio_video') {
       if (quoteState.edit30sQty && quoteState.edit30sQty > 0) {
@@ -484,6 +515,13 @@ export const useQuoteLogic = ({
       if (quoteState.edit1minQty && quoteState.edit1minQty > 0) {
           activeAddons.push(`Edição 1min x${quoteState.edit1minQty}`);
       }
+  }
+  if (category === 'video_production') {
+      if (quoteState.qty > 0) activeAddons.push(`${quoteState.qty} Fotos Tratadas`);
+      if (quoteState.camCapHours && quoteState.camCapHours > 0) activeAddons.push(`Gravação Câmera (${quoteState.camCapHours}h)`);
+      if (quoteState.mobileCapHours && quoteState.mobileCapHours > 0) activeAddons.push(`Gravação Celular (${quoteState.mobileCapHours}h)`);
+      if (quoteState.edit30sQty && quoteState.edit30sQty > 0) activeAddons.push(`Edição 30s x${quoteState.edit30sQty}`);
+      if (quoteState.edit1minQty && quoteState.edit1minQty > 0) activeAddons.push(`Edição 1min x${quoteState.edit1minQty}`);
   }
 
   const getFooterLabel = () => {

@@ -64,7 +64,12 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 commercialMode: state.commercialMode,
                 videoDevice: quoteState.videoDevice,
                 edit30sQty: quoteState.edit30sQty,
-                edit1minQty: quoteState.edit1minQty
+                edit1minQty: quoteState.edit1minQty,
+                droneQty: quoteState.droneQty,
+                camCapHours: quoteState.camCapHours,
+                mobileCapHours: quoteState.mobileCapHours,
+                projectType: quoteState.projectType,
+                priceBreakdown: state.priceBreakdown
             }}
         />
       );
@@ -285,7 +290,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                   <motion.div
                       variants={modalVariants}
                       initial="hidden" animate="visible" exit="exit"
-                      className="relative bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0"
+                      className="relative bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0 z-10"
                   >
  
                       <div className="p-4 bg-white/5 border-b border-white/5 text-center">
@@ -295,28 +300,25 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
  
                       
                       <div className="p-3 space-y-2 max-h-[60vh] overflow-y-auto">
-                          {Object.entries(state.categoryLabels).map(([key, label], index) => {
+                          {Object.entries(state.categoryLabels).map(([key, label]) => {
                               const isActive = quoteState.category === key;
                               return (
-                                  <motion.button
+                                  <button
                                       key={key}
-                                      initial={{ opacity: 0, x: -10 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      transition={{ delay: index * 0.05 }}
                                       onClick={() => {
                                           actions.setCategory(key as ServiceCategory);
                                           actions.setIsCategoryMenuOpen(false);
                                       }}
                                       className={cn(
-                                          "w-full text-left px-5 py-4 sm:py-3 rounded-2xl flex items-center justify-between transition-all",
+                                          "w-full text-left px-5 py-4 sm:py-3 rounded-2xl flex items-center justify-between transition-colors duration-150",
                                           isActive 
-                                              ? "bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20" 
-                                              : "bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white"
+                                              ? "bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20 font-bold" 
+                                              : "bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white font-medium"
                                       )}
                                   >
-                                      <span className="text-sm font-medium tracking-wide uppercase">{label}</span>
+                                      <span className="text-sm tracking-wide uppercase">{label}</span>
                                       {isActive && <CheckCircle size={18} />}
-                                  </motion.button>
+                                  </button>
                               )
                           })}
                      </div>

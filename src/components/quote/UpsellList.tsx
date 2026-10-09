@@ -624,42 +624,71 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
                     </motion.div>
                   )}
-{category !== 'video_production' && showDuration && (
-                    <motion.div 
-                        key="duration"
-                        variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-                        className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
-                    >
-                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
-                        
-                        <div 
-                            className="flex items-center gap-3 mb-8 relative group cursor-pointer"
-                            onClick={() => setInfoData({ 
-                                title: "Tempo de Cobertura", 
-                                desc: "Período contínuo de trabalho da equipe. Horas adicionais podem ser negociadas no dia do evento caso a festa se estenda.", 
-                                price: "Info" 
-                            })}
-                        >
-                             <Clock className="text-brand-DEFAULT" size={24} />
-                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Tempo de Cobertura</h3>
-                             <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
-                        </div>
+{category !== 'video_production' && showDuration && (() => {
+    const baseHours = (category === 'social' && serviceId === 'graduation') ? 4 : 2;
+    const extraHours = Math.max(0, hours - baseHours);
+    const hourPrice = getIncrementPrice('hour');
 
-                        <div className="flex items-center justify-between w-full gap-8 px-4">
-                            <ControlBtn onClick={() => setHours(Math.max(2, hours - 1))} icon={Minus} />
-                            <div className="text-center">
-                                <span className="block text-6xl font-price font-bold text-white tracking-tighter mb-2 drop-shadow-lg">
-                                    <AnimatedNumber value={hours} />
-                                </span>
-                                <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">Horas</span>
-                            </div>
-                            <div className="flex flex-col items-center gap-2 group relative">
-                                <PriceTooltip value={getIncrementPrice('hour')} />
-                                <ControlBtn onClick={() => setHours(hours + 1)} icon={Plus} active />
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
+    return (
+        <motion.div 
+            key="duration"
+            variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
+            className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+        >
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
+            
+            {extraHours > 0 && (
+                <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow-lg z-10 flex items-center gap-1">
+                    <Sparkles size={11} />
+                    +{extraHours}h Extra{extraHours > 1 ? 's' : ''} (+{formatCurrency(extraHours * hourPrice)})
+                </div>
+            )}
+            
+            <div 
+                className="flex items-center gap-3 mb-2 relative group cursor-pointer"
+                onClick={() => setInfoData({ 
+                    title: "Tempo de Cobertura", 
+                    desc: "Período contínuo de trabalho da equipe. Horas adicionais podem ser negociadas no dia do evento caso a festa se estenda.", 
+                    price: "Info" 
+                })}
+            >
+                 <Clock className="text-brand-DEFAULT" size={24} />
+                 <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Tempo de Cobertura</h3>
+                 <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
+            </div>
+
+            <p className="text-xs text-neutral-400 mb-6 max-w-sm">
+                {extraHours > 0 
+                    ? `Pacote com ${baseHours}h base + ${extraHours} hora${extraHours > 1 ? 's' : ''} adicional${extraHours > 1 ? 'is' : ''} (+R$ ${hourPrice}/h).` 
+                    : `Período contínuo de ${baseHours} horas de cobertura inclusas no pacote.`
+                }
+            </p>
+
+            <div className="flex items-center justify-between w-full gap-8 px-4">
+                <ControlBtn onClick={() => setHours(Math.max(baseHours, hours - 1))} icon={Minus} />
+                <div className="text-center">
+                    <span className="block text-6xl font-price font-bold text-white tracking-tighter mb-1 drop-shadow-lg">
+                        <AnimatedNumber value={hours} />
+                    </span>
+                    <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em] block">Horas</span>
+                    {extraHours > 0 ? (
+                        <span className="text-[11px] text-brand-DEFAULT font-bold uppercase tracking-wider block mt-1">
+                            {baseHours}h Base + {extraHours}h Extra{extraHours > 1 ? 's' : ''}
+                        </span>
+                    ) : (
+                        <span className="text-[10px] text-neutral-500 font-medium block mt-1">
+                            Tempo Base Incluso ({baseHours}h)
+                        </span>
+                    )}
+                </div>
+                <div className="flex flex-col items-center gap-2 group relative">
+                    <PriceTooltip value={getIncrementPrice('hour')} />
+                    <ControlBtn onClick={() => setHours(hours + 1)} icon={Plus} active />
+                </div>
+            </div>
+        </motion.div>
+    );
+})()}
 
                 {/* --- SELETOR DUPLO PARA PACOTE (Foto + Vídeo) --- */}
                 {isCombo && setVideoQty && (
@@ -833,79 +862,150 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 >
                     <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                     
-                    <div className="flex items-center gap-2 mb-2">
-                        <Video className="text-brand-DEFAULT" size={20} />
-                        <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
-                            Deseja Incluir Vídeo?
-                        </h3>
-                    </div>
-                    <p className="text-xs text-neutral-400 mb-4 max-w-sm">
-                        {category === 'wedding'
-                            ? "Adicione gravação de vídeo para registrar os melhores momentos da cerimônia."
-                            : "Adicione gravação de vídeo para registrar momentos marcantes do evento."}
-                    </p>
-
-                    <div className="grid grid-cols-3 gap-2 w-full max-w-md">
-                        <button
-                            type="button"
-                            onClick={() => setVideoQty?.(0)}
-                            className={cn(
-                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
-                                (!videoQty || videoQty === 0)
-                                    ? "bg-white/10 border-white/30 text-white shadow-sm"
-                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
-                            )}
-                        >
-                            <span className="font-semibold">Sem Vídeo</span>
-                            <span className="text-[10px] text-neutral-500">Apenas fotos</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setVideoDevice?.('mobile');
-                                setVideoQty?.(Math.max(1, videoQty || 1));
-                            }}
-                            className={cn(
-                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
-                                videoQty > 0 && videoDevice === 'mobile'
-                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
-                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
-                            )}
-                        >
-                            <span className="font-semibold">📱 Mobile</span>
-                            <span className="text-[10px] opacity-80">+R$ 350</span>
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setVideoDevice?.('camera');
-                                setVideoQty?.(Math.max(1, videoQty || 1));
-                            }}
-                            className={cn(
-                                "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
-                                videoQty > 0 && videoDevice === 'camera'
-                                    ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
-                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
-                            )}
-                        >
-                            <span className="font-semibold">📷 Câmera</span>
-                            <span className="text-[10px] opacity-80">+R$ 600</span>
-                        </button>
-                    </div>
-
-                    {videoQty > 0 && (
-                        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between w-full px-2">
-                            <span className="text-xs text-neutral-300 font-medium">
-                                Quantidade de vídeos:
-                            </span>
-                            <div className="flex items-center gap-3">
-                                <ControlBtn onClick={() => setVideoQty?.(Math.max(1, videoQty - 1))} icon={Minus} />
-                                <span className="font-price font-bold text-white text-lg w-6 text-center">{videoQty}</span>
-                                <ControlBtn onClick={() => setVideoQty?.(videoQty + 1)} icon={Plus} active />
+                    {serviceId === 'wedding_essence' ? (
+                        <>
+                            {/* Pacote Mais Essência: 1 Vídeo Já Incluso no Pacote */}
+                            <div className="flex items-center gap-2 mb-2">
+                                <Video className="text-brand-DEFAULT" size={20} />
+                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                                    Vídeo da Cerimônia (1 Incluso)
+                                </h3>
                             </div>
-                        </div>
+                            <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                                O Pacote Mais Essência já inclui 1 vídeo completo da cerimônia. Escolha o formato da gravação do vídeo incluso:
+                            </p>
+
+                            {/* Seletor Mobile / Câmera para o vídeo já incluso */}
+                            <div className="grid grid-cols-2 gap-2 w-full max-w-xs mb-5">
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoDevice?.('mobile')}
+                                    className={cn(
+                                        "py-2.5 px-3 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-0.5",
+                                        videoDevice === 'mobile'
+                                            ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30 font-semibold"
+                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <span>📱 Mobile</span>
+                                    <span className="text-[10px] opacity-80">Incluso no Pacote</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoDevice?.('camera')}
+                                    className={cn(
+                                        "py-2.5 px-3 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-0.5",
+                                        videoDevice === 'camera'
+                                            ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30 font-semibold"
+                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <span>📷 Câmera Cinema</span>
+                                    <span className="text-[10px] opacity-80">Incluso no Pacote</span>
+                                </button>
+                            </div>
+
+                            {/* Oferta de Vídeos Adicionais / Extras */}
+                            <div className="pt-4 border-t border-white/10 w-full flex flex-col items-center">
+                                <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                                    Deseja Adicionar Vídeos Extras?
+                                </span>
+                                <span className="text-[11px] text-neutral-400 mb-3">
+                                    {videoDevice === 'camera' ? "+R$ 600 por vídeo adicional (Câmera)" : "+R$ 350 por vídeo adicional (Mobile)"}
+                                </span>
+                                
+                                <div className="flex items-center justify-between w-full max-w-xs px-2">
+                                    <ControlBtn onClick={() => setVideoQty?.(Math.max(0, (videoQty || 0) - 1))} icon={Minus} />
+                                    <div className="text-center">
+                                        <span className="font-price font-bold text-white text-xl block leading-none">
+                                            {videoQty || 0}
+                                        </span>
+                                        <span className="text-[10px] text-neutral-400 uppercase font-semibold mt-1 block">
+                                            {(videoQty || 0) === 0 ? "Nenhum extra (1 incluso)" : `${videoQty} extra(s) (+ ${videoQty} vídeo${videoQty > 1 ? 's' : ''})`}
+                                        </span>
+                                    </div>
+                                    <ControlBtn onClick={() => setVideoQty?.((videoQty || 0) + 1)} icon={Plus} active />
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Video className="text-brand-DEFAULT" size={20} />
+                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                                    Deseja Incluir Vídeo?
+                                </h3>
+                            </div>
+                            <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                                {category === 'wedding'
+                                    ? "Adicione gravação de vídeo para registrar os melhores momentos da cerimônia."
+                                    : "Adicione gravação de vídeo para registrar momentos marcantes do evento."}
+                            </p>
+
+                            <div className="grid grid-cols-3 gap-2 w-full max-w-md">
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoQty?.(0)}
+                                    className={cn(
+                                        "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                        (!videoQty || videoQty === 0)
+                                            ? "bg-white/10 border-white/30 text-white shadow-sm"
+                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <span className="font-semibold">Sem Vídeo</span>
+                                    <span className="text-[10px] text-neutral-500">Apenas fotos</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setVideoDevice?.('mobile');
+                                        setVideoQty?.(Math.max(1, videoQty || 1));
+                                    }}
+                                    className={cn(
+                                        "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                        videoQty > 0 && videoDevice === 'mobile'
+                                            ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
+                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <span className="font-semibold">📱 Mobile</span>
+                                    <span className="text-[10px] opacity-80">+R$ 350</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setVideoDevice?.('camera');
+                                        setVideoQty?.(Math.max(1, videoQty || 1));
+                                    }}
+                                    className={cn(
+                                        "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
+                                        videoQty > 0 && videoDevice === 'camera'
+                                            ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
+                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    )}
+                                >
+                                    <span className="font-semibold">📷 Câmera</span>
+                                    <span className="text-[10px] opacity-80">+R$ 600</span>
+                                </button>
+                            </div>
+
+                            {videoQty > 0 && (
+                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between w-full px-2">
+                                    <span className="text-xs text-neutral-300 font-medium">
+                                        Quantidade de vídeos:
+                                    </span>
+                                    <div className="flex items-center gap-3">
+                                        <ControlBtn onClick={() => setVideoQty?.(Math.max(1, videoQty - 1))} icon={Minus} />
+                                        <span className="font-price font-bold text-white text-lg w-6 text-center">{videoQty}</span>
+                                        <ControlBtn onClick={() => setVideoQty?.(videoQty + 1)} icon={Plus} active />
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </motion.div>
             )}

@@ -79,7 +79,13 @@ export class PricingEngine {
     }
 
     total += baseVal;
-    breakdown.push({ label: baseLabel, value: baseVal, type: 'base' });
+    if (serviceId === 'wedding_essence') {
+      const isCam = state.videoDevice === 'camera';
+      const deviceName = isCam ? 'Câmera' : 'Mobile';
+      breakdown.push({ label: `${baseLabel} (1 Vídeo ${deviceName} Incluso)`, value: baseVal, type: 'base' });
+    } else {
+      breakdown.push({ label: baseLabel, value: baseVal, type: 'base' });
+    }
 
     // Horas Extras (Regra: Acima de 2h, +250/h)
     // Nota: Em casamentos, normalmente pacotes são fechados, mas mantemos a lógica caso o user altere
@@ -90,14 +96,18 @@ export class PricingEngine {
     }
 
     // Adicional opcional de vídeo no Casamento (seja mobile ou câmera)
+    // No Pacote Mais Essência, 1 vídeo já está incluso no valor base; videoQty representa vídeos adicionais/extras.
     const { videoQty, videoDevice } = state;
     if (videoQty && videoQty > 0) {
       const isCam = videoDevice === 'camera';
       const videoUnitPrice = isCam ? 600 : 350;
       const videoTotal = videoQty * videoUnitPrice;
       total += videoTotal;
+      const videoLabel = serviceId === 'wedding_essence'
+        ? `Vídeos Extras Casamento (${isCam ? 'Câmera' : 'Mobile'}) x${videoQty}`
+        : `Vídeo Casamento (${isCam ? 'Câmera' : 'Mobile'}) x${videoQty}`;
       breakdown.push({
-        label: `Vídeo Casamento (${isCam ? 'Câmera' : 'Mobile'}) x${videoQty}`,
+        label: videoLabel,
         value: videoTotal,
         type: 'addon'
       });
@@ -120,7 +130,7 @@ export class PricingEngine {
          const extraVal = (hours - table.graduation.hoursIncluded) * table.graduation.hourPrice;
          if (extraVal > 0) {
              total += extraVal;
-             breakdown.push({ label: `Horas Extras (+${hours}h)`, value: extraVal, type: 'addon' });
+             breakdown.push({ label: `Horas Extras (+${hours - table.graduation.hoursIncluded}h)`, value: extraVal, type: 'addon' });
          }
       }
     } else if (serviceId === 'social_video') {
