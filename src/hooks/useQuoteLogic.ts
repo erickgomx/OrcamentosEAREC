@@ -126,19 +126,13 @@ export const useQuoteLogic = ({
               videoQty: c === 'wedding' ? 0 : prev.videoQty
           }));
           
-          // Lógica de Navegação:
-          // Se estivermos na tela inicial (Step 0), APENAS selecionamos a categoria visualmente.
-          // O usuário deve clicar em "Ver Detalhes/Continuar" no rodapé para avançar.
-          // Se estivermos nas etapas seguintes (via Menu Dropdown currentStep > 0), 
-          // aí sim forçamos o reinício para Step 1 para evitar inconsistência.
-          if (currentStep > 0) {
-              if (c === 'video_production') {
-                  setCurrentStep(2);
-              } else {
-                  setCurrentStep(1);
-              }
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+          setDirection(1);
+          if (c === 'video_production') {
+              setCurrentStep(2);
+          } else {
+              setCurrentStep(1);
           }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           
           setIsCategoryMenuOpen(false);
       },

@@ -170,7 +170,10 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       </motion.div>
 
       {/* MAIN CONTENT: WIZARD STEP */}
-      <div className="flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 pb-32 sm:pb-40 flex flex-col items-center">
+      <div className={cn(
+          "flex-1 w-full max-w-5xl mx-auto relative px-4 sm:px-6 md:px-8 flex flex-col items-center",
+          state.currentStep === 0 ? "pb-12 sm:pb-16" : "pb-32 sm:pb-40"
+      )}>
           <AnimatePresence initial={false} custom={state.direction} mode="wait">
             {state.viewState === 'config' && (
                 <motion.div 
@@ -265,7 +268,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       </div>
 
       {/* FOOTER NAVIGATION */}
-      {state.viewState === 'config' && (
+      {state.viewState === 'config' && state.currentStep !== 0 && (
         <StickyFooter 
             totalPrice={state.totalPrice} 
             onApprove={actions.handleNextStep} 
