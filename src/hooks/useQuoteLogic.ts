@@ -276,7 +276,7 @@ export const useQuoteLogic = ({
         message = `💼 *CONSULTORIA COMERCIAL*\nOlá, equipe EAREC! Me chamo ${clientName}.\n\nEstou no configurador e gostaria de um orçamento personalizado para minha empresa/marca.\n\n💡 *DETALHES DA DEMANDA*\n• Objetivo: (Descreva aqui)\n• Referência: Opção "Comercial Personalizado"\n\n*Aguardo contato para alinharmos o projeto!*`;
     }
 
-    window.open(`https://api.whatsapp.com/send?phone=${AppConfig.BRAND.WHATSAPP}&text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://api.whatsapp.com/send?phone=${AppConfig.BRAND.WHATSAPP}&text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   // === HANDLERS: NAVIGATION & INTERACTION ===

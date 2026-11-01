@@ -259,7 +259,7 @@ Poderiam confirmar a reserva desta data?`;
         if (action === 'qrcode') {
             setIsQrModalOpen(true);
         } else {
-            window.open(generateWhatsappUrl(), '_blank');
+            window.open(generateWhatsappUrl(), '_blank', 'noopener,noreferrer');
         }
     }
   };
@@ -272,7 +272,7 @@ Poderiam confirmar a reserva desta data?`;
       if (pendingAction === 'qrcode') {
           setIsQrModalOpen(true);
       } else {
-          window.open(generateWhatsappUrl(tempName), '_blank');
+          window.open(generateWhatsappUrl(tempName), '_blank', 'noopener,noreferrer');
       }
   };
 
