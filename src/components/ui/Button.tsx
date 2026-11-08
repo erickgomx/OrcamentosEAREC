@@ -36,9 +36,9 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   // Configurações de estilo para cada variante visual
   const variants = {
-    primary: "bg-brand-DEFAULT text-white shadow-[0_0_20px_rgba(220,38,38,0.35)] border border-brand-DEFAULT hover:shadow-[0_0_30px_rgba(220,38,38,0.55)]",
-    secondary: "bg-transparent border border-white/20 text-white hover:bg-white/10 hover:border-white/40",
-    glass: "bg-white/10 backdrop-blur-md border border-white/15 text-white hover:bg-white/20 hover:border-white/30"
+    primary: "bg-[#DC2626] text-white shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-[#DC2626] hover:bg-[#B91C1C] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] font-bold",
+    secondary: "bg-transparent border border-stone-300 dark:border-white/20 text-stone-800 dark:text-white hover:bg-stone-100 dark:hover:bg-white/10 hover:border-stone-400 dark:hover:border-white/40",
+    glass: "bg-stone-100/80 dark:bg-white/10 backdrop-blur-md border border-stone-200 dark:border-white/15 text-stone-800 dark:text-white hover:bg-stone-200 dark:hover:bg-white/20"
   };
 
   // Espaçamentos e tipografia escalonados

@@ -97,7 +97,7 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1">
             <p className={cn(
                 "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300",
-                active ? "text-stone-900 dark:text-neutral-100 font-bold" : "text-stone-700 group-hover:text-stone-950 dark:text-neutral-300 dark:group-hover:text-white font-medium"
+                active ? "text-stone-950 dark:text-white font-bold" : "text-stone-800 group-hover:text-stone-950 dark:text-neutral-200 dark:group-hover:text-white font-semibold"
             )}>
                 {label}
             </p>
@@ -263,7 +263,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             onClick={() => setSelectionMode('quantity')} 
                             className={cn(
                                 "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
-                                selectionMode === 'quantity' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                selectionMode === 'quantity' ? "bg-white text-stone-900 dark:bg-white/10 dark:text-white shadow-sm font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                             )}
                         >
                             <Camera size={16} />
@@ -1378,7 +1378,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {/* Botão de Ajuda / Detalhes Rápidos - Posicionado à esquerda do card */}
         {onInfo && desc && (
             <button 
-              className="absolute top-2 left-2 sm:top-3 sm:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-1 sm:p-1.5 hover:bg-white/10 rounded-full"
+              className="absolute top-2 left-2 sm:top-3 sm:left-3 text-stone-400 hover:text-stone-800 dark:text-neutral-500 dark:hover:text-white transition-colors z-20 p-1 sm:p-1.5 hover:bg-stone-100 dark:hover:bg-white/10 rounded-full"
               onClick={(e) => {
                  e.stopPropagation();
                  onInfo({ title, desc, price });
@@ -1393,7 +1393,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {!highlight && (
             <div className={cn(
                 "absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all duration-500 z-20",
-                active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
+                active ? "bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]" : "bg-stone-200 dark:bg-white/10"
             )} />
         )}
         
@@ -1410,7 +1410,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
                 <h4 className={cn(
                     "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
-                    active ? "text-stone-900 dark:text-neutral-100 font-bold" : "text-stone-700 group-hover:text-stone-950 dark:text-neutral-300 dark:group-hover:text-white font-medium"
+                    active ? "text-stone-950 dark:text-white font-bold" : "text-stone-800 group-hover:text-stone-950 dark:text-neutral-200 dark:group-hover:text-white font-semibold"
                 )}>
                     {title}
                 </h4>
@@ -1439,8 +1439,8 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             </div>
         </div>
 
-        <div className="w-full pt-2.5 sm:pt-3 border-t border-white/5 mt-2.5 sm:mt-3">
-            <p className={cn("text-xs sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-400 group-hover:text-neutral-200")}>
+        <div className="w-full pt-2.5 sm:pt-3 border-t border-stone-200/90 dark:border-white/[0.08] mt-2.5 sm:mt-3">
+            <p className={cn("text-xs sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-[#DC2626] dark:text-red-400 font-extrabold" : "text-stone-900 dark:text-neutral-100 group-hover:text-stone-950 dark:group-hover:text-white")}>
                 {price}
             </p>
         </div>
