@@ -264,6 +264,39 @@ Poderiam confirmar a reserva desta data?`;
     return `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
   };
 
+  // --- FUNÇÃO GERADORA DA MENSAGEM OTIMIZADA PARA QR CODE ---
+  // Mantém os dados essenciais para encurtar a URL, permitindo que os módulos/quadradinhos
+  // do padrão interno do QR fiquem bem maiores, legíveis e nunca estourem limite de dados.
+  const generateQrWhatsappUrl = (overrideName?: string) => {
+    const finalName = overrideName || clientData.name || "Cliente";
+    let message = "";
+
+    if (quoteDetails) {
+        const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
+
+        let pacoteLabel = quoteDetails.customOccasionText || "Serviço Selecionado";
+        if (quoteDetails.occasion === 'video_production') {
+            const typeLabel = quoteDetails.projectType === 'commercial' ? 'Comercial' : 'Pessoa Física';
+            pacoteLabel = `Monte seu Pacote (${typeLabel})`;
+        }
+
+        const dateStr = formatDate(clientData.date);
+        const locationStr = clientData.location ? ` | ${clientData.location}` : '';
+
+        message = `✨ Olá! Proposta EAREC (Pedido: #${finalOrderId})
+👤 Cliente: ${finalName}
+🎬 Pacote: ${pacoteLabel}
+🗓️ Data: ${dateStr}${locationStr}
+💎 Total: ${formattedPrice}
+
+Gostaria de verificar a disponibilidade e confirmar a reserva!`;
+    } else {
+        message = `✨ Olá! Gostaria de consultar um orçamento na EAREC (Pedido: #${finalOrderId}).\nNome: ${finalName}`;
+    }
+
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  };
+
   // Handler de Clique na Ação (Link ou QR Code)
   const handleActionClick = (action: 'link' | 'qrcode', e: React.MouseEvent) => {
     e.preventDefault(); // Impede o link padrão
@@ -499,11 +532,11 @@ Poderiam confirmar a reserva desta data?`;
 
                         <div className="bg-white p-4 rounded-2xl mb-2 border border-stone-200/80 dark:border-transparent shadow-sm">
                             <QRCodeSVG 
-                                value={generateWhatsappUrl(clientData.name || tempName)} 
-                                size={200}
+                                value={generateQrWhatsappUrl(clientData.name || tempName)} 
+                                size={230}
                                 bgColor={"#ffffff"}
                                 fgColor={"#000000"}
-                                level={"H"}
+                                level={"M"}
                                 includeMargin={false}
                             />
                         </div>
