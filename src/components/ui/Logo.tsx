@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
@@ -7,7 +8,7 @@ interface LogoProps {
   animate?: boolean;
 }
 
-const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) => (
+const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shouldAnimate: boolean; textColor?: string }) => (
   <svg 
     viewBox="60 -10 240 85" 
     fill="none" 
@@ -19,8 +20,8 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
       fontFamily="'Microgramma Extd D Bold', 'Microgramma Extended', sans-serif" 
       fontWeight="900" 
       fontSize="55" 
-      fill="#E5E5E5"
-       stroke="#E5E5E5"
+      fill={textColor}
+       stroke={textColor}
        strokeWidth="2" 
       letterSpacing="-3"
       className="drop-shadow-sm"
@@ -103,6 +104,14 @@ const SvgContent = React.memo(({ shouldAnimate }: { shouldAnimate: boolean }) =>
 ));
 
 const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) => {
+  let isDark = true;
+  try {
+    const themeContext = useTheme();
+    isDark = themeContext.isDark;
+  } catch {
+    isDark = true;
+  }
+  const textColor = isDark ? '#E5E5E5' : '#171717';
   const [isShining, setIsShining] = useState(false);
   
   const handleClick = useCallback((e?: React.MouseEvent) => {
@@ -145,7 +154,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <SvgContent shouldAnimate={animate} />
+      <SvgContent shouldAnimate={animate} textColor={textColor} />
       
       {/* ELEGANT CLICK ANIMATION: GENTLE GLOW AND SOFT SWEEP */}
       <AnimatePresence>

@@ -1,3 +1,15 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - SISTEMA DE ANIMAÇÕES CINEMATOGRÁFICAS (animations.ts)
+// ============================================================================
+// Olá, dev criativo! 🎬✨
+// Este arquivo é o motor de física e movimento da experiência visual da EAREC.
+// Toda a estética foi pensada para transmitir fluidez de estúdio de cinema:
+// - Curvas cúbicas refinadas (`CINE_EASE`) com aceleração e desaceleração orgânicas.
+// - Efeitos de desfoque de lente (`blur filter`) simulando abertura e foco óptico.
+// - Orquestração em cascata (`staggerChildren`) para que listas entrem como peças de dominó.
+// - Modais e gavetas que sobem com peso e suavidade sem causar flickers na GPU.
+// ============================================================================
+
 import { Variants } from 'framer-motion';
 
 /**

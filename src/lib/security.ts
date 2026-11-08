@@ -1,4 +1,12 @@
-
+// ============================================================================
+// EAREC AUDIOVISUAL - UTILITÁRIOS DE SEGURANÇA E SANEAMENTO (security.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Este módulo lida com higienização de inputs do usuário (prevenção a XSS),
+// geração de hash criptográfico nativo via Web Crypto API (SubtleCrypto) e
+// mitigação de ataques de tempo (timing attacks).
+// Tudo opera 100% no cliente sem dependências externas pesadas.
+// ============================================================================
 
 /**
  * Módulo de Segurança
@@ -8,7 +16,8 @@
 
 /**
  * Gera um Hash SHA-256 de uma string.
- * Utiliza a API nativa de criptografia do navegador (SubtleCrypto).
+ * Utiliza a API nativa de criptografia do navegador (SubtleCrypto),
+ * ideal para checagem rápida de senhas ou integridade de dados locais.
  */
 export const sha256 = async (message: string): Promise<string> => {
   const msgBuffer = new TextEncoder().encode(message);
@@ -20,6 +29,8 @@ export const sha256 = async (message: string): Promise<string> => {
 
 /**
  * Verifica se a senha fornecida corresponde ao Hash armazenado.
+ * Normaliza os caracteres (trim e uppercase) para evitar rejeições acidentais de teclado móvel.
+ * 
  * @param input Senha digitada pelo usuário
  * @param targetHash Hash SHA-256 esperado
  */
@@ -31,7 +42,7 @@ export const verifyHash = async (input: string, targetHash: string): Promise<boo
 
 /**
  * Remove tags HTML e caracteres perigosos de uma string (Basic XSS Prevention).
- * Útil para dados que serão exibidos na UI ou salvos em localStorage.
+ * Útil para dados de formulário que serão exibidos na UI ou salvos em localStorage.
  */
 export const sanitizeInput = (input: string): string => {
   if (!input) return "";
@@ -45,5 +56,6 @@ export const sanitizeInput = (input: string): string => {
 
 /**
  * Gera um delay artificial para prevenir Timing Attacks rudimentares e melhorar UX.
+ * Dá a sensação de conferência e protege fluxos de autenticação/validação.
  */
 export const securityDelay = (): Promise<void> => new Promise<void>(resolve => setTimeout(resolve, 800));

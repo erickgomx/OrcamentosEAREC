@@ -1,19 +1,62 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - DEFINIÇÕES DE TIPO DE DOMÍNIO (DDD / TypeScript Types)
+// ============================================================================
+// Olá, dev do futuro! 👋 
+// Este arquivo é o "coração da verdade" de tipagem da aplicação EAREC.
+// Aqui estão todas as interfaces, uniões e modelos de dados que transitam
+// desde a primeira tela até a geração do orçamento em PDF/WhatsApp.
+//
+// DICA DE MANUTENÇÃO:
+// Ao adicionar um novo serviço ou categoria, lembre-se de atualizar:
+// 1. `ServiceCategory` e `ServiceId` aqui
+// 2. A tabela de preços em `AppConfig.ts`
+// 3. A lógica de cálculo em `PricingEngine.ts`
+// 4. As opções visuais em `useQuoteLogic.ts` e `QuoteView.tsx`
+// ============================================================================
 
 // === DEFINIÇÕES DE TIPO DE DOMÍNIO (DDD) ===
 // Este arquivo centraliza todas as interfaces que modelam o negócio.
 
+/**
+ * Controla as telas de navegação globais do aplicativo:
+ * - 'intro': Tela inicial/boas-vindas onde o cliente escolhe a categoria inicial.
+ * - 'quote': Wizard principal de orçamento (cálculo interativo e tempo real).
+ * - 'confirmation': Tela de dados do cliente (nome, WhatsApp, data do evento).
+ * - 'welcome': Tela de apresentação/boas-vindas legada mantida por compatibilidade.
+ */
 // Controle de Navegação Global
 export type ViewState = 'confirmation' | 'intro' | 'welcome' | 'quote';
 
+/**
+ * Define a natureza do local onde as fotos/vídeos serão captados.
+ * - 'studio': Em estúdio próprio (isenta frete/deslocamento).
+ * - 'external': Locação externa do cliente (calcula km de ida e volta).
+ */
 // Tipos de Locação (Afetam o cálculo de frete)
 export type LocationType = 'studio' | 'external';
 
+/**
+ * Identifica a ocasião do evento para customizar o texto de proposta final.
+ */
 // Tipos de Ocasião (Usados para categorização na mensagem final)
 export type OccasionType = 'institutional' | 'advertising' | 'social' | 'wedding' | 'custom';
 
+/**
+ * Categorias principais de Serviço da EAREC:
+ * - 'wedding': Casamentos completos, cerimônias e ensaios pré-wedding.
+ * - 'social': Aniversários, 15 anos, batizados, formaturas e festas.
+ * - 'commercial': Empresas, produtos gastronômicos, moda e institucional.
+ * - 'studio': Ensaios fotográficos e gravações em estúdio climatizado e equipado.
+ * - 'video_production': Produção sob demanda (horas de câmera, mobile, edição, drone).
+ * - 'custom': Projetos sob medida negociados diretamente via WhatsApp.
+ */
 // Categorias principais de Serviço (Abas do Configurador)
 export type ServiceCategory = 'wedding' | 'social' | 'commercial' | 'studio' | 'video_production' | 'custom';
 
+/**
+ * Identificadores únicos de cada pacote comercial oferecido.
+ * Mapeiam diretamente para as chaves da tabela AppConfig.PRICING_TABLE.
+ */
 // IDs únicos para cada "Produto" vendável no sistema
 export type ServiceId = 
   | 'birthday' | 'fifteen' | 'graduation' | 'baptism' | 'social_party' | 'social_event' | 'social_video'
@@ -23,6 +66,11 @@ export type ServiceId =
   | 'edit_only' | 'cam_cap' | 'mobile_cap' | 'drone' | 'custom_bundle'
   | 'custom_project';
 
+/**
+ * Estado dinâmico do orçamento em construção pelo usuário.
+ * Este objeto guarda todas as escolhas feitas no formulário e é repassado
+ * ao PricingEngine para calcular o total em tempo real.
+ */
 // Estado persistente da tela de Orçamento
 export interface QuoteState {
   category: ServiceCategory | null; // Alterado para permitir nulo (sem seleção)
@@ -43,6 +91,9 @@ export interface QuoteState {
   edit1minQty?: number;
 }
 
+/**
+ * Representa um item ou sub-serviço avulso com título, valor e regra de cobrança.
+ */
 // Estrutura de um item individual dentro de um orçamento
 export interface ServiceItem {
   id: string;
@@ -53,6 +104,9 @@ export interface ServiceItem {
   type: 'fixed' | 'variable_photo' | 'variable_video';
 }
 
+/**
+ * Dados de contato e identificação do cliente coletados para envio do orçamento.
+ */
 // Dados do Cliente (Input do Formulário Inicial)
 export interface ClientData {
   name: string;
@@ -63,6 +117,9 @@ export interface ClientData {
   projectTitle?: string;
 }
 
+/**
+ * Objeto completo contendo todas as regras base e metadados de um orçamento.
+ */
 // Objeto Mestre de Configuração do Orçamento
 export interface QuoteData {
   id: string;
@@ -81,6 +138,9 @@ export interface QuoteData {
   moodboardImages: string[];
 }
 
+/**
+ * Propriedades compartilhadas para o componente estilizado de Checkbox.
+ */
 // Props para componentes de UI
 export interface CheckboxProps {
   checked: boolean;
@@ -91,18 +151,30 @@ export interface CheckboxProps {
 
 // --- NOVOS TIPOS PARA A FASE 2 (POO) ---
 
+/**
+ * Linha discriminada no extrato do orçamento (Breakdown).
+ * Permite ao cliente ver exatamente quanto custou a base, quanto foram os adicionais e o frete.
+ */
 export interface PriceBreakdownItem {
   label: string;
   value: number;
   type: 'base' | 'addon' | 'freight';
 }
 
+/**
+ * Retorno estruturado do PricingEngine.
+ * Contém o valor total final, a lista detalhada de itens que compõem o valor e a moeda.
+ */
 export interface PricingResult {
   totalPrice: number;
   breakdown: PriceBreakdownItem[];
   currency: string;
 }
 
+/**
+ * Contexto externo alimentado ao PricingEngine para regras variáveis
+ * (ex: distância em km, preço da foto avulsa, modo rápido sem endereço fixo).
+ */
 export interface PricingContext {
   pricePerKm: number;
   photoUnitPrice: number;

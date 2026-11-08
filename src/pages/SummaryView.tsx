@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Copyright, CreditCard, ArrowLeft, CheckCircle, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown, Sparkles, ShieldCheck } from 'lucide-react';
 import Logo from '../components/ui/Logo';
@@ -52,7 +52,7 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, children, icon: Icon, edit
         </div>
         <div className="w-full">
             <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-0.5">{label}</p>
-            <div className="text-sm md:text-base text-white font-light leading-snug">
+            <div className="text-sm md:text-base text-neutral-900 dark:text-white font-light leading-snug">
                 {children}
             </div>
         </div>
@@ -161,7 +161,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
   return (
     <div 
-        className="fixed inset-0 z-50 bg-[#0a0a0a] overflow-y-auto"
+        className="fixed inset-0 z-50 bg-neutral-100 dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-100 overflow-y-auto transition-colors duration-300"
     >
       <AnimatePresence>
         {!showContent && (
@@ -170,7 +170,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(20px)' }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center bg-[#0a0a0a] z-50"
+            className="absolute inset-0 flex items-center justify-center bg-neutral-100 dark:bg-[#0a0a0a] z-50 transition-colors duration-300"
           >
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}>
               <Logo className="w-64" animate />
@@ -196,14 +196,14 @@ const SummaryView: React.FC<SummaryViewProps> = ({
              <motion.div className="w-full max-w-6xl mx-auto" variants={staggerContainer} initial="hidden" animate="visible">
                 
                 {/* HEADER */}
-                <motion.div variants={fadeInUp} className="flex flex-col md:flex-row items-center justify-between mb-8 pb-6 border-b border-white/5 gap-4">
-                    <button onClick={onBack} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors group text-sm font-medium bg-white/5 px-4 py-2 rounded-full hover:bg-white/10">
+                <motion.div variants={fadeInUp} className="flex flex-col md:flex-row items-center justify-between mb-8 pb-6 border-b border-neutral-200 dark:border-white/5 gap-4">
+                    <button onClick={onBack} className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors group text-sm font-medium bg-neutral-200/60 dark:bg-white/5 px-4 py-2 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10">
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                         Voltar à Configuração
                     </button>
                     <div className="text-center md:text-right">
-                        <h2 className="text-white font-serif text-2xl md:text-3xl">Revisão do Pedido</h2>
-                        <p className="text-neutral-400 text-xs font-mono uppercase tracking-widest mt-1">Pedido: #{quoteData.id}</p>
+                        <h2 className="text-neutral-900 dark:text-white font-serif text-2xl md:text-3xl">Revisão do Pedido</h2>
+                        <p className="text-neutral-500 dark:text-neutral-400 text-xs font-mono uppercase tracking-widest mt-1">Pedido: #{quoteData.id}</p>
                     </div>
                 </motion.div>
 
@@ -214,17 +214,17 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     <motion.div variants={fadeInUp} className="lg:col-span-7 space-y-6">
                         
                         {/* 1. CARD DADOS DO CLIENTE */}
-                        <div className="bg-neutral-900/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden relative group">
+                        <div className="bg-white/90 dark:bg-neutral-900/40 backdrop-blur-md border border-neutral-200/80 dark:border-white/10 shadow-sm dark:shadow-none rounded-2xl overflow-hidden relative group transition-colors duration-300">
                             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-DEFAULT to-transparent opacity-50" />
                             
-                            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/[0.02]">
-                                <h3 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-white/5 bg-neutral-50/50 dark:bg-white/[0.02]">
+                                <h3 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2 uppercase tracking-wide">
                                     <User size={16} className="text-brand-DEFAULT" />
                                     Dados do Contrato
                                 </h3>
                                 
                                 {!isEditing ? (
-                                    <button onClick={() => setIsEditing(true)} className="text-xs text-neutral-400 hover:text-white flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-full hover:bg-white/5 border border-transparent hover:border-white/10">
+                                    <button onClick={() => setIsEditing(true)} className="text-xs text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-white/5 border border-transparent hover:border-neutral-200 dark:hover:border-white/10">
                                         <Edit2 size={12} /> Alterar
                                     </button>
                                 ) : (
@@ -273,9 +273,9 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                         </div>
 
                         {/* 2. CARD PAGAMENTO */}
-                        <div className="bg-neutral-900/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 relative">
-                             <div className="flex items-center gap-2 mb-4 text-white">
-                                <div className="p-2 bg-white/5 rounded-lg text-brand-DEFAULT">
+                        <div className="bg-white/90 dark:bg-neutral-900/40 backdrop-blur-md border border-neutral-200/80 dark:border-white/10 shadow-sm dark:shadow-none rounded-2xl p-6 relative transition-colors duration-300">
+                             <div className="flex items-center gap-2 mb-4 text-neutral-900 dark:text-white">
+                                <div className="p-2 bg-brand-DEFAULT/10 rounded-lg text-brand-DEFAULT">
                                     <CreditCard size={20} />
                                 </div>
                                 <div>
@@ -295,7 +295,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                 "relative flex flex-col items-center justify-center py-4 px-2 rounded-xl border transition-all duration-300 group overflow-hidden",
                                                 isActive 
                                                     ? "bg-brand-DEFAULT/10 border-brand-DEFAULT text-white shadow-[0_0_15px_rgba(220,38,38,0.2)]" 
-                                                    : "bg-black/20 border-white/5 text-neutral-400 hover:bg-white/5 hover:border-white/10 hover:text-white"
+                                                    : "bg-neutral-50 dark:bg-black/20 border-neutral-200 dark:border-white/5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
                                             )}
                                         >
                                             {isActive && <div className="absolute top-2 right-2 text-brand-DEFAULT"><Check size={14} /></div>}
@@ -314,7 +314,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                             <motion.div 
                                 key={paymentMethod}
                                 initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
-                                className="mt-4 p-3 bg-white/5 rounded-lg border border-white/5 flex items-start gap-3"
+                                className="mt-4 p-3 bg-neutral-50 dark:bg-white/5 rounded-lg border border-neutral-200 dark:border-white/5 flex items-start gap-3"
                             >
                                 <ShieldCheck size={16} className="text-green-500 mt-0.5 shrink-0" />
                                 <p className="text-xs text-neutral-400 leading-relaxed">
@@ -331,21 +331,21 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     <motion.div variants={fadeInUp} className="lg:col-span-5 relative">
                         {/* EFEITO DE TICKET FLUTUANTE */}
                         <div className="sticky top-8">
-                            <div className="relative bg-[#111] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                            <div className="relative bg-white dark:bg-[#111] border border-neutral-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl dark:shadow-2xl flex flex-col transition-colors duration-300">
                                 
                                 {/* TOPO DO TICKET */}
                                 <div className="bg-brand-DEFAULT/10 p-6 border-b border-white/10 flex justify-between items-start">
                                     <div>
                                         <p className="text-xs sm:text-sm text-brand-DEFAULT uppercase tracking-[0.2em] font-bold mb-1">Serviço Principal</p>
-                                        <h3 className="text-xl sm:text-2xl md:text-3xl text-white font-serif leading-tight">{summaryDetails.serviceName}</h3>
-                                        <p className="text-neutral-300 text-xs sm:text-sm mt-1 font-medium">{summaryDetails.metricLabel}</p>
+                                        <h3 className="text-xl sm:text-2xl md:text-3xl text-neutral-900 dark:text-white font-serif leading-tight">{summaryDetails.serviceName}</h3>
+                                        <p className="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm mt-1 font-medium">{summaryDetails.metricLabel}</p>
                                     </div>
                                     <button 
                                         onClick={handleEditPackage}
                                         className="p-2.5 bg-white/5 rounded-xl border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
                                         title="Alterar pacote"
                                     >
-                                        <FileText size={20} className="text-white opacity-90" />
+                                        <FileText size={20} className="text-neutral-800 dark:text-white opacity-90" />
                                     </button>
                                 </div>
 
@@ -389,8 +389,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
                                     <div className="my-6 border-t-2 border-dashed border-white/10 relative">
                                         {/* Bolinhas decorativas do ticket */}
-                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-neutral-950 rounded-full" />
-                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-neutral-950 rounded-full" />
+                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-neutral-100 dark:bg-neutral-950 rounded-full transition-colors duration-300" />
+                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-neutral-100 dark:bg-neutral-950 rounded-full transition-colors duration-300" />
                                     </div>
 
                                     {/* TOTAL */}
@@ -406,7 +406,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 </div>
 
                                 {/* AÇÃO */}
-                                <div className="p-4 sm:p-5 bg-neutral-900 border-t border-white/5">
+                                <div className="p-4 sm:p-5 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-white/5 transition-colors duration-300">
                                     <Button 
                                         onClick={onConfirm || onProceedToSign}
                                         size="lg" 

@@ -1,3 +1,16 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - DADOS MOCK INICIAIS E ESTRUTURA PADRÃO (mock.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Este arquivo fornece o template inicial de orçamento antes de o usuário
+// começar a interagir ou caso ele entre direto em uma rota sem parâmetros.
+// 
+// Aqui você encontra:
+// 1. Geração de código de proposta legível (ex: EA-4921)
+// 2. Valores de contingência de preço base e por km
+// 3. Diferenciais de produção inclusos em qualquer pacote
+// 4. Imagens oficiais do portfólio para a galeria / moodboard
+// ============================================================================
 
 import { QuoteData } from '../types';
 import { generateOrderCode } from '../lib/utils';
@@ -26,7 +39,7 @@ export const mockQuote: QuoteData = {
     contact: "(11) 99999-9999"
   },
   
-  // Definição de datas de validade da proposta (Ex: válida por 7 dias)
+  // Definição de datas de validade da proposta (Ex: válida por 7 dias a partir da criação)
   date: new Date().toISOString(),
   validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
   

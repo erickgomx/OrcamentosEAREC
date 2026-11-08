@@ -60,7 +60,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
       <header className="relative z-20 w-full max-w-5xl flex items-center justify-between mb-8 md:mb-12">
         <button 
           onClick={onNavigateHome}
-          className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all flex items-center gap-2 group"
+          className="p-2.5 rounded-full bg-white/80 dark:bg-white/5 border border-neutral-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 text-neutral-700 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2 group shadow-sm dark:shadow-none"
           title="Voltar ao Início"
         >
           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -91,7 +91,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
           <p className="text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.3em] font-semibold mb-2">
             Vitrine Cinematográfica
           </p>
-          <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-serif leading-tight">
+          <h1 className="text-neutral-900 dark:text-white text-2xl sm:text-3xl md:text-5xl font-serif leading-tight">
             Produções que Revelam o Seu Melhor
           </h1>
           <p className="text-neutral-400 text-sm sm:text-base mt-4 font-light leading-relaxed">
@@ -112,7 +112,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
                 custom={index}
                 variants={cardItemVariants}
                 whileHover={{ y: -3, scale: 1.015 }}
-                className="group relative rounded-3xl p-6 sm:p-8 bg-neutral-900/80 border border-white/10 hover:border-brand-DEFAULT/40 transition-all duration-300 shadow-xl backdrop-blur-md overflow-hidden flex flex-col justify-between min-h-[220px]"
+                className="group relative rounded-3xl p-6 sm:p-8 bg-white/90 dark:bg-neutral-900/80 border border-neutral-200 dark:border-white/10 hover:border-brand-DEFAULT/40 transition-all duration-300 shadow-lg dark:shadow-xl backdrop-blur-md overflow-hidden flex flex-col justify-between min-h-[220px]"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-DEFAULT/5 group-hover:bg-brand-DEFAULT/15 blur-2xl rounded-full transition-all duration-500 pointer-events-none" />
 
@@ -127,7 +127,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
                     </span>
                   </div>
 
-                  <h2 className="text-white font-serif text-lg sm:text-xl font-bold mb-2 group-hover:text-brand-DEFAULT transition-colors leading-snug">
+                  <h2 className="text-neutral-900 dark:text-white font-serif text-lg sm:text-xl font-bold mb-2 group-hover:text-brand-DEFAULT transition-colors leading-snug">
                     {project.title}
                   </h2>
 
@@ -152,10 +152,10 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
         {/* Call to Action Final */}
         <motion.div 
           variants={organicItemVariants}
-          className="mt-14 sm:mt-18 w-full max-w-2xl p-8 rounded-3xl bg-neutral-900/90 border border-white/10 text-center shadow-2xl relative overflow-hidden backdrop-blur-md"
+          className="mt-14 sm:mt-18 w-full max-w-2xl p-8 rounded-3xl bg-white/90 dark:bg-neutral-900/90 border border-neutral-200 dark:border-white/10 text-center shadow-xl dark:shadow-2xl relative overflow-hidden backdrop-blur-md"
         >
           <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent" />
-          <h3 className="text-white text-xl sm:text-2xl font-serif font-bold mb-3">
+          <h3 className="text-neutral-900 dark:text-white text-xl sm:text-2xl font-serif font-bold mb-3">
             Deseja uma produção como esta para seu projeto?
           </h3>
           <p className="text-neutral-400 text-xs sm:text-sm mb-6 max-w-md mx-auto">

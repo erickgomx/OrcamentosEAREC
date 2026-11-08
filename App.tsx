@@ -7,6 +7,7 @@ import ConfirmationView from './src/pages/ConfirmationView';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
 import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
+import ThemeToggle from './src/components/ui/ThemeToggle';
 import { ClientData, QuoteData, QuoteState, ViewState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
@@ -102,8 +103,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="w-full min-h-[100dvh] bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
+    <main className="w-full min-h-[100dvh] bg-neutral-100 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
+      {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
+      {!showSplash && (
+        <div className="fixed top-5 right-5 md:top-6 md:right-8 z-[70]">
+          <ThemeToggle />
+        </div>
+      )}
       
       {/* Cinematic Vignette Overlay */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_transparent_0%,_#0a0a0a_120%)] z-0 opacity-80" />

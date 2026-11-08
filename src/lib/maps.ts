@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - GEOLOCALIZAÇÃO E CÁLCULO DE DESLOCAMENTO (maps.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Este módulo faz a estimativa de quilometragem entre a sede da EAREC e o local do evento.
+// 
+// BASE DE ORIGEM: Goianinha - RN (Sede da produtora).
+// 
+// COMO FUNCIONA:
+// 1. Geocoding via OpenStreetMap (Nominatim API - sem custos de chave de API).
+// 2. Cálculo da distância geodésica em linha reta via Fórmula de Haversine.
+// 3. Aplicação do "Fator de Tortuosidade de Rodovias" (1.35x), convertendo a
+//    distância linear para uma estimativa realista de estrada asfaltada.
+// ============================================================================
 
 /**
  * Biblioteca de Mapas e Geolocalização
@@ -9,8 +23,8 @@
 // Coordenadas fixas da Origem: EAREC Estúdio, Goianinha - RN
 // Ponto zero para todos os cálculos de deslocamento.
 const ORIGIN_COORDS = {
-    lat: -6.2662, // Latitude aproximada de Goianinha
-    lon: -35.2227 // Longitude aproximada de Goianinha
+    lat: -6.2662, // Latitude aproximada de Goianinha - RN
+    lon: -35.2227 // Longitude aproximada de Goianinha - RN
 };
 
 /**
@@ -79,7 +93,7 @@ export async function calculateDistance(destination: string): Promise<number> {
  * em uma esfera dado suas longitudes e latitudes.
  */
 function getHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Raio da Terra em km
+    const R = 6371; // Raio médio da Terra em quilômetros
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a = 

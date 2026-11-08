@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Heart, Sparkles, Hand, Gem, MessageCircle, Gift, Users, GlassWater, PlaneTakeoff, GraduationCap, Building2, Camera, MapPin, Search, Clock, Zap, Video, Minus, Plus, ChevronRight, HelpCircle, Check, Play, Map as MapIcon, X, Battery, Star , User } from 'lucide-react';
@@ -74,14 +74,14 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         
         <div className={cn(
             "p-3 sm:p-4 rounded-2xl mb-2 transition-colors duration-200",
-            active ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
+            active ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" : "bg-neutral-100 dark:bg-white/5 text-neutral-600 dark:text-neutral-300 group-hover:bg-neutral-200 dark:group-hover:bg-white/10 group-hover:text-neutral-900 dark:group-hover:text-white"
         )}>
             <Icon size={28} strokeWidth={1.5} className="sm:w-8 sm:h-8" />
         </div>
         <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1">
             <p className={cn(
                 "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300",
-                active ? "text-white" : "text-neutral-300 group-hover:text-white"
+                active ? "text-neutral-900 dark:text-white" : "text-neutral-700 group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white"
             )}>
                 {label}
             </p>
@@ -1394,7 +1394,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
                 <h4 className={cn(
                     "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
-                    active ? "text-white" : "text-neutral-300 group-hover:text-white"
+                    active ? "text-neutral-900 dark:text-white" : "text-neutral-700 group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white"
                 )}>
                     {title}
                 </h4>

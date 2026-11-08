@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -303,7 +303,7 @@ Poderiam confirmar a reserva desta data?`;
         {/* Card Principal - Estilo Ticket/Pass */}
         <motion.div 
             variants={fadeInUp}
-            className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative"
+            className="bg-white/90 dark:bg-neutral-900/60 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-xl dark:shadow-2xl relative transition-colors duration-300"
         >
             {/* Faixa decorativa superior */}
             <div className="h-1.5 w-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
@@ -342,8 +342,8 @@ Poderiam confirmar a reserva desta data?`;
                 </div>
 
                 {/* Textos */}
-                <h1 className="text-2xl font-serif text-white mb-2">Proposta Pronta</h1>
-                <p className="text-neutral-400 text-sm leading-relaxed mb-16 font-light">
+                <h1 className="text-2xl font-serif text-neutral-900 dark:text-white mb-2">Proposta Pronta</h1>
+                <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed mb-16 font-light">
                     Sua configuração foi salva com sucesso. <br/>
                     Para confirmar a reserva da data, envie o resumo gerado para nossa equipe.
                 </p>
@@ -408,11 +408,11 @@ Poderiam confirmar a reserva desta data?`;
                     
                     <button 
                         onClick={(e) => handleActionClick('qrcode', e)}
-                        className="w-full mt-3 block relative overflow-hidden rounded-xl group cursor-pointer bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-3"
+                        className="w-full mt-3 block relative overflow-hidden rounded-xl group cursor-pointer bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 hover:bg-neutral-200 dark:hover:bg-white/10 transition-colors p-3"
                     >
                         <div className="flex items-center justify-center gap-3">
                             <QrCode size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
-                            <span className="text-neutral-300 group-hover:text-white text-sm font-medium transition-colors">Gerar QR Code para outro dispositivo</span>
+                            <span className="text-neutral-700 group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white text-sm font-medium transition-colors">Gerar QR Code para outro dispositivo</span>
                         </div>
                     </button>
                 </div>
@@ -420,7 +420,7 @@ Poderiam confirmar a reserva desta data?`;
                 {/* Botão Secundário (Novo Orçamento) */}
                 <button 
                     onClick={onReset}
-                    className="mt-6 text-neutral-500 hover:text-white transition-colors text-xs flex items-center gap-2 py-2 px-4 rounded-full hover:bg-white/5"
+                    className="mt-6 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors text-xs flex items-center gap-2 py-2 px-4 rounded-full hover:bg-neutral-100 dark:hover:bg-white/5"
                 >
                     <RefreshCcw size={12} />
                     <span>Configurar novo pedido</span>
@@ -429,7 +429,7 @@ Poderiam confirmar a reserva desta data?`;
             </div>
 
             {/* Footer do Card - Status Centralizado */}
-            <div className="bg-black/40 border-t border-white/5 p-4 flex flex-col items-center justify-center gap-2">
+            <div className="bg-neutral-50 dark:bg-black/40 border-t border-neutral-200 dark:border-white/5 p-4 flex flex-col items-center justify-center gap-2 transition-colors duration-300">
                  <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>

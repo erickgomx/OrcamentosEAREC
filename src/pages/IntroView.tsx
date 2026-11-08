@@ -40,7 +40,7 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
                 
                 {/* Texto Inicial Elegante e Fluido (Sem animações pesadas que causem lag) */}
                 <motion.div variants={organicItemVariants} className="mb-2">
-                    <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-serif leading-snug drop-shadow-md">
+                    <h2 className="text-neutral-900 dark:text-white text-xl sm:text-2xl md:text-3xl font-serif leading-snug drop-shadow-md">
                         Você já conhece nosso trabalho ou deseja fazer um orçamento?
                     </h2>
                 </motion.div>
@@ -52,16 +52,16 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
                     </p>
                     <motion.div 
                         onClick={onQuickStart} 
-                        className="cursor-pointer group relative rounded-2xl overflow-hidden transition-all duration-300 shadow-2xl border border-white/15 hover:border-white/40 bg-neutral-900/90 hover:bg-neutral-850 hover:shadow-[0_0_30px_rgba(220,38,38,0.2)] backdrop-blur-sm"
+                        className="cursor-pointer group relative rounded-2xl overflow-hidden transition-all duration-300 shadow-2xl border border-neutral-200 dark:border-white/15 hover:border-neutral-300 dark:hover:border-white/40 bg-white/95 dark:bg-neutral-900/90 hover:bg-white dark:hover:bg-neutral-850 hover:shadow-[0_0_30px_rgba(220,38,38,0.2)] backdrop-blur-sm"
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                         <div className="relative z-20 w-full flex items-center justify-between py-5 px-5 sm:py-6 sm:px-7">
-                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-brand-DEFAULT/20 group-hover:border-brand-DEFAULT/40 transition-colors duration-300 shrink-0">
-                                <Zap size={22} className="text-neutral-200 group-hover:text-brand-DEFAULT group-hover:scale-110 transition-all duration-300" />
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 flex items-center justify-center group-hover:bg-brand-DEFAULT/20 group-hover:border-brand-DEFAULT/40 transition-colors duration-300 shrink-0">
+                                <Zap size={22} className="text-neutral-700 dark:text-neutral-200 group-hover:text-brand-DEFAULT group-hover:scale-110 transition-all duration-300" />
                             </div>
-                            <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-100 group-hover:text-white transition-colors tracking-wide px-2">
+                            <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-900 dark:text-neutral-100 group-hover:text-brand-DEFAULT dark:group-hover:text-white transition-colors tracking-wide px-2">
                                 Iniciar Orçamento
                             </span>
                             <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">
@@ -73,9 +73,9 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
 
                 {/* Divisor Silver Refinado */}
                 <motion.div variants={organicItemVariants} className="flex items-center gap-4 opacity-50 my-1">
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1" />
+                    <div className="h-px bg-gradient-to-r from-transparent via-neutral-300 dark:via-white/20 to-transparent flex-1" />
                     <span className="text-xs tracking-[0.25em] text-neutral-400 uppercase font-semibold font-sans">Ou</span>
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent flex-1" />
+                    <div className="h-px bg-gradient-to-r from-transparent via-neutral-300 dark:via-white/20 to-transparent flex-1" />
                 </motion.div>
 
                 {/* Opção 2: Instagram EAREC (Sólido, Refinado com Texto Rigorosamente Centralizado) */}
@@ -87,16 +87,16 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
                         href="https://www.instagram.com/earecmidia/" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="relative group block w-full rounded-2xl overflow-hidden border border-white/15 hover:border-white/40 transition-all duration-300 shadow-2xl bg-neutral-900/90 hover:bg-neutral-850 hover:shadow-[0_0_25px_rgba(255,255,255,0.06)] backdrop-blur-sm"
+                        className="relative group block w-full rounded-2xl overflow-hidden border border-neutral-200 dark:border-white/15 hover:border-neutral-300 dark:hover:border-white/40 transition-all duration-300 shadow-xl dark:shadow-2xl bg-white/95 dark:bg-neutral-900/90 hover:bg-white dark:hover:bg-neutral-850 hover:shadow-[0_0_25px_rgba(255,255,255,0.06)] backdrop-blur-sm"
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                         <div className="relative z-20 w-full flex items-center justify-between py-5 px-5 sm:py-6 sm:px-7">
-                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-colors duration-300 shrink-0">
-                                <Instagram size={22} className="text-neutral-200 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
+                            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-colors duration-300 shrink-0">
+                                <Instagram size={22} className="text-neutral-700 dark:text-neutral-200 group-hover:text-neutral-900 dark:group-hover:text-white group-hover:scale-110 transition-all duration-300" />
                             </div>
-                            <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-100 group-hover:text-white transition-colors tracking-wide px-2">
+                            <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-neutral-900 dark:text-neutral-100 group-hover:text-brand-DEFAULT dark:group-hover:text-white transition-colors tracking-wide px-2">
                                 Instagram EAREC
                             </span>
                             <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">

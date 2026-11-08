@@ -1,4 +1,4 @@
-
+﻿
 import React from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowLeft, ChevronsUpDown, CheckCircle, X, User } from 'lucide-react';
@@ -94,10 +94,10 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0a0a]/80 flex flex-col">
+    <div className="relative min-h-[100dvh] bg-neutral-100/90 dark:bg-[#0a0a0a]/80 text-neutral-900 dark:text-neutral-100 flex flex-col transition-colors duration-300">
       
       {/* Background sutil */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-[#0a0a0a] -z-10" />
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-neutral-200 via-neutral-100 to-neutral-100 dark:from-neutral-900 dark:via-[#0a0a0a] dark:to-[#0a0a0a] -z-10 transition-colors duration-300" />
 
       {/* HEADER: PROGRESS & NAV */}
       <motion.div 
@@ -110,7 +110,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           <motion.div variants={organicItemVariants} className="w-full relative flex justify-center items-center mb-6">
                <button 
                   onClick={actions.handlePrevStep} 
-                  className="absolute left-0 p-2 md:p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all flex items-center gap-1.5"
+                  className="absolute left-0 p-2 md:p-2.5 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-1.5"
                   title={state.currentStep === 0 ? "Voltar ao Início" : "Voltar etapa"}
                >
                    <ArrowLeft className="w-5 h-5" />
@@ -124,7 +124,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           </motion.div>
 
           {/* Progress Bar */}
-          <motion.div variants={organicItemVariants} className="w-full max-w-xs mb-2 h-1 bg-white/10 rounded-full overflow-hidden">
+          <motion.div variants={organicItemVariants} className="w-full max-w-xs mb-2 h-1 bg-neutral-300 dark:bg-white/10 rounded-full overflow-hidden">
              <motion.div 
                  className="h-full bg-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.5)] origin-left"
                  initial={{ width: "0%" }}
@@ -142,7 +142,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     onClick={() => actions.setIsCategoryMenuOpen(true)}
-                    className="mt-5 flex items-center gap-3 px-5 py-2.5 rounded-full bg-neutral-900/90 backdrop-blur-md border border-white/10 shadow-xl shadow-black/40 hover:border-brand-DEFAULT/40 transition-all duration-300 group relative overflow-hidden"
+                    className="mt-5 flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md border border-neutral-200 dark:border-white/10 shadow-xl shadow-neutral-900/5 dark:shadow-black/40 hover:border-brand-DEFAULT/40 transition-all duration-300 group relative overflow-hidden"
                  >
                     <div className="relative flex items-center justify-center w-3 h-3">
                         <motion.div 
@@ -155,16 +155,16 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                             }}
                         />
                     </div>
-                    <div className="h-3.5 w-px bg-white/15 group-hover:bg-white/30 transition-colors" />
-                    <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-neutral-300 font-semibold group-hover:text-white transition-colors">
+                    <div className="h-3.5 w-px bg-neutral-300 dark:bg-white/15 group-hover:bg-neutral-400 dark:group-hover:bg-white/30 transition-colors" />
+                    <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-neutral-700 dark:text-neutral-300 font-semibold group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
                         {state.categoryLabels[quoteState.category]}
                     </span>
-                    <ChevronsUpDown size={16} className="text-neutral-400 group-hover:text-white transition-colors ml-1" />
+                    <ChevronsUpDown size={16} className="text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors ml-1" />
                  </motion.button>
             )}
           </AnimatePresence>
 
-          <motion.p variants={organicItemVariants} className="text-xs sm:text-sm text-neutral-400 font-mono uppercase tracking-widest mt-3 opacity-80 font-medium">
+          <motion.p variants={organicItemVariants} className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 font-mono uppercase tracking-widest mt-3 opacity-80 font-medium">
                 {state.steps[state.currentStep].title}
           </motion.p>
       </motion.div>
@@ -293,11 +293,11 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                   <motion.div
                       variants={modalVariants}
                       initial="hidden" animate="visible" exit="exit"
-                      className="relative bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0 z-10"
+                      className="relative bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0 z-10"
                   >
  
-                      <div className="p-4 bg-white/5 border-b border-white/5 text-center">
-                          <h3 className="text-white font-serif text-lg">Trocar Ocasião</h3>
+                      <div className="p-4 bg-neutral-100 dark:bg-white/5 border-b border-neutral-200 dark:border-white/5 text-center">
+                          <h3 className="text-neutral-900 dark:text-white font-serif text-lg">Trocar Ocasião</h3>
                           <p className="text-neutral-500 text-[10px] uppercase tracking-wider">Selecione uma nova categoria</p>
                        </div>
  
@@ -316,7 +316,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                                           "w-full text-left px-5 py-4 sm:py-3 rounded-2xl flex items-center justify-between transition-colors duration-150",
                                           isActive 
                                               ? "bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20 font-bold" 
-                                              : "bg-white/5 text-neutral-300 hover:bg-white/10 hover:text-white font-medium"
+                                              : "bg-neutral-100 dark:bg-white/5 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-white/10 hover:text-neutral-900 dark:hover:text-white font-medium"
                                       )}
                                   >
                                       <span className="text-sm tracking-wide uppercase">{label}</span>

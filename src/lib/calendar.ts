@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - INTEGRAÇÃO DE AGENDA GOOGLE CALENDAR (calendar.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Este serviço consulta a agenda da EAREC para verificar se a data desejada pelo
+// cliente para o evento/ensaio está disponível ou ocupada.
+//
+// CARACTERÍSTICAS:
+// 1. Validação imediata de datas no passado.
+// 2. Modo Simulação/Fallback Gracioso: se nenhuma chave de API estiver no .env,
+//    o app não quebra e simula a checagem com um delay natural e elegante.
+// 3. Modo Real (Google Calendar API v3): busca eventos entre 00:00 e 23:59:59.
+//    Se encontrar algum evento, sinaliza indisponibilidade.
+// ============================================================================
 
 /**
  * Serviço de Integração com Google Calendar

@@ -74,7 +74,7 @@ const SmartInput = ({
         onChange={onChange}
         onFocus={handleFocus}
         className={cn(
-            "w-full bg-white/5 border border-white/10 rounded-xl py-4 sm:py-5 pl-12 sm:pl-14 pr-12 sm:pr-14 text-base sm:text-lg md:text-xl text-white placeholder:text-neutral-600 focus:outline-none focus:border-brand-DEFAULT/50 focus:bg-white/10 transition-all selection:bg-brand-DEFAULT selection:text-white",
+            "w-full bg-white dark:bg-white/5 border border-neutral-300 dark:border-white/10 rounded-xl py-4 sm:py-5 pl-12 sm:pl-14 pr-12 sm:pr-14 text-base sm:text-lg md:text-xl text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-brand-DEFAULT/60 focus:bg-white dark:focus:bg-white/10 transition-all selection:bg-brand-DEFAULT selection:text-white shadow-sm dark:shadow-none",
             status === 'error' && "border-red-500/50 text-red-100 bg-red-900/10",
             className
         )}
@@ -268,7 +268,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
       <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-[60]">
         <button 
             onClick={handleBackStep}
-            className="text-neutral-500 hover:text-white flex items-center gap-2 transition-colors text-xs uppercase tracking-wider bg-black/20 p-2.5 rounded-full hover:bg-white/10 border border-transparent hover:border-white/10"
+            className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white flex items-center gap-2 transition-colors text-xs uppercase tracking-wider bg-white/90 dark:bg-black/20 p-2.5 rounded-full hover:bg-white dark:hover:bg-white/10 border border-neutral-200 dark:border-white/10 shadow-sm dark:shadow-none"
         >
              {currentStep === 0 ? <ArrowLeft size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -287,7 +287,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
             {/* Progress Bar Minimalista */}
             <div className="flex items-center gap-2 max-w-[200px] mx-auto">
                 {steps.map((_, idx) => (
-                    <div key={idx} className="h-1 flex-1 rounded-full overflow-hidden bg-white/10">
+                    <div key={idx} className="h-1 flex-1 rounded-full overflow-hidden bg-neutral-200 dark:bg-white/10">
                         <motion.div 
                             className="h-full bg-brand-DEFAULT"
                             initial={{ width: "0%" }}
@@ -318,10 +318,10 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
                     <div className="flex flex-col items-center text-center space-y-6 sm:space-y-8">
                         
                         <motion.div variants={organicItemVariants} className="space-y-1.5 sm:space-y-2">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-white leading-tight">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-neutral-900 dark:text-white leading-tight">
                                 {currentStepData.title}
                             </h2>
-                            <p className="text-neutral-400 text-xs sm:text-sm md:text-base font-light">
+                            <p className="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm md:text-base font-light">
                                 {currentStepData.subtitle}
                             </p>
                         </motion.div>
@@ -342,7 +342,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
                                     <button 
                                         type="button"
                                         onClick={() => setIsMapOpen(true)}
-                                        className="bg-white/10 hover:bg-brand-DEFAULT hover:text-white text-neutral-400 p-2 rounded-lg transition-all flex items-center gap-2 text-xs font-medium border border-white/10"
+                                        className="bg-neutral-100 dark:bg-white/10 hover:bg-brand-DEFAULT hover:text-white text-neutral-600 dark:text-neutral-400 p-2 rounded-lg transition-all flex items-center gap-2 text-xs font-medium border border-neutral-200 dark:border-white/10"
                                         title="Abrir Mapa"
                                     >
                                         <MapIcon size={16} />

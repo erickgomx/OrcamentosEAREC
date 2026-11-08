@@ -22,7 +22,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
   };
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-x-hidden overflow-y-auto px-6 py-12 bg-[#0a0a0a]">
+    <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-x-hidden overflow-y-auto px-6 py-12 bg-neutral-100 dark:bg-[#0a0a0a] transition-colors duration-300">
       
       {/* Container Principal */}
       <motion.div 
@@ -33,7 +33,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
       >
         
         {/* Card Estilizado */}
-        <div className="bg-neutral-900/60 backdrop-blur-md border border-white/10 p-6 md:p-8 rounded-3xl shadow-2xl relative overflow-hidden min-h-[550px] md:min-h-[600px] flex flex-col">
+        <div className="bg-white/90 dark:bg-neutral-900/60 backdrop-blur-md border border-neutral-200 dark:border-white/10 p-6 md:p-8 rounded-3xl shadow-xl dark:shadow-2xl relative overflow-hidden min-h-[550px] md:min-h-[600px] flex flex-col transition-colors duration-300">
             
             {/* Efeito de luz sutil no topo */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neutral-800 via-brand-DEFAULT to-neutral-800 opacity-50" />
@@ -44,10 +44,10 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                 <div className="flex justify-center mb-4 md:mb-6"> 
                     <Logo className="w-44 md:w-56 h-auto" animate />
                 </div>
-                <h1 className="font-serif text-2xl md:text-4xl text-white leading-tight">
+                <h1 className="font-serif text-2xl md:text-4xl text-neutral-900 dark:text-white leading-tight">
                     COMO <span className="text-brand-DEFAULT font-medium">FUNCIONA?</span>
                 </h1>
-                <p className="text-neutral-400 text-sm mt-2">Entenda seu caminho até a contratação</p>
+                <p className="text-neutral-600 dark:text-neutral-400 text-sm mt-2">Entenda seu caminho até a contratação</p>
             </motion.div>
 
             {/* Timeline de Passos */}
@@ -64,16 +64,16 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                             animate={{ opacity: 1, y: 0 }}
                             className="relative flex gap-4 md:gap-6 items-center md:items-start group mb-5 md:mb-6"
                         >
-                            <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-black border border-brand-DEFAULT/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.2)] shrink-0">
-                                <MousePointerClick size={24} className="text-white md:w-8 md:h-8" />
+                            <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-white dark:bg-black border border-brand-DEFAULT/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.2)] shrink-0">
+                                <MousePointerClick size={24} className="text-neutral-900 dark:text-white md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                <h3 className="text-neutral-900 dark:text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
                                     <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">1.</span>
                                     Iniciar
                                 </h3>
-                                <p className="text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
-                                    Acesse o menu inicial e inicie seu <span className="text-white font-medium">Orçamento</span> para simular valores na hora.
+                                <p className="text-neutral-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
+                                    Acesse o menu inicial e inicie seu <span className="text-neutral-900 dark:text-white font-medium">Orçamento</span> para simular valores na hora.
                                 </p>
                             </div>
                         </motion.div>
@@ -86,16 +86,16 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                             animate={{ opacity: 1, y: 0 }}
                             className="relative flex gap-4 md:gap-6 items-center md:items-start group mb-5 md:mb-6"
                         >
-                            <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-black border border-brand-DEFAULT/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.2)] shrink-0">
-                                <SlidersHorizontal size={24} className="text-white md:w-8 md:h-8" />
+                            <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-white dark:bg-black border border-brand-DEFAULT/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.2)] shrink-0">
+                                <SlidersHorizontal size={24} className="text-neutral-900 dark:text-white md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                <h3 className="text-neutral-900 dark:text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
                                     <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">2.</span>
                                     Configure
                                 </h3>
-                                <p className="text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
-                                    Navegue por <span className="text-white font-medium">Categorias</span>, adicione serviços extras e revise o <span className="text-white font-medium">Resumo</span> completo.
+                                <p className="text-neutral-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
+                                    Navegue por <span className="text-neutral-900 dark:text-white font-medium">Categorias</span>, adicione serviços extras e revise o <span className="text-neutral-900 dark:text-white font-medium">Resumo</span> completo.
                                 </p>
                             </div>
                         </motion.div>
@@ -108,15 +108,15 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                             animate={{ opacity: 1, y: 0 }}
                             className="relative flex gap-4 md:gap-6 items-center md:items-start group"
                         >
-                            <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-black border border-brand-DEFAULT/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.2)] shrink-0">
-                                <MessageCircle size={24} className="text-white md:w-8 md:h-8" />
+                            <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-white dark:bg-black border border-brand-DEFAULT/50 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.2)] shrink-0">
+                                <MessageCircle size={24} className="text-neutral-900 dark:text-white md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                <h3 className="text-neutral-900 dark:text-white font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
                                     <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">3.</span>
                                     Finalize no WhatsApp
                                 </h3>
-                                <p className="text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
+                                <p className="text-neutral-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
                                     Você será redirecionado ao WhatsApp para confirmar a disponibilidade da data com a equipe.
                                 </p>
                             </div>

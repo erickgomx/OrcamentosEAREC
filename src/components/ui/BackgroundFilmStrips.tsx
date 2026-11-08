@@ -113,7 +113,7 @@ const FilmWheel3D = ({
 
 const BackgroundFilmStrips: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#0a0a0a]">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-neutral-100 dark:bg-[#0a0a0a] transition-colors duration-500">
       
       {/* Luzes Volumétricas de Fundo */}
       <div className="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-slate-800/20 blur-[150px] rounded-full opacity-40 mix-blend-screen" />
@@ -145,8 +145,8 @@ const BackgroundFilmStrips: React.FC = () => {
 
       {/* Máscaras de Gradiente (Vignette) para suavizar as pontas das rodas */}
       {/* UPDATE: Opacidade reduzida (from-black/60 e from-black/40) para tornar os filmstrips mais visíveis */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none z-10" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 pointer-events-none z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-100/70 dark:from-black/60 via-transparent to-neutral-100/70 dark:to-black/60 pointer-events-none z-10 transition-colors duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-r from-neutral-100/50 dark:from-black/40 via-transparent to-neutral-100/50 dark:to-black/40 pointer-events-none z-10 transition-colors duration-500" />
 
       {/* Noise Texture */}
       <div className="absolute inset-0 opacity-[0.07] pointer-events-none mix-blend-overlay z-20" 

@@ -2,6 +2,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
   <head>
+    <!-- Evita FOUC (Flash of Unstyled Theme) -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('earec_theme');
+          if (saved === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          }
+        } catch(e) {}
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="theme-color" content="#0a0a0a" />

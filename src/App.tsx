@@ -10,6 +10,7 @@ const PortfolioView = lazy(() => import('./pages/PortfolioView'));
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
 import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
+import ThemeToggle from './components/ui/ThemeToggle';
 import { ClientData, QuoteData, QuoteState } from './types';
 import { mockQuote } from './data/mock';
 import { delay, generateOrderCode } from './lib/utils';
@@ -201,8 +202,14 @@ const App: React.FC = () => {
   }, [router.activeRoute]);
 
   return (
-    <main className="w-full min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
+    <main className="w-full min-h-screen bg-neutral-100 dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
       <BackgroundFilmStrips />
+      {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
+      {!showSplash && (
+        <div className="fixed top-5 right-5 md:top-6 md:right-8 z-[70]">
+          <ThemeToggle />
+        </div>
+      )}
 
       {/* SPLASH SCREEN */}
       <AnimatePresence mode="wait">
