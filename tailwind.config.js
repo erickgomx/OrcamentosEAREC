@@ -15,9 +15,10 @@ export default {
       },
       colors: {
         brand: {
-          DEFAULT: 'var(--brand-color)',
-          glow: 'var(--brand-glow)',
+          DEFAULT: '#DC2626',
+          glow: 'rgba(220, 38, 38, 0.5)',
         },
+        'brand-DEFAULT': '#DC2626',
         neutral: {
           950: '#0a0a0a',
         },

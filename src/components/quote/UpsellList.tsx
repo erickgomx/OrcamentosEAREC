@@ -1271,11 +1271,11 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
       className={cn(
         "w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-all border shadow-sm dark:shadow-lg",
         active 
-          ? "bg-brand-DEFAULT text-white border-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
-          : "bg-stone-100 dark:bg-white/[0.04] border-stone-200/90 dark:border-white/10 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/80 dark:hover:bg-white/10 hover:border-stone-300 dark:hover:border-white/20"
+          ? "bg-[#DC2626] text-white border-[#DC2626] shadow-[0_4px_15px_rgba(220,38,38,0.35)] dark:shadow-[0_0_20px_rgba(220,38,38,0.5)] cursor-pointer" 
+          : "bg-stone-100 dark:bg-white/[0.04] border-stone-300 dark:border-white/10 text-stone-800 dark:text-neutral-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/90 dark:hover:bg-white/10 hover:border-stone-400 dark:hover:border-white/20 cursor-pointer"
       )}
   >
-      <Icon size={24}/>
+      <Icon size={24} strokeWidth={2.5} />
   </motion.button>
 );
 
