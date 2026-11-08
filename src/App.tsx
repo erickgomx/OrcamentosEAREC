@@ -221,7 +221,7 @@ const App: React.FC = () => {
 
   return (
     <main className="w-full min-h-screen bg-white dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
-      {(!['orcamento', 'orcamentos', 'resumo', 'sucesso'].includes(router.activeRoute)) && <BackgroundFilmStrips />}
+      {(!showSplash && !['orcamento', 'orcamentos', 'resumo', 'sucesso'].includes(router.activeRoute)) && <BackgroundFilmStrips />}
       {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
       {!showSplash && (
         <div className="fixed top-5 right-5 md:top-6 md:right-8 z-[70]">
@@ -235,8 +235,8 @@ const App: React.FC = () => {
           <motion.div 
             key="splash"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-[#080808]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">

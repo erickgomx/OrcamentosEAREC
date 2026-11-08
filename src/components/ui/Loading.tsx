@@ -24,8 +24,8 @@ const Loading: React.FC<LoadingProps> = ({ text = "Gerando Proposta..." }) => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: 'blur(10px)', transition: { duration: 0.8 } }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-[#080808] backdrop-blur-md"
+      exit={{ opacity: 0, transition: { duration: 0.3 } }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-[#080808]"
     >
       {/* Background Pulse: luz ambiente que pulsa sutilmente */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-100/60 via-white to-stone-50 dark:from-neutral-900/50 dark:via-[#0a0a0a] dark:to-black animate-pulse-slow" />
