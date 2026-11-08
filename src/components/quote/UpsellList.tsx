@@ -70,11 +70,11 @@ interface UpsellListProps {
 
 const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: any) => (
     <motion.div 
-        custom={index}
-        variants={cardItemVariants}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.04 }}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
             "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[145px] sm:min-h-[175px] md:min-h-[200px] overflow-hidden backdrop-blur-md",
@@ -199,15 +199,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
 
       {viewMode === 'categories' && (
-        <motion.div
+        <div
           key="categories-view"
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
           className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto pb-6 sm:pb-8"
         >
-            <motion.div variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
                 {categories.map((cat, i) => (
                     <CategoryCard 
                         key={cat.id}
@@ -217,37 +213,34 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         index={i}
                     />
                 ))}
-            </motion.div>
-        </motion.div>
+            </div>
+        </div>
       )}
       {viewMode === 'services' && (
-        <motion.div
+        <div
           key="services-view"
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
           className="space-y-6 sm:space-y-8 w-full flex flex-col items-center pb-6 sm:pb-8"
         >
                 
             {category === 'commercial' && commercialMode && (
-                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
-                    <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Onde será o serviço?</p>
+                <div className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
+                    <p className="text-center text-xs uppercase tracking-widest text-[#DC2626] mb-3 font-bold">Onde será o serviço?</p>
                     <div className="flex w-full bg-stone-200/80 dark:bg-[#151515] p-1.5 md:p-2 rounded-2xl border border-stone-300/80 dark:border-white/[0.08] shadow-md">
                         <button onClick={() => setCommercialMode('on_location')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'on_location' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
-                            <MapPin size={20} className={commercialMode === 'on_location' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
+                            <MapPin size={20} className={commercialMode === 'on_location' ? "text-[#DC2626] shrink-0" : "shrink-0"} />
                             NO COMÉRCIO
                         </button>
                         <button onClick={() => setCommercialMode('studio')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'studio' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
-                            <Building2 size={20} className={commercialMode === 'studio' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
+                            <Building2 size={20} className={commercialMode === 'studio' ? "text-[#DC2626] shrink-0" : "shrink-0"} />
                             NO ESTÚDIO
                         </button>
                     </div>
-                </motion.div>
+                </div>
             )}
 
             {selectionMode && (category === 'social') && (
-                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
-                    <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Como deseja contratar?</p>
+                <div className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
+                    <p className="text-center text-xs uppercase tracking-widest text-[#DC2626] mb-3 font-bold">Como deseja contratar?</p>
                     <div className="flex bg-stone-200/80 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-stone-300/60 dark:border-white/5">
                         <button 
                             onClick={() => setSelectionMode('duration')} 
@@ -270,15 +263,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             Por Unidade
                         </button>
                     </div>
-                </motion.div>
+                </div>
             )}
 
             {!isCustomBundle && (
-              <motion.div 
+              <div 
                   key={`services-grid-${category}`}
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
                   className={gridClasses}
               >
                   {category === 'wedding' && (
@@ -456,58 +446,57 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                           </button>
                       </motion.div>
                   )}
-              </motion.div>
+              </div>
             )}
 
             {/* PAINEL DE DETALHES DO PACOTE SELECIONADO (No fluxo natural do layout, logo abaixo dos cards) */}
             {category !== 'custom' && (
-                <motion.div 
-                    variants={fadeInUp}
-                    className="w-full max-w-3xl mx-auto mt-4 sm:mt-6 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-neutral-900/80 border border-white/10 backdrop-blur-md text-center shadow-xl relative overflow-hidden"
+                <div 
+                    className="w-full max-w-3xl mx-auto mt-4 sm:mt-6 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] backdrop-blur-md text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-xl relative overflow-hidden"
                 >
-                    <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/60 to-transparent" />
+                    <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-[#DC2626]/60 to-transparent" />
 
                     <AnimatePresence mode="wait">
                     {category === 'video_production' ? (
                         <motion.div 
                             key="video_prod_details"
-                            initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
-                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(6px)', y: -8 }}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.25 }}
                             className="flex flex-col items-center text-center space-y-2 max-w-2xl mx-auto"
                         >
                             <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
-                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-white font-bold">
+                                <span className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
+                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-stone-900 dark:text-white font-bold">
                                     Projetos Especiais
                                 </h3>
                             </div>
-                            <p className="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed max-w-md mx-auto">
+                            <p className="text-xs sm:text-sm text-stone-600 dark:text-neutral-300 font-normal leading-relaxed max-w-md mx-auto">
                                 Selecione e adicione exatamente os serviços que você precisa.
                             </p>
                         </motion.div>
                     ) : serviceId && (AppConfig.PRICING_TABLE as any)[category]?.[serviceId] ? (
                         <motion.div 
                             key={serviceId}
-                            initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
-                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(6px)', y: -8 }}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.25 }}
                             className="flex flex-col items-center text-center space-y-2 max-w-3xl mx-auto"
                         >
                             <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
-                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-brand-DEFAULT font-bold">
+                                <span className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
+                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-[#DC2626] font-bold">
                                     {(AppConfig.PRICING_TABLE as any)[category][serviceId].label}
                                 </h3>
                             </div>
-                            <p className="text-xs sm:text-sm text-neutral-200 font-normal leading-relaxed max-w-xl mx-auto">
+                            <p className="text-xs sm:text-sm text-stone-700 dark:text-neutral-200 font-normal leading-relaxed max-w-xl mx-auto">
                                 {(AppConfig.PRICING_TABLE as any)[category][serviceId].description}
                             </p>
                             {(AppConfig.PRICING_TABLE as any)[category][serviceId].composition && (
                                 <div className="pt-1">
-                                    <span className="inline-block text-[11px] sm:text-xs text-brand-DEFAULT bg-brand-DEFAULT/10 border border-brand-DEFAULT/20 px-3 py-1 rounded-full font-medium">
+                                    <span className="inline-block text-[11px] sm:text-xs text-[#DC2626] bg-[#DC2626]/10 border border-[#DC2626]/20 px-3 py-1 rounded-full font-medium">
                                         {(AppConfig.PRICING_TABLE as any)[category][serviceId].composition}
                                     </span>
                                 </div>
@@ -521,15 +510,15 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             exit={{ opacity: 0 }}
                             className="py-1"
                         >
-                            <p className="text-xs sm:text-sm text-neutral-400">
+                            <p className="text-xs sm:text-sm text-stone-500 dark:text-neutral-400">
                                 Toque em uma opção acima para ver os detalhes do pacote.
                             </p>
                         </motion.div>
                     )}
                     </AnimatePresence>
-                </motion.div>
+                </div>
             )}
-        </motion.div>
+        </div>
       )}
 
       {/* === STEP 3: CONFIGURATION (DETAILS) === */}
@@ -1298,8 +1287,9 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
     return (
         <motion.div 
-            custom={index}
-            variants={cardItemVariants}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: index * 0.04 }}
             className={cn(
             "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 relative overflow-hidden",
             isAdded 
@@ -1349,11 +1339,11 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
 const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight, index = 0, extraContent }: any) => (
     <motion.div 
-        custom={index}
-        variants={cardItemVariants}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.04 }}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
             "group relative flex flex-col items-center justify-between pt-7 pb-4 px-3 sm:pt-6 sm:pb-5 sm:px-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",

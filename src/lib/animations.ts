@@ -102,14 +102,14 @@ export const organicItemVariants: Variants = {
 // Card individual para listas e grids com suporte total a enter/center e hidden/visible (elimina conflitos de animação e flickering de GPU)
 export const cardItemVariants: Variants = {
   hidden: { 
-    opacity: 0, 
-    y: 20, 
-    scale: 0.96 
+    opacity: 1, 
+    y: 0, 
+    scale: 1 
   },
   enter: { 
-    opacity: 0, 
-    y: 20, 
-    scale: 0.96 
+    opacity: 1, 
+    y: 0, 
+    scale: 1 
   },
   visible: (i: number = 0) => ({ 
     opacity: 1, 
