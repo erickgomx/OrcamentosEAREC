@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // EAREC AUDIOVISUAL - BOTÃO DE ALTERNÂNCIA DE TEMA (ThemeToggle.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -36,9 +36,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, showLabel =
       aria-label={isDark ? "Ativar Modo Claro" : "Ativar Modo Escuro"}
       title={isDark ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
       className={cn(
-        "group relative flex items-center gap-2.5 px-3.5 py-2 rounded-full",
+        "group relative flex items-center justify-center rounded-full",
         "border backdrop-blur-xl transition-all duration-300 select-none",
         "cursor-pointer shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-DEFAULT",
+        "w-9 h-9 sm:w-auto p-0 sm:px-3.5 sm:py-2",
         isDark
           ? "bg-[#141414]/90 hover:bg-[#1c1c1c] border-white/[0.1] hover:border-brand-DEFAULT/50 text-neutral-200 hover:text-white shadow-[0_4px_25px_rgba(0,0,0,0.6)]"
           : "bg-white/95 hover:bg-white border-stone-200/90 hover:border-brand-DEFAULT/50 text-stone-800 hover:text-stone-950 shadow-[0_4px_20px_rgba(0,0,0,0.06)]",
@@ -82,14 +83,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, showLabel =
         </AnimatePresence>
       </div>
 
-      {/* Label Elegante e Responsivo */}
+      {/* Label Elegante e Responsivo: visível apenas a partir de sm (tablets/desktops) para não cobrir títulos no mobile */}
       {showLabel && (
-        <div className="flex items-center gap-1.5 text-xs font-medium tracking-wide">
-          <span className="hidden sm:inline-block">
+        <div className="hidden sm:flex items-center gap-1.5 text-xs font-medium tracking-wide">
+          <span>
             {isDark ? "Modo Escuro" : "Modo Claro"}
-          </span>
-          <span className="sm:hidden font-mono uppercase text-[10px]">
-            {isDark ? "Dark" : "Light"}
           </span>
           {/* Ponto indicador de status */}
           <span 

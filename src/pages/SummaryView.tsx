@@ -186,13 +186,13 @@ const SummaryView: React.FC<SummaryViewProps> = ({
           <motion.div
             key="intro-overlay"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(20px)' }}
-            transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center bg-[#F7F7F5] dark:bg-[#080808] z-50 transition-colors duration-300"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 flex items-center justify-center bg-white dark:bg-[#080808] z-50 transition-colors duration-300"
           >
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.5 }}>
               <Logo className="w-64" animate />
-              <p className="text-center text-neutral-500 text-[10px] uppercase tracking-widest mt-4">Preparando resumo...</p>
+              <p className="text-center text-stone-700 dark:text-neutral-400 text-[10px] uppercase tracking-widest mt-4 font-semibold">Preparando resumo...</p>
             </motion.div>
           </motion.div>
         )}

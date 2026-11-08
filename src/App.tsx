@@ -224,7 +224,7 @@ const App: React.FC = () => {
       {(!showSplash && !['orcamento', 'orcamentos', 'resumo', 'sucesso'].includes(router.activeRoute)) && <BackgroundFilmStrips />}
       {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
       {!showSplash && (
-        <div className="fixed top-5 right-5 md:top-6 md:right-8 z-[70]">
+        <div className="fixed top-3 right-3 sm:top-5 sm:right-6 md:top-6 md:right-8 z-[70]">
           <ThemeToggle />
         </div>
       )}
@@ -255,8 +255,8 @@ const App: React.FC = () => {
                   transition={{ delay: 0.7, duration: 0.5 }}
                   className="flex flex-col items-center"
                >
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-70" />
-                  <p className="text-stone-700 dark:text-neutral-400 font-sans font-semibold text-sm md:text-base tracking-[0.4em] uppercase">
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#DC2626] to-transparent mb-4 opacity-80" />
+                  <p className="text-stone-900 dark:text-neutral-300 font-sans font-bold text-sm md:text-base tracking-[0.4em] uppercase">
                     Orçamento Facilitado
                   </p>
                </motion.div>

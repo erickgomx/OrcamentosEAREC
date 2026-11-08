@@ -127,11 +127,11 @@ const FilmWheel3D = ({
 
 const BackgroundFilmStrips: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-white dark:bg-[#080808] transition-colors duration-500">
+    <div className="hidden dark:block fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#080808] transition-colors duration-500">
       
       {/* Luzes Volumétricas de Fundo */}
-      <div className="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-brand-DEFAULT/5 dark:bg-slate-800/20 blur-[150px] rounded-full opacity-30 dark:opacity-40 dark:mix-blend-screen" />
-      <div className="absolute bottom-[-10%] right-[10%] w-[800px] h-[800px] bg-amber-500/5 dark:bg-neutral-800/30 blur-[180px] rounded-full opacity-20 dark:opacity-30 dark:mix-blend-screen" />
+      <div className="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-slate-800/20 blur-[150px] rounded-full opacity-40 mix-blend-screen" />
+      <div className="absolute bottom-[-10%] right-[10%] w-[800px] h-[800px] bg-neutral-800/30 blur-[180px] rounded-full opacity-30 mix-blend-screen" />
 
       {/* 
           RODA ESQUERDA 

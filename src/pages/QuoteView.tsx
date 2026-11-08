@@ -124,7 +124,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
         exit="exit"
         className="pt-6 md:pt-8 px-4 md:px-6 pb-4 w-full max-w-5xl mx-auto flex flex-col items-center relative z-20"
       >
-          <motion.div variants={organicItemVariants} className="w-full relative flex justify-center items-center mb-6">
+          <motion.div variants={organicItemVariants} className="w-full relative flex justify-center items-center mb-6 px-12 sm:px-0">
                <button 
                   onClick={actions.handlePrevStep} 
                   className="absolute left-0 p-2 md:p-2.5 rounded-full bg-white dark:bg-white/[0.05] border border-stone-200/90 dark:border-white/[0.08] hover:bg-stone-50 dark:hover:bg-white/10 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white transition-all flex items-center gap-1.5 shadow-sm dark:shadow-none"
