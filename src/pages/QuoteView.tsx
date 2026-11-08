@@ -159,7 +159,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     onClick={() => actions.setIsCategoryMenuOpen(true)}
-                    className="mt-5 flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/95 dark:bg-[#121212]/90 backdrop-blur-xl border border-stone-200/90 dark:border-white/[0.08] shadow-[0_8px_25px_rgba(0,0,0,0.05)] dark:shadow-black/60 hover:border-brand-DEFAULT/40 transition-all duration-300 group relative overflow-hidden"
+                    className="mt-5 flex items-center gap-3 px-5 py-2.5 rounded-full bg-white dark:bg-[#141414] backdrop-blur-xl border-2 border-stone-200 dark:border-white/10 shadow-md hover:border-[#DC2626] dark:hover:border-[#DC2626] transition-all duration-300 group relative overflow-hidden"
                  >
                     <div className="relative flex items-center justify-center w-3 h-3">
                         <motion.div 
@@ -172,11 +172,11 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                             }}
                         />
                     </div>
-                    <div className="h-3.5 w-px bg-neutral-300 dark:bg-white/15 group-hover:bg-neutral-400 dark:group-hover:bg-white/30 transition-colors" />
-                    <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-neutral-700 dark:text-neutral-300 font-semibold group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                    <div className="h-3.5 w-px bg-stone-300 dark:bg-white/20 group-hover:bg-stone-400 dark:group-hover:bg-white/40 transition-colors" />
+                    <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-stone-900 dark:text-white font-extrabold group-hover:text-[#DC2626] transition-colors">
                         {state.categoryLabels[quoteState.category]}
                     </span>
-                    <ChevronsUpDown size={16} className="text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors ml-1" />
+                    <ChevronsUpDown size={16} className="text-stone-700 dark:text-neutral-300 group-hover:text-[#DC2626] transition-colors ml-1" />
                  </motion.button>
             )}
           </AnimatePresence>
@@ -304,18 +304,18 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                   <motion.div 
                       variants={backdropVariants}
                       initial="hidden" animate="visible" exit="exit"
-                      className="absolute inset-0 bg-neutral-950/80 backdrop-blur-md"
+                      className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md"
                       onClick={() => actions.setIsCategoryMenuOpen(false)}
                   />
                   <motion.div
                       variants={modalVariants}
                       initial="hidden" animate="visible" exit="exit"
-                      className="relative bg-white/95 dark:bg-[#121212]/95 backdrop-blur-2xl border border-stone-200/90 dark:border-white/[0.08] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0 z-10"
+                      className="relative bg-white dark:bg-[#141414] border border-stone-200/90 dark:border-white/[0.08] rounded-t-3xl sm:rounded-2xl w-full sm:max-w-xs overflow-hidden shadow-2xl pb-6 sm:pb-0 z-10"
                   >
  
-                      <div className="p-4 bg-stone-50 dark:bg-white/[0.03] border-b border-stone-200/80 dark:border-white/[0.06] text-center">
-                          <h3 className="text-stone-900 dark:text-neutral-100 font-serif text-lg">Trocar Ocasião</h3>
-                          <p className="text-neutral-500 text-[10px] uppercase tracking-wider">Selecione uma nova categoria</p>
+                      <div className="p-4 bg-stone-50 dark:bg-white/[0.04] border-b border-stone-200/80 dark:border-white/[0.08] text-center">
+                          <h3 className="text-stone-900 dark:text-white font-serif text-lg font-bold">Trocar Ocasião</h3>
+                          <p className="text-stone-500 dark:text-neutral-400 text-[10px] uppercase tracking-wider font-medium">Selecione uma nova categoria</p>
                        </div>
  
                       
@@ -330,14 +330,14 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                                           actions.setIsCategoryMenuOpen(false);
                                       }}
                                       className={cn(
-                                          "w-full text-left px-5 py-4 sm:py-3 rounded-2xl flex items-center justify-between transition-colors duration-150",
+                                          "w-full text-left px-5 py-4 sm:py-3 rounded-2xl flex items-center justify-between transition-all duration-200",
                                           isActive 
-                                              ? "bg-brand-DEFAULT text-white shadow-lg shadow-brand-DEFAULT/20 font-bold" 
-                                              : "bg-stone-100/80 dark:bg-white/[0.04] text-stone-700 dark:text-neutral-300 hover:bg-stone-200/80 dark:hover:bg-white/[0.08] hover:text-stone-950 dark:hover:text-white font-medium"
+                                              ? "bg-[#DC2626] text-white shadow-lg shadow-[#DC2626]/30 font-extrabold border-2 border-[#DC2626] ring-2 ring-[#DC2626]/20" 
+                                              : "bg-stone-50 dark:bg-white/[0.04] text-stone-800 dark:text-neutral-200 border border-stone-200/80 dark:border-white/5 hover:bg-stone-100 dark:hover:bg-white/[0.08] hover:text-stone-950 dark:hover:text-white font-semibold"
                                       )}
                                   >
                                       <span className="text-sm tracking-wide uppercase">{label}</span>
-                                      {isActive && <CheckCircle size={18} />}
+                                      {isActive && <CheckCircle size={18} className="text-white shrink-0 stroke-[2.5]" />}
                                   </button>
                               )
                           })}

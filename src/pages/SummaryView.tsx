@@ -407,8 +407,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
                                     <div className="my-6 border-t-2 border-dashed border-stone-200 dark:border-white/10 relative">
                                         {/* Bolinhas decorativas do ticket */}
-                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-[#F7F7F5] dark:bg-[#080808] rounded-full transition-colors duration-300" />
-                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-[#F7F7F5] dark:bg-[#080808] rounded-full transition-colors duration-300" />
+                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-white dark:bg-[#080808] rounded-full transition-colors duration-300" />
+                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-white dark:bg-[#080808] rounded-full transition-colors duration-300" />
                                     </div>
 
                                     {/* TOTAL */}

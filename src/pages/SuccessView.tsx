@@ -301,7 +301,7 @@ Poderiam confirmar a reserva desta data?`;
       {/* O fundo sólido (bg-neutral-950) foi removido. */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Gradiente sutil para garantir leitura, mas permitindo ver o fundo */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-100/40 via-[#F7F7F5]/80 to-[#F7F7F5]/95 dark:from-black/40 dark:via-black/80 dark:to-black/95" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-50/40 via-white/80 to-white/95 dark:from-black/40 dark:via-black/80 dark:to-black/95" />
         
         {/* Luz de fundo sutil para atmosfera */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[100px] rounded-full dark:mix-blend-screen" />

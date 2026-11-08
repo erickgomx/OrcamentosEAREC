@@ -220,7 +220,7 @@ const App: React.FC = () => {
   }, [router.activeRoute]);
 
   return (
-    <main className="w-full min-h-screen bg-[#F7F7F5] dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
+    <main className="w-full min-h-screen bg-white dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
       {(!['orcamento', 'orcamentos', 'resumo', 'sucesso'].includes(router.activeRoute)) && <BackgroundFilmStrips />}
       {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
       {!showSplash && (
@@ -237,7 +237,7 @@ const App: React.FC = () => {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(10px)' }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-[#080808]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
@@ -255,8 +255,8 @@ const App: React.FC = () => {
                   transition={{ delay: 0.7, duration: 0.5 }}
                   className="flex flex-col items-center"
                >
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-500 font-sans font-medium text-sm md:text-base tracking-[0.4em] uppercase">
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-70" />
+                  <p className="text-stone-700 dark:text-neutral-400 font-sans font-semibold text-sm md:text-base tracking-[0.4em] uppercase">
                     Orçamento Facilitado
                   </p>
                </motion.div>

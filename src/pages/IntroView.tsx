@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // EAREC AUDIOVISUAL - TELA DE BOAS-VINDAS / ONBOARDING (IntroView.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -30,8 +30,8 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
     <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
       
       {/* Ambient Cinema Lighting (Sutil e Imersivo) */}
-      <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-red-950/20 blur-[140px] rounded-full pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-neutral-800/25 blur-[160px] rounded-full pointer-events-none mix-blend-screen" />
+      <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-brand-DEFAULT/5 dark:bg-red-950/20 blur-[140px] rounded-full pointer-events-none dark:mix-blend-screen" />
+      <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-amber-500/5 dark:bg-neutral-800/25 blur-[160px] rounded-full pointer-events-none dark:mix-blend-screen" />
 
       {/* Container animado com orquestração Framer Motion */}
       <motion.div 
