@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // EAREC AUDIOVISUAL - TELA DE RESUMO E REVISÃO DO PEDIDO (SummaryView.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -179,7 +179,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
   return (
     <div 
-        className="fixed inset-0 z-50 bg-neutral-100 dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-100 overflow-y-auto transition-colors duration-300"
+        className="fixed inset-0 z-50 bg-[#F7F7F5] dark:bg-[#080808] text-neutral-900 dark:text-neutral-100 overflow-y-auto transition-colors duration-300"
     >
       <AnimatePresence>
         {!showContent && (
@@ -188,7 +188,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, filter: 'blur(20px)' }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center bg-neutral-100 dark:bg-[#0a0a0a] z-50 transition-colors duration-300"
+            className="absolute inset-0 flex items-center justify-center bg-[#F7F7F5] dark:bg-[#080808] z-50 transition-colors duration-300"
           >
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }}>
               <Logo className="w-64" animate />
@@ -215,12 +215,12 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                 
                 {/* HEADER: Botão Voltar + Título do Pedido */}
                 <motion.div variants={fadeInUp} className="flex flex-col md:flex-row items-center justify-between mb-8 pb-6 border-b border-neutral-200 dark:border-white/5 gap-4">
-                    <button onClick={onBack} className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors group text-sm font-medium bg-neutral-200/60 dark:bg-white/5 px-4 py-2 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10">
+                    <button onClick={onBack} className="flex items-center gap-2 text-stone-700 hover:text-stone-950 dark:text-neutral-400 dark:hover:text-white transition-colors group text-sm font-medium bg-stone-200/70 dark:bg-white/[0.05] px-4 py-2 rounded-full hover:bg-stone-200 dark:hover:bg-white/10">
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                         Voltar à Configuração
                     </button>
                     <div className="text-center md:text-right">
-                        <h2 className="text-neutral-900 dark:text-white font-serif text-2xl md:text-3xl">Revisão do Pedido</h2>
+                        <h2 className="text-stone-900 dark:text-neutral-100 font-serif text-2xl md:text-3xl">Revisão do Pedido</h2>
                         <p className="text-neutral-500 dark:text-neutral-400 text-xs font-mono uppercase tracking-widest mt-1">Pedido: #{quoteData.id}</p>
                     </div>
                 </motion.div>
@@ -232,11 +232,11 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     <motion.div variants={fadeInUp} className="lg:col-span-7 space-y-6">
                         
                         {/* 1. CARD DADOS DO CLIENTE */}
-                        <div className="bg-white/90 dark:bg-neutral-900/40 backdrop-blur-md border border-neutral-200/80 dark:border-white/10 shadow-sm dark:shadow-none rounded-2xl overflow-hidden relative group transition-colors duration-300">
+                        <div className="bg-white/95 dark:bg-[#121212]/80 backdrop-blur-xl border border-stone-200/90 dark:border-white/[0.08] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] dark:shadow-none rounded-2xl overflow-hidden relative group transition-colors duration-300">
                             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-DEFAULT to-transparent opacity-50" />
                             
-                            <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-white/5 bg-neutral-50/50 dark:bg-white/[0.02]">
-                                <h3 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2 uppercase tracking-wide">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200/80 dark:border-white/[0.06] bg-stone-50/60 dark:bg-white/[0.02]">
+                                <h3 className="text-sm font-bold text-stone-900 dark:text-neutral-100 flex items-center gap-2 uppercase tracking-wide">
                                     <User size={16} className="text-brand-DEFAULT" />
                                     Dados do Contrato
                                 </h3>
@@ -291,7 +291,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                         </div>
 
                         {/* 2. CARD PAGAMENTO */}
-                        <div className="bg-white/90 dark:bg-neutral-900/40 backdrop-blur-md border border-neutral-200/80 dark:border-white/10 shadow-sm dark:shadow-none rounded-2xl p-6 relative transition-colors duration-300">
+                        <div className="bg-white/95 dark:bg-[#121212]/80 backdrop-blur-xl border border-stone-200/90 dark:border-white/[0.08] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] dark:shadow-none rounded-2xl p-6 relative transition-colors duration-300">
                              <div className="flex items-center gap-2 mb-4 text-neutral-900 dark:text-white">
                                 <div className="p-2 bg-brand-DEFAULT/10 rounded-lg text-brand-DEFAULT">
                                     <CreditCard size={20} />
@@ -349,14 +349,14 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     <motion.div variants={fadeInUp} className="lg:col-span-5 relative">
                         {/* EFEITO DE TICKET FLUTUANTE */}
                         <div className="sticky top-8">
-                            <div className="relative bg-white dark:bg-[#111] border border-neutral-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xl dark:shadow-2xl flex flex-col transition-colors duration-300">
+                            <div className="relative bg-white dark:bg-[#121212] border border-stone-200/90 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.08)] dark:shadow-2xl flex flex-col transition-colors duration-300">
                                 
                                 {/* TOPO DO TICKET */}
                                 <div className="bg-brand-DEFAULT/10 p-6 border-b border-white/10 flex justify-between items-start">
                                     <div>
                                         <p className="text-xs sm:text-sm text-brand-DEFAULT uppercase tracking-[0.2em] font-bold mb-1">Serviço Principal</p>
-                                        <h3 className="text-xl sm:text-2xl md:text-3xl text-neutral-900 dark:text-white font-serif leading-tight">{summaryDetails.serviceName}</h3>
-                                        <p className="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm mt-1 font-medium">{summaryDetails.metricLabel}</p>
+                                        <h3 className="text-xl sm:text-2xl md:text-3xl text-stone-900 dark:text-neutral-100 font-serif leading-tight">{summaryDetails.serviceName}</h3>
+                                        <p className="text-stone-600 dark:text-neutral-400 text-xs sm:text-sm mt-1 font-medium">{summaryDetails.metricLabel}</p>
                                     </div>
                                     <button 
                                         onClick={handleEditPackage}
@@ -407,8 +407,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
                                     <div className="my-6 border-t-2 border-dashed border-white/10 relative">
                                         {/* Bolinhas decorativas do ticket */}
-                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-neutral-100 dark:bg-neutral-950 rounded-full transition-colors duration-300" />
-                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-neutral-100 dark:bg-neutral-950 rounded-full transition-colors duration-300" />
+                                        <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-[#F7F7F5] dark:bg-[#080808] rounded-full transition-colors duration-300" />
+                                        <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-[#F7F7F5] dark:bg-[#080808] rounded-full transition-colors duration-300" />
                                     </div>
 
                                     {/* TOTAL */}
@@ -424,7 +424,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 </div>
 
                                 {/* AÇÃO */}
-                                <div className="p-4 sm:p-5 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-white/5 transition-colors duration-300">
+                                <div className="p-4 sm:p-5 bg-stone-50/80 dark:bg-[#181818] border-t border-stone-200/80 dark:border-white/[0.06] transition-colors duration-300">
                                     <Button 
                                         onClick={onConfirm || onProceedToSign}
                                         size="lg" 

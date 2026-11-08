@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowRight, Calendar, MapPin, User, Smartphone, CheckCircle2, Loader2, XCircle, AlertCircle, Map as MapIcon, ArrowLeft, Info, ChevronLeft } from 'lucide-react';
@@ -74,7 +74,7 @@ const SmartInput = ({
         onChange={onChange}
         onFocus={handleFocus}
         className={cn(
-            "w-full bg-white dark:bg-white/5 border border-neutral-300 dark:border-white/10 rounded-xl py-4 sm:py-5 pl-12 sm:pl-14 pr-12 sm:pr-14 text-base sm:text-lg md:text-xl text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none focus:border-brand-DEFAULT/60 focus:bg-white dark:focus:bg-white/10 transition-all selection:bg-brand-DEFAULT selection:text-white shadow-sm dark:shadow-none",
+            "w-full bg-white/90 dark:bg-[#121212]/80 border border-stone-200/90 dark:border-white/[0.08] rounded-xl py-4 sm:py-5 pl-12 sm:pl-14 pr-12 sm:pr-14 text-base sm:text-lg md:text-xl text-stone-900 dark:text-neutral-100 placeholder:text-stone-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-brand-DEFAULT/60 focus:bg-white dark:focus:bg-[#181818] transition-all selection:bg-brand-DEFAULT selection:text-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none",
             status === 'error' && "border-red-500/50 text-red-100 bg-red-900/10",
             className
         )}
@@ -268,7 +268,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
       <div className="fixed top-4 left-4 sm:top-8 sm:left-8 z-[60]">
         <button 
             onClick={handleBackStep}
-            className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white flex items-center gap-2 transition-colors text-xs uppercase tracking-wider bg-white/90 dark:bg-black/20 p-2.5 rounded-full hover:bg-white dark:hover:bg-white/10 border border-neutral-200 dark:border-white/10 shadow-sm dark:shadow-none"
+            className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white flex items-center gap-2 transition-colors text-xs uppercase tracking-wider bg-white/90 dark:bg-[#121212]/80 p-2.5 rounded-full hover:bg-white dark:hover:bg-white/10 border border-stone-200/80 dark:border-white/[0.08] shadow-[0_2px_10px_rgba(0,0,0,0.04)] dark:shadow-none text-stone-700 dark:text-neutral-300"
         >
              {currentStep === 0 ? <ArrowLeft size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -318,10 +318,10 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
                     <div className="flex flex-col items-center text-center space-y-6 sm:space-y-8">
                         
                         <motion.div variants={organicItemVariants} className="space-y-1.5 sm:space-y-2">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-neutral-900 dark:text-white leading-tight">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-serif text-stone-900 dark:text-neutral-100 leading-tight">
                                 {currentStepData.title}
                             </h2>
-                            <p className="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm md:text-base font-light">
+                            <p className="text-stone-600 dark:text-neutral-400 text-xs sm:text-sm md:text-base font-light">
                                 {currentStepData.subtitle}
                             </p>
                         </motion.div>
@@ -342,7 +342,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
                                     <button 
                                         type="button"
                                         onClick={() => setIsMapOpen(true)}
-                                        className="bg-neutral-100 dark:bg-white/10 hover:bg-brand-DEFAULT hover:text-white text-neutral-600 dark:text-neutral-400 p-2 rounded-lg transition-all flex items-center gap-2 text-xs font-medium border border-neutral-200 dark:border-white/10"
+                                        className="bg-stone-100 dark:bg-white/[0.04] hover:bg-brand-DEFAULT hover:text-white text-stone-700 dark:text-neutral-300 p-2 rounded-lg transition-all flex items-center gap-2 text-xs font-medium border border-stone-200/80 dark:border-white/[0.08]"
                                         title="Abrir Mapa"
                                     >
                                         <MapIcon size={16} />
@@ -350,7 +350,7 @@ const WelcomeView: React.FC<WelcomeViewProps> = ({ onStart, onBack }) => {
                                     </button>
                                 )}
                                 // Estilização especial para date picker
-                                className={currentStepData.type === 'date' ? "[&::-webkit-calendar-picker-indicator]:bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20viewBox%3D%220%200%2024%2024%22%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%222%22%20ry%3D%222%22%2F%3E%3Cline%20x1%3D%2216%22%20y1%3D%222%22%20x2%3D%2216%22%20y2%3D%226%22%2F%3E%3Cline%20x1%3D%228%22%20y1%3D%222%22%20x2%3D%228%22%20y2%3D%226%22%2F%3E%3Cline%20x1%3D%223%22%20y1%3D%2210%22%20x2%3D%2221%22%20y2%3D%2210%22%2F%3E%3C%2Fsvg%3E')] [&::-webkit-calendar-picker-indicator]:opacity-60 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:cursor-pointer" : ""}
+                                className={currentStepData.type === 'date' ? "[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-70 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 dark:[&::-webkit-calendar-picker-indicator]:invert" : ""}
                             />
                             
                             {/* Dica contextual */}

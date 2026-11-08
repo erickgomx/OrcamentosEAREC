@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // EAREC AUDIOVISUAL - CONTEXTO GLOBAL DE TEMA (DARK / LIGHT MODE)
 // ============================================================================
 // Olá, dev! 👋
@@ -68,7 +68,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       metaThemeColor.setAttribute('name', 'theme-color');
       document.head.appendChild(metaThemeColor);
     }
-    metaThemeColor.setAttribute('content', targetTheme === 'dark' ? '#0a0a0a' : '#f8f9fa');
+    metaThemeColor.setAttribute('content', targetTheme === 'dark' ? '#080808' : '#F7F7F5');
   };
 
   // Observa mudanças de tema e persiste no DOM e no localStorage

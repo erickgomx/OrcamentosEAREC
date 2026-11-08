@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // EAREC AUDIOVISUAL - CONFIGURADOR DE PACOTES E ADICIONAIS (UpsellList.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -97,7 +97,7 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1">
             <p className={cn(
                 "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300",
-                active ? "text-neutral-900 dark:text-white" : "text-neutral-700 group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white"
+                active ? "text-stone-900 dark:text-neutral-100 font-bold" : "text-stone-700 group-hover:text-stone-950 dark:text-neutral-300 dark:group-hover:text-white font-medium"
             )}>
                 {label}
             </p>
@@ -232,7 +232,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             {category === 'commercial' && commercialMode && (
                 <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
                     <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Onde será o serviço?</p>
-                    <div className="flex w-full bg-neutral-900 p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-lg">
+                    <div className="flex w-full bg-stone-200/80 dark:bg-[#151515] p-1.5 md:p-2 rounded-2xl border border-stone-300/80 dark:border-white/[0.08] shadow-md">
                         <button onClick={() => setCommercialMode('on_location')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'on_location' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
                             <MapPin size={20} className={commercialMode === 'on_location' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
                             NO COMÉRCIO
@@ -248,12 +248,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             {selectionMode && (category === 'social') && (
                 <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
                     <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Como deseja contratar?</p>
-                    <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-white/5">
+                    <div className="flex bg-stone-200/80 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-stone-300/60 dark:border-white/5">
                         <button 
                             onClick={() => setSelectionMode('duration')} 
                             className={cn(
                                 "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
-                                selectionMode === 'duration' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                selectionMode === 'duration' ? "bg-white text-stone-900 dark:bg-white/10 dark:text-white shadow-sm font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                             )}
                         >
                             <Clock size={16} />
@@ -542,7 +542,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     <motion.div 
                         key="video-prod-config"
                         variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-                        className="w-full max-w-2xl bg-neutral-900/40 p-4 md:p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden"
+                        className="w-full max-w-2xl bg-white/95 dark:bg-[#121212]/80 p-4 md:p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         
@@ -649,7 +649,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
         <motion.div 
             key="duration"
             variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-            className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+            className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
         >
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
             
@@ -714,7 +714,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         className="w-full max-w-lg space-y-4"
                    >
                         {/* Seletor de Fotos */}
-                        <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
+                        <div className="bg-white/95 dark:bg-[#121212]/80 p-6 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                             
                             <div className="flex items-center gap-2 mb-4">
@@ -737,7 +737,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </div>
 
                         {/* Seletor de Vídeos */}
-                        <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
+                        <div className="bg-white/95 dark:bg-[#121212]/80 p-6 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
                             <div className="flex items-center gap-2 mb-4">
                                 <Video className="text-brand-DEFAULT" size={20} />
                                 <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">Vídeos (Base 1)</h3>
@@ -789,7 +789,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     <motion.div 
                         key="quantity"
                         variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-                        className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+                        className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         {category === 'studio' && serviceId === 'studio_photo' && (
@@ -1410,7 +1410,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
                 <h4 className={cn(
                     "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
-                    active ? "text-neutral-900 dark:text-white" : "text-neutral-700 group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white"
+                    active ? "text-stone-900 dark:text-neutral-100 font-bold" : "text-stone-700 group-hover:text-stone-950 dark:text-neutral-300 dark:group-hover:text-white font-medium"
                 )}>
                     {title}
                 </h4>

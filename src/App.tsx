@@ -220,7 +220,7 @@ const App: React.FC = () => {
   }, [router.activeRoute]);
 
   return (
-    <main className="w-full min-h-screen bg-neutral-100 dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
+    <main className="w-full min-h-screen bg-[#F7F7F5] dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
       <BackgroundFilmStrips />
       {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
       {!showSplash && (

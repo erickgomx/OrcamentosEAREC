@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // EAREC AUDIOVISUAL - BOTÃO DE ALTERNÂNCIA DE TEMA (ThemeToggle.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -40,8 +40,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, showLabel =
         "border backdrop-blur-xl transition-all duration-300 select-none",
         "cursor-pointer shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-DEFAULT",
         isDark
-          ? "bg-neutral-900/80 hover:bg-neutral-800/90 border-white/10 hover:border-brand-DEFAULT/40 text-neutral-300 hover:text-white shadow-black/40"
-          : "bg-white/90 hover:bg-white border-neutral-200 hover:border-brand-DEFAULT/40 text-neutral-700 hover:text-neutral-950 shadow-neutral-300/40",
+          ? "bg-[#141414]/90 hover:bg-[#1c1c1c] border-white/[0.1] hover:border-brand-DEFAULT/50 text-neutral-200 hover:text-white shadow-[0_4px_25px_rgba(0,0,0,0.6)]"
+          : "bg-white/95 hover:bg-white border-stone-200/90 hover:border-brand-DEFAULT/50 text-stone-800 hover:text-stone-950 shadow-[0_4px_20px_rgba(0,0,0,0.06)]",
         className
       )}
     >

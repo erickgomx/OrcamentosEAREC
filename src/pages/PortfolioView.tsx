@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // EAREC AUDIOVISUAL - VITRINE E PORTFÓLIO CINEMATOGRÁFICO (PortfolioView.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -75,7 +75,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
       <header className="relative z-20 w-full max-w-5xl flex items-center justify-between mb-8 md:mb-12">
         <button 
           onClick={onNavigateHome}
-          className="p-2.5 rounded-full bg-white/80 dark:bg-white/5 border border-neutral-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10 text-neutral-700 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all flex items-center gap-2 group shadow-sm dark:shadow-none"
+          className="p-2.5 rounded-full bg-white/90 dark:bg-white/[0.04] border border-stone-200/80 dark:border-white/[0.08] hover:bg-white dark:hover:bg-white/10 text-stone-700 dark:text-neutral-300 hover:text-stone-950 dark:hover:text-white transition-all flex items-center gap-2 group shadow-sm dark:shadow-none"
           title="Voltar ao Início"
         >
           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -103,13 +103,13 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
       >
         {/* Título de Apresentação da Vitrine */}
         <motion.div variants={organicItemVariants} className="max-w-2xl mx-auto mb-10 md:mb-14">
-          <p className="text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.3em] font-semibold mb-2">
+          <p className="text-stone-500 dark:text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.3em] font-semibold mb-2">
             Vitrine Cinematográfica
           </p>
-          <h1 className="text-neutral-900 dark:text-white text-2xl sm:text-3xl md:text-5xl font-serif leading-tight">
+          <h1 className="text-stone-900 dark:text-neutral-100 text-2xl sm:text-3xl md:text-5xl font-serif leading-tight">
             Produções que Revelam o Seu Melhor
           </h1>
-          <p className="text-neutral-400 text-sm sm:text-base mt-4 font-light leading-relaxed">
+          <p className="text-stone-600 dark:text-neutral-400 text-sm sm:text-base mt-4 font-light leading-relaxed">
             Cada filme é planejado e executado com rigor estético, captação 4K com câmeras de cinema, color grading profissional e mixagem de som envolvente.
           </p>
         </motion.div>
@@ -127,13 +127,13 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
                 custom={index}
                 variants={cardItemVariants}
                 whileHover={{ y: -3, scale: 1.015 }}
-                className="group relative rounded-3xl p-6 sm:p-8 bg-white/90 dark:bg-neutral-900/80 border border-neutral-200 dark:border-white/10 hover:border-brand-DEFAULT/40 transition-all duration-300 shadow-lg dark:shadow-xl backdrop-blur-md overflow-hidden flex flex-col justify-between min-h-[220px]"
+                className="group relative rounded-3xl p-6 sm:p-8 bg-white/95 dark:bg-[#121212]/80 border border-stone-200/90 dark:border-white/[0.08] hover:border-brand-DEFAULT/50 transition-all duration-300 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06)] dark:shadow-xl backdrop-blur-xl overflow-hidden flex flex-col justify-between min-h-[220px]"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-DEFAULT/5 group-hover:bg-brand-DEFAULT/15 blur-2xl rounded-full transition-all duration-500 pointer-events-none" />
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-white/5 border border-white/10 text-neutral-300 group-hover:text-white transition-colors">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-stone-100 dark:bg-white/[0.04] border border-stone-200/80 dark:border-white/[0.08] text-stone-700 dark:text-neutral-300 group-hover:text-stone-950 dark:group-hover:text-white transition-colors">
                       <Icon size={14} className="text-brand-DEFAULT" />
                       {project.category}
                     </span>
@@ -142,20 +142,20 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
                     </span>
                   </div>
 
-                  <h2 className="text-neutral-900 dark:text-white font-serif text-lg sm:text-xl font-bold mb-2 group-hover:text-brand-DEFAULT transition-colors leading-snug">
+                  <h2 className="text-stone-900 dark:text-neutral-100 font-serif text-lg sm:text-xl font-bold mb-2 group-hover:text-brand-DEFAULT transition-colors leading-snug">
                     {project.title}
                   </h2>
 
-                  <p className="text-neutral-400 text-xs sm:text-sm font-light leading-relaxed">
+                  <p className="text-stone-600 dark:text-neutral-400 text-xs sm:text-sm font-light leading-relaxed">
                     {project.desc}
                   </p>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-white/5 flex items-center justify-between">
+                <div className="pt-6 mt-6 border-t border-stone-200/80 dark:border-white/5 flex items-center justify-between">
                   <span className="text-[11px] sm:text-xs text-neutral-500 uppercase tracking-widest font-mono">
                     {project.tag}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 group-hover:text-white group-hover:bg-brand-DEFAULT group-hover:border-brand-DEFAULT transition-all">
+                  <div className="w-8 h-8 rounded-full bg-stone-100 dark:bg-white/5 border border-stone-200/80 dark:border-white/10 flex items-center justify-center text-stone-600 dark:text-neutral-400 group-hover:text-white group-hover:bg-brand-DEFAULT group-hover:border-brand-DEFAULT transition-all">
                     <Play size={14} className="ml-0.5" />
                   </div>
                 </div>
