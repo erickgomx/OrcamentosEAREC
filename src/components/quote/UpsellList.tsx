@@ -1269,7 +1269,7 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
       transition={{ type: "spring", stiffness: 450, damping: 25 }}
       onClick={onClick} 
       className={cn(
-        "w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-all border shadow-sm dark:shadow-lg",
+        "w-12 h-12 md:w-16 md:h-16 shrink-0 aspect-square flex items-center justify-center rounded-full transition-all border shadow-sm dark:shadow-lg",
         active 
           ? "bg-[#DC2626] text-white border-[#DC2626] shadow-[0_4px_15px_rgba(220,38,38,0.35)] dark:shadow-[0_0_20px_rgba(220,38,38,0.5)] cursor-pointer" 
           : "bg-stone-100 dark:bg-white/[0.04] border-stone-300 dark:border-white/10 text-stone-800 dark:text-neutral-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/90 dark:hover:bg-white/10 hover:border-stone-400 dark:hover:border-white/20 cursor-pointer"
@@ -1311,7 +1311,7 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
                 </div>
             </div>
             
-            <div className="w-full sm:w-[170px] md:w-[190px] relative z-10 shrink-0">
+            <div className="w-full sm:w-[185px] md:w-[210px] relative z-10 shrink-0">
                 {!isAdded ? (
                     <button 
                         onClick={() => setter?.(min)}
@@ -1324,7 +1324,7 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
                         <ControlBtn onClick={() => setter?.(value > min ? value - step : 0)} icon={Minus} />
                         <div className="text-center flex-1 px-1">
                             <span className="text-xl sm:text-2xl font-bold font-price text-stone-900 dark:text-white leading-none"><AnimatedNumber value={value} /></span>
-                            <span className="block text-[10px] sm:text-xs text-stone-500 dark:text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider">{unitLabel}</span>
+                            <span className="block text-[10px] sm:text-xs text-stone-500 dark:text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider truncate max-w-full">{unitLabel}</span>
                         </div>
                         <ControlBtn onClick={() => setter?.(value + step)} icon={Plus} active />
                     </div>
