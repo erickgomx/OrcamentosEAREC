@@ -1,3 +1,18 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - SISTEMA DE ROTEAMENTO SPA ULTRA LEVE (useRouter.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Este hook é o roteador oficial da EAREC. Ele substitui dependências pesadas
+// como react-router-dom por uma solução sob medida de apenas ~150 linhas:
+//
+// VANTAGENS:
+// 1. Zero Bundle Bloat: usa a API nativa do navegador (`history.pushState` / `popstate`).
+// 2. Transições instantâneas (0ms de latência) sem recarregar a página.
+// 3. Suporte flexível a URL com acentos (ex: `/orçamento` ou `/orcamento`, `/início` ou `/inicio`).
+// 4. Integração transparente com botões de avançar/voltar do navegador do celular.
+// 5. Suporte a parâmetros de consulta (`params: URLSearchParams`).
+// ============================================================================
+
 /**
  * useRouter.ts
  * ------------

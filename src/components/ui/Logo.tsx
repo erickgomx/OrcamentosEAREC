@@ -1,3 +1,18 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - LOGOMARCA OFICIAL VETORIAL (Logo.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o componente central da identidade visual da EAREC:
+// "EA ● REC" (com o botão de REC pulsante e ondas de expansão).
+//
+// CARACTERÍSTICAS TÉCNICAS E VISUAIS:
+// 1. Tipografia de engenharia óptica ('Microgramma' e 'Michroma/Eurostile').
+// 2. Adaptação dinâmica de contraste de acordo com o tema ativo (Dark vs Light).
+// 3. Ponto REC central vermelho vivo com pulsação suave e efeito de anéis concêntricos (ripple).
+// 4. Easter Egg interativo: ao clicar no logo, dispara um brilho de feixe de luz
+//    e exibe o slogan assinatura da marca: "Revelando seu melhor".
+// ============================================================================
+
 import React, { useState, useCallback } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
@@ -8,6 +23,10 @@ interface LogoProps {
   animate?: boolean;
 }
 
+/**
+ * Conteúdo vetorial renderizado com alta performance (React.memo).
+ * Isola o SVG para evitar repinturas desnecessárias durante animações de layout.
+ */
 const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shouldAnimate: boolean; textColor?: string }) => (
   <svg 
     viewBox="60 -10 240 85" 
@@ -16,6 +35,7 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
     className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.05)] pointer-events-none relative z-10 overflow-visible"
     aria-label="EAREC Logo"
   >
+    {/* Texto "EA" inicial */}
     <motion.text 
       fontFamily="'Microgramma Extd D Bold', 'Microgramma Extended', sans-serif" 
       fontWeight="900" 
@@ -55,7 +75,7 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
       }}
     />
     
-    {/* Pulse Circle */}
+    {/* Pulse Circle: O ponto vermelho icônico do botão REC */}
     <motion.circle 
       cx="135" 
       cy="33" 
@@ -74,7 +94,7 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
       }}
     />
 
-    {/* Subtle Inner Glow Breathing */}
+    {/* Subtle Inner Glow Breathing: respiração luminosa interna */}
     <motion.circle 
       cx="135" 
       cy="33" 
@@ -87,6 +107,7 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     />
     
+    {/* Texto "REC" final */}
     <motion.text 
       fontFamily="'Eurostile Extd Regular', 'Eurostile Extd', 'Eurostile Extended', 'Michroma', sans-serif" 
       fontWeight="400" 
@@ -104,6 +125,7 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
 ));
 
 const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) => {
+  // Lê a preferência de cor com tratamento contra falha se estiver fora de Provider
   let isDark = true;
   try {
     const themeContext = useTheme();
@@ -114,6 +136,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
   const textColor = isDark ? '#E5E5E5' : '#171717';
   const [isShining, setIsShining] = useState(false);
   
+  // Gatilho do Easter Egg interativo de clique com animação cinematográfica
   const handleClick = useCallback((e?: React.MouseEvent) => {
     if (e) {
       e.stopPropagation();
@@ -180,7 +203,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
                 />
               </div>
               
-              {/* Revelando seu melhor text */}
+              {/* Revelando seu melhor text: slogan revelado suavemente */}
               <motion.div
                   initial={{ opacity: 0, y: 10, filter: 'blur(4px)', scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}

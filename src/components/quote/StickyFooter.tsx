@@ -1,4 +1,17 @@
-﻿import React from 'react';
+// ============================================================================
+// EAREC AUDIOVISUAL - BARRA DE RODAPÉ FLUTUANTE DE CONVERSÃO (StickyFooter.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o rodapé fixo inferior que acompanha o usuário ao longo de toda a navegação.
+//
+// CARACTERÍSTICAS PRINCIPAIS:
+// 1. Exibição em tempo real do preço total estimado (`AnimatedPrice`).
+// 2. Botão de Call to Action (CTA) em destaque para avançar no funil ("Continuar" / "Avançar").
+// 3. Suporte a SafeArea do iOS (`pb-[max(0.75rem,env(safe-area-inset-bottom))]`).
+// 4. Efeito de Glassmorphism translúcido adaptável aos modos Dark e Light.
+// ============================================================================
+
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
 import AnimatedPrice from '../ui/AnimatedPrice';
@@ -23,6 +36,7 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
       {/* Sombra / Gradiente para contraste suave com o conteúdo ao fundo */}
       <div className="absolute inset-0 bg-gradient-to-t from-neutral-200/90 via-neutral-100/50 to-transparent dark:from-black dark:via-black/60 dark:to-transparent -z-10 pointer-events-none" />
 
+      {/* Caixa Flutuante com backdrop-blur */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -39,6 +53,7 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
               showPrice ? "justify-between" : "justify-center"
           )}>
             
+            {/* Lado Esquerdo: Valor Estimado com Odômetro Animado */}
             <AnimatePresence mode="wait">
               {showPrice && (
                 <motion.div 
@@ -60,6 +75,7 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
               )}
             </AnimatePresence>
 
+            {/* Lado Direito: Botão de Avanço / CTA */}
             <div className={cn("flex items-center gap-3 shrink-0", !showPrice && "w-full justify-center")}>
               <Button 
                   variant="primary" 

@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - CENÁRIO DE FUNDO 3D EM ROLOS DE FILME (BackgroundFilmStrips.tsx)
+// ============================================================================
+// Olá, dev cinematográfico! 🎞️✨
+// Este componente cria o efeito assinatura da EAREC: dois rolos de filme 35mm
+// girando continuamente nas laterais em um espaço tridimensional com perspectiva (`perspective: 1200px`).
+//
+// COMO FUNCIONA:
+// 1. `SingleFilmFrame`: Desenho vetorial de 1 quadro de película com perfurações (sprockets),
+//    vidro reflexivo e bordas iluminadas (rim light).
+// 2. `FilmWheel3D`: Monta um cilindro 3D com 18 quadros distribuídos trigonometricamente
+//    ao longo de 360° com `rotateX` e `translateZ`.
+// 3. Iluminação volumétrica, vinheta gradiente e textura de granulação de película (noise).
+// ============================================================================
 
 import React from 'react';
 

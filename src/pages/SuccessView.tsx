@@ -1,4 +1,22 @@
-﻿import React, { useState } from 'react';
+// ============================================================================
+// EAREC AUDIOVISUAL - TELA DE CONCLUSÃO E DISPARO WHATSAPP (SuccessView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Esta tela representa o ápice do funil de conversão da EAREC.
+//
+// RECURSOS PRINCIPAIS:
+// 1. Mensagem Dinâmica do WhatsApp:
+//    - Monta o template completo e legível com emojis, quebras de linha e seções:
+//      [AGENDA], [DADOS DO CLIENTE], [PACOTE ESCOLHIDO], [INVESTIMENTO], [FORMAS DE PAGAMENTO].
+//    - Realiza escape seguro de caracteres para envio via https://api.whatsapp.com/send.
+// 2. Ações Duplas de Envio:
+//    - Botão direto: abre o WhatsApp com a mensagem pronta no aplicativo/web.
+//    - Modal de QR Code: renderiza um QRCodeSVG com o link para o cliente escanear
+//      com o celular caso esteja acessando pelo computador desktop.
+// 3. Captura tardia de Nome: se o usuário navegou em modo rápido sem informar o nome,
+//    um modal amigável surge antes do disparo solicitando seu nome.
+// ============================================================================
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';

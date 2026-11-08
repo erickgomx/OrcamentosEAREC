@@ -1,3 +1,15 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - MODAL DE UPSELL / ADICIONAIS RECOMENDADOS (AddonUpsellModal.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este modal é exibido de forma elegante antes do fechamento do orçamento para
+// oferecer melhorias de alto valor percebido:
+// 1. Captação aérea cinematográfica com Drone (+ R$ 250).
+// 2. Transmissão / Envio de fotos tratadas em tempo real durante o evento (+ R$ 600).
+//
+// O usuário pode marcar/desmarcar os itens (o valor total no rodapé do modal
+// reage instantaneamente) e clicar em "Confirmar" ou "Pular e Ver Resumo".
+// ============================================================================
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +40,7 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
+          {/* Backdrop escurecido com desfoque óptico intenso */}
           <motion.div 
             variants={backdropVariants}
             initial="hidden"
@@ -44,10 +57,11 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
             exit="exit"
             className="relative bg-neutral-950 border border-white/10 rounded-2xl shadow-2xl w-full max-w-[340px] md:max-w-md overflow-hidden"
           >
-            {/* Faixa Superior sutil */}
+            {/* Faixa Superior sutil vermelha */}
             <div className="h-1 w-full bg-brand-DEFAULT shadow-[0_0_10px_#DC2626]" />
 
             <div className="p-4 md:p-6">
+              {/* Cabeçalho do Modal */}
               <div className="text-center mb-4 md:mb-6">
                 <motion.div 
                     initial={{ scale: 0 }} 
@@ -63,6 +77,7 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
                 </p>
               </div>
 
+              {/* Lista de Up-sells Opcionais */}
               <div className="flex flex-col gap-3 mb-6">
                 {/* Cartão Drone - Compacto */}
                 <motion.div 
@@ -121,6 +136,7 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
                 </motion.div>
               </div>
 
+              {/* Rodapé com Preço Atualizado e Botões de Decisão */}
               <div className="flex flex-col items-center gap-4">
                 <div className="text-center">
                     <p className="text-[9px] text-neutral-500 uppercase tracking-widest mb-1">Total Estimado</p>

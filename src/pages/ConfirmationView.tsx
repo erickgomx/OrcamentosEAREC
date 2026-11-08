@@ -1,3 +1,14 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - GUIA INTERATIVO "COMO FUNCIONA" (ConfirmationView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Esta tela funciona como um mini-onboarding interativo em 3 passos para ensinar
+// ao cliente como ele monta e contrata o serviço com a EAREC:
+// 
+// PASSO 1 - Iniciar: Simulação dos valores na hora.
+// PASSO 2 - Configure: Escolha das categorias e pacotes personalizados.
+// PASSO 3 - Finalize no WhatsApp: Redirecionamento direto com a proposta pré-formatada.
+// ============================================================================
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +22,7 @@ interface ConfirmationViewProps {
 }
 
 const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
+  // Estado local para avançar os 3 passos da timeline
   const [step, setStep] = useState(1);
 
   const handleNext = () => {
@@ -32,7 +44,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
         className="relative z-10 w-full max-w-lg my-auto"
       >
         
-        {/* Card Estilizado */}
+        {/* Card Estilizado com glassmorphism e bordas refinadas */}
         <div className="bg-white/90 dark:bg-neutral-900/60 backdrop-blur-md border border-neutral-200 dark:border-white/10 p-6 md:p-8 rounded-3xl shadow-xl dark:shadow-2xl relative overflow-hidden min-h-[550px] md:min-h-[600px] flex flex-col transition-colors duration-300">
             
             {/* Efeito de luz sutil no topo */}
@@ -57,6 +69,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                 <div className="absolute left-[28px] md:left-[32px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-brand-DEFAULT via-brand-DEFAULT/30 to-transparent opacity-30" />
 
                 <AnimatePresence mode="popLayout">
+                    {/* Passo 1: Iniciar */}
                     {step >= 1 && (
                         <motion.div 
                             key="step-1"
@@ -79,6 +92,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                         </motion.div>
                     )}
 
+                    {/* Passo 2: Configure */}
                     {step >= 2 && (
                         <motion.div 
                             key="step-2"
@@ -101,6 +115,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                         </motion.div>
                     )}
 
+                    {/* Passo 3: Finalize no WhatsApp */}
                     {step >= 3 && (
                         <motion.div 
                             key="step-3"
@@ -125,7 +140,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                 </AnimatePresence>
             </div>
 
-            {/* Botão de Ação */}
+            {/* Botão de Ação: Avança o passo da timeline */}
             <motion.div variants={fadeInUp} className="mt-auto">
                 <Button 
                     onClick={handleNext} 
@@ -140,7 +155,7 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
         </div>
       </motion.div>
 
-      {/* Background Decorativo */}
+      {/* Background Decorativo com glow circular suave */}
       <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-DEFAULT/5 blur-[150px] rounded-full" />
       </div>

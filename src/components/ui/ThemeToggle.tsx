@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - BOTÃO DE ALTERNÂNCIA DE TEMA (ThemeToggle.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este componente é o botão flutuante elegante que permite ao cliente alternar
+// entre o modo escuro (Dark) e o modo claro (Light).
+//
+// DESTAQUES VISUAIS:
+// 1. Efeito glassmorphism translúcido com `backdrop-blur-xl`.
+// 2. Animação de rotação e escala com `Framer Motion` e `AnimatePresence`.
+// 3. Indicador luminoso pulsante com a cor da marca (vermelho no escuro, âmbar no claro).
+// 4. Adaptabilidade responsiva (texto completo em telas grandes e abreviação em mobile).
+// ============================================================================
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon, Sparkles } from 'lucide-react';
@@ -10,6 +24,7 @@ interface ThemeToggleProps {
 }
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, showLabel = true }) => {
+  // Consome o tema atual e a função de alternância do ThemeContext
   const { isDark, toggleTheme } = useTheme();
 
   return (
@@ -67,7 +82,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className, showLabel =
         </AnimatePresence>
       </div>
 
-      {/* Label Elegante */}
+      {/* Label Elegante e Responsivo */}
       {showLabel && (
         <div className="flex items-center gap-1.5 text-xs font-medium tracking-wide">
           <span className="hidden sm:inline-block">

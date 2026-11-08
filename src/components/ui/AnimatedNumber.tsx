@@ -1,3 +1,14 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - NÚMERO ANIMADO COM FÍSICA SUAVE (AnimatedNumber.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este componente anima a contagem de números inteiros (como quantidade de fotos,
+// horas de cobertura, etc.) com interpolação suave da física do Framer Motion (`useSpring`).
+//
+// CARACTERÍSTICAS:
+// 1. Só dispara quando entra no viewport do usuário (`useInView`).
+// 2. Utiliza `tabular-nums` para que a largura dos números não oscile durante a transição.
+// ============================================================================
 
 import React, { useEffect, useRef } from 'react';
 import { motion, useSpring, useTransform, useInView } from 'framer-motion';

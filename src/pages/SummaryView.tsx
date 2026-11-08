@@ -1,4 +1,22 @@
-﻿import React, { useEffect, useState } from 'react';
+// ============================================================================
+// EAREC AUDIOVISUAL - TELA DE RESUMO E REVISÃO DO PEDIDO (SummaryView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Esta tela funciona como o "Checkout Transparente / Espelho da Proposta" da EAREC.
+//
+// RECURSOS PRINCIPAIS:
+// 1. Edição inline dos dados do cliente (Nome, WhatsApp, Data do Evento, Localização)
+//    com auto-save com debounce de 600ms e feedback visual de status ("Salvando...", "Salvo").
+// 2. Seletor de forma de pagamento: Pix, Cartão de Crédito ou Espécie com termos claros
+//    (ex: Pix com 50% de entrada na reserva e 50% na realização do serviço).
+// 3. Ticket / Extrato financeiro estilizado à direita com:
+//    - Título e métricas do pacote contratado.
+//    - Detalhamento discriminado (`priceBreakdown`) com opção de remoção de adicionais avulsos (lixeira).
+//    - Valor total atualizado dinamicamente via `AnimatedPrice`.
+//    - Botão oficial de fechamento: "CONFIRMAR ORÇAMENTO".
+// ============================================================================
+
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Copyright, CreditCard, ArrowLeft, CheckCircle, MapPin, User, Phone, Edit2, X, Banknote, QrCode, FileText, Map as MapIcon, Trash2, PlusCircle, Check, Loader2, Cloud, ChevronDown, Sparkles, ShieldCheck } from 'lucide-react';
 import Logo from '../components/ui/Logo';
@@ -180,7 +198,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
         )}
       </AnimatePresence>
       
-      {/* Background Ambience */}
+      {/* Background Ambience: Luzes de ambiente sutis */}
       <div className="fixed inset-0 pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[120px] rounded-full" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-900/10 blur-[120px] rounded-full" />
@@ -195,7 +213,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
         >
              <motion.div className="w-full max-w-6xl mx-auto" variants={staggerContainer} initial="hidden" animate="visible">
                 
-                {/* HEADER */}
+                {/* HEADER: Botão Voltar + Título do Pedido */}
                 <motion.div variants={fadeInUp} className="flex flex-col md:flex-row items-center justify-between mb-8 pb-6 border-b border-neutral-200 dark:border-white/5 gap-4">
                     <button onClick={onBack} className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors group text-sm font-medium bg-neutral-200/60 dark:bg-white/5 px-4 py-2 rounded-full hover:bg-neutral-200 dark:hover:bg-white/10">
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
@@ -207,7 +225,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                     </div>
                 </motion.div>
 
-                {/* MAIN GRID LAYOUT */}
+                {/* MAIN GRID LAYOUT: Formulário de Contrato à esquerda e Extrato à direita */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
                     
                     {/* COLUNA ESQUERDA: DADOS + PAGAMENTO (lg:col-span-7) */}

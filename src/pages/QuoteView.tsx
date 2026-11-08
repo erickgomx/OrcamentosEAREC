@@ -1,11 +1,27 @@
-﻿
+// ============================================================================
+// EAREC AUDIOVISUAL - TELA PRINCIPAL DO CONFIGURADOR DE ORÇAMENTOS (QuoteView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este componente é a visão central do simulador de orçamentos.
+// 
+// FLUXO DE RENDERIZAÇÃO:
+// 1. Se `state.viewState === 'summary'`, renderiza a tela de revisão dos dados (`SummaryView`).
+// 2. Se `state.viewState === 'success'`, renderiza a tela de parabéns e envio ao WhatsApp (`SuccessView`).
+// 3. Caso contrário, renderiza o Wizard do configurador em 3 etapas com:
+//    - Barra de progresso visual animada.
+//    - Badge interativo da categoria selecionada com menu cascata (dropdown modal) para troca rápida.
+//    - Componente `UpsellList` para personalização dos detalhes de cada serviço.
+//    - Barra flutuante `StickyFooter` para exibição do total em tempo real e CTA de avanço.
+//    - Modal `LocationMapModal` e modal de captura de nome quando necessário.
+// ============================================================================
+
 import React from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ArrowLeft, ChevronsUpDown, CheckCircle, X, User } from 'lucide-react';
 import { cn, formatCurrency } from '../lib/utils';
 import { ClientData, QuoteData, QuoteState, ServiceCategory } from '../types';
 
-// Components
+// Componentes da Interface
 import UpsellList from '../components/quote/UpsellList';
 import StickyFooter from '../components/quote/StickyFooter';
 const LocationMapModal = React.lazy(() => import('../components/ui/LocationMapModal'));
@@ -14,10 +30,10 @@ import SuccessView from './SuccessView';
 import Logo from '../components/ui/Logo';
 import Button from '../components/ui/Button';
 
-// Animations
+// Animações Cinematográficas
 import { wizardStepVariants, modalVariants, backdropVariants, organicItemVariants, staggerContainer } from '../lib/animations';
 
-// Logic Hook
+// Hook com a Máquina de Estados e Lógica de Negócio
 import { useQuoteLogic } from '../hooks/useQuoteLogic';
 
 interface QuoteViewProps {
@@ -35,13 +51,13 @@ interface QuoteViewProps {
 }
 
 const QuoteView: React.FC<QuoteViewProps> = (props) => {
-  // Encapsulated Logic
+  // Consome a máquina de estados desacoplada do useQuoteLogic
   const logic = useQuoteLogic(props);
   const { state, actions, computed } = logic;
   const { quoteState, clientData, onNavigateHome } = props;
   const travelCost = state.distance > 0 ? (state.distance * 2 * state.quoteData.pricePerKm) : 0;
 
-  // View Routing
+  // Roteamento condicional de Telas (Passo 3: Sucesso / Conclusão)
   if (state.viewState === 'success') {
       return (
         <SuccessView 
@@ -75,6 +91,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
       );
   }
 
+  // Roteamento condicional de Telas (Passo 2: Resumo Financeiro)
   if (state.viewState === 'summary') {
       return (
         <SummaryView 

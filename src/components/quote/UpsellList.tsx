@@ -1,4 +1,20 @@
-﻿
+// ============================================================================
+// EAREC AUDIOVISUAL - CONFIGURADOR DE PACOTES E ADICIONAIS (UpsellList.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o componente mais rico em interatividade e opções de negócio da EAREC.
+// Ele gerencia a renderização dos 3 passos principais do configurador:
+// 
+// PASSO 1 - CATEGORIAS (viewMode: 'categories'):
+// Apresenta os cards de ocasião: Casamento, Social, Comercial, Estúdio, Produção, Personalizado.
+// 
+// PASSO 2 - PACOTES (viewMode: 'services'):
+// Apresenta os cards de pacotes específicos da categoria selecionada com composição e valores base.
+// 
+// PASSO 3 - PERSONALIZAÇÃO (viewMode: 'config'):
+// Controles de quantidade (+/-), horas de cobertura, escolha de câmera vs mobile,
+// adicionais de drone, fotos em tempo real e cálculo de frete por geolocalização.
+// ============================================================================
 import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Heart, Sparkles, Hand, Gem, MessageCircle, Gift, Users, GlassWater, PlaneTakeoff, GraduationCap, Building2, Camera, MapPin, Search, Clock, Zap, Video, Minus, Plus, ChevronRight, HelpCircle, Check, Play, Map as MapIcon, X, Battery, Star , User } from 'lucide-react';

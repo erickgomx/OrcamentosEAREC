@@ -1,3 +1,31 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - MÁQUINA DE ESTADOS DO ORÇAMENTO (useQuoteLogic.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Este hook customizado é o "Cérebro Operacional" de toda a jornada de orçamento.
+// Ele desacopla a regra de negócio da interface gráfica (React Component),
+// centralizando:
+// 
+// 1. NAVEGAÇÃO & SINCRONIZAÇÃO DE URL:
+//    - Controla os estados `'config'`, `'summary'` e `'success'`.
+//    - Sincroniza o histórico do navegador (`window.history.pushState` e `popstate`)
+//      para que o botão "Voltar" do celular funcione de maneira natural.
+// 
+// 2. ORQUESTRAÇÃO DE PASSOS DO WIZARD:
+//    - Passo 0: Seleção de Categoria (Casamento, Social, Comercial, etc.).
+//    - Passo 1: Escolha do Pacote Ideal.
+//    - Passo 2: Ajuste fino de parâmetros (horas, quantidade de fotos/vídeos, adicionais).
+// 
+// 3. LOGÍSTICA & DISTÂNCIA:
+//    - Consulta em tempo real a distância via `LocationService` e computa o frete.
+// 
+// 4. INTEGRAÇÃO COM O PRICING ENGINE:
+//    - Alimenta o estado do usuário ao `PricingEngine.calculate` e expõe `totalPrice`
+//      e `priceBreakdown` para os componentes filhos.
+// 
+// 5. MENSAGENS PARA WHATSAPP:
+//    - Gera links diretos com textos formatados para projetos personalizados e corporativos.
+// ============================================================================
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ClientData, QuoteData, QuoteState, PricingContext, ServiceCategory, ServiceId } from '../types';
@@ -32,6 +60,7 @@ export const useQuoteLogic = ({
 }: UseQuoteLogicProps) => {
   
   // === STATE: VIEW & NAVIGATION COM SINCRONIZAÇÃO DE ROTA ===
+  // Inicializa o passo visual com base no pathname da URL (Deep Linking amigável)
   const [viewState, setViewState] = useState<ViewState>(() => {
     // Só entra direto em 'summary' ou 'success' se houver um serviço selecionado
     if (typeof window !== 'undefined' && quoteState?.category) {
@@ -42,6 +71,9 @@ export const useQuoteLogic = ({
     return 'config';
   });
 
+  /**
+   * Atualiza a tela ativa e empurra a nova URL para o histórico do navegador
+   */
   const updateViewState = useCallback((nextState: ViewState, pushToHistory = true) => {
     setViewState(nextState);
     if (pushToHistory && typeof window !== 'undefined') {
@@ -75,6 +107,7 @@ export const useQuoteLogic = ({
     return () => window.removeEventListener('popstate', handlePop);
   }, []);
 
+  // Controle de etapas do Wizard interno da cotação
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
@@ -90,7 +123,7 @@ export const useQuoteLogic = ({
   const [tempName, setTempName] = useState('');
   const [pendingAction, setPendingAction] = useState<'next_step' | 'custom_project' | 'commercial_custom' | null>(null);
 
-  // === CONSTANTS ===
+  // === CONSTANTS: ETAPAS DO CONFIGURADOR ===
   const steps = [
       { id: 'categories', title: 'Qual a ocasião?' },
       { id: 'services', title: 'Escolha o pacote ideal' },
@@ -109,6 +142,7 @@ export const useQuoteLogic = ({
   // === DERIVED STATE ===
   const currentStepId = steps[currentStep].id as 'categories' | 'services' | 'config';
   
+  // Objeto QuoteData memorizado combinando dados padrão com o input do cliente
   const quoteData: QuoteData = useMemo(() => ({
     ...config,
     client: { ...config.client, ...clientData, projectTitle: `Project: ${clientData.name}` }
@@ -165,6 +199,7 @@ export const useQuoteLogic = ({
   };
 
   // === EFFECT: LOCATION SERVICE ===
+  // Recalcula a distância em KM sempre que o endereço do cliente mudar
   useEffect(() => {
     let isMounted = true;
     const updateDistance = async () => {
@@ -180,6 +215,7 @@ export const useQuoteLogic = ({
   }, [clientData.location]);
 
   // === EFFECT: SMART DEFAULTS (Category Change) ===
+  // Ajusta inteligentemente o modo de seleção padrão baseado na categoria escolhida
   useEffect(() => {
       if (category === 'wedding') actions.setSelectionMode('duration');
       if (category === 'commercial') {
@@ -194,6 +230,7 @@ export const useQuoteLogic = ({
   }, [category, serviceId]);
 
   // === EFFECT: RESET ON CATEGORY CHANGE ===
+  // Garante que o serviceId selecionado pertença legitimamente à categoria ativa
   useEffect(() => {
       if (!category) return;
       
@@ -251,6 +288,7 @@ export const useQuoteLogic = ({
   }, [category, serviceId]);
 
   // === PRICING ENGINE ===
+  // Executa o cálculo determinístico através da classe PricingEngine
   const { totalPrice, priceBreakdown } = useMemo(() => {
     const context: PricingContext = {
         pricePerKm: config.pricePerKm,
@@ -266,6 +304,7 @@ export const useQuoteLogic = ({
   }, [quoteState, config, distance, isQuickMode, viewState]);
 
   // === ACTIONS: WHATSAPP ===
+  // Abre o WhatsApp oficial com template de mensagem amigável e profissional
   const openWhatsappAction = (type: 'custom_project' | 'commercial_custom', nameOverride?: string) => {
     const clientName = nameOverride || clientData.name || "Cliente";
     let message = "";

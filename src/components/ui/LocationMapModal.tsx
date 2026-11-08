@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - MODAL DE MAPA INTERATIVO E GEOLOCALIZAÇÃO (LocationMapModal.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este modal permite ao cliente selecionar visualmente o local do evento no mapa.
+//
+// CARACTERÍSTICAS TÉCNICAS:
+// 1. Leaflet + Tiles de satélite/roadmap de alta performance e sem custos.
+// 2. Pino marcador vermelho customizado e arrastável (`draggable: true`).
+// 3. Reverse Geocoding (arrastou o pino -> converte latitude/longitude para nome da rua/bairro/cidade).
+// 4. Forward Geocoding (digitou o nome da cidade/bairro -> move o mapa e posiciona o pino com debounce de 4s).
+// 5. Detecta localização via GPS do navegador móvel quando autorizado pelo cliente.
+// ============================================================================
+
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Check, Loader2, Info, Search, ArrowRight } from 'lucide-react';
@@ -21,7 +35,7 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
   const [currentAddress, setCurrentAddress] = useState(initialAddress || "Carregando posição...");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Lógica de Busca Automática (Debounce de 4s)
+  // Lógica de Busca Automática (Debounce de 4s para evitar requisições a cada tecla digitada)
   useEffect(() => {
     if (!isOpen || !currentAddress || currentAddress.length < 3) return;
 
@@ -35,7 +49,7 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
     return () => clearTimeout(timer);
   }, [currentAddress, isOpen]);
 
-  // Inicialização do Mapa
+  // Inicialização e montagem do ciclo de vida do Mapa Leaflet
   useEffect(() => {
     if (!isOpen) return;
 
@@ -54,8 +68,8 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
             }
 
             if (!mapInstanceRef.current) {
-                // 1. Cria o mapa
-                // Coordenadas iniciais: Goianinha/RN (Fallback)
+                // 1. Cria a instância do mapa Leaflet
+                // Coordenadas iniciais: Goianinha/RN (Sede da EAREC como fallback)
                 const initialLat = -6.2662; 
                 const initialLng = -35.2227;
 
@@ -85,12 +99,12 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
 
                 googleRoadmap.addTo(map);
 
-                // Força redimensionamento correto do container
+                // Força redimensionamento correto do container em modais animados
                 map.invalidateSize();
                 setTimeout(() => map.invalidateSize(), 150);
                 setTimeout(() => map.invalidateSize(), 400);
 
-                // 3. Ícone Personalizado Cinematográfico
+                // 3. Ícone Personalizado Cinematográfico com a identidade vermelha EAREC
                 const customIcon = L.divIcon({
                     className: 'bg-transparent',
                     html: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#DC2626" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin drop-shadow-lg"><path d="M20 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>`,
@@ -144,6 +158,7 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
         }
     }, 150);
 
+    // Desmontagem e limpeza de listeners de memória
     return () => {
         clearTimeout(timer);
         if (mapInstanceRef.current) {

@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - TELA DE BOAS-VINDAS / ONBOARDING (IntroView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Esta é a porta de entrada da experiência do usuário no site/app da EAREC.
+//
+// OBJETIVO:
+// Reduzir atrito e guiar o visitante rapidamente com duas opções centrais:
+// 1. "Iniciar Orçamento": direciona imediatamente para o simulador de pacotes.
+// 2. "Instagram EAREC": abre o Instagram oficial (@earecmidia) para clientes que
+//    querem primeiro ver o portfólio e bastidores dos trabalhos.
+// 3. Link discreto de acesso ao Portfólio interno no rodapé.
+// ============================================================================
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Instagram, Zap } from 'lucide-react';
@@ -19,6 +33,7 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
       <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-red-950/20 blur-[140px] rounded-full pointer-events-none mix-blend-screen" />
       <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-neutral-800/25 blur-[160px] rounded-full pointer-events-none mix-blend-screen" />
 
+      {/* Container animado com orquestração Framer Motion */}
       <motion.div 
         variants={pageContainerVariants}
         initial="initial"

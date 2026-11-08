@@ -1,3 +1,21 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - COMPONENTE RAIZ DA APLICAÇÃO (src/App.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o componente orquestrador principal da aplicação SPA da EAREC.
+//
+// RESPONSABILIDADES:
+// 1. Roteamento SPA com o hook `useRouter`:
+//    - '/' ou '/inicio': IntroView (Boas-vindas / Escolha entre Simulador ou Instagram)
+//    - '/orcamento': QuoteView (Configurador, Resumo e Conclusão)
+//    - '/resumo': SummaryView (Espelho da Proposta e formas de pagamento)
+//    - '/sucesso': SuccessView (Parabéns e envio ao WhatsApp)
+//    - '/portfolio': PortfolioView (Vitrine e cases de sucesso)
+// 2. Persistência de dados: armazena e recupera dados do cliente via localStorage ('earec_client_data').
+// 3. Splash Screen Cinematográfica inicial com AnimatePresence e Framer Motion.
+// 4. Cenário de fundo com rolos de filme 35mm em 3D (`BackgroundFilmStrips`).
+// 5. Botão flutuante de alternância de tema Claro/Escuro (`ThemeToggle`).
+// ============================================================================
 import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 

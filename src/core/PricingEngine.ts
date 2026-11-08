@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - MOTOR MATEMÁTICO DE PRECIFICAÇÃO (PricingEngine.ts)
+// ============================================================================
+// Olá, dev do futuro! 👋
+// Esta classe é o motor financeiro e matemático da EAREC.
+// 
+// PRINCÍPIOS ARQUITETURAIS:
+// 1. Single Responsibility Principle (SRP): esta classe lida exclusivamente com cálculo.
+//    Não toca no DOM, não faz fetch de rede e não altera o estado do React.
+// 2. Pure Functions & Determinismo: dadas as mesmas entradas (`QuoteState` + `PricingContext`),
+//    ela sempre retorna exatamente o mesmo `PricingResult` com breakdown centavo por centavo.
+// 3. Estratégia por Categoria: cada nicho (Casamento, Social, Comercial, Estúdio, Produção)
+//    possui sua própria função especializada de cálculo.
+// ============================================================================
 
 import { AppConfig } from "../config/AppConfig";
 import { PricingContext, PricingResult, QuoteState, PriceBreakdownItem } from "../types";
@@ -15,6 +29,7 @@ export class PricingEngine {
 
   /**
    * Método principal de cálculo.
+   * Centraliza o fluxo de roteamento de cálculo e aplicação de adicionais transversais.
    */
   static calculate(state: QuoteState, context: PricingContext): PricingResult {
     const { category } = state;
@@ -25,7 +40,7 @@ export class PricingEngine {
       currency: 'BRL'
     };
 
-    // Roteamento de Estratégia
+    // Roteamento de Estratégia de Precificação por Categoria
     switch (category) {
       case 'wedding':
         result = this.calculateWedding(state, context);
@@ -43,6 +58,7 @@ export class PricingEngine {
         result = this.calculateProduction(state, context);
         break;
       case 'custom':
+        // Projeto personalizado: valor sob consulta (inicia em 0)
         result = {
           totalPrice: AppConfig.PRICING_TABLE.custom.custom_project.base,
           breakdown: [{ label: AppConfig.PRICING_TABLE.custom.custom_project.label, value: 0, type: 'base' }],
@@ -51,7 +67,7 @@ export class PricingEngine {
         break;
     }
 
-    // Cálculos Globais (Frete e Adicionais Transversais)
+    // Cálculos Globais (Frete e Adicionais Transversais como Drone e Tempo Real)
     result = this.applyAddonsAndFreight(state, context, result);
 
     return result;
@@ -59,6 +75,12 @@ export class PricingEngine {
 
   // --- ESTRATÉGIAS ESPECÍFICAS POR CATEGORIA ---
 
+  /**
+   * Cálculo para a categoria CASAMENTOS (Wedding)
+   * Pacotes: Base (650), Clássico (900), Romance (1150) e Mais Essência (1750, inclui 1 vídeo).
+   * Horas extras acima de 2h: +R$ 250/h.
+   * Vídeos adicionais opcionais: Câmera (R$ 600) ou Mobile (R$ 350).
+   */
   private static calculateWedding(state: QuoteState, ctx: PricingContext): PricingResult {
     const { serviceId, hours } = state;
     const table = AppConfig.PRICING_TABLE.wedding;
@@ -116,6 +138,11 @@ export class PricingEngine {
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
+  /**
+   * Cálculo para EVENTOS SOCIAIS
+   * Cobre: Aniversários, Festas, Religioso/Cultos, 15 Anos, Formaturas e Vídeos Sociais.
+   * Suporta tanto cobrança por Duração (tempo de cobertura) quanto por Quantidade de Fotos (mínimo 8 fotos a R$ 25).
+   */
   private static calculateSocial(state: QuoteState, ctx: PricingContext): PricingResult {
     const { serviceId, hours, qty, selectionMode, videoQty, videoDevice } = state;
     const table = AppConfig.PRICING_TABLE.social;
@@ -123,6 +150,7 @@ export class PricingEngine {
     let total = 0;
 
     if (serviceId === 'graduation') {
+      // Formatura: 4h inclusas (R$ 800), horas extras a R$ 250/h
       total += table.graduation.base;
       breakdown.push({ label: table.graduation.label, value: table.graduation.base, type: 'base' });
       
@@ -134,6 +162,7 @@ export class PricingEngine {
          }
       }
     } else if (serviceId === 'social_video') {
+      // Cobertura exclusiva em vídeo para eventos sociais (Mobile R$ 350 vs Câmera R$ 600)
       const isCam = videoDevice === 'camera';
       const unitVal = isCam ? table.social_video.unitCamera : table.social_video.unitMobile;
       const count = Math.max(1, qty || 1);
@@ -154,6 +183,7 @@ export class PricingEngine {
       else ref = table.birthday; // Default
       
       if (selectionMode === 'duration') {
+        // Modo Duração: 2 horas inclusas
         total += ref.base;
         breakdown.push({ label: `${ref.label} (Base 2h)`, value: ref.base, type: 'base' });
         
@@ -187,6 +217,13 @@ export class PricingEngine {
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
+  /**
+   * Cálculo para a categoria COMERCIAL (Empresas, Marcas e Restaurantes)
+   * - Apenas Fotos: Mínimo 8 fotos a R$ 20 cada.
+   * - Apenas Vídeo: Mobile R$ 350 ou Câmera R$ 600 por vídeo editado.
+   * - Pacote Combo Foto + Vídeo: 10 fotos tratadas + 1 vídeo comercial (Mobile R$ 600 / Câmera R$ 850).
+   *   Fotos extras: +R$ 20 cada. Vídeos extras: +R$ 350 (mobile) / +R$ 600 (câmera).
+   */
   private static calculateCommercial(state: QuoteState, ctx: PricingContext): PricingResult {
     const { serviceId, qty, videoQty } = state; // videoQty usado apenas no combo
     const table = AppConfig.PRICING_TABLE.commercial;
@@ -237,6 +274,12 @@ export class PricingEngine {
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
+  /**
+   * Cálculo para SESSÕES EM ESTÚDIO PRÓPRIO
+   * - Ensaio Fotográfico: Pacote promocional de 7 fotos (R$ 150) ou 13 fotos (R$ 250); outras quantidades a R$ 25/foto.
+   * - Vídeo em Estúdio: Base 2h com câmera a R$ 350; horas adicionais a R$ 175/h.
+   * - Edições de vídeo no estúdio: vídeos de até 30s (+R$ 150/un) e vídeos de até 1 min (+R$ 250/un).
+   */
   private static calculateStudio(state: QuoteState, ctx: PricingContext): PricingResult {
     const { serviceId, qty, hours, selectionMode } = state;
     const table = AppConfig.PRICING_TABLE.studio;
@@ -292,6 +335,11 @@ export class PricingEngine {
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
+  /**
+   * Cálculo para PRODUÇÃO AUDIOVISUAL MODULAR (Sob Demanda)
+   * Permite montar livremente itens de captação (câmera, mobile), edição e drone.
+   * Aplica tabela corporativa/PJ diferenciada se `projectType === 'commercial'`.
+   */
   private static calculateProduction(state: QuoteState, ctx: PricingContext): PricingResult {
     const { camCapHours = 0, mobileCapHours = 0, edit30sQty = 0, edit1minQty = 0, droneQty = 0, qty = 0 } = state;
     const table = AppConfig.PRICING_TABLE.video_production;
@@ -300,6 +348,7 @@ export class PricingEngine {
     
     const isPJ = state.projectType === 'commercial';
 
+    // Fotos Avulsas
     if (qty > 0) {
       const unitPrice = isPJ ? 30 : table.photo_cap.unit;
       const val = qty * unitPrice;
@@ -307,6 +356,7 @@ export class PricingEngine {
       breakdown.push({ label: `${table.photo_cap.label} (${qty}x)`, value: val, type: 'base' });
     }
 
+    // Horas de Captação com Câmera Cinema (Base 2h)
     if (camCapHours > 0) { 
       const basePrice = isPJ ? 600 : table.cam_cap.base;
       const hourPrice = isPJ ? 300 : table.cam_cap.hourPrice;
@@ -319,6 +369,7 @@ export class PricingEngine {
       }
     }
 
+    // Horas de Captação com Celular / Mobile (Base 2h)
     if (mobileCapHours > 0) { 
       const basePrice = isPJ ? 300 : table.mobile_cap.base;
       const hourPrice = isPJ ? 150 : table.mobile_cap.hourPrice;
@@ -331,6 +382,7 @@ export class PricingEngine {
       }
     }
     
+    // Edição de Reels / TikTok (Até 30 segundos)
     if (edit30sQty > 0) {
       const unitPrice = isPJ ? 180 : table.edit_30s.unit;
       const val = edit30sQty * unitPrice;
@@ -338,6 +390,7 @@ export class PricingEngine {
       breakdown.push({ label: `${table.edit_30s.label} (${edit30sQty}x)`, value: val, type: 'base' });
     }
 
+    // Edição de Vídeo Completo (Até 1 minuto)
     if (edit1minQty > 0) {
       const unitPrice = isPJ ? 300 : table.edit_1min.unit;
       const val = edit1minQty * unitPrice;
@@ -356,8 +409,14 @@ export class PricingEngine {
     return { totalPrice: total, breakdown, currency: 'BRL' };
   }
 
-  // --- CÁLCULOS GLOBAIS ---
+  // --- CÁLCULOS GLOBAIS (ADICIONAIS TRANSVERSAIS E LOGÍSTICA) ---
 
+  /**
+   * Aplica adicionais que podem ser anexados a múltiplos pacotes:
+   * 1. Drone (+ R$ 250)
+   * 2. Envio de Fotos Tratadas em Tempo Real (+ R$ 600, ou R$ 300 p/ Comercial)
+   * 3. Cálculo de frete/deslocamento: 2x a distância em km * pricePerKm (isento em estúdio)
+   */
   private static applyAddonsAndFreight(state: QuoteState, ctx: PricingContext, currentResult: PricingResult): PricingResult {
     const { category, addDrone, addRealTime, commercialMode } = state;
     const { distance, pricePerKm, isQuickMode, includeFreight } = ctx;

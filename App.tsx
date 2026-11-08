@@ -1,3 +1,11 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - ENTRY WRAPPER APP (App.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este arquivo é o ponto de montagem principal importado pelo index.tsx.
+// Ele provê a casca do app, garantindo compatibilidade com o ThemeProvider,
+// BackgroundFilmStrips, ThemeToggle no topo direito e renderização das views.
+// ============================================================================
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import QuoteView from './src/pages/QuoteView';

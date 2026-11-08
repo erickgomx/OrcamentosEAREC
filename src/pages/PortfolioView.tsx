@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - VITRINE E PORTFÓLIO CINEMATOGRÁFICO (PortfolioView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Esta página apresenta os cases de sucesso e o estilo visual característico da EAREC:
+// 1. Casamento (Wedding Films com multicâmera 4K e drone).
+// 2. Comercial (Campanhas institucionais e vídeos com alta conversão para Reels/TikTok).
+// 3. Social & Eventos (15 anos, formaturas e cobertura em tempo real).
+// 4. Estúdio & Moda (Editoriais com iluminação técnica controlada).
+//
+// Ao final da navegação pela vitrine, o cliente é convidado por um CTA
+// de alta conversão para simular seu próprio orçamento de forma instantânea.
+// ============================================================================
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Play, Sparkles, Video, Film, Camera, Heart, Building2, CheckCircle2 } from 'lucide-react';
@@ -9,6 +23,7 @@ interface PortfolioViewProps {
   onStartQuote: () => void;
 }
 
+// Lista curada de produções e cases do portfólio EAREC
 const portfolioProjects = [
   {
     id: 1,
@@ -52,11 +67,11 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
   return (
     <div className="w-full min-h-[100dvh] flex flex-col items-center justify-start relative overflow-x-hidden px-4 md:px-6 py-8 md:py-12">
       
-      {/* Ambient Cinema Lighting */}
+      {/* Ambient Cinema Lighting: Luzes volumétricas vermelhas e neutras */}
       <div className="fixed top-1/4 -left-32 w-[500px] h-[500px] bg-red-950/20 blur-[140px] rounded-full pointer-events-none mix-blend-screen" />
       <div className="fixed bottom-1/4 -right-32 w-[500px] h-[500px] bg-neutral-800/25 blur-[160px] rounded-full pointer-events-none mix-blend-screen" />
 
-      {/* Header com Navegação */}
+      {/* Header com Navegação: Voltar ao Início / Logo / Iniciar Orçamento */}
       <header className="relative z-20 w-full max-w-5xl flex items-center justify-between mb-8 md:mb-12">
         <button 
           onClick={onNavigateHome}
@@ -78,7 +93,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
         </button>
       </header>
 
-      {/* Conteúdo Principal */}
+      {/* Conteúdo Principal do Portfólio */}
       <motion.main 
         variants={pageContainerVariants}
         initial="initial"
@@ -86,7 +101,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
         exit="exit"
         className="relative z-10 w-full max-w-5xl flex flex-col items-center text-center pb-20"
       >
-        {/* Título de Apresentação */}
+        {/* Título de Apresentação da Vitrine */}
         <motion.div variants={organicItemVariants} className="max-w-2xl mx-auto mb-10 md:mb-14">
           <p className="text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.3em] font-semibold mb-2">
             Vitrine Cinematográfica
@@ -149,7 +164,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ onNavigateHome, onStartQu
           })}
         </motion.div>
 
-        {/* Call to Action Final */}
+        {/* Call to Action Final para Iniciar Orçamento */}
         <motion.div 
           variants={organicItemVariants}
           className="mt-14 sm:mt-18 w-full max-w-2xl p-8 rounded-3xl bg-white/90 dark:bg-neutral-900/90 border border-neutral-200 dark:border-white/10 text-center shadow-xl dark:shadow-2xl relative overflow-hidden backdrop-blur-md"
