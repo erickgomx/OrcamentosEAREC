@@ -195,7 +195,23 @@ export const fadeInUp: Variants = {
     filter: 'blur(6px)',
     scale: 0.98
   },
+  enter: { 
+    opacity: 0, 
+    y: 26, 
+    filter: 'blur(6px)',
+    scale: 0.98
+  },
   visible: { 
+    opacity: 1, 
+    y: 0,
+    filter: 'blur(0px)',
+    scale: 1,
+    transition: { 
+      duration: 0.48, 
+      ease: CINE_EASE 
+    }
+  },
+  center: { 
     opacity: 1, 
     y: 0,
     filter: 'blur(0px)',
@@ -220,6 +236,14 @@ export const fadeInUp: Variants = {
 // Container escalonado para orquestração de listas e cards
 export const staggerContainer: Variants = {
   hidden: { opacity: 1 },
+  enter: { opacity: 1 },
+  center: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.02
+    }
+  },
   visible: {
     opacity: 1,
     transition: {

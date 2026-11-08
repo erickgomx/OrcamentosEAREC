@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // EAREC AUDIOVISUAL - CONFIGURADOR DE PACOTES E ADICIONAIS (UpsellList.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -79,8 +79,8 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         className={cn(
             "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[145px] sm:min-h-[175px] md:min-h-[200px] overflow-hidden backdrop-blur-md",
             active 
-                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
-                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.18)] ring-2 ring-[#DC2626]/20" 
+                : "bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-[#181818] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none"
         )}
     >
         <div className={cn(
@@ -310,7 +310,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.social.social_video.description} 
                             highlight 
                             extraContent={
-                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-stone-100 dark:bg-black/50 p-1 rounded-xl border border-stone-200 dark:border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -320,13 +320,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'mobile'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Mobile (350)
                                     </button>
-                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
+                                    <span className="text-[10px] text-stone-400 dark:text-neutral-500 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -336,8 +336,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'camera'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Câmera (600)
@@ -363,7 +363,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.commercial.comm_video.description} 
                             highlight 
                             extraContent={
-                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-stone-100 dark:bg-black/50 p-1 rounded-xl border border-stone-200 dark:border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -373,13 +373,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'mobile'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Mobile (350)
                                     </button>
-                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
+                                    <span className="text-[10px] text-stone-400 dark:text-neutral-500 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -389,8 +389,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'camera'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Câmera (600)
@@ -1303,8 +1303,8 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
             className={cn(
             "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 relative overflow-hidden",
             isAdded 
-                ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)]" 
-                : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.14)] dark:shadow-[0_8px_30px_rgba(220,38,38,0.25)] ring-2 ring-[#DC2626]/20" 
+                : "bg-stone-50/90 dark:bg-white/[0.02] border border-stone-200/90 dark:border-white/5 hover:border-stone-300 dark:hover:border-white/10 hover:bg-white dark:hover:bg-white/[0.04]"
         )}>
             {/* Background Glow when active */}
             {isAdded && (
@@ -1358,8 +1358,8 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         className={cn(
             "group relative flex flex-col items-center justify-between pt-7 pb-4 px-3 sm:pt-6 sm:pb-5 sm:px-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
             active 
-                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
-                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.18)] ring-2 ring-[#DC2626]/20" 
+                : "bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-[#181818] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none"
         )}
     >
         {/* Tag / Ícone de Destaque "Popular" - Posicionado EXCLUSIVAMENTE à direita do card sem sobreposição */}
@@ -1367,10 +1367,10 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className={cn(
                 "absolute top-0 right-0 text-[8px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-colors duration-200 flex items-center gap-1 shadow-sm",
                 active 
-                    ? "bg-brand-DEFAULT text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
-                    : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
+                    ? "bg-[#DC2626] text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
+                    : "bg-amber-500/15 dark:bg-amber-400/10 text-amber-800 dark:text-amber-300 border-b border-l border-amber-500/20"
             )}>
-                <Sparkles size={10} className={active ? "text-white" : "text-amber-400"} />
+                <Sparkles size={10} className={active ? "text-white" : "text-amber-500 dark:text-amber-400"} />
                 <span>Popular</span>
             </div>
         )}
@@ -1401,8 +1401,8 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className={cn(
                 "p-2.5 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl mb-1.5 sm:mb-2 transition-colors duration-200",
                 active 
-                    ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
-                    : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
+                    ? "bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#DC2626] shadow-[0_0_20px_rgba(220,38,38,0.2)]" 
+                    : "bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-neutral-300 group-hover:bg-stone-200 dark:group-hover:bg-white/10 group-hover:text-stone-950 dark:group-hover:text-white"
             )}>
                 <Icon size={22} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
             </div>
