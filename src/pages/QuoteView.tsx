@@ -111,10 +111,10 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#F7F7F5]/90 dark:bg-[#080808]/85 text-stone-900 dark:text-neutral-100 flex flex-col transition-colors duration-300">
+    <div className="relative min-h-[100dvh] bg-[#FAFAF9] dark:bg-[#080808] text-stone-900 dark:text-neutral-100 flex flex-col transition-colors duration-300">
       
       {/* Background sutil */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#F0EFEB] via-[#F7F7F5] to-[#F7F7F5] dark:from-[#111111] dark:via-[#080808] dark:to-[#080808] -z-10 transition-colors duration-300" />
+      <div className="fixed inset-0 bg-[#FAFAF9] dark:bg-[#080808] -z-10 transition-colors duration-300" />
 
       {/* HEADER: PROGRESS & NAV */}
       <motion.div 
@@ -127,7 +127,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           <motion.div variants={organicItemVariants} className="w-full relative flex justify-center items-center mb-6">
                <button 
                   onClick={actions.handlePrevStep} 
-                  className="absolute left-0 p-2 md:p-2.5 rounded-full bg-stone-200/60 dark:bg-white/[0.05] hover:bg-stone-200 dark:hover:bg-white/10 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white transition-all flex items-center gap-1.5"
+                  className="absolute left-0 p-2 md:p-2.5 rounded-full bg-white dark:bg-white/[0.05] border border-stone-200/90 dark:border-white/[0.08] hover:bg-stone-50 dark:hover:bg-white/10 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white transition-all flex items-center gap-1.5 shadow-sm dark:shadow-none"
                   title={state.currentStep === 0 ? "Voltar ao Início" : "Voltar etapa"}
                >
                    <ArrowLeft className="w-5 h-5" />
@@ -141,7 +141,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
           </motion.div>
 
           {/* Progress Bar */}
-          <motion.div variants={organicItemVariants} className="w-full max-w-xs mb-2 h-1 bg-stone-200 dark:bg-white/10 rounded-full overflow-hidden">
+          <motion.div variants={organicItemVariants} className="w-full max-w-xs mb-2 h-1.5 bg-stone-200 dark:bg-white/10 rounded-full overflow-hidden">
              <motion.div 
                  className="h-full bg-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.5)] origin-left"
                  initial={{ width: "0%" }}

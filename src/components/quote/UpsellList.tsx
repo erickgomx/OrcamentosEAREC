@@ -547,16 +547,16 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         
                         <div className="text-center mb-6">
-                            <h3 className="font-serif text-2xl text-white">Monte seu Pacote</h3>
-                            <p className="text-neutral-400 text-sm mt-2">Escolha as quantidades para cada serviço desejado.</p>
+                            <h3 className="font-serif text-2xl text-stone-900 dark:text-white font-bold">Monte seu Pacote</h3>
+                            <p className="text-stone-600 dark:text-neutral-400 text-sm mt-2">Escolha as quantidades para cada serviço desejado.</p>
                             
                             {/* Project Type Toggle */}
-                            <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mt-6 border border-white/5">
+                            <div className="flex bg-stone-100 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mt-6 border border-stone-200/90 dark:border-white/5">
                                 <button
                                     onClick={() => setProjectType?.('personal')}
                                     className={cn(
                                         "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
-                                        projectType === 'personal' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        projectType === 'personal' ? "bg-white text-stone-900 shadow-sm dark:bg-white/10 dark:text-white font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     <User size={16} />
@@ -566,7 +566,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     onClick={() => setProjectType?.('commercial')}
                                     className={cn(
                                         "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
-                                        projectType === 'commercial' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        projectType === 'commercial' ? "bg-white text-stone-900 shadow-sm dark:bg-white/10 dark:text-white font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     <Building2 size={16} />
@@ -1314,13 +1314,13 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
             <div className="flex items-center gap-4 w-full sm:w-auto relative z-10 flex-1">
                 <div className={cn(
                     "p-3 rounded-2xl transition-colors shrink-0", 
-                    isAdded ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300"
+                    isAdded ? "bg-[#DC2626]/15 text-[#DC2626] shadow-[0_0_15px_rgba(220,38,38,0.25)]" : "bg-stone-200/80 dark:bg-white/5 text-stone-600 dark:text-neutral-300"
                 )}>
                     <Icon size={24} strokeWidth={1.5} />
                 </div>
                 <div className="text-left">
-                    <h4 className="text-white font-semibold text-base sm:text-lg leading-tight">{title}</h4>
-                    <p className="text-xs sm:text-sm text-neutral-400 font-medium mt-1">{desc}</p>
+                    <h4 className="text-stone-900 dark:text-white font-bold text-base sm:text-lg leading-tight">{title}</h4>
+                    <p className="text-xs sm:text-sm text-stone-500 dark:text-neutral-400 font-medium mt-1">{desc}</p>
                 </div>
             </div>
             
@@ -1328,16 +1328,16 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
                 {!isAdded ? (
                     <button 
                         onClick={() => setter?.(min)}
-                        className="w-full py-3 sm:py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm sm:text-base font-semibold transition-colors border border-white/10 flex justify-center items-center gap-2"
+                        className="w-full py-3 sm:py-2.5 bg-white hover:bg-[#DC2626] hover:text-white dark:bg-white/5 dark:hover:bg-white/10 text-stone-800 dark:text-white rounded-xl text-sm sm:text-base font-semibold transition-colors border border-stone-200 dark:border-white/10 flex justify-center items-center gap-2 shadow-sm"
                     >
                         <Plus size={18} /> Adicionar
                     </button>
                 ) : (
-                    <div className="flex items-center justify-between w-full bg-black/40 rounded-2xl p-1.5 border border-white/10">
+                    <div className="flex items-center justify-between w-full bg-white dark:bg-black/40 rounded-2xl p-1.5 border border-stone-200 dark:border-white/10 shadow-sm">
                         <ControlBtn onClick={() => setter?.(value > min ? value - step : 0)} icon={Minus} />
                         <div className="text-center flex-1 px-1">
-                            <span className="text-xl sm:text-2xl font-bold font-price text-white leading-none"><AnimatedNumber value={value} /></span>
-                            <span className="block text-[10px] sm:text-xs text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider">{unitLabel}</span>
+                            <span className="text-xl sm:text-2xl font-bold font-price text-stone-900 dark:text-white leading-none"><AnimatedNumber value={value} /></span>
+                            <span className="block text-[10px] sm:text-xs text-stone-500 dark:text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider">{unitLabel}</span>
                         </div>
                         <ControlBtn onClick={() => setter?.(value + step)} icon={Plus} active />
                     </div>
@@ -1463,7 +1463,7 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, in
         )}
     >
         <button 
-          className="absolute top-3 left-3 text-neutral-500 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
+          className="absolute top-3 left-3 text-stone-400 hover:text-stone-700 dark:text-neutral-500 dark:hover:text-white transition-colors z-20 p-2 hover:bg-stone-100 dark:hover:bg-white/5 rounded-full"
           onClick={(e) => {
              e.stopPropagation();
              if (onInfo && desc) onInfo({ title: label, desc, price: formatCurrency(price) });
@@ -1474,21 +1474,21 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, in
 
         <div className={cn(
             "absolute top-3 right-3 w-6 h-6 rounded-full border flex items-center justify-center transition-all", 
-            active ? "bg-brand-DEFAULT border-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.6)]" : "border-white/15 bg-black/30"
+            active ? "bg-[#DC2626] border-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.6)]" : "border-stone-300 bg-stone-100 dark:border-white/15 dark:bg-black/30"
         )}>
             {active && <Check size={14} className="text-white" />}
         </div>
 
         <div className={cn(
             "p-3.5 sm:p-4 rounded-2xl mb-1 transition-colors duration-200", 
-            active ? "bg-white/20 text-white" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
+            active ? "bg-red-100 text-[#DC2626] dark:bg-white/20 dark:text-white" : "bg-stone-100 text-stone-600 dark:bg-white/5 dark:text-neutral-300 group-hover:bg-stone-200 dark:group-hover:bg-white/10 group-hover:text-stone-900 dark:group-hover:text-white"
         )}>
            <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
         </div>
         
         <div className="space-y-1 text-center px-0 sm:px-1 w-full">
-            <p className={cn("text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words", active ? "text-white" : "text-neutral-200")}>{label}</p>
-            <p className="text-xs sm:text-sm text-brand-DEFAULT font-bold font-price bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block mt-1.5 whitespace-nowrap">
+            <p className={cn("text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words", active ? "text-stone-900 dark:text-white font-bold" : "text-stone-800 dark:text-neutral-200 font-medium")}>{label}</p>
+            <p className="text-xs sm:text-sm text-[#DC2626] dark:text-red-400 font-bold font-price bg-red-50 border border-red-100 dark:border-transparent dark:bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block mt-1.5 whitespace-nowrap">
                 + {formatCurrency(price)}
             </p>
         </div>

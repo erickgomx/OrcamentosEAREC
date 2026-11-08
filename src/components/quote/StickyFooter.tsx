@@ -84,16 +84,16 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
                   disabled={disabled}
                   className={cn(
                       "flex items-center justify-center gap-2 sm:gap-3 transition-all duration-300", 
-                      !disabled 
-                        ? "shadow-[0_0_25px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)]" 
-                        : "opacity-50 cursor-not-allowed shadow-none grayscale",
+                      disabled 
+                        ? "!bg-stone-200 !text-stone-400 dark:!bg-white/10 dark:!text-neutral-500 cursor-not-allowed !shadow-none !border-transparent" 
+                        : "bg-[#DC2626] text-white shadow-[0_0_25px_rgba(220,38,38,0.4)] hover:bg-[#B91C1C] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)]",
                       !showPrice 
                         ? "w-full sm:w-auto px-6 py-3 sm:px-10 sm:py-4 text-sm sm:text-base font-bold max-w-md" 
                         : "px-4 py-2.5 sm:px-7 sm:py-3.5 text-xs sm:text-base font-bold whitespace-nowrap"
                   )}
               >
                   <span className="tracking-wide">{customLabel || "Continuar"}</span> 
-                  <div className={cn("p-1 sm:p-1.5 rounded-full shrink-0", disabled ? "bg-white/5" : "bg-white/20")}>
+                  <div className={cn("p-1 sm:p-1.5 rounded-full shrink-0", disabled ? "bg-stone-300/60 dark:bg-white/5 text-stone-400 dark:text-neutral-500" : "bg-white/20 text-white")}>
                       <ChevronRight size={16} className="sm:w-[18px] sm:h-[18px]" />
                   </div>
               </Button>
