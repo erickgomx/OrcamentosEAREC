@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // EAREC AUDIOVISUAL - CENÁRIO DE FUNDO 3D EM ROLOS DE FILME (BackgroundFilmStrips.tsx)
 // ============================================================================
 // Olá, dev cinematográfico! 🎞️✨
@@ -141,7 +141,7 @@ const BackgroundFilmStrips: React.FC = () => {
           UPDATE: Scale massivo para 0.85 (Mobile) / 1.0 (Tablet)
           UPDATE: Position ajustado para -80px para mostrar mais as rodas (Menos escondidas)
       */}
-      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] transition-all duration-1000 origin-left">
+      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] opacity-[0.14] dark:opacity-100 transition-all duration-1000 origin-left">
           <div style={{ transform: 'rotateY(25deg) rotateZ(-8deg)' }}>
              <FilmWheel3D speed={80} direction="normal" />
           </div>
@@ -151,7 +151,7 @@ const BackgroundFilmStrips: React.FC = () => {
           RODA DIREITA
           Simétrico à esquerda.
       */}
-      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] transition-all duration-1000 origin-right">
+      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] opacity-[0.14] dark:opacity-100 transition-all duration-1000 origin-right">
           <div style={{ transform: 'rotateY(-25deg) rotateZ(5deg)' }}>
              <FilmWheel3D speed={100} direction="reverse" />
           </div>

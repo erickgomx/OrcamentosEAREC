@@ -55,7 +55,7 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative bg-neutral-950 border border-white/10 rounded-2xl shadow-2xl w-full max-w-[340px] md:max-w-md overflow-hidden"
+            className="relative bg-white dark:bg-neutral-950 border border-stone-200/90 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-[340px] md:max-w-md overflow-hidden"
           >
             {/* Faixa Superior sutil vermelha */}
             <div className="h-1 w-full bg-brand-DEFAULT shadow-[0_0_10px_#DC2626]" />
@@ -71,8 +71,8 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
                 >
                     <Sparkles size={16} />
                 </motion.div>
-                <h2 className="font-serif text-xl md:text-2xl text-white mb-1">Eleve seu Projeto</h2>
-                <p className="text-neutral-500 max-w-[240px] mx-auto text-[10px] md:text-xs">
+                <h2 className="font-serif text-xl md:text-2xl text-stone-900 dark:text-white mb-1">Eleve seu Projeto</h2>
+                <p className="text-stone-600 dark:text-neutral-500 max-w-[240px] mx-auto text-[10px] md:text-xs">
                   Recursos exclusivos para uma experiência audiovisual completa.
                 </p>
               </div>
@@ -87,17 +87,17 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
                     "cursor-pointer p-3 rounded-xl border transition-all relative group flex items-center gap-3",
                     addDrone 
                       ? "bg-brand-DEFAULT/5 border-brand-DEFAULT/40" 
-                      : "bg-white/5 border-white/5"
+                      : "bg-stone-50 dark:bg-white/5 border-stone-200/80 dark:border-white/5"
                   )}
                 >
                   <div className={cn(
                       "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-                      addDrone ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-500"
+                      addDrone ? "bg-brand-DEFAULT text-white" : "bg-stone-200/80 dark:bg-white/5 text-stone-600 dark:text-neutral-500"
                   )}>
                       <Plane size={20} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-white font-medium text-xs">Drone (Aéreo)</h3>
+                    <h3 className="text-stone-900 dark:text-white font-medium text-xs">Drone (Aéreo)</h3>
                     <p className="text-brand-DEFAULT font-bold text-[10px]">+ {formatCurrency(250)}</p>
                   </div>
                   {addDrone && (
@@ -115,17 +115,17 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
                     "cursor-pointer p-3 rounded-xl border transition-all relative group flex items-center gap-3",
                     addRealTime 
                       ? "bg-brand-DEFAULT/5 border-brand-DEFAULT/40" 
-                      : "bg-white/5 border-white/5"
+                      : "bg-stone-50 dark:bg-white/5 border-stone-200/80 dark:border-white/5"
                   )}
                 >
                   <div className={cn(
                       "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-                      addRealTime ? "bg-brand-DEFAULT text-white" : "bg-white/5 text-neutral-500"
+                      addRealTime ? "bg-brand-DEFAULT text-white" : "bg-stone-200/80 dark:bg-white/5 text-stone-600 dark:text-neutral-500"
                   )}>
                       <Timer size={20} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-white font-medium text-xs">Fotos em Tempo Real</h3>
+                    <h3 className="text-stone-900 dark:text-white font-medium text-xs">Fotos em Tempo Real</h3>
                     <p className="text-brand-DEFAULT font-bold text-[10px]">+ {formatCurrency(600)}</p>
                   </div>
                   {addRealTime && (
@@ -139,8 +139,8 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
               {/* Rodapé com Preço Atualizado e Botões de Decisão */}
               <div className="flex flex-col items-center gap-4">
                 <div className="text-center">
-                    <p className="text-[9px] text-neutral-500 uppercase tracking-widest mb-1">Total Estimado</p>
-                    <div className="text-xl text-white font-price font-bold">
+                    <p className="text-[9px] text-stone-500 dark:text-neutral-500 uppercase tracking-widest mb-1">Total Estimado</p>
+                    <div className="text-xl text-stone-900 dark:text-white font-price font-bold">
                         <AnimatedPrice value={totalPrice} />
                     </div>
                 </div>
@@ -155,7 +155,7 @@ const AddonUpsellModal: React.FC<AddonUpsellModalProps> = ({
                     </Button>
                     <button 
                         onClick={onConfirm}
-                        className="w-full py-2 text-neutral-500 hover:text-white transition-colors text-[9px] uppercase tracking-widest"
+                        className="w-full py-2 text-stone-500 hover:text-stone-900 dark:text-neutral-500 dark:hover:text-white transition-colors text-[9px] uppercase tracking-widest"
                     >
                         Pular e Ver Resumo
                     </button>

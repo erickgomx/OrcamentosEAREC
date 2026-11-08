@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // EAREC AUDIOVISUAL - TELA PRINCIPAL DO CONFIGURADOR DE ORÇAMENTOS (QuoteView.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -365,18 +365,18 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                 <motion.div 
                     variants={backdropVariants}
                     initial="hidden" animate="visible" exit="exit"
-                    className="absolute inset-0 bg-neutral-950/90 backdrop-blur-md"
+                    className="absolute inset-0 bg-stone-950/60 dark:bg-neutral-950/90 backdrop-blur-md"
                     onClick={() => actions.setIsNameModalOpen(false)}
                 />
                 <motion.div
                     variants={modalVariants}
                     initial="hidden" animate="visible" exit="exit"
-                    className="relative bg-neutral-900/95 backdrop-blur-xl border border-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-sm shadow-2xl"
+                    className="relative bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-stone-200/90 dark:border-white/10 p-6 sm:p-8 rounded-2xl w-full max-w-sm shadow-2xl"
                 >
 
                      <button 
                         onClick={() => actions.setIsNameModalOpen(false)}
-                        className="absolute top-6 right-6 text-neutral-500 hover:text-white transition-colors"
+                        className="absolute top-6 right-6 text-stone-400 hover:text-stone-900 dark:text-neutral-500 dark:hover:text-white transition-colors"
                      >
                         <X size={20} />
                      </button>
@@ -386,8 +386,8 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                             <User size={36} strokeWidth={1.5} />
                         </div>
                     </div>
-                    <h3 className="text-2xl text-white font-serif text-center mb-2 leading-tight">Como podemos<br/>te chamar?</h3>
-                    <p className="text-neutral-400 text-center text-sm mb-8 font-light">
+                    <h3 className="text-2xl text-stone-900 dark:text-white font-serif text-center mb-2 leading-tight">Como podemos<br/>te chamar?</h3>
+                    <p className="text-stone-600 dark:text-neutral-400 text-center text-sm mb-8 font-light">
                         Para um atendimento personalizado,<br/>informe seu nome ou empresa.
                     </p>
                     
@@ -398,7 +398,7 @@ const QuoteView: React.FC<QuoteViewProps> = (props) => {
                             value={state.tempName}
                             onChange={(e) => actions.setTempName(e.target.value)}
                             autoFocus
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-neutral-600 focus:border-brand-DEFAULT focus:ring-1 focus:ring-brand-DEFAULT outline-none transition-all text-lg font-medium text-center"
+                            className="w-full bg-stone-100 dark:bg-black/40 border border-stone-200/90 dark:border-white/10 rounded-2xl px-5 py-4 text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-neutral-600 focus:border-brand-DEFAULT focus:ring-1 focus:ring-brand-DEFAULT outline-none transition-all text-lg font-medium text-center"
                             onKeyDown={(e) => e.key === 'Enter' && actions.handleConfirmName()}
                         />
                         <Button 

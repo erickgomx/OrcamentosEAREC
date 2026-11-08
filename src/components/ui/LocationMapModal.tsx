@@ -268,32 +268,32 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative bg-neutral-900 border border-white/10 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative bg-white dark:bg-neutral-900 border border-stone-200/90 dark:border-white/10 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="p-4 border-b border-white/10 flex justify-between items-center bg-neutral-900 z-10">
+            <div className="p-4 border-b border-stone-200/80 dark:border-white/10 flex justify-between items-center bg-white dark:bg-neutral-900 z-10">
                 <div>
-                    <h3 className="text-white font-medium flex items-center gap-2">
+                    <h3 className="text-stone-900 dark:text-white font-medium flex items-center gap-2">
                         <MapPin size={18} className="text-brand-DEFAULT" />
                         Local do Serviço
                     </h3>
-                    <p className="text-xs text-neutral-500 flex items-center gap-1 mt-1">
+                    <p className="text-xs text-stone-500 dark:text-neutral-500 flex items-center gap-1 mt-1">
                        <Info size={12} />
                        Digite apenas Cidade ou Bairro para maior precisão.
                     </p>
                 </div>
-                <button onClick={onClose} className="text-neutral-400 hover:text-white p-2">
+                <button onClick={onClose} className="text-stone-400 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-white p-2">
                     <X size={20} />
                 </button>
             </div>
 
             {/* Mapa */}
-            <div className="relative flex-1 min-h-[400px] w-full bg-neutral-950 group">
+            <div className="relative flex-1 min-h-[400px] w-full bg-stone-100 dark:bg-neutral-950 group">
                 <div ref={mapContainerRef} className="absolute inset-0 z-0" />
                 
                 {/* Barra de Busca Flutuante (Input Editável) */}
-                <div className="absolute top-4 left-4 right-4 z-[400] bg-neutral-900/90 backdrop-blur-md border border-white/10 p-2 rounded-lg shadow-xl flex items-center gap-2 transition-all focus-within:border-brand-DEFAULT/50 focus-within:bg-neutral-900">
-                    <div className="p-2 text-neutral-400">
+                <div className="absolute top-4 left-4 right-4 z-[400] bg-white/95 dark:bg-neutral-900/90 backdrop-blur-md border border-stone-200/90 dark:border-white/10 p-2 rounded-lg shadow-xl flex items-center gap-2 transition-all focus-within:border-brand-DEFAULT/50 focus-within:bg-white dark:focus-within:bg-neutral-900">
+                    <div className="p-2 text-stone-400 dark:text-neutral-400">
                         {isLoading ? (
                             <Loader2 size={18} className="text-brand-DEFAULT animate-spin" />
                         ) : (
@@ -307,12 +307,12 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
                         onChange={(e) => setCurrentAddress(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="Ex: Ponta Negra, Natal (Pesquisa auto em 4s...)"
-                        className="w-full bg-transparent text-sm text-white placeholder:text-neutral-500 outline-none h-full py-1"
+                        className="w-full bg-transparent text-sm text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-neutral-500 outline-none h-full py-1"
                     />
 
                     <button 
                         onClick={() => handleSearch()}
-                        className="p-2 bg-white/5 hover:bg-brand-DEFAULT text-neutral-400 hover:text-white rounded-md transition-colors"
+                        className="p-2 bg-stone-100 dark:bg-white/5 hover:bg-brand-DEFAULT text-stone-600 dark:text-neutral-400 hover:text-white rounded-md transition-colors"
                         title="Buscar Agora"
                     >
                         <ArrowRight size={16} />
@@ -321,7 +321,7 @@ const LocationMapModal: React.FC<LocationMapModalProps> = ({ isOpen, onClose, on
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-white/10 bg-neutral-900 z-10 flex justify-end gap-3">
+            <div className="p-4 border-t border-stone-200/80 dark:border-white/10 bg-white dark:bg-neutral-900 z-10 flex justify-end gap-3">
                 <Button variant="secondary" onClick={onClose} size="sm">Cancelar</Button>
                 <Button 
                     variant="primary" 

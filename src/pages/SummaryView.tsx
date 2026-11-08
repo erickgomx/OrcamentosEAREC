@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // EAREC AUDIOVISUAL - TELA DE RESUMO E REVISÃO DO PEDIDO (SummaryView.tsx)
 // ============================================================================
 // Olá, dev! 👋
@@ -262,28 +262,28 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                     <InfoField label="Nome / Empresa" icon={User} editing={isEditing}>
                                         {isEditing ? (
-                                            <input name="name" value={tempData.name} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="Nome completo" />
+                                            <input name="name" value={tempData.name} onChange={handleChange} className="w-full bg-transparent border-b border-stone-300 dark:border-white/20 text-stone-900 dark:text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-stone-400 dark:placeholder:text-neutral-700" placeholder="Nome completo" />
                                         ) : (tempData.name || clientData.name || "A definir")}
                                     </InfoField>
 
                                     <InfoField label="Data do Evento" icon={Calendar} editing={isEditing}>
                                         {isEditing ? (
-                                            <input name="date" type="date" min={today} value={getInputDateValue(tempData.date)} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors [&::-webkit-calendar-picker-indicator]:invert" />
+                                            <input name="date" type="date" min={today} value={getInputDateValue(tempData.date)} onChange={handleChange} className="w-full bg-transparent border-b border-stone-300 dark:border-white/20 text-stone-900 dark:text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors dark:[&::-webkit-calendar-picker-indicator]:invert" />
                                         ) : formatDateSafe(tempData.date || clientData.date)}
                                     </InfoField>
 
                                     <InfoField label="Localização" icon={MapPin} editing={isEditing}>
                                         {isEditing ? (
                                             <div className="relative">
-                                                <input name="location" value={tempData.location} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 pr-8 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="Cidade ou Endereço" />
-                                                <button onClick={() => setIsMapOpen(true)} className="absolute right-0 top-1 text-neutral-500 hover:text-brand-DEFAULT"><MapIcon size={16} /></button>
+                                                <input name="location" value={tempData.location} onChange={handleChange} className="w-full bg-transparent border-b border-stone-300 dark:border-white/20 text-stone-900 dark:text-white py-1 pr-8 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-stone-400 dark:placeholder:text-neutral-700" placeholder="Cidade ou Endereço" />
+                                                <button onClick={() => setIsMapOpen(true)} className="absolute right-0 top-1 text-stone-500 dark:text-neutral-500 hover:text-brand-DEFAULT"><MapIcon size={16} /></button>
                                             </div>
                                         ) : (tempData.location || clientData.location || "A definir")}
                                     </InfoField>
 
                                     <InfoField label="WhatsApp" icon={Phone} editing={isEditing}>
                                         {isEditing ? (
-                                            <input name="contact" type="tel" value={tempData.contact} onChange={handleChange} className="w-full bg-transparent border-b border-white/20 text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-neutral-700" placeholder="(00) 00000-0000" />
+                                            <input name="contact" type="tel" value={tempData.contact} onChange={handleChange} className="w-full bg-transparent border-b border-stone-300 dark:border-white/20 text-stone-900 dark:text-white py-1 focus:border-brand-DEFAULT outline-none transition-colors placeholder:text-stone-400 dark:placeholder:text-neutral-700" placeholder="(00) 00000-0000" />
                                         ) : (tempData.contact || clientData.contact || "A definir")}
                                     </InfoField>
                                 </div>
@@ -298,7 +298,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-bold uppercase tracking-wide">Forma de Pagamento</h4>
-                                    <p className="text-[10px] text-neutral-500">Selecione como prefere realizar o pagamento</p>
+                                    <p className="text-[10px] text-stone-500 dark:text-neutral-500">Selecione como prefere realizar o pagamento</p>
                                 </div>
                             </div>
 
@@ -312,8 +312,8 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                             className={cn(
                                                 "relative flex flex-col items-center justify-center py-4 px-2 rounded-xl border transition-all duration-300 group overflow-hidden",
                                                 isActive 
-                                                    ? "bg-brand-DEFAULT/10 border-brand-DEFAULT text-white shadow-[0_0_15px_rgba(220,38,38,0.2)]" 
-                                                    : "bg-neutral-50 dark:bg-black/20 border-neutral-200 dark:border-white/5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
+                                                    ? "bg-[#DC2626]/10 border-2 border-[#DC2626] text-stone-950 dark:text-white font-bold shadow-[0_4px_15px_rgba(220,38,38,0.15)]" 
+                                                    : "bg-stone-50 dark:bg-black/20 border-stone-200 dark:border-white/5 text-stone-600 dark:text-neutral-400 hover:bg-stone-100 dark:hover:bg-white/5 hover:text-stone-900 dark:hover:text-white"
                                             )}
                                         >
                                             {isActive && <div className="absolute top-2 right-2 text-brand-DEFAULT"><Check size={14} /></div>}
@@ -332,10 +332,10 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                             <motion.div 
                                 key={paymentMethod}
                                 initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
-                                className="mt-4 p-3 bg-neutral-50 dark:bg-white/5 rounded-lg border border-neutral-200 dark:border-white/5 flex items-start gap-3"
+                                className="mt-4 p-3 bg-stone-50 dark:bg-white/5 rounded-lg border border-stone-200/80 dark:border-white/5 flex items-start gap-3"
                             >
-                                <ShieldCheck size={16} className="text-green-500 mt-0.5 shrink-0" />
-                                <p className="text-xs text-neutral-400 leading-relaxed">
+                                <ShieldCheck size={16} className="text-emerald-600 dark:text-green-500 mt-0.5 shrink-0" />
+                                <p className="text-xs text-stone-600 dark:text-neutral-400 leading-relaxed">
                                     {paymentMethod === 'Pix' && <>Pagamento de <strong>50% para marcar</strong> e <strong>50% até a data de realização</strong> do serviço.</>}
                                     {paymentMethod === 'Cartão' && <>Parcelamento em até <strong>12x no cartão de crédito</strong> (consultar taxas da maquininha).</>}
                                     {paymentMethod === 'Espécie' && <>Pagamento de <strong>50% para marcar</strong> e <strong>50% até a data de realização</strong> do serviço.</>}
@@ -352,7 +352,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                             <div className="relative bg-white dark:bg-[#121212] border border-stone-200/90 dark:border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.08)] dark:shadow-2xl flex flex-col transition-colors duration-300">
                                 
                                 {/* TOPO DO TICKET */}
-                                <div className="bg-brand-DEFAULT/10 p-6 border-b border-white/10 flex justify-between items-start">
+                                <div className="bg-brand-DEFAULT/[0.08] dark:bg-brand-DEFAULT/10 p-6 border-b border-stone-200/80 dark:border-white/10 flex justify-between items-start">
                                     <div>
                                         <p className="text-xs sm:text-sm text-brand-DEFAULT uppercase tracking-[0.2em] font-bold mb-1">Serviço Principal</p>
                                         <h3 className="text-xl sm:text-2xl md:text-3xl text-stone-900 dark:text-neutral-100 font-serif leading-tight">{summaryDetails.serviceName}</h3>
@@ -360,16 +360,16 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                     </div>
                                     <button 
                                         onClick={handleEditPackage}
-                                        className="p-2.5 bg-white/5 rounded-xl border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+                                        className="p-2.5 bg-white/80 dark:bg-white/5 rounded-xl border border-stone-200/80 dark:border-white/10 cursor-pointer hover:bg-stone-100 dark:hover:bg-white/10 transition-colors shadow-sm dark:shadow-none"
                                         title="Alterar pacote"
                                     >
-                                        <FileText size={20} className="text-neutral-800 dark:text-white opacity-90" />
+                                        <FileText size={20} className="text-stone-700 dark:text-white opacity-90" />
                                     </button>
                                 </div>
 
                                 {/* LISTA DE ITENS */}
                                 <div className="p-6 space-y-4 bg-dots-pattern">
-                                    <p className="text-xs text-neutral-400 uppercase tracking-widest mb-3 border-b border-white/10 pb-2 font-semibold">Detalhamento</p>
+                                    <p className="text-xs text-stone-500 dark:text-neutral-400 uppercase tracking-widest mb-3 border-b border-stone-200/80 dark:border-white/10 pb-2 font-semibold">Detalhamento</p>
                                     
                                     <div className="space-y-3">
                                         {priceBreakdown.map((item, idx) => (
@@ -378,7 +378,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                     {item.type === 'addon' && onRemoveAddon && (
                                                         <button 
                                                             onClick={() => onRemoveAddon(item.label)} 
-                                                            className="text-neutral-500 hover:text-red-500 transition-colors mt-0.5"
+                                                            className="text-stone-400 dark:text-neutral-500 hover:text-red-500 transition-colors mt-0.5"
                                                             title="Remover Item"
                                                         >
                                                             <Trash2 size={18} />
@@ -386,7 +386,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                     )}
                                                     <span className={cn(
                                                         "text-sm sm:text-base leading-snug",
-                                                        item.type === 'base' ? "text-white font-medium" : "text-neutral-300",
+                                                        item.type === 'base' ? "text-stone-900 dark:text-white font-semibold" : "text-stone-600 dark:text-neutral-300",
                                                         item.type === 'freight' && "italic"
                                                     )}>
                                                         {item.label}
@@ -394,7 +394,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                                 </div>
                                                 <span className={cn(
                                                     "text-sm sm:text-base font-price font-semibold",
-                                                    item.value === 0 ? "text-green-400 text-xs uppercase font-bold mt-0.5" : "text-white"
+                                                    item.value === 0 ? "text-emerald-600 dark:text-green-400 text-xs uppercase font-bold mt-0.5" : "text-stone-900 dark:text-white"
                                                 )}>
                                                     {item.label.includes("A consultar") 
                                                             ? "Consultar" 
@@ -405,7 +405,7 @@ const SummaryView: React.FC<SummaryViewProps> = ({
                                         ))}
                                     </div>
 
-                                    <div className="my-6 border-t-2 border-dashed border-white/10 relative">
+                                    <div className="my-6 border-t-2 border-dashed border-stone-200 dark:border-white/10 relative">
                                         {/* Bolinhas decorativas do ticket */}
                                         <div className="absolute -left-[32px] -top-[10px] w-5 h-5 bg-[#F7F7F5] dark:bg-[#080808] rounded-full transition-colors duration-300" />
                                         <div className="absolute -right-[32px] -top-[10px] w-5 h-5 bg-[#F7F7F5] dark:bg-[#080808] rounded-full transition-colors duration-300" />
@@ -413,12 +413,12 @@ const SummaryView: React.FC<SummaryViewProps> = ({
 
                                     {/* TOTAL */}
                                     <div className="flex justify-between items-end">
-                                        <span className="text-sm sm:text-base text-neutral-400 font-semibold uppercase tracking-wider">Valor Total</span>
+                                        <span className="text-sm sm:text-base text-stone-500 dark:text-neutral-400 font-semibold uppercase tracking-wider">Valor Total</span>
                                         <div className="text-right">
                                             <span className="text-3xl sm:text-4xl text-brand-DEFAULT font-price font-bold tracking-tight block leading-none">
                                                 <AnimatedPrice value={totalPrice} />
                                             </span>
-                                            <span className="text-xs text-neutral-500 uppercase font-medium mt-1 inline-block">Moeda: BRL</span>
+                                            <span className="text-xs text-stone-500 dark:text-neutral-500 uppercase font-medium mt-1 inline-block">Moeda: BRL</span>
                                         </div>
                                     </div>
                                 </div>
