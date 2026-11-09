@@ -111,17 +111,17 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="w-full min-h-[100dvh] bg-[#F7F7F5] dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
-      {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
+    <main className="w-full min-h-[100dvh] bg-white dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
+      {(!showSplash && (view !== 'quote' || isQuoteSuccess)) && <BackgroundFilmStrips />}
       {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
       {!showSplash && (
-        <div className="fixed top-5 right-5 md:top-6 md:right-8 z-[70]">
+        <div className="fixed top-3 right-3 sm:top-5 sm:right-6 md:top-6 md:right-8 z-[70]">
           <ThemeToggle />
         </div>
       )}
       
       {/* Cinematic Vignette Overlay */}
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.05)_120%)] dark:bg-[radial-gradient(circle_at_center,_transparent_0%,_#080808_120%)] z-0 opacity-80 transition-colors duration-300" />
+      <div className="fixed inset-0 pointer-events-none bg-transparent dark:bg-[radial-gradient(circle_at_center,_transparent_0%,_#080808_120%)] z-0 opacity-80 transition-colors duration-300" />
 
       {/* SPLASH SCREEN */}
       <AnimatePresence mode="wait">
@@ -131,7 +131,7 @@ const App: React.FC = () => {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#F7F7F5] dark:bg-[#080808]"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-[#080808]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
