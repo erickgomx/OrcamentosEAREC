@@ -225,14 +225,26 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             {category === 'commercial' && commercialMode && (
                 <div className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
                     <p className="text-center text-xs uppercase tracking-widest text-[#DC2626] mb-3 font-bold">Onde será o serviço?</p>
-                    <div className="flex w-full bg-stone-200/80 dark:bg-[#151515] p-1.5 md:p-2 rounded-2xl border border-stone-300/80 dark:border-white/[0.08] shadow-md">
-                        <button onClick={() => setCommercialMode('on_location')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'on_location' ? "bg-white text-stone-950 dark:text-black border-stone-200/80 dark:border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-stone-600 dark:text-neutral-500 hover:text-stone-950 dark:hover:text-white hover:bg-stone-300/40 dark:hover:bg-white/5")}>
-                            <MapPin size={20} className={commercialMode === 'on_location' ? "text-[#DC2626] shrink-0" : "shrink-0"} />
-                            NO COMÉRCIO
+                    <div className="flex bg-stone-200/80 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-stone-300/60 dark:border-white/5">
+                        <button 
+                            onClick={() => setCommercialMode('on_location')} 
+                            className={cn(
+                                "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
+                                commercialMode === 'on_location' ? "bg-white text-stone-900 dark:bg-white/10 dark:text-white shadow-sm font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
+                            )}
+                        >
+                            <MapPin size={16} />
+                            No Comércio
                         </button>
-                        <button onClick={() => setCommercialMode('studio')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'studio' ? "bg-white text-stone-950 dark:text-black border-stone-200/80 dark:border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-stone-600 dark:text-neutral-500 hover:text-stone-950 dark:hover:text-white hover:bg-stone-300/40 dark:hover:bg-white/5")}>
-                            <Building2 size={20} className={commercialMode === 'studio' ? "text-[#DC2626] shrink-0" : "shrink-0"} />
-                            NO ESTÚDIO
+                        <button 
+                            onClick={() => setCommercialMode('studio')} 
+                            className={cn(
+                                "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
+                                commercialMode === 'studio' ? "bg-white text-stone-900 dark:bg-white/10 dark:text-white shadow-sm font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
+                            )}
+                        >
+                            <Building2 size={16} />
+                            No Estúdio
                         </button>
                     </div>
                 </div>
@@ -781,15 +793,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
-                        {category === 'studio' && serviceId === 'studio_photo' && (
-                            <div className="absolute top-4 left-4 bg-brand-DEFAULT text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shadow-lg z-10 flex items-center gap-1">
-                                <Sparkles size={11} />
-                                {qty === 7 ? "Desconto Especial (R$ 150)" : qty === 13 ? "Promoção Especial (R$ 250)" : "R$ 25 / foto"}
-                            </div>
-                        )}
 
                         <div 
-                            className="flex items-center gap-3 mb-6 relative group cursor-pointer"
+                            className={cn(
+                                "flex items-center gap-3 relative group cursor-pointer",
+                                category === 'studio' && serviceId === 'studio_photo' ? "mb-2.5" : "mb-6"
+                            )}
                             onClick={() => setInfoData({ 
                                 title: isDroneQuantity ? "Quantidade de Baterias" : "Quantidade", 
                                 desc: isDroneQuantity 
@@ -811,6 +820,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                              </h3>
                              <HelpCircle size={18} className="text-stone-400 group-hover:text-stone-900 dark:text-neutral-600 dark:group-hover:text-white transition-colors" />
                         </div>
+
+                        {category === 'studio' && serviceId === 'studio_photo' && (
+                            <div className="mb-5 inline-flex items-center gap-1.5 bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#DC2626] dark:text-red-400 border border-[#DC2626]/25 text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full shadow-sm tracking-wide">
+                                <Sparkles size={12} className="shrink-0 text-[#DC2626] dark:text-red-400" />
+                                <span>{qty === 7 ? "Desconto Especial (R$ 150)" : qty === 13 ? "Promoção Especial (R$ 250)" : "R$ 25 / foto"}</span>
+                            </div>
+                        )}
 
                         {((category === 'commercial' && serviceId === 'comm_video') || (category === 'social' && serviceId === 'social_video')) && (
                             <div className="flex items-center justify-center bg-stone-100 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-stone-200/90 dark:border-white/5 gap-1.5">
