@@ -1,3 +1,18 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - MOODBOARD E GALERIA DE REFERÊNCIAS (Moodboard.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este componente é a galeria visual de referências fotográficas e cinematográficas.
+// 
+// DESTAQUES DE DESIGN & PERFORMANCE:
+// 1. Cross-Parallax 3D com Framer Motion (`useScroll`, `useSpring`, `useTransform`):
+//    - Coluna 1 sobe rápido.
+//    - Coluna 2 desce em contra-fluxo gerando sensação de profundidade tridimensional.
+//    - Coluna 3 sobe com offset assimétrico.
+// 2. Foco dinâmico no mouse (`hoveredIndex`): ao passar o cursor sobre uma imagem,
+//    as demais ficam sutilmente escurecidas e desaturadas (grayscale), dando destaque total à foto.
+// 3. Fallback mobile simplificado e sem travamentos para celulares mais modestos.
+// ============================================================================
 
 import React, { useState, useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
@@ -12,13 +27,13 @@ const Moodboard: React.FC<MoodboardProps> = ({ images }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Hooks para o efeito Parallax
+  // Hooks para o efeito Parallax sincronizado com o scroll da página
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
   });
 
-  // Suavização do scroll para o movimento parecer "pesado" e cinematográfico
+  // Suavização do scroll com física mola para o movimento parecer pesado e cinematográfico
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 50,
     damping: 20,
@@ -36,11 +51,12 @@ const Moodboard: React.FC<MoodboardProps> = ({ images }) => {
   // Coluna 3: Igual a coluna 1, mas com um offset para não ficar simétrico demais
   const yCol3 = useTransform(smoothProgress, [0, 1], [150, -200]);
 
-  // Divisão das imagens em colunas
+  // Divisão das imagens em colunas balanceadas
   const col1 = images.filter((_, i) => i % 3 === 0);
   const col2 = images.filter((_, i) => i % 3 === 1);
   const col3 = images.filter((_, i) => i % 3 === 2);
 
+  // Renderizador individual de imagem com aspect ratio vertical cinematográfico
   const renderImage = (src: string, originalIndex: number, priority: boolean = false) => (
     <motion.div
       key={originalIndex}
@@ -76,7 +92,7 @@ const Moodboard: React.FC<MoodboardProps> = ({ images }) => {
   return (
     <section ref={containerRef} className="py-32 px-6 md:px-12 bg-neutral-950 relative overflow-hidden">
       
-      {/* Background Decorativo Sutil */}
+      {/* Background Decorativo Sutil de fade gradiente */}
       <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-black to-transparent z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none" />
 

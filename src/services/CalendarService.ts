@@ -1,3 +1,13 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - SERVIÇO DE DISPONIBILIDADE DE AGENDA (CalendarService.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Esta classe fornece a camada de serviço desacoplada para verificar conflitos
+// de datas na agenda da equipe de cinegrafistas e fotógrafos.
+// 
+// Ela utiliza o `EnvConfig` para obter as chaves com fallback seguro para simulação
+// caso o ambiente de teste ainda não tenha as credenciais da Google configuradas.
+// ============================================================================
 
 import { EnvConfig } from "../config/EnvConfig";
 
@@ -8,8 +18,12 @@ import { EnvConfig } from "../config/EnvConfig";
  */
 export class CalendarService {
 
+  /**
+   * Consulta se determinada data já possui compromisso agendado na EAREC.
+   * Retorna `{ available: true }` ou `{ available: false, message: string }`.
+   */
   static async checkAvailability(dateString: string): Promise<{ available: boolean; message?: string }> {
-    // Regra de Negócio: Data no passado
+    // Regra de Negócio: Data no passado não é permitida
     const selectedDate = new Date(`${dateString}T00:00:00`);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -24,18 +38,18 @@ export class CalendarService {
     
     // Modo Simulação (Mock)
     if (!EnvConfig.HAS_CALENDAR_INTEGRATION) {
-      // Simula delay de rede
+      // Simula delay de rede para proporcionar uma transição de UI realista
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       const day = new Date(dateString).getDate();
-      // Lógica Mock para demonstração
+      // Lógica Mock para demonstração: dias 15 e 20 simulados como ocupados
       if (day === 15 || day === 20) {
           return { available: false, message: "Agenda lotada neste dia." };
       }
       return { available: true };
     }
 
-    // Integração Real
+    // Integração Real com API v3 do Google Calendar
     try {
       const startDate = new Date(dateString);
       startDate.setHours(0, 0, 0, 0);
@@ -57,6 +71,7 @@ export class CalendarService {
 
       const data = await response.json();
       
+      // Havendo eventos cadastrados no dia, consideramos a diária indisponível
       if (data.items && data.items.length > 0) {
           return { available: false, message: "Data indisponível (Já reservada)." };
       }
@@ -65,6 +80,7 @@ export class CalendarService {
 
     } catch (error) {
       console.error("Connection Error:", error);
+      // Em falha de conexão externa, priorizamos a continuidade do usuário (fail-open)
       return { available: true }; 
     }
   }

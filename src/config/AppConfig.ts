@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - CONFIGURAÇÃO GERAL E TABELA DE PREÇOS (AppConfig.ts)
+// ============================================================================
+// Olá, equipe EAREC! 👋
+// Este arquivo é o repositório central de parâmetros de negócio da aplicação.
+// Aqui você pode:
+// 1. Atualizar o número de WhatsApp comercial da empresa.
+// 2. Modificar os preços de pacotes, horas adicionais e serviços extras.
+// 3. Ajustar os textos (copywriting) apresentados aos clientes.
+//
+// ⚠️ DICA IMPORTANTE:
+// Qualquer alteração de valores nesta tabela reflete IMEDIATAMENTE nos cálculos
+// automáticos da PricingEngine e na mensagem enviada ao WhatsApp do cliente!
+// ============================================================================
 
 import { ServiceCategory, ServiceId } from "../types";
 
@@ -11,22 +25,25 @@ import { ServiceCategory, ServiceId } from "../types";
  */
 export class AppConfig {
   
-  // === BRANDING ===
+  // === IDENTIDADE VISUAL E CONTATO (BRANDING) ===
+  // Centraliza o nome comercial, número oficial para fechamento e paleta base
   static readonly BRAND = {
     NAME: "EAREC",
-    WHATSAPP: "5584981048857",
+    WHATSAPP: "5584981048857", // Telefone no formato DDI + DDD + Número (sem símbolos)
     COLORS: {
-      PRIMARY: "#DC2626",
-      BACKGROUND: "#0a0a0a",
+      PRIMARY: "#DC2626", // Vermelho característico da marca EAREC (REC button)
+      BACKGROUND: "#0a0a0a", // Fundo preto cinematográfico profundo
     }
   };
 
-  // === TEXTOS DE UI (COPYWRITING) ===
+  // === TEXTOS DE INTERFACE E COPYWRITING ===
+  // Modifique aqui as frases de impacto e descrições exibidas aos clientes
   static readonly TEXTS = {
     HERO: {
       TITLE: (name: string) => `Olá, ${name}.`,
       SUBTITLE: "Configure seu orçamento gratuitamente!",
     },
+    // Apresentação humanizada para cada modalidade audiovisual
     CATEGORY_DESCRIPTIONS: {
       wedding: "Cobertura cinematográfica para eternizar o dia mais importante da sua vida.",
       social: "Registros vibrantes e emocionantes para Cultos, Batizados, 15 anos e formaturas.",
@@ -35,6 +52,7 @@ export class AppConfig {
       video_production: "Monte o pacote ideal com fotos, vídeos e adicionais conforme sua necessidade.",
       custom: "Soluções audiovisuais sob medida para demandas específicas e projetos únicos."
     } as Record<ServiceCategory, string>,
+    // Rótulos explicativos para os modos de seleção e adicionais
     LABELS: {
       DURATION_MODE: "POR TEMPO (Fotos Ilimitadas)",
       QUANTITY_MODE: "POR ENTREGA (Pack de Fotos)",
@@ -43,8 +61,10 @@ export class AppConfig {
     }
   };
 
-  // === TABELA DE PREÇOS (BASE) ===
+  // === TABELA DE PREÇOS OFICIAL (BASE E REGRAS DE NEGÓCIO) ===
+  // Todos os valores em Reais (BRL). Alterações aqui recalculam o orçamento em tempo real.
   static readonly PRICING_TABLE = {
+    // --- 1. CASAMENTOS & MATRIMÔNIOS ---
     wedding: {
         wedding_base: { 
             base: 650, 
@@ -72,6 +92,7 @@ export class AppConfig {
         },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
+    // --- 2. EVENTOS SOCIAIS & CELEBRAÇÕES ---
     social: {
         birthday: { 
             base: 400, 
@@ -131,6 +152,7 @@ export class AppConfig {
         video_highlight: { fixed: 350, label: "Vídeo Highlight (30s a 1min)" },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
+    // --- 3. PRODUÇÃO COMERCIAL / EMPRESAS ---
     commercial: {
         comm_photo: { 
             unit: 20, 
@@ -156,6 +178,7 @@ export class AppConfig {
         },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
+    // --- 4. SESSÕES EM ESTÚDIO ---
     studio: {
         studio_photo: { 
             unit: 25, 
@@ -172,6 +195,7 @@ export class AppConfig {
             description: "2 horas de gravação profissional com câmera no estúdio (Ideal para videocasts, cursos online ou institucionais)" 
         },
     },
+    // --- 5. PRODUÇÃO AUDIOVISUAL SOB DEMANDA ---
     video_production: {
         photo_cap: { unit: 25, label: "Fotos", composition: "Alta resolução", description: "Alta resolução" },
         cam_cap: { base: 350, hoursIncluded: 2, hourPrice: 175, label: "Gravação com câmera", composition: "Valor por 2 horas", description: "Valor por 2 horas (Adicional R$175/h | R$300 p/ PJ)" },
@@ -181,6 +205,7 @@ export class AppConfig {
         edit_1min: { unit: 250, label: "Edição de Vídeo (Até 1 min)", composition: "Por vídeo entregue", description: "Por vídeo entregue" },
         realtime: { fixed: 600, label: "Receber material na hora" }
     },
+    // --- 6. PROJETO PERSONALIZADO SOB CONSULTA ---
     custom: {
         custom_project: { base: 0, label: "Projeto Personalizado", composition: "Sob Consulta", description: "Orçamento aberto." } 
     }
@@ -188,6 +213,7 @@ export class AppConfig {
 
   /**
    * Retorna o label amigável de um serviço baseado no ID.
+   * Utilizado nos cabeçalhos de resumo e mensagens do WhatsApp.
    */
   static getServiceLabel(category: ServiceCategory, serviceId: ServiceId): string {
     const table: any = this.PRICING_TABLE;

@@ -1,3 +1,21 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - TELA DE CONCLUSÃO E DISPARO WHATSAPP (SuccessView.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Esta tela representa o ápice do funil de conversão da EAREC.
+//
+// RECURSOS PRINCIPAIS:
+// 1. Mensagem Dinâmica do WhatsApp:
+//    - Monta o template completo e legível com emojis, quebras de linha e seções:
+//      [AGENDA], [DADOS DO CLIENTE], [PACOTE ESCOLHIDO], [INVESTIMENTO], [FORMAS DE PAGAMENTO].
+//    - Realiza escape seguro de caracteres para envio via https://api.whatsapp.com/send.
+// 2. Ações Duplas de Envio:
+//    - Botão direto: abre o WhatsApp com a mensagem pronta no aplicativo/web.
+//    - Modal de QR Code: renderiza um QRCodeSVG com o link para o cliente escanear
+//      com o celular caso esteja acessando pelo computador desktop.
+// 3. Captura tardia de Nome: se o usuário navegou em modo rápido sem informar o nome,
+//    um modal amigável surge antes do disparo solicitando seu nome.
+// ============================================================================
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, MessageCircle, ArrowRight, RefreshCcw, Sparkles, Send, User, X, QrCode } from 'lucide-react';
@@ -246,6 +264,39 @@ Poderiam confirmar a reserva desta data?`;
     return `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
   };
 
+  // --- FUNÇÃO GERADORA DA MENSAGEM OTIMIZADA PARA QR CODE ---
+  // Mantém os dados essenciais para encurtar a URL, permitindo que os módulos/quadradinhos
+  // do padrão interno do QR fiquem bem maiores, legíveis e nunca estourem limite de dados.
+  const generateQrWhatsappUrl = (overrideName?: string) => {
+    const finalName = overrideName || clientData.name || "Cliente";
+    let message = "";
+
+    if (quoteDetails) {
+        const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
+
+        let pacoteLabel = quoteDetails.customOccasionText || "Serviço Selecionado";
+        if (quoteDetails.occasion === 'video_production') {
+            const typeLabel = quoteDetails.projectType === 'commercial' ? 'Comercial' : 'Pessoa Física';
+            pacoteLabel = `Monte seu Pacote (${typeLabel})`;
+        }
+
+        const dateStr = formatDate(clientData.date);
+        const locationStr = clientData.location ? ` | ${clientData.location}` : '';
+
+        message = `✨ Olá! Proposta EAREC (Pedido: #${finalOrderId})
+👤 Cliente: ${finalName}
+🎬 Pacote: ${pacoteLabel}
+🗓️ Data: ${dateStr}${locationStr}
+💎 Total: ${formattedPrice}
+
+Gostaria de verificar a disponibilidade e confirmar a reserva!`;
+    } else {
+        message = `✨ Olá! Gostaria de consultar um orçamento na EAREC (Pedido: #${finalOrderId}).\nNome: ${finalName}`;
+    }
+
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  };
+
   // Handler de Clique na Ação (Link ou QR Code)
   const handleActionClick = (action: 'link' | 'qrcode', e: React.MouseEvent) => {
     e.preventDefault(); // Impede o link padrão
@@ -283,10 +334,10 @@ Poderiam confirmar a reserva desta data?`;
       {/* O fundo sólido (bg-neutral-950) foi removido. */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Gradiente sutil para garantir leitura, mas permitindo ver o fundo */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-black/40 via-black/80 to-black/95" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-50/40 via-white/80 to-white/95 dark:from-black/40 dark:via-black/80 dark:to-black/95" />
         
         {/* Luz de fundo sutil para atmosfera */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[100px] rounded-full mix-blend-screen" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-DEFAULT/10 blur-[100px] rounded-full dark:mix-blend-screen" />
       </div>
 
       <motion.div 
@@ -303,7 +354,7 @@ Poderiam confirmar a reserva desta data?`;
         {/* Card Principal - Estilo Ticket/Pass */}
         <motion.div 
             variants={fadeInUp}
-            className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative"
+            className="bg-white/95 dark:bg-[#121212]/85 backdrop-blur-2xl border border-stone-200/90 dark:border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_20px_50px_-10px_rgba(0,0,0,0.08)] dark:shadow-2xl relative transition-colors duration-300"
         >
             {/* Faixa decorativa superior */}
             <div className="h-1.5 w-full bg-gradient-to-r from-emerald-600 to-emerald-400" />
@@ -342,8 +393,8 @@ Poderiam confirmar a reserva desta data?`;
                 </div>
 
                 {/* Textos */}
-                <h1 className="text-2xl font-serif text-white mb-2">Proposta Pronta</h1>
-                <p className="text-neutral-400 text-sm leading-relaxed mb-16 font-light">
+                <h1 className="text-2xl font-serif text-stone-900 dark:text-neutral-100 mb-2">Proposta Pronta</h1>
+                <p className="text-stone-600 dark:text-neutral-400 text-sm leading-relaxed mb-16 font-light">
                     Sua configuração foi salva com sucesso. <br/>
                     Para confirmar a reserva da data, envie o resumo gerado para nossa equipe.
                 </p>
@@ -361,10 +412,10 @@ Poderiam confirmar a reserva desta data?`;
                         <motion.div
                             animate={{ y: [0, -6, 0] }}
                             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                            className="bg-emerald-500/20 text-emerald-400 text-[9px] uppercase font-bold tracking-widest py-1.5 px-3 rounded-full border border-emerald-500/30 backdrop-blur-md shadow-lg flex items-center gap-2"
+                            className="bg-emerald-500/15 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[9px] uppercase font-bold tracking-widest py-1.5 px-3 rounded-full border border-emerald-500/30 backdrop-blur-md shadow-lg flex items-center gap-2"
                         >
                             <span>Clique para Confirmar</span>
-                            <Send size={10} className="fill-emerald-400" />
+                            <Send size={10} className="fill-emerald-600 dark:fill-emerald-400" />
                         </motion.div>
                         {/* Triângulo do Tooltip */}
                         <motion.div 
@@ -408,11 +459,11 @@ Poderiam confirmar a reserva desta data?`;
                     
                     <button 
                         onClick={(e) => handleActionClick('qrcode', e)}
-                        className="w-full mt-3 block relative overflow-hidden rounded-xl group cursor-pointer bg-white/5 border border-white/10 hover:bg-white/10 transition-colors p-3"
+                        className="w-full mt-3 block relative overflow-hidden rounded-xl group cursor-pointer bg-stone-100/80 hover:bg-stone-200/80 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-stone-200/80 dark:border-white/[0.08] transition-colors p-3"
                     >
                         <div className="flex items-center justify-center gap-3">
                             <QrCode size={18} className="text-neutral-400 group-hover:text-white transition-colors" />
-                            <span className="text-neutral-300 group-hover:text-white text-sm font-medium transition-colors">Gerar QR Code para outro dispositivo</span>
+                            <span className="text-stone-700 group-hover:text-stone-950 dark:text-neutral-300 dark:group-hover:text-white text-sm font-medium transition-colors">Gerar QR Code para outro dispositivo</span>
                         </div>
                     </button>
                 </div>
@@ -420,7 +471,7 @@ Poderiam confirmar a reserva desta data?`;
                 {/* Botão Secundário (Novo Orçamento) */}
                 <button 
                     onClick={onReset}
-                    className="mt-6 text-neutral-500 hover:text-white transition-colors text-xs flex items-center gap-2 py-2 px-4 rounded-full hover:bg-white/5"
+                    className="mt-6 text-stone-500 hover:text-stone-900 dark:text-neutral-500 dark:hover:text-white transition-colors text-xs flex items-center gap-2 py-2 px-4 rounded-full hover:bg-stone-100 dark:hover:bg-white/[0.05]"
                 >
                     <RefreshCcw size={12} />
                     <span>Configurar novo pedido</span>
@@ -429,7 +480,7 @@ Poderiam confirmar a reserva desta data?`;
             </div>
 
             {/* Footer do Card - Status Centralizado */}
-            <div className="bg-black/40 border-t border-white/5 p-4 flex flex-col items-center justify-center gap-2">
+            <div className="bg-stone-50/80 dark:bg-black/40 border-t border-stone-200/80 dark:border-white/[0.06] p-4 flex flex-col items-center justify-center gap-2 transition-colors duration-300">
                  <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
@@ -453,7 +504,7 @@ Poderiam confirmar a reserva desta data?`;
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/90 backdrop-blur-xl" 
+                        className="absolute inset-0 bg-stone-950/60 dark:bg-black/90 backdrop-blur-xl" 
                         onClick={() => setIsQrModalOpen(false)}
                     />
                     <motion.div 
@@ -461,11 +512,11 @@ Poderiam confirmar a reserva desta data?`;
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="bg-neutral-900 border border-white/10 p-8 rounded-3xl w-full max-w-sm relative z-10 shadow-2xl flex flex-col items-center"
+                        className="bg-white dark:bg-neutral-900 border border-stone-200/90 dark:border-white/10 p-8 rounded-3xl w-full max-w-sm relative z-10 shadow-2xl flex flex-col items-center"
                     >
                         <button 
                             onClick={() => setIsQrModalOpen(false)}
-                            className="absolute top-4 right-4 text-neutral-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full p-2 transition-all"
+                            className="absolute top-4 right-4 text-stone-500 hover:text-stone-900 dark:text-neutral-500 dark:hover:text-white bg-stone-100 dark:bg-white/5 hover:bg-stone-200 dark:hover:bg-white/10 rounded-full p-2 transition-all"
                         >
                             <X size={16} />
                         </button>
@@ -474,18 +525,18 @@ Poderiam confirmar a reserva desta data?`;
                              <QrCode size={32} className="text-brand-DEFAULT" />
                         </div>
 
-                        <h3 className="text-2xl font-serif text-white mb-2 text-center">Escaneie para Enviar</h3>
-                        <p className="text-neutral-400 text-sm mb-8 text-center leading-relaxed">
+                        <h3 className="text-2xl font-serif text-stone-900 dark:text-white mb-2 text-center">Escaneie para Enviar</h3>
+                        <p className="text-stone-600 dark:text-neutral-400 text-sm mb-8 text-center leading-relaxed">
                             Abra a câmera do seu celular e aponte para o código abaixo para enviar a mensagem via WhatsApp.
                         </p>
 
-                        <div className="bg-white p-4 rounded-2xl mb-2">
+                        <div className="bg-white p-4 rounded-2xl mb-2 border border-stone-200/80 dark:border-transparent shadow-sm">
                             <QRCodeSVG 
-                                value={generateWhatsappUrl(clientData.name || tempName)} 
-                                size={200}
+                                value={generateQrWhatsappUrl(clientData.name || tempName)} 
+                                size={230}
                                 bgColor={"#ffffff"}
                                 fgColor={"#000000"}
-                                level={"H"}
+                                level={"M"}
                                 includeMargin={false}
                             />
                         </div>
@@ -502,7 +553,7 @@ Poderiam confirmar a reserva desta data?`;
                         initial={{ opacity: 0 }} 
                         animate={{ opacity: 1 }} 
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-neutral-950/90 backdrop-blur-md"
+                        className="absolute inset-0 bg-stone-950/60 dark:bg-neutral-950/90 backdrop-blur-md"
                         onClick={() => setIsNameModalOpen(false)}
                     />
                     
@@ -511,11 +562,11 @@ Poderiam confirmar a reserva desta data?`;
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="relative z-10 w-full max-w-sm bg-neutral-900 border border-white/10 rounded-2xl p-6 shadow-2xl"
+                        className="relative z-10 w-full max-w-sm bg-white dark:bg-neutral-900 border border-stone-200/90 dark:border-white/10 rounded-2xl p-6 shadow-2xl"
                     >
                          <button 
                             onClick={() => setIsNameModalOpen(false)}
-                            className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors"
+                            className="absolute top-4 right-4 text-stone-400 hover:text-stone-900 dark:text-neutral-500 dark:hover:text-white transition-colors"
                          >
                             <X size={20} />
                          </button>
@@ -524,8 +575,8 @@ Poderiam confirmar a reserva desta data?`;
                              <div className="p-3 bg-brand-DEFAULT/10 rounded-full text-brand-DEFAULT mb-4">
                                  <User size={24} />
                              </div>
-                             <h3 className="text-xl text-white font-serif mb-2">Identifique-se</h3>
-                             <p className="text-neutral-400 text-xs leading-relaxed">
+                             <h3 className="text-xl text-stone-900 dark:text-white font-serif mb-2">Identifique-se</h3>
+                             <p className="text-stone-600 dark:text-neutral-400 text-xs leading-relaxed">
                                  Para finalizar e enviar a mensagem no WhatsApp, precisamos saber seu nome.
                              </p>
                          </div>
@@ -537,7 +588,7 @@ Poderiam confirmar a reserva desta data?`;
                                 value={tempName}
                                 onChange={(e) => setTempName(e.target.value)}
                                 autoFocus
-                                className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-brand-DEFAULT outline-none transition-colors"
+                                className="w-full bg-stone-100 dark:bg-black/30 border border-stone-200/90 dark:border-white/10 rounded-xl px-4 py-3 text-stone-900 dark:text-white placeholder-stone-400 dark:placeholder-neutral-500 focus:border-brand-DEFAULT outline-none transition-colors"
                                 onKeyDown={(e) => e.key === 'Enter' && handleConfirmName()}
                             />
                             

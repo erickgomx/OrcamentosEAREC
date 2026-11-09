@@ -1,4 +1,20 @@
-
+// ============================================================================
+// EAREC AUDIOVISUAL - CONFIGURADOR DE PACOTES E ADICIONAIS (UpsellList.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o componente mais rico em interatividade e opções de negócio da EAREC.
+// Ele gerencia a renderização dos 3 passos principais do configurador:
+// 
+// PASSO 1 - CATEGORIAS (viewMode: 'categories'):
+// Apresenta os cards de ocasião: Casamento, Social, Comercial, Estúdio, Produção, Personalizado.
+// 
+// PASSO 2 - PACOTES (viewMode: 'services'):
+// Apresenta os cards de pacotes específicos da categoria selecionada com composição e valores base.
+// 
+// PASSO 3 - PERSONALIZAÇÃO (viewMode: 'config'):
+// Controles de quantidade (+/-), horas de cobertura, escolha de câmera vs mobile,
+// adicionais de drone, fotos em tempo real e cálculo de frete por geolocalização.
+// ============================================================================
 import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Heart, Sparkles, Hand, Gem, MessageCircle, Gift, Users, GlassWater, PlaneTakeoff, GraduationCap, Building2, Camera, MapPin, Search, Clock, Zap, Video, Minus, Plus, ChevronRight, HelpCircle, Check, Play, Map as MapIcon, X, Battery, Star , User } from 'lucide-react';
@@ -54,17 +70,17 @@ interface UpsellListProps {
 
 const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: any) => (
     <motion.div 
-        custom={index}
-        variants={cardItemVariants}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.04 }}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
             "group relative flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[145px] sm:min-h-[175px] md:min-h-[200px] overflow-hidden backdrop-blur-md",
             active 
-                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
-                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.18)] ring-2 ring-[#DC2626]/20" 
+                : "bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-[#181818] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none"
         )}
     >
         <div className={cn(
@@ -74,14 +90,14 @@ const CategoryCard = ({ active, onClick, icon: Icon, label, desc, index = 0 }: a
         
         <div className={cn(
             "p-3 sm:p-4 rounded-2xl mb-2 transition-colors duration-200",
-            active ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
+            active ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" : "bg-neutral-100 dark:bg-white/5 text-neutral-600 dark:text-neutral-300 group-hover:bg-neutral-200 dark:group-hover:bg-white/10 group-hover:text-neutral-900 dark:group-hover:text-white"
         )}>
             <Icon size={28} strokeWidth={1.5} className="sm:w-8 sm:h-8" />
         </div>
         <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1">
             <p className={cn(
                 "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300",
-                active ? "text-white" : "text-neutral-300 group-hover:text-white"
+                active ? "text-stone-950 dark:text-white font-bold" : "text-stone-800 group-hover:text-stone-950 dark:text-neutral-200 dark:group-hover:text-white font-semibold"
             )}>
                 {label}
             </p>
@@ -183,15 +199,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
 
 
       {viewMode === 'categories' && (
-        <motion.div
+        <div
           key="categories-view"
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
           className="space-y-8 w-full flex flex-col items-center max-w-4xl mx-auto pb-6 sm:pb-8"
         >
-            <motion.div variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6 w-full">
                 {categories.map((cat, i) => (
                     <CategoryCard 
                         key={cat.id}
@@ -201,43 +213,40 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         index={i}
                     />
                 ))}
-            </motion.div>
-        </motion.div>
+            </div>
+        </div>
       )}
       {viewMode === 'services' && (
-        <motion.div
+        <div
           key="services-view"
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
           className="space-y-6 sm:space-y-8 w-full flex flex-col items-center pb-6 sm:pb-8"
         >
                 
             {category === 'commercial' && commercialMode && (
-                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
-                    <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Onde será o serviço?</p>
-                    <div className="flex w-full bg-neutral-900 p-1.5 md:p-2 rounded-2xl border border-white/10 shadow-lg">
-                        <button onClick={() => setCommercialMode('on_location')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'on_location' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
-                            <MapPin size={20} className={commercialMode === 'on_location' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
+                <div className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
+                    <p className="text-center text-xs uppercase tracking-widest text-[#DC2626] mb-3 font-bold">Onde será o serviço?</p>
+                    <div className="flex w-full bg-stone-200/80 dark:bg-[#151515] p-1.5 md:p-2 rounded-2xl border border-stone-300/80 dark:border-white/[0.08] shadow-md">
+                        <button onClick={() => setCommercialMode('on_location')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'on_location' ? "bg-white text-stone-950 dark:text-black border-stone-200/80 dark:border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-stone-600 dark:text-neutral-500 hover:text-stone-950 dark:hover:text-white hover:bg-stone-300/40 dark:hover:bg-white/5")}>
+                            <MapPin size={20} className={commercialMode === 'on_location' ? "text-[#DC2626] shrink-0" : "shrink-0"} />
                             NO COMÉRCIO
                         </button>
-                        <button onClick={() => setCommercialMode('studio')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'studio' ? "bg-white text-black border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-neutral-500 hover:text-white hover:bg-white/5")}>
-                            <Building2 size={20} className={commercialMode === 'studio' ? "text-brand-DEFAULT shrink-0" : "shrink-0"} />
+                        <button onClick={() => setCommercialMode('studio')} className={cn("flex-1 py-4 rounded-xl text-sm md:text-base font-bold transition-all flex items-center gap-2 md:gap-3 justify-center border", commercialMode === 'studio' ? "bg-white text-stone-950 dark:text-black border-stone-200/80 dark:border-white shadow-lg scale-[1.02] z-10" : "bg-transparent border-transparent text-stone-600 dark:text-neutral-500 hover:text-stone-950 dark:hover:text-white hover:bg-stone-300/40 dark:hover:bg-white/5")}>
+                            <Building2 size={20} className={commercialMode === 'studio' ? "text-[#DC2626] shrink-0" : "shrink-0"} />
                             NO ESTÚDIO
                         </button>
                     </div>
-                </motion.div>
+                </div>
             )}
 
             {selectionMode && (category === 'social') && (
-                <motion.div variants={fadeInUp} className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
-                    <p className="text-center text-xs uppercase tracking-widest text-brand-DEFAULT mb-3 font-bold">Como deseja contratar?</p>
-                    <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-white/5">
+                <div className="flex flex-col items-center mb-10 w-full max-w-3xl mx-auto">
+                    <p className="text-center text-xs uppercase tracking-widest text-[#DC2626] mb-3 font-bold">Como deseja contratar?</p>
+                    <div className="flex bg-stone-200/80 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto border border-stone-300/60 dark:border-white/5">
                         <button 
                             onClick={() => setSelectionMode('duration')} 
                             className={cn(
                                 "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
-                                selectionMode === 'duration' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                selectionMode === 'duration' ? "bg-white text-stone-900 dark:bg-white/10 dark:text-white shadow-sm font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                             )}
                         >
                             <Clock size={16} />
@@ -247,22 +256,19 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             onClick={() => setSelectionMode('quantity')} 
                             className={cn(
                                 "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2", 
-                                selectionMode === 'quantity' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                selectionMode === 'quantity' ? "bg-white text-stone-900 dark:bg-white/10 dark:text-white shadow-sm font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                             )}
                         >
                             <Camera size={16} />
                             Por Unidade
                         </button>
                     </div>
-                </motion.div>
+                </div>
             )}
 
             {!isCustomBundle && (
-              <motion.div 
+              <div 
                   key={`services-grid-${category}`}
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
                   className={gridClasses}
               >
                   {category === 'wedding' && (
@@ -294,7 +300,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.social.social_video.description} 
                             highlight 
                             extraContent={
-                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-stone-100 dark:bg-black/50 p-1 rounded-xl border border-stone-200 dark:border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -304,13 +310,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'mobile'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Mobile (350)
                                     </button>
-                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
+                                    <span className="text-[10px] text-stone-400 dark:text-neutral-500 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -320,8 +326,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'camera'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Câmera (600)
@@ -347,7 +353,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             desc={TABLE.commercial.comm_video.description} 
                             highlight 
                             extraContent={
-                                <div className="flex items-center justify-center bg-black/50 p-1 rounded-xl border border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
+                                <div className="flex items-center justify-center bg-stone-100 dark:bg-black/50 p-1 rounded-xl border border-stone-200 dark:border-white/10 gap-1.5 w-full max-w-[210px] mx-auto mt-1">
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -357,13 +363,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'mobile'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Mobile (350)
                                     </button>
-                                    <span className="text-[10px] text-neutral-400 font-semibold px-0.5 select-none lowercase">ou</span>
+                                    <span className="text-[10px] text-stone-400 dark:text-neutral-500 font-semibold px-0.5 select-none lowercase">ou</span>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -373,8 +379,8 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         className={cn(
                                             "flex-1 py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all text-center",
                                             videoDevice === 'camera'
-                                                ? "bg-brand-DEFAULT text-white shadow-sm"
-                                                : "text-neutral-400 hover:text-white"
+                                                ? "bg-[#DC2626] text-white shadow-sm"
+                                                : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                         )}
                                     >
                                         Câmera (600)
@@ -427,12 +433,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                   )}
                   
                   {category === 'custom' && (
-                      <motion.div variants={cardItemVariants} custom={0} className="!w-full !max-w-none col-span-3 bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
-                          <Star className="mx-auto text-brand-DEFAULT mb-4" size={32} />
-                          <h3 className="font-serif text-2xl text-white mb-2">Projeto Personalizado</h3>
-                          <p className="text-neutral-400 mb-6 text-lg">Descreva sua necessidade específica no WhatsApp.</p>
+                      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="!w-full !max-w-none col-span-3 bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06)] dark:shadow-xl p-6 md:p-10 rounded-2xl text-center backdrop-blur-sm flex flex-col items-center justify-center h-full">
+                          <Star className="mx-auto text-[#DC2626] mb-4" size={32} />
+                          <h3 className="font-serif text-2xl text-stone-900 dark:text-white mb-2 font-bold">Projeto Personalizado</h3>
+                          <p className="text-stone-600 dark:text-neutral-400 mb-6 text-lg">Descreva sua necessidade específica no WhatsApp.</p>
                           <button 
-                              className="bg-brand-DEFAULT hover:bg-brand-hover text-white px-6 py-3 rounded-xl font-bold flex items-center gap-3 transition-colors"
+                              className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-6 py-3 rounded-xl font-bold flex items-center gap-3 transition-colors shadow-lg shadow-red-600/20"
                               onClick={handleCustomProjectClick}
                           >
                               <MessageCircle size={22} />
@@ -440,58 +446,57 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                           </button>
                       </motion.div>
                   )}
-              </motion.div>
+              </div>
             )}
 
             {/* PAINEL DE DETALHES DO PACOTE SELECIONADO (No fluxo natural do layout, logo abaixo dos cards) */}
             {category !== 'custom' && (
-                <motion.div 
-                    variants={fadeInUp}
-                    className="w-full max-w-3xl mx-auto mt-4 sm:mt-6 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-neutral-900/80 border border-white/10 backdrop-blur-md text-center shadow-xl relative overflow-hidden"
+                <div 
+                    className="w-full max-w-3xl mx-auto mt-4 sm:mt-6 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] backdrop-blur-md text-center shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-xl relative overflow-hidden"
                 >
-                    <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/60 to-transparent" />
+                    <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-[#DC2626]/60 to-transparent" />
 
                     <AnimatePresence mode="wait">
                     {category === 'video_production' ? (
                         <motion.div 
                             key="video_prod_details"
-                            initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
-                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(6px)', y: -8 }}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.25 }}
                             className="flex flex-col items-center text-center space-y-2 max-w-2xl mx-auto"
                         >
                             <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
-                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-white font-bold">
+                                <span className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
+                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-stone-900 dark:text-white font-bold">
                                     Projetos Especiais
                                 </h3>
                             </div>
-                            <p className="text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed max-w-md mx-auto">
+                            <p className="text-xs sm:text-sm text-stone-600 dark:text-neutral-300 font-normal leading-relaxed max-w-md mx-auto">
                                 Selecione e adicione exatamente os serviços que você precisa.
                             </p>
                         </motion.div>
                     ) : serviceId && (AppConfig.PRICING_TABLE as any)[category]?.[serviceId] ? (
                         <motion.div 
                             key={serviceId}
-                            initial={{ opacity: 0, filter: 'blur(6px)', y: 8 }}
-                            animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                            exit={{ opacity: 0, filter: 'blur(6px)', y: -8 }}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.25 }}
                             className="flex flex-col items-center text-center space-y-2 max-w-3xl mx-auto"
                         >
                             <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-brand-DEFAULT shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
-                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-brand-DEFAULT font-bold">
+                                <span className="w-2 h-2 rounded-full bg-[#DC2626] shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
+                                <h3 className="text-base sm:text-lg md:text-xl font-serif text-[#DC2626] font-bold">
                                     {(AppConfig.PRICING_TABLE as any)[category][serviceId].label}
                                 </h3>
                             </div>
-                            <p className="text-xs sm:text-sm text-neutral-200 font-normal leading-relaxed max-w-xl mx-auto">
+                            <p className="text-xs sm:text-sm text-stone-700 dark:text-neutral-200 font-normal leading-relaxed max-w-xl mx-auto">
                                 {(AppConfig.PRICING_TABLE as any)[category][serviceId].description}
                             </p>
                             {(AppConfig.PRICING_TABLE as any)[category][serviceId].composition && (
                                 <div className="pt-1">
-                                    <span className="inline-block text-[11px] sm:text-xs text-brand-DEFAULT bg-brand-DEFAULT/10 border border-brand-DEFAULT/20 px-3 py-1 rounded-full font-medium">
+                                    <span className="inline-block text-[11px] sm:text-xs text-[#DC2626] bg-[#DC2626]/10 border border-[#DC2626]/20 px-3 py-1 rounded-full font-medium">
                                         {(AppConfig.PRICING_TABLE as any)[category][serviceId].composition}
                                     </span>
                                 </div>
@@ -505,15 +510,15 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             exit={{ opacity: 0 }}
                             className="py-1"
                         >
-                            <p className="text-xs sm:text-sm text-neutral-400">
+                            <p className="text-xs sm:text-sm text-stone-500 dark:text-neutral-400">
                                 Toque em uma opção acima para ver os detalhes do pacote.
                             </p>
                         </motion.div>
                     )}
                     </AnimatePresence>
-                </motion.div>
+                </div>
             )}
-        </motion.div>
+        </div>
       )}
 
       {/* === STEP 3: CONFIGURATION (DETAILS) === */}
@@ -526,21 +531,21 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     <motion.div 
                         key="video-prod-config"
                         variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-                        className="w-full max-w-2xl bg-neutral-900/40 p-4 md:p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden"
+                        className="w-full max-w-2xl bg-white/95 dark:bg-[#121212]/80 p-4 md:p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col gap-6 backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         
                         <div className="text-center mb-6">
-                            <h3 className="font-serif text-2xl text-white">Monte seu Pacote</h3>
-                            <p className="text-neutral-400 text-sm mt-2">Escolha as quantidades para cada serviço desejado.</p>
+                            <h3 className="font-serif text-2xl text-stone-900 dark:text-white font-bold">Monte seu Pacote</h3>
+                            <p className="text-stone-600 dark:text-neutral-400 text-sm mt-2">Escolha as quantidades para cada serviço desejado.</p>
                             
                             {/* Project Type Toggle */}
-                            <div className="flex bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mt-6 border border-white/5">
+                            <div className="flex bg-stone-100 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mt-6 border border-stone-200/90 dark:border-white/5">
                                 <button
                                     onClick={() => setProjectType?.('personal')}
                                     className={cn(
                                         "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
-                                        projectType === 'personal' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        projectType === 'personal' ? "bg-white text-stone-900 shadow-sm dark:bg-white/10 dark:text-white font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     <User size={16} />
@@ -550,7 +555,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     onClick={() => setProjectType?.('commercial')}
                                     className={cn(
                                         "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
-                                        projectType === 'commercial' ? "bg-white/10 text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        projectType === 'commercial' ? "bg-white text-stone-900 shadow-sm dark:bg-white/10 dark:text-white font-semibold" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     <Building2 size={16} />
@@ -633,7 +638,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
         <motion.div 
             key="duration"
             variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-            className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+            className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
         >
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
             
@@ -653,11 +658,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                 })}
             >
                  <Clock className="text-brand-DEFAULT" size={24} />
-                 <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">Tempo de Cobertura</h3>
-                 <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
+                 <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-stone-700 dark:text-neutral-300">Tempo de Cobertura</h3>
+                 <HelpCircle size={18} className="text-stone-400 group-hover:text-stone-900 dark:text-neutral-600 dark:group-hover:text-white transition-colors" />
             </div>
 
-            <p className="text-xs text-neutral-400 mb-6 max-w-sm">
+            <p className="text-xs text-stone-600 dark:text-neutral-400 mb-6 max-w-sm">
                 {extraHours > 0 
                     ? `Pacote com ${baseHours}h base + ${extraHours} hora${extraHours > 1 ? 's' : ''} adicional${extraHours > 1 ? 'is' : ''} (+R$ ${hourPrice}/h).` 
                     : `Período contínuo de ${baseHours} horas de cobertura inclusas no pacote.`
@@ -667,16 +672,16 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             <div className="flex items-center justify-between w-full gap-8 px-4">
                 <ControlBtn onClick={() => setHours(Math.max(baseHours, hours - 1))} icon={Minus} />
                 <div className="text-center">
-                    <span className="block text-6xl font-price font-bold text-white tracking-tighter mb-1 drop-shadow-lg">
+                    <span className="block text-6xl font-price font-bold text-stone-900 dark:text-white tracking-tighter mb-1 drop-shadow-sm dark:drop-shadow-lg">
                         <AnimatedNumber value={hours} />
                     </span>
-                    <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em] block">Horas</span>
+                    <span className="text-xs text-stone-500 dark:text-neutral-500 font-bold uppercase tracking-[0.4em] block">Horas</span>
                     {extraHours > 0 ? (
                         <span className="text-[11px] text-brand-DEFAULT font-bold uppercase tracking-wider block mt-1">
                             {baseHours}h Base + {extraHours}h Extra{extraHours > 1 ? 's' : ''}
                         </span>
                     ) : (
-                        <span className="text-[10px] text-neutral-500 font-medium block mt-1">
+                        <span className="text-[10px] text-stone-500 dark:text-neutral-500 font-medium block mt-1">
                             Tempo Base Incluso ({baseHours}h)
                         </span>
                     )}
@@ -698,18 +703,18 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         className="w-full max-w-lg space-y-4"
                    >
                         {/* Seletor de Fotos */}
-                        <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
+                        <div className="bg-white/95 dark:bg-[#121212]/80 p-6 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                             
                             <div className="flex items-center gap-2 mb-4">
                                 <Camera className="text-brand-DEFAULT" size={20} />
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">Fotos (Base 10)</h3>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700 dark:text-neutral-300">Fotos (Base 10)</h3>
                             </div>
 
                             <div className="flex items-center justify-between w-full gap-8 px-4">
                                 <ControlBtn onClick={() => setQty(Math.max(10, qty - 1))} icon={Minus} />
                                 <div className="text-center">
-                                    <span className="block text-4xl font-price font-bold text-white tracking-tighter mb-1 drop-shadow-lg">
+                                    <span className="block text-4xl font-price font-bold text-stone-900 dark:text-white tracking-tighter mb-1 drop-shadow-sm dark:drop-shadow-lg">
                                         <AnimatedNumber value={qty} />
                                     </span>
                                 </div>
@@ -721,31 +726,31 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         </div>
 
                         {/* Seletor de Vídeos */}
-                        <div className="bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
+                        <div className="bg-white/95 dark:bg-[#121212]/80 p-6 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden">
                             <div className="flex items-center gap-2 mb-4">
                                 <Video className="text-brand-DEFAULT" size={20} />
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">Vídeos (Base 1)</h3>
+                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-700 dark:text-neutral-300">Vídeos (Base 1)</h3>
                             </div>
 
                             {/* Seletor Mobile vs Câmera para o Pacote junto ao seletor de quantidade */}
-                            <div className="flex items-center justify-center bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-white/5 gap-1.5">
+                            <div className="flex items-center justify-center bg-stone-100 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-stone-200/90 dark:border-white/5 gap-1.5">
                                 <button
                                     type="button"
                                     onClick={() => setVideoDevice?.('mobile')}
                                     className={cn(
                                         "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
-                                        videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     📱 Mobile (R$ 350)
                                 </button>
-                                <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
+                                <span className="text-xs text-stone-400 dark:text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
                                 <button
                                     type="button"
                                     onClick={() => setVideoDevice?.('camera')}
                                     className={cn(
                                         "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
-                                        videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     📷 Câmera (R$ 600)
@@ -755,7 +760,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             <div className="flex items-center justify-between w-full gap-8 px-4">
                                 <ControlBtn onClick={() => setVideoQty(Math.max(1, videoQty - 1))} icon={Minus} />
                                 <div className="text-center">
-                                    <span className="block text-4xl font-price font-bold text-white tracking-tighter mb-1 drop-shadow-lg">
+                                    <span className="block text-4xl font-price font-bold text-stone-900 dark:text-white tracking-tighter mb-1 drop-shadow-sm dark:drop-shadow-lg">
                                         <AnimatedNumber value={videoQty} />
                                     </span>
                                 </div>
@@ -773,7 +778,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     <motion.div 
                         key="quantity"
                         variants={fadeInUp} initial="hidden" animate="visible" exit="hidden"
-                        className="w-full max-w-lg bg-neutral-900/40 p-8 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+                        className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-8 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                         {category === 'studio' && serviceId === 'studio_photo' && (
@@ -801,31 +806,31 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     ? <Video className="text-brand-DEFAULT" size={24} /> 
                                     : <Camera className="text-brand-DEFAULT" size={24} />
                              }
-                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-neutral-300">
+                             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-stone-700 dark:text-neutral-300">
                                 {isDroneQuantity ? "Baterias" : "Quantidade"}
                              </h3>
-                             <HelpCircle size={18} className="text-neutral-600 group-hover:text-white transition-colors" />
+                             <HelpCircle size={18} className="text-stone-400 group-hover:text-stone-900 dark:text-neutral-600 dark:group-hover:text-white transition-colors" />
                         </div>
 
                         {((category === 'commercial' && serviceId === 'comm_video') || (category === 'social' && serviceId === 'social_video')) && (
-                            <div className="flex items-center justify-center bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-white/5 gap-1.5">
+                            <div className="flex items-center justify-center bg-stone-100 dark:bg-black/40 rounded-xl p-1 w-full max-w-xs mx-auto mb-6 border border-stone-200/90 dark:border-white/5 gap-1.5">
                                 <button
                                     type="button"
                                     onClick={() => setVideoDevice?.('mobile')}
                                     className={cn(
                                         "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
-                                        videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        videoDevice === 'mobile' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     📱 Mobile (R$ 350)
                                 </button>
-                                <span className="text-xs text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
+                                <span className="text-xs text-stone-400 dark:text-neutral-400 font-semibold px-1 select-none lowercase">ou</span>
                                 <button
                                     type="button"
                                     onClick={() => setVideoDevice?.('camera')}
                                     className={cn(
                                         "flex-1 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5",
-                                        videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-neutral-400 hover:text-white"
+                                        videoDevice === 'camera' ? "bg-brand-DEFAULT text-white shadow-sm" : "text-stone-600 dark:text-neutral-400 hover:text-stone-900 dark:hover:text-white"
                                     )}
                                 >
                                     📷 Câmera (R$ 600)
@@ -836,10 +841,10 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <div className="flex items-center justify-between w-full gap-8 px-4">
                             <ControlBtn onClick={() => setQty(Math.max(minQty, qty - 1))} icon={Minus} />
                             <div className="text-center">
-                                <span className="block text-6xl font-price font-bold text-white tracking-tighter mb-2 drop-shadow-lg">
+                                <span className="block text-6xl font-price font-bold text-stone-900 dark:text-white tracking-tighter mb-2 drop-shadow-sm dark:drop-shadow-lg">
                                     <AnimatedNumber value={qty} />
                                 </span>
-                                <span className="text-xs text-neutral-500 font-bold uppercase tracking-[0.4em]">
+                                <span className="text-xs text-stone-500 dark:text-neutral-500 font-bold uppercase tracking-[0.4em]">
                                     {isDroneQuantity ? "Baterias" : isVideoQuantity ? "Vídeos" : "Fotos"}
                                 </span>
                             </div>
@@ -858,7 +863,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     variants={fadeInUp} 
                     initial="hidden"
                     animate="visible"
-                    className="w-full max-w-lg bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+                    className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-6 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                 >
                     <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                     
@@ -867,11 +872,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             {/* Pacote Mais Essência: 1 Vídeo Já Incluso no Pacote */}
                             <div className="flex items-center gap-2 mb-2">
                                 <Video className="text-brand-DEFAULT" size={20} />
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-800 dark:text-neutral-300">
                                     Vídeo da Cerimônia (1 Incluso)
                                 </h3>
                             </div>
-                            <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                            <p className="text-xs text-stone-600 dark:text-neutral-400 mb-4 max-w-sm">
                                 O Pacote Mais Essência já inclui 1 vídeo completo da cerimônia. Escolha o formato da gravação do vídeo incluso:
                             </p>
 
@@ -884,7 +889,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         "py-2.5 px-3 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-0.5",
                                         videoDevice === 'mobile'
                                             ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30 font-semibold"
-                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                            : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                                     )}
                                 >
                                     <span>📱 Mobile</span>
@@ -898,7 +903,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         "py-2.5 px-3 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-0.5",
                                         videoDevice === 'camera'
                                             ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30 font-semibold"
-                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                            : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                                     )}
                                 >
                                     <span>📷 Câmera Cinema</span>
@@ -907,21 +912,21 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             </div>
 
                             {/* Oferta de Vídeos Adicionais / Extras */}
-                            <div className="pt-4 border-t border-white/10 w-full flex flex-col items-center">
-                                <span className="text-xs font-bold uppercase tracking-wider text-neutral-300 mb-1">
+                            <div className="pt-4 border-t border-stone-200/80 dark:border-white/10 w-full flex flex-col items-center">
+                                <span className="text-xs font-bold uppercase tracking-wider text-stone-800 dark:text-neutral-300 mb-1">
                                     Deseja Adicionar Vídeos Extras?
                                 </span>
-                                <span className="text-[11px] text-neutral-400 mb-3">
+                                <span className="text-[11px] text-stone-500 dark:text-neutral-400 mb-3">
                                     {videoDevice === 'camera' ? "+R$ 600 por vídeo adicional (Câmera)" : "+R$ 350 por vídeo adicional (Mobile)"}
                                 </span>
                                 
                                 <div className="flex items-center justify-between w-full max-w-xs px-2">
                                     <ControlBtn onClick={() => setVideoQty?.(Math.max(0, (videoQty || 0) - 1))} icon={Minus} />
                                     <div className="text-center">
-                                        <span className="font-price font-bold text-white text-xl block leading-none">
+                                        <span className="font-price font-bold text-stone-900 dark:text-white text-xl block leading-none">
                                             {videoQty || 0}
                                         </span>
-                                        <span className="text-[10px] text-neutral-400 uppercase font-semibold mt-1 block">
+                                        <span className="text-[10px] text-stone-500 dark:text-neutral-400 uppercase font-semibold mt-1 block">
                                             {(videoQty || 0) === 0 ? "Nenhum extra (1 incluso)" : `${videoQty} extra(s) (+ ${videoQty} vídeo${videoQty > 1 ? 's' : ''})`}
                                         </span>
                                     </div>
@@ -933,11 +938,11 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         <>
                             <div className="flex items-center gap-2 mb-2">
                                 <Video className="text-brand-DEFAULT" size={20} />
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-800 dark:text-neutral-300">
                                     Deseja Incluir Vídeo?
                                 </h3>
                             </div>
-                            <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                            <p className="text-xs text-stone-600 dark:text-neutral-400 mb-4 max-w-sm">
                                 {category === 'wedding'
                                     ? "Adicione gravação de vídeo para registrar os melhores momentos da cerimônia."
                                     : "Adicione gravação de vídeo para registrar momentos marcantes do evento."}
@@ -950,12 +955,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     className={cn(
                                         "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
                                         (!videoQty || videoQty === 0)
-                                            ? "bg-white/10 border-white/30 text-white shadow-sm"
-                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                            ? "bg-stone-900 text-white border-stone-900 dark:bg-white/10 dark:border-white/30 dark:text-white shadow-sm"
+                                            : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                                     )}
                                 >
                                     <span className="font-semibold">Sem Vídeo</span>
-                                    <span className="text-[10px] text-neutral-500">Apenas fotos</span>
+                                    <span className="text-[10px] opacity-75">Apenas fotos</span>
                                 </button>
 
                                 <button
@@ -968,7 +973,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
                                         videoQty > 0 && videoDevice === 'mobile'
                                             ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
-                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                            : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                                     )}
                                 >
                                     <span className="font-semibold">📱 Mobile</span>
@@ -985,7 +990,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                         "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
                                         videoQty > 0 && videoDevice === 'camera'
                                             ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
-                                            : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                            : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                                     )}
                                 >
                                     <span className="font-semibold">📷 Câmera</span>
@@ -994,13 +999,13 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             </div>
 
                             {videoQty > 0 && (
-                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between w-full px-2">
-                                    <span className="text-xs text-neutral-300 font-medium">
+                                <div className="mt-4 pt-3 border-t border-stone-200/80 dark:border-white/5 flex items-center justify-between w-full px-2">
+                                    <span className="text-xs text-stone-700 dark:text-neutral-300 font-medium">
                                         Quantidade de vídeos:
                                     </span>
                                     <div className="flex items-center gap-3">
                                         <ControlBtn onClick={() => setVideoQty?.(Math.max(1, videoQty - 1))} icon={Minus} />
-                                        <span className="font-price font-bold text-white text-lg w-6 text-center">{videoQty}</span>
+                                        <span className="font-price font-bold text-stone-900 dark:text-white text-lg w-6 text-center">{videoQty}</span>
                                         <ControlBtn onClick={() => setVideoQty?.(videoQty + 1)} icon={Plus} active />
                                     </div>
                                 </div>
@@ -1016,17 +1021,17 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     variants={fadeInUp} 
                     initial="hidden"
                     animate="visible"
-                    className="w-full max-w-lg bg-neutral-900/40 p-6 rounded-[2rem] border border-white/10 shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
+                    className="w-full max-w-lg bg-white/95 dark:bg-[#121212]/80 p-6 rounded-[2rem] border border-stone-200/90 dark:border-white/[0.08] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] dark:shadow-2xl flex flex-col items-center text-center backdrop-blur-xl relative overflow-hidden"
                 >
                     <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-DEFAULT/50 to-transparent" />
                     
                     <div className="flex items-center gap-2 mb-2">
                         <Zap className="text-brand-DEFAULT" size={20} />
-                        <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-300">
+                        <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-800 dark:text-neutral-300">
                             Deseja Incluir Edição?
                         </h3>
                     </div>
-                    <p className="text-xs text-neutral-400 mb-4 max-w-sm">
+                    <p className="text-xs text-stone-600 dark:text-neutral-400 mb-4 max-w-sm">
                         Adicione vídeos editados com cortes, cor e áudio finalizados para Reels, TikTok ou YouTube.
                     </p>
 
@@ -1040,12 +1045,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                             className={cn(
                                 "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
                                 (!edit30sQty && !edit1minQty)
-                                    ? "bg-white/10 border-white/30 text-white shadow-sm"
-                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    ? "bg-stone-900 text-white border-stone-900 dark:bg-white/10 dark:border-white/30 dark:text-white shadow-sm"
+                                    : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                             )}
                         >
                             <span className="font-semibold">Sem Edição</span>
-                            <span className="text-[10px] text-neutral-500">Material bruto</span>
+                            <span className="text-[10px] opacity-75">Material bruto</span>
                         </button>
 
                         <button
@@ -1059,7 +1064,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
                                 (edit30sQty && edit30sQty > 0)
                                     ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
-                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                             )}
                         >
                             <span className="font-semibold">⚡ Até 30s</span>
@@ -1077,7 +1082,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                 "py-3 px-2 rounded-xl text-xs font-medium border transition-all flex flex-col items-center justify-center gap-1",
                                 (edit1minQty && edit1minQty > 0)
                                     ? "bg-brand-DEFAULT border-brand-DEFAULT text-white shadow-md shadow-brand-DEFAULT/30"
-                                    : "bg-black/20 border-white/5 text-neutral-400 hover:text-white"
+                                    : "bg-stone-100 dark:bg-black/20 border-stone-200/90 dark:border-white/5 text-stone-700 dark:text-neutral-400 hover:text-stone-950 dark:hover:text-white"
                             )}
                         >
                             <span className="font-semibold">🎬 Até 1 min</span>
@@ -1086,12 +1091,12 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     </div>
 
                     {((edit30sQty && edit30sQty > 0) || (edit1minQty && edit1minQty > 0)) && (
-                        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between w-full px-2">
+                        <div className="mt-4 pt-3 border-t border-stone-200/80 dark:border-white/5 flex items-center justify-between w-full px-2">
                             <div className="text-left">
-                                <span className="text-xs text-neutral-300 font-medium block">
+                                <span className="text-xs text-stone-700 dark:text-neutral-300 font-medium block">
                                     {(edit30sQty && edit30sQty > 0) ? "Vídeos editados (30s):" : "Vídeos editados (1 min):"}
                                 </span>
-                                <span className="text-[10px] text-neutral-500 font-mono">
+                                <span className="text-[10px] text-stone-500 dark:text-neutral-500 font-mono">
                                     {(edit30sQty && edit30sQty > 0) ? "+ R$ 150 por vídeo" : "+ R$ 250 por vídeo"}
                                 </span>
                             </div>
@@ -1106,7 +1111,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                                     }} 
                                     icon={Minus} 
                                 />
-                                <span className="font-price font-bold text-white text-lg w-6 text-center">
+                                <span className="font-price font-bold text-stone-900 dark:text-white text-lg w-6 text-center">
                                     {(edit30sQty && edit30sQty > 0) ? edit30sQty : edit1minQty}
                                 </span>
                                 <ControlBtn 
@@ -1129,10 +1134,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
             {/* 2. ADDONS (Drone / RealTime) */}
             {(category === 'wedding' || category === 'social' || category === 'commercial' || category === 'video_production') && (
 
-                <motion.div 
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
+                <div 
                   className={cn(
                     "w-full max-w-lg grid gap-4",
                     showDroneAddon ? "grid-cols-2" : "grid-cols-1 max-w-xs" // Layout adaptativo se só tiver 1 item
@@ -1160,7 +1162,7 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                         onInfo={setInfoData}
                         desc="Entrega imediata de uma seleção de fotos durante o evento para postagem nas redes sociais. Engajamento instantâneo."
                     />
-                </motion.div>
+                </div>
             )}
 
             {/* 3. LOGISTICS */}
@@ -1170,21 +1172,21 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                     initial="hidden"
                     animate="visible"
                     onClick={() => setIsMapOpen(true)} 
-                    className="w-full max-w-lg border border-white/5 bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer group hover:bg-white/[0.05] rounded-xl p-4 md:p-6 transition-colors gap-2 sm:gap-4 overflow-hidden"
+                    className="w-full max-w-lg border border-stone-200/90 dark:border-white/[0.08] bg-white/95 dark:bg-white/[0.02] flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer group hover:bg-stone-50 dark:hover:bg-white/[0.05] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none rounded-2xl p-4 md:p-6 transition-colors gap-2 sm:gap-4 overflow-hidden"
                 >
                     <div className="flex items-center gap-3 md:gap-4 min-w-0 w-full flex-1">
-                        <div className="shrink-0 p-3 md:p-4 bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors flex items-center justify-center">
+                        <div className="shrink-0 p-3 md:p-4 bg-stone-100 dark:bg-white/5 rounded-full text-brand-DEFAULT group-hover:bg-brand-DEFAULT group-hover:text-white transition-colors flex items-center justify-center">
                             <MapPin size={20} className="md:w-6 md:h-6" />
                         </div>
                         <div className="text-left min-w-0 flex-1 overflow-hidden">
-                            <p className="text-[10px] md:text-xs uppercase tracking-widest text-neutral-500 font-bold">Logística</p>
-                            <p className="text-white text-sm md:text-lg font-medium mt-0.5 md:mt-1 truncate w-full block">
+                            <p className="text-[10px] md:text-xs uppercase tracking-widest text-stone-500 dark:text-neutral-500 font-bold">Logística</p>
+                            <p className="text-stone-900 dark:text-white text-sm md:text-lg font-medium mt-0.5 md:mt-1 truncate w-full block">
                                 {isQuickMode && distance === 0 ? "A definir" : (clientData?.location || "Selecionar Local")}
                             </p>
                         </div>
                     </div>
                     <div className="text-left sm:text-right shrink-0 pl-14 sm:pl-0">
-                         <p className="text-brand-DEFAULT md:text-neutral-400 text-xs md:text-sm font-medium font-price">
+                         <p className="text-brand-DEFAULT md:text-stone-600 dark:md:text-neutral-400 text-xs md:text-sm font-medium font-price">
                              {isQuickMode && distance === 0 
                                 ? "A consultar" 
                                 : `${distance}km • ${travelCost > 0 ? formatCurrency(travelCost) : "Grátis"}`}
@@ -1212,26 +1214,26 @@ const UpsellList: React.FC<UpsellListProps> = (props) => {
                <motion.div 
                   key="modal"
                   variants={infoModalVariants} initial="hidden" animate="visible" exit="exit"
-                  className="relative z-[10000] bg-neutral-900 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl overflow-hidden"
+                  className="relative z-[10000] bg-white dark:bg-neutral-900 border border-stone-200/90 dark:border-white/10 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl overflow-hidden"
                >
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                       setInfoData(null);
                     }}
-                    className="absolute top-4 right-4 text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors z-50"
+                    className="absolute top-4 right-4 text-stone-500 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-white bg-stone-100 dark:bg-white/5 hover:bg-stone-200 dark:hover:bg-white/10 p-2 rounded-full transition-colors z-50"
                     aria-label="Fechar"
                   >
                       <X size={24} />
                   </button>
                   
-                  <h3 className="text-2xl font-serif text-white mb-4 pr-8">{infoData.title}</h3>
+                  <h3 className="text-2xl font-serif text-stone-900 dark:text-white mb-4 pr-8">{infoData.title}</h3>
                   <div className="w-12 h-0.5 bg-brand-DEFAULT mx-auto mb-6" />
                   <div className="max-h-[60vh] overflow-y-auto">
-                      <p className="text-neutral-300 leading-relaxed font-light text-base mb-8 text-left">
+                      <p className="text-stone-600 dark:text-neutral-300 leading-relaxed font-light text-base mb-8 text-left">
                           {infoData.desc}
                           <br/><br/>
-                          <span className="text-neutral-500 text-sm block text-center mt-4 border-t border-white/5 pt-4">
+                          <span className="text-stone-500 dark:text-neutral-500 text-sm block text-center mt-4 border-t border-stone-200/80 dark:border-white/5 pt-4">
                               Inclui suporte completo e equipamentos profissionais da EAREC.
                           </span>
                       </p>
@@ -1267,13 +1269,13 @@ const ControlBtn = ({ onClick, icon: Icon, active }: any) => (
       transition={{ type: "spring", stiffness: 450, damping: 25 }}
       onClick={onClick} 
       className={cn(
-        "w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full transition-all border shadow-lg",
+        "w-12 h-12 md:w-16 md:h-16 shrink-0 aspect-square flex items-center justify-center rounded-full transition-all border shadow-sm dark:shadow-lg",
         active 
-          ? "bg-brand-DEFAULT text-white border-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.4)]" 
-          : "bg-white/[0.04] border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 hover:border-white/20"
+          ? "bg-[#DC2626] text-white border-[#DC2626] shadow-[0_4px_15px_rgba(220,38,38,0.35)] dark:shadow-[0_0_20px_rgba(220,38,38,0.5)] cursor-pointer" 
+          : "bg-stone-100 dark:bg-white/[0.04] border-stone-300 dark:border-white/10 text-stone-800 dark:text-neutral-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/90 dark:hover:bg-white/10 hover:border-stone-400 dark:hover:border-white/20 cursor-pointer"
       )}
   >
-      <Icon size={24}/>
+      <Icon size={24} strokeWidth={2.5} />
   </motion.button>
 );
 
@@ -1282,13 +1284,14 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
     return (
         <motion.div 
-            custom={index}
-            variants={cardItemVariants}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: index * 0.04 }}
             className={cn(
             "flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 relative overflow-hidden",
             isAdded 
-                ? "bg-neutral-900 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.15)]" 
-                : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.14)] dark:shadow-[0_8px_30px_rgba(220,38,38,0.25)] ring-2 ring-[#DC2626]/20" 
+                : "bg-stone-50/90 dark:bg-white/[0.02] border border-stone-200/90 dark:border-white/5 hover:border-stone-300 dark:hover:border-white/10 hover:bg-white dark:hover:bg-white/[0.04]"
         )}>
             {/* Background Glow when active */}
             {isAdded && (
@@ -1298,30 +1301,30 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
             <div className="flex items-center gap-4 w-full sm:w-auto relative z-10 flex-1">
                 <div className={cn(
                     "p-3 rounded-2xl transition-colors shrink-0", 
-                    isAdded ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_15px_rgba(220,38,38,0.25)]" : "bg-white/5 text-neutral-300"
+                    isAdded ? "bg-[#DC2626]/15 text-[#DC2626] shadow-[0_0_15px_rgba(220,38,38,0.25)]" : "bg-stone-200/80 dark:bg-white/5 text-stone-600 dark:text-neutral-300"
                 )}>
                     <Icon size={24} strokeWidth={1.5} />
                 </div>
                 <div className="text-left">
-                    <h4 className="text-white font-semibold text-base sm:text-lg leading-tight">{title}</h4>
-                    <p className="text-xs sm:text-sm text-neutral-400 font-medium mt-1">{desc}</p>
+                    <h4 className="text-stone-900 dark:text-white font-bold text-base sm:text-lg leading-tight">{title}</h4>
+                    <p className="text-xs sm:text-sm text-stone-500 dark:text-neutral-400 font-medium mt-1">{desc}</p>
                 </div>
             </div>
             
-            <div className="w-full sm:w-[170px] md:w-[190px] relative z-10 shrink-0">
+            <div className="w-full sm:w-[185px] md:w-[210px] relative z-10 shrink-0">
                 {!isAdded ? (
                     <button 
                         onClick={() => setter?.(min)}
-                        className="w-full py-3 sm:py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm sm:text-base font-semibold transition-colors border border-white/10 flex justify-center items-center gap-2"
+                        className="w-full py-3 sm:py-2.5 bg-white hover:bg-[#DC2626] hover:text-white dark:bg-white/5 dark:hover:bg-white/10 text-stone-800 dark:text-white rounded-xl text-sm sm:text-base font-semibold transition-colors border border-stone-200 dark:border-white/10 flex justify-center items-center gap-2 shadow-sm"
                     >
                         <Plus size={18} /> Adicionar
                     </button>
                 ) : (
-                    <div className="flex items-center justify-between w-full bg-black/40 rounded-2xl p-1.5 border border-white/10">
+                    <div className="flex items-center justify-between w-full bg-white dark:bg-black/40 rounded-2xl p-1.5 border border-stone-200 dark:border-white/10 shadow-sm">
                         <ControlBtn onClick={() => setter?.(value > min ? value - step : 0)} icon={Minus} />
                         <div className="text-center flex-1 px-1">
-                            <span className="text-xl sm:text-2xl font-bold font-price text-white leading-none"><AnimatedNumber value={value} /></span>
-                            <span className="block text-[10px] sm:text-xs text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider">{unitLabel}</span>
+                            <span className="text-xl sm:text-2xl font-bold font-price text-stone-900 dark:text-white leading-none"><AnimatedNumber value={value} /></span>
+                            <span className="block text-[10px] sm:text-xs text-stone-500 dark:text-neutral-400 uppercase font-semibold mt-0.5 tracking-wider truncate max-w-full">{unitLabel}</span>
                         </div>
                         <ControlBtn onClick={() => setter?.(value + step)} icon={Plus} active />
                     </div>
@@ -1333,17 +1336,17 @@ const ProductionControlItem = ({ icon: Icon, title, desc, value, setter, min, st
 
 const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, composition, desc, highlight, index = 0, extraContent }: any) => (
     <motion.div 
-        custom={index}
-        variants={cardItemVariants}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.04 }}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
             "group relative flex flex-col items-center justify-between pt-7 pb-4 px-3 sm:pt-6 sm:pb-5 sm:px-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 cursor-pointer text-center h-full min-h-[160px] sm:min-h-[190px] md:min-h-[220px] w-full box-border backdrop-blur-md overflow-hidden",
             active 
-                ? "bg-neutral-900/90 border-brand-DEFAULT shadow-[0_0_30px_rgba(220,38,38,0.2)] ring-1 ring-brand-DEFAULT/50" 
-                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.18)] ring-2 ring-[#DC2626]/20" 
+                : "bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-[#181818] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none"
         )}
     >
         {/* Tag / Ícone de Destaque "Popular" - Posicionado EXCLUSIVAMENTE à direita do card sem sobreposição */}
@@ -1351,10 +1354,10 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className={cn(
                 "absolute top-0 right-0 text-[8px] sm:text-[10px] md:text-[11px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 uppercase tracking-wider z-20 rounded-bl-xl sm:rounded-bl-2xl rounded-tr-2xl md:rounded-tr-3xl transition-colors duration-200 flex items-center gap-1 shadow-sm",
                 active 
-                    ? "bg-brand-DEFAULT text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
-                    : "bg-white/10 text-neutral-300 group-hover:bg-white/20 group-hover:text-white"
+                    ? "bg-[#DC2626] text-white shadow-[0_0_12px_rgba(220,38,38,0.5)]" 
+                    : "bg-amber-500/15 dark:bg-amber-400/10 text-amber-800 dark:text-amber-300 border-b border-l border-amber-500/20"
             )}>
-                <Sparkles size={10} className={active ? "text-white" : "text-amber-400"} />
+                <Sparkles size={10} className={active ? "text-white" : "text-amber-500 dark:text-amber-400"} />
                 <span>Popular</span>
             </div>
         )}
@@ -1362,7 +1365,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {/* Botão de Ajuda / Detalhes Rápidos - Posicionado à esquerda do card */}
         {onInfo && desc && (
             <button 
-              className="absolute top-2 left-2 sm:top-3 sm:left-3 text-neutral-500 hover:text-white transition-colors z-20 p-1 sm:p-1.5 hover:bg-white/10 rounded-full"
+              className="absolute top-2 left-2 sm:top-3 sm:left-3 text-stone-400 hover:text-stone-800 dark:text-neutral-500 dark:hover:text-white transition-colors z-20 p-1 sm:p-1.5 hover:bg-stone-100 dark:hover:bg-white/10 rounded-full"
               onClick={(e) => {
                  e.stopPropagation();
                  onInfo({ title, desc, price });
@@ -1377,7 +1380,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
         {!highlight && (
             <div className={cn(
                 "absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full transition-all duration-500 z-20",
-                active ? "bg-brand-DEFAULT shadow-[0_0_10px_var(--brand-glow)]" : "bg-white/10"
+                active ? "bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]" : "bg-stone-200 dark:bg-white/10"
             )} />
         )}
         
@@ -1385,8 +1388,8 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className={cn(
                 "p-2.5 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl mb-1.5 sm:mb-2 transition-colors duration-200",
                 active 
-                    ? "bg-brand-DEFAULT/15 text-brand-DEFAULT shadow-[0_0_20px_rgba(220,38,38,0.25)]" 
-                    : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
+                    ? "bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#DC2626] shadow-[0_0_20px_rgba(220,38,38,0.2)]" 
+                    : "bg-stone-100 dark:bg-white/5 text-stone-700 dark:text-neutral-300 group-hover:bg-stone-200 dark:group-hover:bg-white/10 group-hover:text-stone-950 dark:group-hover:text-white"
             )}>
                 <Icon size={22} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
             </div>
@@ -1394,7 +1397,7 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             <div className="space-y-1 text-center px-0 sm:px-1 w-full mt-1 flex flex-col items-center">
                 <h4 className={cn(
                     "text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words transition-colors duration-300", 
-                    active ? "text-white" : "text-neutral-300 group-hover:text-white"
+                    active ? "text-stone-950 dark:text-white font-bold" : "text-stone-800 group-hover:text-stone-950 dark:text-neutral-200 dark:group-hover:text-white font-semibold"
                 )}>
                     {title}
                 </h4>
@@ -1423,8 +1426,8 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
             </div>
         </div>
 
-        <div className="w-full pt-2.5 sm:pt-3 border-t border-white/5 mt-2.5 sm:mt-3">
-            <p className={cn("text-xs sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-brand-DEFAULT" : "text-neutral-400 group-hover:text-neutral-200")}>
+        <div className="w-full pt-2.5 sm:pt-3 border-t border-stone-200/90 dark:border-white/[0.08] mt-2.5 sm:mt-3">
+            <p className={cn("text-xs sm:text-base md:text-lg font-bold font-price tracking-wide uppercase transition-colors duration-300", active ? "text-[#DC2626] dark:text-red-400 font-extrabold" : "text-stone-900 dark:text-neutral-100 group-hover:text-stone-950 dark:group-hover:text-white")}>
                 {price}
             </p>
         </div>
@@ -1433,21 +1436,21 @@ const ServiceCard = ({ active, onClick, onInfo, icon: Icon, title, price, compos
 
 const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, index = 0 }: any) => (
     <motion.div 
-        custom={index}
-        variants={cardItemVariants}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.04 }}
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
         onClick={onClick}
         className={cn(
             "cursor-pointer flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl border transition-colors duration-200 select-none relative gap-2 sm:gap-3 h-full group box-border backdrop-blur-md min-h-[140px] sm:min-h-[160px]", 
             active 
-                ? "bg-brand-DEFAULT/15 border-brand-DEFAULT shadow-[0_0_25px_rgba(220,38,38,0.25)] ring-1 ring-brand-DEFAULT" 
-                : "bg-neutral-900/40 border-white/10 hover:border-white/25 hover:bg-neutral-900/70 hover:shadow-[0_0_20px_rgba(255,255,255,0.03)]"
+                ? "bg-white dark:bg-[#181818] border-2 border-[#DC2626] shadow-[0_8px_30px_rgba(220,38,38,0.18)] ring-2 ring-[#DC2626]/20" 
+                : "bg-white/95 dark:bg-[#121212]/90 border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-[#181818] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none"
         )}
     >
         <button 
-          className="absolute top-3 left-3 text-neutral-500 hover:text-white transition-colors z-20 p-2 hover:bg-white/5 rounded-full"
+          className="absolute top-3 left-3 text-stone-400 hover:text-stone-700 dark:text-neutral-500 dark:hover:text-white transition-colors z-20 p-2 hover:bg-stone-100 dark:hover:bg-white/5 rounded-full"
           onClick={(e) => {
              e.stopPropagation();
              if (onInfo && desc) onInfo({ title: label, desc, price: formatCurrency(price) });
@@ -1458,21 +1461,21 @@ const AddonCard = ({ label, price, icon: Icon, active, onClick, onInfo, desc, in
 
         <div className={cn(
             "absolute top-3 right-3 w-6 h-6 rounded-full border flex items-center justify-center transition-all", 
-            active ? "bg-brand-DEFAULT border-brand-DEFAULT shadow-[0_0_10px_rgba(220,38,38,0.6)]" : "border-white/15 bg-black/30"
+            active ? "bg-[#DC2626] border-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.6)]" : "border-stone-300 bg-stone-100 dark:border-white/15 dark:bg-black/30"
         )}>
             {active && <Check size={14} className="text-white" />}
         </div>
 
         <div className={cn(
             "p-3.5 sm:p-4 rounded-2xl mb-1 transition-colors duration-200", 
-            active ? "bg-white/20 text-white" : "bg-white/5 text-neutral-300 group-hover:bg-white/10 group-hover:text-white"
+            active ? "bg-red-100 text-[#DC2626] dark:bg-white/20 dark:text-white" : "bg-stone-100 text-stone-600 dark:bg-white/5 dark:text-neutral-300 group-hover:bg-stone-200 dark:group-hover:bg-white/10 group-hover:text-stone-900 dark:group-hover:text-white"
         )}>
            <Icon size={26} strokeWidth={1.5} className="sm:w-7 sm:h-7" />
         </div>
         
         <div className="space-y-1 text-center px-0 sm:px-1 w-full">
-            <p className={cn("text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words", active ? "text-white" : "text-neutral-200")}>{label}</p>
-            <p className="text-xs sm:text-sm text-brand-DEFAULT font-bold font-price bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block mt-1.5 whitespace-nowrap">
+            <p className={cn("text-xs sm:text-sm md:text-base font-semibold whitespace-normal leading-tight break-words", active ? "text-stone-900 dark:text-white font-bold" : "text-stone-800 dark:text-neutral-200 font-medium")}>{label}</p>
+            <p className="text-xs sm:text-sm text-[#DC2626] dark:text-red-400 font-bold font-price bg-red-50 border border-red-100 dark:border-transparent dark:bg-brand-DEFAULT/10 py-1 px-3 rounded-full inline-block mt-1.5 whitespace-nowrap">
                 + {formatCurrency(price)}
             </p>
         </div>

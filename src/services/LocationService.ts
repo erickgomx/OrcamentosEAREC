@@ -1,3 +1,13 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - SERVIÇO DE LOGÍSTICA E DISTÂNCIAS (LocationService.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Esta classe é uma evolução orientada a objetos para o cálculo de rotas.
+// Ela adiciona uma camada de CACHE EM MEMÓRIA (`Map<string, number>`), garantindo que:
+// 1. Cidades consultadas várias vezes (ex: "Pipa, RN", "Natal, RN") tenham resposta instantânea (0ms).
+// 2. Não façamos requisições repetidas à API pública do OpenStreetMap/Nominatim.
+// 3. A precisão do frete permaneça consistente por toda a sessão do usuário.
+// ============================================================================
 
 /**
  * LocationService

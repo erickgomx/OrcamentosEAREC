@@ -1,3 +1,11 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - ENTRY WRAPPER APP (App.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este arquivo é o ponto de montagem principal importado pelo index.tsx.
+// Ele provê a casca do app, garantindo compatibilidade com o ThemeProvider,
+// BackgroundFilmStrips, ThemeToggle no topo direito e renderização das views.
+// ============================================================================
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import QuoteView from './src/pages/QuoteView';
@@ -7,6 +15,7 @@ import ConfirmationView from './src/pages/ConfirmationView';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
 import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
+import ThemeToggle from './src/components/ui/ThemeToggle';
 import { ClientData, QuoteData, QuoteState, ViewState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
@@ -102,11 +111,17 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="w-full min-h-[100dvh] bg-neutral-950 text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
+    <main className="w-full min-h-[100dvh] bg-[#F7F7F5] dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
       {(view !== 'quote' || isQuoteSuccess) && <BackgroundFilmStrips />}
+      {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
+      {!showSplash && (
+        <div className="fixed top-5 right-5 md:top-6 md:right-8 z-[70]">
+          <ThemeToggle />
+        </div>
+      )}
       
       {/* Cinematic Vignette Overlay */}
-      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_transparent_0%,_#0a0a0a_120%)] z-0 opacity-80" />
+      <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.05)_120%)] dark:bg-[radial-gradient(circle_at_center,_transparent_0%,_#080808_120%)] z-0 opacity-80 transition-colors duration-300" />
 
       {/* SPLASH SCREEN */}
       <AnimatePresence mode="wait">
@@ -114,9 +129,9 @@ const App: React.FC = () => {
           <motion.div 
             key="splash"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px]"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#F7F7F5] dark:bg-[#080808]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
@@ -134,8 +149,8 @@ const App: React.FC = () => {
                   transition={{ delay: 0.7, duration: 0.5 }}
                   className="flex flex-col items-center"
                >
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-500 font-sans font-medium text-sm md:text-base tracking-[0.4em] uppercase">
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#DC2626] to-transparent mb-4 opacity-80" />
+                  <p className="text-stone-900 dark:text-neutral-300 font-sans font-bold text-sm md:text-base tracking-[0.4em] uppercase">
                     Orçamento Facilitado
                   </p>
                </motion.div>

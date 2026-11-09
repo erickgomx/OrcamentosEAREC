@@ -1,3 +1,15 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - SISTEMA DE ANIMAÇÕES CINEMATOGRÁFICAS (animations.ts)
+// ============================================================================
+// Olá, dev criativo! 🎬✨
+// Este arquivo é o motor de física e movimento da experiência visual da EAREC.
+// Toda a estética foi pensada para transmitir fluidez de estúdio de cinema:
+// - Curvas cúbicas refinadas (`CINE_EASE`) com aceleração e desaceleração orgânicas.
+// - Efeitos de desfoque de lente (`blur filter`) simulando abertura e foco óptico.
+// - Orquestração em cascata (`staggerChildren`) para que listas entrem como peças de dominó.
+// - Modais e gavetas que sobem com peso e suavidade sem causar flickers na GPU.
+// ============================================================================
+
 import { Variants } from 'framer-motion';
 
 /**
@@ -90,14 +102,14 @@ export const organicItemVariants: Variants = {
 // Card individual para listas e grids com suporte total a enter/center e hidden/visible (elimina conflitos de animação e flickering de GPU)
 export const cardItemVariants: Variants = {
   hidden: { 
-    opacity: 0, 
-    y: 20, 
-    scale: 0.96 
+    opacity: 1, 
+    y: 0, 
+    scale: 1 
   },
   enter: { 
-    opacity: 0, 
-    y: 20, 
-    scale: 0.96 
+    opacity: 1, 
+    y: 0, 
+    scale: 1 
   },
   visible: (i: number = 0) => ({ 
     opacity: 1, 
@@ -183,7 +195,23 @@ export const fadeInUp: Variants = {
     filter: 'blur(6px)',
     scale: 0.98
   },
+  enter: { 
+    opacity: 0, 
+    y: 26, 
+    filter: 'blur(6px)',
+    scale: 0.98
+  },
   visible: { 
+    opacity: 1, 
+    y: 0,
+    filter: 'blur(0px)',
+    scale: 1,
+    transition: { 
+      duration: 0.48, 
+      ease: CINE_EASE 
+    }
+  },
+  center: { 
     opacity: 1, 
     y: 0,
     filter: 'blur(0px)',
@@ -208,6 +236,14 @@ export const fadeInUp: Variants = {
 // Container escalonado para orquestração de listas e cards
 export const staggerContainer: Variants = {
   hidden: { opacity: 1 },
+  enter: { opacity: 1 },
+  center: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.02
+    }
+  },
   visible: {
     opacity: 1,
     transition: {

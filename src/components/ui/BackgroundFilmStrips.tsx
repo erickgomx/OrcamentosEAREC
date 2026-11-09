@@ -1,3 +1,17 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - CENÁRIO DE FUNDO 3D EM ROLOS DE FILME (BackgroundFilmStrips.tsx)
+// ============================================================================
+// Olá, dev cinematográfico! 🎞️✨
+// Este componente cria o efeito assinatura da EAREC: dois rolos de filme 35mm
+// girando continuamente nas laterais em um espaço tridimensional com perspectiva (`perspective: 1200px`).
+//
+// COMO FUNCIONA:
+// 1. `SingleFilmFrame`: Desenho vetorial de 1 quadro de película com perfurações (sprockets),
+//    vidro reflexivo e bordas iluminadas (rim light).
+// 2. `FilmWheel3D`: Monta um cilindro 3D com 18 quadros distribuídos trigonometricamente
+//    ao longo de 360° com `rotateX` e `translateZ`.
+// 3. Iluminação volumétrica, vinheta gradiente e textura de granulação de película (noise).
+// ============================================================================
 
 import React from 'react';
 
@@ -113,7 +127,7 @@ const FilmWheel3D = ({
 
 const BackgroundFilmStrips: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#0a0a0a]">
+    <div className="hidden dark:block fixed inset-0 z-0 pointer-events-none overflow-hidden h-screen w-screen bg-[#080808] transition-colors duration-500">
       
       {/* Luzes Volumétricas de Fundo */}
       <div className="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-slate-800/20 blur-[150px] rounded-full opacity-40 mix-blend-screen" />
@@ -127,7 +141,7 @@ const BackgroundFilmStrips: React.FC = () => {
           UPDATE: Scale massivo para 0.85 (Mobile) / 1.0 (Tablet)
           UPDATE: Position ajustado para -80px para mostrar mais as rodas (Menos escondidas)
       */}
-      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] transition-all duration-1000 origin-left">
+      <div className="fixed top-1/2 -translate-y-1/2 -left-[80px] md:-left-[150px] lg:left-[0%] scale-[0.85] md:scale-[1.0] lg:scale-[1.1] opacity-[0.05] dark:opacity-100 transition-all duration-1000 origin-left">
           <div style={{ transform: 'rotateY(25deg) rotateZ(-8deg)' }}>
              <FilmWheel3D speed={80} direction="normal" />
           </div>
@@ -137,7 +151,7 @@ const BackgroundFilmStrips: React.FC = () => {
           RODA DIREITA
           Simétrico à esquerda.
       */}
-      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] transition-all duration-1000 origin-right">
+      <div className="fixed top-1/2 -translate-y-1/2 -right-[80px] md:-right-[150px] lg:right-[0%] scale-[0.85] md:scale-[1.05] lg:scale-[1.15] opacity-[0.05] dark:opacity-100 transition-all duration-1000 origin-right">
           <div style={{ transform: 'rotateY(-25deg) rotateZ(5deg)' }}>
              <FilmWheel3D speed={100} direction="reverse" />
           </div>
@@ -145,11 +159,11 @@ const BackgroundFilmStrips: React.FC = () => {
 
       {/* Máscaras de Gradiente (Vignette) para suavizar as pontas das rodas */}
       {/* UPDATE: Opacidade reduzida (from-black/60 e from-black/40) para tornar os filmstrips mais visíveis */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none z-10" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 pointer-events-none z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white dark:from-black/60 via-transparent to-white dark:to-black/60 pointer-events-none z-10 transition-colors duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-black/40 via-transparent to-white dark:to-black/40 pointer-events-none z-10 transition-colors duration-500" />
 
       {/* Noise Texture */}
-      <div className="absolute inset-0 opacity-[0.07] pointer-events-none mix-blend-overlay z-20" 
+      <div className="absolute inset-0 opacity-0 dark:opacity-[0.07] pointer-events-none mix-blend-overlay z-20" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
     </div>

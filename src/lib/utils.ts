@@ -1,9 +1,22 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - FUNÇÕES UTILITÁRIAS ESSENCIAIS (utils.ts)
+// ============================================================================
+// Olá, dev! 👋
+// Aqui residem as funções auxiliares puras mais utilizadas em todo o projeto:
+// 1. Merge inteligente de classes Tailwind com tratamento de precedência (`cn`).
+// 2. Formatação brasileira de valores monetários em R$ (`formatCurrency`).
+// 3. Delays assíncronos (`delay`) para transições fluidas e sensações visuais refinadas.
+// 4. Scroll cinematográfico suave com curva cúbica (`smoothScrollTo`).
+// 5. Geração de código de pedido amigável no formato `EA-XXXX` (`generateOrderCode`).
+// ============================================================================
 
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 /**
  * Utilitário para combinar classes Tailwind de forma segura (merge de conflitos).
+ * Usa `clsx` para suportar condicionais e objetos, e `twMerge` para sobrescrever
+ * classes conflitantes (ex: `p-2` vs `p-4`) sem bugs de especificidade CSS.
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,6 +25,7 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Formatador de moeda BRL (Real Brasileiro).
  * Estilo "Contábil" limpo para interfaces financeiras.
+ * Exemplo: 1250 vira "R$ 1.250,00".
  */
 export const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('pt-BR', {
@@ -23,7 +37,8 @@ export const formatCurrency = (value: number): string => {
 };
 
 /**
- * Delay assíncrono para simular loading ou steps de animação
+ * Delay assíncrono para simular loading ou steps de animação.
+ * Útil para aguardar encerramento de transições visuais antes de mudar de tela.
  */
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -71,8 +86,9 @@ export const smoothScrollTo = (elementId: string, duration: number = 1200) => {
 };
 
 /**
- * Gera um código de pedido aleatório elegante, exclusivo e fácil de ler (ex: EA-7842)
- * Evita sequências confusas ou caracteres ilegíveis para proporcionar uma leitura rápida e clara.
+ * Gera um código de pedido aleatório elegante, exclusivo e fácil de ler (ex: EA-7842).
+ * Evita sequências confusas ou caracteres ilegíveis para proporcionar uma leitura rápida e clara
+ * na comunicação entre o cliente e o fotógrafo/videomaker.
  */
 export const generateOrderCode = (): string => {
   const randomNum = Math.floor(1000 + Math.random() * 9000);

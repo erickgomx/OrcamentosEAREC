@@ -1,3 +1,21 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - COMPONENTE RAIZ DA APLICAÇÃO (src/App.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o componente orquestrador principal da aplicação SPA da EAREC.
+//
+// RESPONSABILIDADES:
+// 1. Roteamento SPA com o hook `useRouter`:
+//    - '/' ou '/inicio': IntroView (Boas-vindas / Escolha entre Simulador ou Instagram)
+//    - '/orcamento': QuoteView (Configurador, Resumo e Conclusão)
+//    - '/resumo': SummaryView (Espelho da Proposta e formas de pagamento)
+//    - '/sucesso': SuccessView (Parabéns e envio ao WhatsApp)
+//    - '/portfolio': PortfolioView (Vitrine e cases de sucesso)
+// 2. Persistência de dados: armazena e recupera dados do cliente via localStorage ('earec_client_data').
+// 3. Splash Screen Cinematográfica inicial com AnimatePresence e Framer Motion.
+// 4. Cenário de fundo com rolos de filme 35mm em 3D (`BackgroundFilmStrips`).
+// 5. Botão flutuante de alternância de tema Claro/Escuro (`ThemeToggle`).
+// ============================================================================
 import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -10,6 +28,7 @@ const PortfolioView = lazy(() => import('./pages/PortfolioView'));
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
 import BackgroundFilmStrips from './components/ui/BackgroundFilmStrips';
+import ThemeToggle from './components/ui/ThemeToggle';
 import { ClientData, QuoteData, QuoteState } from './types';
 import { mockQuote } from './data/mock';
 import { delay, generateOrderCode } from './lib/utils';
@@ -201,8 +220,14 @@ const App: React.FC = () => {
   }, [router.activeRoute]);
 
   return (
-    <main className="w-full min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative">
-      <BackgroundFilmStrips />
+    <main className="w-full min-h-screen bg-white dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
+      {(!showSplash && !['orcamento', 'orcamentos', 'resumo', 'sucesso'].includes(router.activeRoute)) && <BackgroundFilmStrips />}
+      {/* Botao Elegante de Modo Escuro / Claro na parte superior */}
+      {!showSplash && (
+        <div className="fixed top-3 right-3 sm:top-5 sm:right-6 md:top-6 md:right-8 z-[70]">
+          <ThemeToggle />
+        </div>
+      )}
 
       {/* SPLASH SCREEN */}
       <AnimatePresence mode="wait">
@@ -210,9 +235,9 @@ const App: React.FC = () => {
           <motion.div 
             key="splash"
             initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-[#080808]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
@@ -230,8 +255,8 @@ const App: React.FC = () => {
                   transition={{ delay: 0.7, duration: 0.5 }}
                   className="flex flex-col items-center"
                >
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-brand-DEFAULT to-transparent mb-4 opacity-50" />
-                  <p className="text-neutral-500 font-sans font-medium text-sm md:text-base tracking-[0.4em] uppercase">
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#DC2626] to-transparent mb-4 opacity-80" />
+                  <p className="text-stone-900 dark:text-neutral-300 font-sans font-bold text-sm md:text-base tracking-[0.4em] uppercase">
                     Orçamento Facilitado
                   </p>
                </motion.div>

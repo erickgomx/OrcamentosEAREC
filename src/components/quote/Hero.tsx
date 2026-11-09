@@ -1,3 +1,14 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - HERO BANNER DO ORÇAMENTO (Hero.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este é o topo acolhedor da página do configurador de orçamentos.
+// 
+// DESTAQUES VISUAIS:
+// 1. Vídeo de textura cinematográfica de grão de filme 35mm em loop infinito.
+// 2. Saudação calorosa personalizada com o nome do cliente.
+// 3. Logotipo oficial responsivo com animação escalonada.
+// ============================================================================
 
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -20,7 +31,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
   return (
     <section className="relative w-full min-h-[35vh] md:min-h-[50vh] flex items-center justify-center bg-black overflow-hidden border-b border-white/10">
       
-      {/* BACKGROUND CINEMATOGRÁFICO */}
+      {/* BACKGROUND CINEMATOGRÁFICO: Vídeo de película analógica com filtro sépia/quente */}
       <motion.div 
         variants={scaleIn}
         initial="hidden"
@@ -42,7 +53,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] z-10" />
       </motion.div>
 
-      {/* CONTEÚDO CENTRAL */}
+      {/* CONTEÚDO CENTRAL: Logo EAREC + Saudação personalizada */}
       <motion.div 
         variants={staggerContainer}
         initial="hidden"
@@ -53,6 +64,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
             <Logo className="w-40 md:w-64" />
         </motion.div>
         
+        {/* Cumprimento personalizado dinâmico */}
         <motion.h1 variants={fadeInUp} className="text-xl md:text-4xl text-white font-light mb-2 tracking-wide leading-tight">
           Olá, <span className="font-semibold">{data.client.name}</span>.
         </motion.h1>

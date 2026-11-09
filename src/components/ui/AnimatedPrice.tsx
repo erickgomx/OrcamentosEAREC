@@ -1,3 +1,15 @@
+// ============================================================================
+// EAREC AUDIOVISUAL - PREÇO ANIMADO EM TEMPO REAL (AnimatedPrice.tsx)
+// ============================================================================
+// Olá, dev! 👋
+// Este componente é o responsável pelo efeito "odômetro / ticker" nos preços
+// da aplicação. Conforme o usuário adiciona horas, fotos extras ou drone,
+// o número rola fluidamente até o novo total com formatação monetária (R$).
+//
+// CARACTERÍSTICAS:
+// 1. `useSpring` com física ágil (`stiffness: 250`) para dar sensação de imediatismo ao toque.
+// 2. `useTransform` que roda a cada frame formatando em tempo real com `formatCurrency`.
+// ============================================================================
 
 import React, { useEffect, useState } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
