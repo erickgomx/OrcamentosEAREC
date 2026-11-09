@@ -211,7 +211,7 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
                   transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
                   className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 z-30 flex justify-center pointer-events-none w-full"
               >
-                  <span className="text-[10px] sm:text-[14px] uppercase tracking-[0.05em] sm:tracking-[0.1em] text-white/90 font-bold w-full text-center truncate drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] px-1">
+                  <span className="text-[10px] sm:text-[14px] uppercase tracking-[0.05em] sm:tracking-[0.1em] text-stone-900 dark:text-white/90 font-bold w-full text-center truncate drop-shadow-[0_1px_3px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] px-1 transition-colors duration-300">
                       Revelando seu melhor
                   </span>
               </motion.div>
