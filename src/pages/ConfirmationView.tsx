@@ -81,10 +81,10 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                                 <MousePointerClick size={24} className="text-stone-900 dark:text-neutral-100 md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-stone-900 dark:text-neutral-100 font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                <h2 className="text-stone-900 dark:text-neutral-100 font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
                                     <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">1.</span>
                                     Iniciar
-                                </h3>
+                                </h2>
                                 <p className="text-stone-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
                                     Acesse o menu inicial e inicie seu <span className="text-stone-950 dark:text-white font-medium">Orçamento</span> para simular valores na hora.
                                 </p>
@@ -104,10 +104,10 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                                 <SlidersHorizontal size={24} className="text-stone-900 dark:text-neutral-100 md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-stone-900 dark:text-neutral-100 font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                <h2 className="text-stone-900 dark:text-neutral-100 font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
                                     <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">2.</span>
                                     Configure
-                                </h3>
+                                </h2>
                                 <p className="text-stone-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
                                     Navegue por <span className="text-stone-950 dark:text-white font-medium">Categorias</span>, adicione serviços extras e revise o <span className="text-stone-950 dark:text-white font-medium">Resumo</span> completo.
                                 </p>
@@ -127,10 +127,10 @@ const ConfirmationView: React.FC<ConfirmationViewProps> = ({ onContinue }) => {
                                 <MessageCircle size={24} className="text-stone-900 dark:text-neutral-100 md:w-8 md:h-8" />
                             </div>
                             <div className="pt-0">
-                                <h3 className="text-stone-900 dark:text-neutral-100 font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
+                                <h2 className="text-stone-900 dark:text-neutral-100 font-bold text-sm md:text-base uppercase tracking-wide flex items-baseline mb-1">
                                     <span className="text-[#DC2626] text-xl md:text-3xl mr-2 md:mr-3 font-serif font-bold translate-y-0.5">3.</span>
                                     Finalize no WhatsApp
-                                </h3>
+                                </h2>
                                 <p className="text-stone-600 dark:text-neutral-400 text-sm md:text-base leading-relaxed mt-1">
                                     Você será redirecionado ao WhatsApp para confirmar a disponibilidade da data com a equipe.
                                 </p>

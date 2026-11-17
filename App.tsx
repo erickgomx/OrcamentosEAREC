@@ -6,16 +6,17 @@
 // Ele provê a casca do app, garantindo compatibilidade com o ThemeProvider,
 // BackgroundFilmStrips, ThemeToggle no topo direito e renderização das views.
 // ============================================================================
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import QuoteView from './src/pages/QuoteView';
-import WelcomeView from './src/pages/WelcomeView';
-import IntroView from './src/pages/IntroView';
 import ConfirmationView from './src/pages/ConfirmationView';
 import Loading from './src/components/ui/Loading';
 import Logo from './src/components/ui/Logo';
 import BackgroundFilmStrips from './src/components/ui/BackgroundFilmStrips';
 import ThemeToggle from './src/components/ui/ThemeToggle';
+
+const QuoteView = React.lazy(() => import('./src/pages/QuoteView'));
+const WelcomeView = React.lazy(() => import('./src/pages/WelcomeView'));
+const IntroView = React.lazy(() => import('./src/pages/IntroView'));
 import { ClientData, QuoteData, QuoteState, ViewState } from './src/types';
 import { mockQuote } from './src/data/mock';
 import { delay } from './src/lib/utils';
@@ -71,8 +72,8 @@ const App: React.FC = () => {
     }
     window.scrollTo(0, 0);
     
-    // Animação de entrada (Logo + Texto) dura aprox 2.5s
-    const timer = setTimeout(() => setShowSplash(false), 2500); 
+    // Animação de entrada (Logo + Texto)
+    const timer = setTimeout(() => setShowSplash(false), 900); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -130,14 +131,15 @@ const App: React.FC = () => {
             key="splash"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-[#080808]"
           >
              <div className="flex flex-col items-center justify-center w-full h-full p-4">
                <motion.div
-                 initial={{ scale: 0.8, opacity: 0 }}
+                 initial={{ scale: 0.9, opacity: 0 }}
                  animate={{ scale: 1, opacity: 1 }}
-                 transition={{ duration: 0.8, ease: "easeOut" }}
+                 transition={{ duration: 0.4, ease: "easeOut" }}
                  className="mb-4"
                >
                   <Logo className="w-64 md:w-96" animate={true} />
@@ -146,7 +148,7 @@ const App: React.FC = () => {
                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.5 }}
+                  transition={{ delay: 0.2, duration: 0.35 }}
                   className="flex flex-col items-center"
                >
                   <div className="h-px w-16 bg-gradient-to-r from-transparent via-[#DC2626] to-transparent mb-4 opacity-80" />
@@ -166,7 +168,7 @@ const App: React.FC = () => {
       <div className="relative z-10">
         {/* Renderiza o conteúdo apenas quando o Splash sai e não está carregando */}
         {!showSplash && !isLoading && (
-            <>
+            <Suspense fallback={<Loading />}>
             {/* 1. TELA DE CONFIRMAÇÃO (INTERSTICIAL) */}
             {view === 'confirmation' && (
                 <ConfirmationView 
@@ -207,7 +209,7 @@ const App: React.FC = () => {
                   onRequestForm={handleRequestForm}
                 />
             )}
-            </>
+            </Suspense>
         )}
       </div>
     </main>

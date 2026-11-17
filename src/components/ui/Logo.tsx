@@ -45,9 +45,9 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
        strokeWidth="2" 
       letterSpacing="-3"
       className="drop-shadow-sm"
-      initial={shouldAnimate ? { opacity: 0, x: -10, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 65, y: 52, filter: 'blur(0px)' }}
-      animate={{ opacity: 1, x: 65, y: 52, filter: 'blur(0px)' }}
-      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: shouldAnimate ? 0.2 : 0 }}
+      initial={shouldAnimate ? { opacity: 0, x: -10, y: 52 } : { opacity: 1, x: 65, y: 52 }}
+      animate={{ opacity: 1, x: 65, y: 52 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: shouldAnimate ? 0.05 : 0 }}
     >
       EA
     </motion.text>
@@ -115,9 +115,9 @@ const SvgContent = React.memo(({ shouldAnimate, textColor = "#E5E5E5" }: { shoul
       fill="#DC2626" 
       letterSpacing="-1"
       className="drop-shadow-[0_0_5px_rgba(220,38,38,0.4)]"
-      initial={shouldAnimate ? { opacity: 0, x: 215, y: 52, filter: 'blur(8px)' } : { opacity: 1, x: 155, y: 52, filter: 'blur(0px)' }}
-      animate={{ opacity: 1, x: 155, y: 52, filter: 'blur(0px)' }}
-      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: shouldAnimate ? 0.4 : 0 }}
+      initial={shouldAnimate ? { opacity: 0, x: 215, y: 52 } : { opacity: 1, x: 155, y: 52 }}
+      animate={{ opacity: 1, x: 155, y: 52 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: shouldAnimate ? 0.15 : 0 }}
     >
       REC
     </motion.text>
@@ -151,17 +151,15 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
   const containerVariants: Variants = {
     hidden: { 
        opacity: 0, 
-       scale: 0.85, 
-       filter: 'blur(10px)',
-       y: 20
+       scale: 0.9,
+       y: 12
      },
     visible: { 
        opacity: 1, 
-       scale: 1, 
-       filter: 'blur(0px)',
+       scale: 1,
        y: 0,
        transition: { 
-         duration: 1.2, 
+         duration: 0.45, 
          ease: [0.22, 1, 0.36, 1] 
        } 
      }
@@ -205,10 +203,10 @@ const Logo: React.FC<LogoProps> = React.memo(({ className, animate = false }) =>
               
               {/* Revelando seu melhor text: slogan revelado suavemente */}
               <motion.div
-                  initial={{ opacity: 0, y: 10, filter: 'blur(4px)', scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
-                  exit={{ opacity: 0, y: -5, filter: 'blur(4px)', scale: 0.98 }}
-                  transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -5, scale: 0.98 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
                   className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 z-30 flex justify-center pointer-events-none w-full"
               >
                   <span className="text-[10px] sm:text-[14px] uppercase tracking-[0.05em] sm:tracking-[0.1em] text-stone-900 dark:text-white/90 font-bold w-full text-center truncate drop-shadow-[0_1px_3px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] px-1 transition-colors duration-300">
