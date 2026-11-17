@@ -24,6 +24,7 @@ const WelcomeView = lazy(() => import('./pages/WelcomeView'));
 const IntroView = lazy(() => import('./pages/IntroView'));
 const ConfirmationView = lazy(() => import('./pages/ConfirmationView'));
 const PortfolioView = lazy(() => import('./pages/PortfolioView'));
+const ProdutoraView = lazy(() => import('./produtora/ProdutoraApp'));
 
 import Loading from './components/ui/Loading';
 import Logo from './components/ui/Logo';
@@ -40,8 +41,9 @@ const App: React.FC = () => {
   // Roteamento SPA nativo (suporta /inicio, /orcamento e /admin)
   const router = useRouter();
 
-  // Splash Screen inteligente: exibe apenas na primeira abertura da sessão
+  // Splash Screen inteligente: exibe apenas na primeira abertura da sessão (exceto em /produtora)
   const [showSplash, setShowSplash] = useState(() => {
+    if (router.activeRoute === 'produtora') return false;
     if (typeof window !== 'undefined') {
       return !sessionStorage.getItem('earec_splash_shown');
     }
@@ -129,6 +131,8 @@ const App: React.FC = () => {
       router.navigate('/sucesso', true);
     } else if (router.activeRoute === 'portfolio' && p !== '/portfolio') {
       router.navigate('/portfolio', true);
+    } else if (router.activeRoute === 'produtora' && p !== '/produtora') {
+      router.navigate('/produtora', true);
     }
   }, [router.currentPath, router.activeRoute, router.navigate]);
 
@@ -219,6 +223,14 @@ const App: React.FC = () => {
     }
   }, [router.activeRoute]);
 
+  if (router.activeRoute === 'produtora') {
+    return (
+      <Suspense fallback={<Loading text="Carregando experiência..." />}>
+        <ProdutoraView onRequestQuote={handleQuickStart} />
+      </Suspense>
+    );
+  }
+
   return (
     <main className="w-full min-h-screen bg-white dark:bg-[#080808] text-[#18181B] dark:text-[#F4F4F5] selection:bg-brand-DEFAULT selection:text-white overflow-x-hidden font-sans relative transition-colors duration-300">
       {(!showSplash && !['orcamento', 'orcamentos', 'resumo', 'sucesso'].includes(router.activeRoute)) && <BackgroundFilmStrips />}
@@ -291,6 +303,7 @@ const App: React.FC = () => {
                     }}
                     onQuickStart={handleQuickStart}
                     onOpenPortfolio={() => router.navigate('/portfolio')}
+                    onOpenProdutora={() => router.navigate('/produtora')}
                   />
                 </motion.div>
               )}
@@ -309,7 +322,6 @@ const App: React.FC = () => {
                   {quoteSubView === 'welcome' ? (
                     <WelcomeView 
                       onStart={handleStart} 
-                      onAdminClick={() => router.navigate('/admin')}
                       onBack={() => setQuoteSubView('quote')} 
                     />
                   ) : (

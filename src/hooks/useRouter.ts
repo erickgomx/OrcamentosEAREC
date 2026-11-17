@@ -28,13 +28,14 @@
  * - '/resumo': Tela de revisão do orçamento
  * - '/sucesso': Confirmação e link para WhatsApp
  * - '/portfolio': Galeria e vitrine de produções
+ * - '/produtora': Experiência interativa WebGL 3D da produtora
  * - '/admin': Painel administrativo protegido
  */
 
 import { useState, useEffect, useCallback } from 'react';
 
 /** Tipos de rotas reconhecidas */
-export type AppRoute = 'inicio' | 'orcamento' | 'resumo' | 'sucesso' | 'portfolio' | string;
+export type AppRoute = 'inicio' | 'orcamento' | 'resumo' | 'sucesso' | 'portfolio' | 'produtora' | string;
 
 export interface RouterState {
   currentPath: string;
@@ -96,6 +97,11 @@ const resolveRoute = (path: string): AppRoute => {
   // Portfólio
   if (normalized === '/portfolio' || normalized === '/portfólio') {
     return 'portfolio';
+  }
+
+  // Produtora (Experiência 3D WebGL)
+  if (normalized === '/produtora' || normalized.startsWith('/produtora/')) {
+    return 'produtora';
   }
 
   // Redireciona tentativa de /admin para /inicio

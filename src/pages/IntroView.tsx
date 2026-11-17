@@ -12,9 +12,9 @@
 // 3. Link discreto de acesso ao Portfólio interno no rodapé.
 // ============================================================================
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Instagram, Zap } from 'lucide-react';
+import { ArrowRight, Film, Zap } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import { cn } from '../lib/utils';
 import { organicItemVariants, pageContainerVariants } from '../lib/animations';
@@ -23,9 +23,10 @@ interface IntroViewProps {
   onContinue: () => void;
   onQuickStart: () => void;
   onOpenPortfolio?: () => void;
+  onOpenProdutora?: () => void;
 }
 
-const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenPortfolio }) => {
+const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenPortfolio, onOpenProdutora }) => {
   return (
     <div className="w-full min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-6">
       
@@ -93,26 +94,33 @@ const IntroView: React.FC<IntroViewProps> = ({ onContinue, onQuickStart, onOpenP
                     <div className="h-px bg-gradient-to-r from-transparent via-stone-300 dark:via-white/15 to-transparent flex-1" />
                 </motion.div>
 
-                {/* Opção 2: Instagram EAREC (Sólido, Refinado com Texto Rigorosamente Centralizado) */}
+                {/* Opção 2: Conheça a produtora */}
                 <motion.div variants={organicItemVariants}>
                     <p className="text-stone-500 dark:text-neutral-400 text-xs sm:text-sm uppercase tracking-[0.2em] mb-2.5 font-semibold font-sans">
                         Portfólio & Bastidores
                     </p>
                     <motion.a 
-                        href="https://www.instagram.com/earecmidia/" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="relative group block w-full rounded-2xl overflow-hidden border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 transition-all duration-300 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06)] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.6)] dark:hover:shadow-[0_0_25px_rgba(255,255,255,0.06)] bg-white/95 dark:bg-[#121212]/80 hover:bg-white dark:hover:bg-[#181818]/90 backdrop-blur-xl"
+                        href="/produtora"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (onOpenProdutora) {
+                                onOpenProdutora();
+                            } else if (typeof window !== 'undefined') {
+                                window.history.pushState({}, '', '/produtora');
+                                window.dispatchEvent(new PopStateEvent('popstate'));
+                            }
+                        }}
+                        className="relative group block w-full rounded-2xl overflow-hidden border border-stone-200/90 dark:border-white/[0.08] hover:border-stone-300 dark:hover:border-white/20 transition-all duration-300 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.06)] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.6)] dark:hover:shadow-[0_0_25px_rgba(255,255,255,0.06)] bg-white/95 dark:bg-[#121212]/80 hover:bg-white dark:hover:bg-[#181818]/90 backdrop-blur-xl cursor-pointer"
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
                         <div className="relative z-20 w-full flex items-center justify-between py-5 px-5 sm:py-6 sm:px-7">
                             <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-stone-100 dark:bg-white/[0.04] border border-stone-200/80 dark:border-white/[0.08] flex items-center justify-center group-hover:bg-stone-200 dark:group-hover:bg-white/10 transition-colors duration-300 shrink-0">
-                                <Instagram size={22} className="text-stone-700 dark:text-neutral-200 group-hover:text-stone-950 dark:group-hover:text-white group-hover:scale-110 transition-all duration-300" />
+                                <Film size={22} className="text-stone-700 dark:text-neutral-200 group-hover:text-stone-950 dark:group-hover:text-white group-hover:scale-110 transition-all duration-300" />
                             </div>
                             <span className="flex-1 text-center font-sans font-semibold text-base sm:text-lg md:text-xl text-stone-900 dark:text-neutral-100 group-hover:text-brand-DEFAULT transition-colors tracking-wide px-2">
-                                Instagram EAREC
+                                Conheça a produtora
                             </span>
                             <div className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">
                                 <ArrowRight size={20} className="text-stone-400 dark:text-neutral-500 group-hover:text-brand-DEFAULT group-hover:translate-x-1.5 transition-transform duration-300" />

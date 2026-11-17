@@ -25,7 +25,7 @@
  * - 'welcome': Tela de apresentação/boas-vindas legada mantida por compatibilidade.
  */
 // Controle de Navegação Global
-export type ViewState = 'confirmation' | 'intro' | 'welcome' | 'quote';
+export type ViewState = 'confirmation' | 'intro' | 'welcome' | 'quote' | 'portfolio' | 'produtora';
 
 /**
  * Define a natureza do local onde as fotos/vídeos serão captados.

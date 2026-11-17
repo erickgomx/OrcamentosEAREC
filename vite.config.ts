@@ -38,7 +38,13 @@ export default defineConfig(() => {
         rollupOptions: {
           output: {
             manualChunks(id) {
-              if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/scheduler/')) {
+              if (
+                id.includes('vite/preload-helper') ||
+                id.includes('commonjsHelpers') ||
+                id.includes('node_modules/react/') ||
+                id.includes('node_modules/react-dom/') ||
+                id.includes('node_modules/scheduler/')
+              ) {
                 return 'vendor-react';
               }
               if (id.includes('node_modules/framer-motion/')) {
@@ -49,6 +55,18 @@ export default defineConfig(() => {
               }
               if (id.includes('node_modules/lucide-react/')) {
                 return 'vendor-icons';
+              }
+              if (
+                id.includes('node_modules/three/') ||
+                id.includes('node_modules/@react-three/') ||
+                id.includes('node_modules/postprocessing/') ||
+                id.includes('node_modules/three-stdlib/') ||
+                id.includes('node_modules/troika-')
+              ) {
+                return 'vendor-three';
+              }
+              if (id.includes('node_modules/gsap/') || id.includes('node_modules/lenis/')) {
+                return 'vendor-produtora-scroll';
               }
             }
           }

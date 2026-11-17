@@ -1,0 +1,256 @@
+.produtora-root {
+  --bg-void: #030303;
+  --bg-obsidian: #050505;
+  --surface-charcoal: #0e0d0c;
+  --accent-rec: #ff0829;
+  --accent-rec-glow: #ff1e1e;
+  --text-primary: #ffffff;
+  --text-offwhite: #f5f3f1;
+  --text-muted: #b3ada3;
+  --text-dim: #8a847a;
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.route-produtora {
+  background-color: #030303;
+  color: #ffffff;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html.route-produtora::-webkit-scrollbar {
+  display: none;
+}
+
+html.route-produtora body {
+  margin: 0;
+  padding: 0;
+  background-color: #030303;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  font-optical-sizing: auto;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.produtora-root h1,
+.produtora-root h2,
+.produtora-root h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  font-kerning: normal;
+}
+
+.produtora-root p {
+  text-wrap: pretty;
+}
+
+.produtora-root .font-mono {
+  font-feature-settings: 'zero' 0, 'calt' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.produtora-root :focus-visible {
+  outline: 2px solid #ff0829;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Hero display headline with fluid scale (mobile → ultrawide) */
+.produtora-root .type-hero {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.35rem, 1.2rem + 5.4vw, 5.75rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+/* Section titles */
+.produtora-root .type-title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 1.1rem + 2.2vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+/* Body lead copy */
+.produtora-root .type-lead {
+  font-size: clamp(0.975rem, 0.9rem + 0.35vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* Technical eyebrow labels (mono, uppercase) */
+.produtora-root .type-eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* ---------- Scroll reveal (compositor-only: opacity, transform, clip-path) ---------- */
+.produtora-root [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 420ms var(--ease-cinematic),
+    transform 520ms var(--ease-cinematic);
+  transition-delay: 0ms;
+}
+
+.produtora-root [data-reveal='mask'] {
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transform: translate3d(0, 30px, 0);
+  transition:
+    opacity 420ms var(--ease-cinematic),
+    transform 520ms var(--ease-cinematic),
+    clip-path 520ms var(--ease-cinematic);
+  transition-delay: 0ms;
+}
+
+@media (min-width: 768px) {
+  .produtora-root [data-reveal='slide-left'] {
+    transform: translate3d(28px, 14px, 0);
+  }
+
+  .produtora-root [data-reveal='slide-right'] {
+    transform: translate3d(-28px, 14px, 0);
+  }
+}
+
+.produtora-root [data-reveal].is-revealed,
+.produtora-root [data-reveal='mask'].is-revealed {
+  opacity: 1;
+  clip-path: inset(0 0 0% 0);
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 850ms var(--ease-cinematic),
+    transform 1050ms var(--ease-cinematic),
+    clip-path 1050ms var(--ease-cinematic);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Staggered children inside a revealed card/container */
+.produtora-root [data-stagger] {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity 360ms var(--ease-cinematic),
+    transform 450ms var(--ease-cinematic);
+  transition-delay: 0ms;
+}
+
+.produtora-root .is-revealed [data-stagger] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 750ms var(--ease-cinematic),
+    transform 900ms var(--ease-cinematic);
+  transition-delay: var(--stagger-delay, 0ms);
+}
+
+/* Compositor-only glow helpers (60fps-animation rule: animate opacity on pseudo-element) */
+.produtora-root .rec-glow-surface {
+  position: relative;
+}
+
+.produtora-root .rec-glow-surface::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow: 0 0 28px rgba(255, 8, 41, 0.45), 0 0 60px rgba(229, 9, 20, 0.2);
+  opacity: 0;
+  transition: opacity 260ms var(--ease-cinematic);
+  pointer-events: none;
+}
+
+.produtora-root .rec-glow-surface:hover::after,
+.produtora-root .rec-glow-surface:focus-visible::after {
+  opacity: 1;
+}
+
+/* Smooth scroll cue (transform-only, gentler than animate-bounce) */
+@keyframes scrollCue {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(0, 6px, 0);
+    opacity: 0.55;
+  }
+}
+
+.produtora-root .animate-scroll-cue {
+  animation: scrollCue 1.8s var(--ease-cinematic) infinite;
+}
+
+.produtora-root .hud-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.produtora-root .no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.produtora-root .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * GPU budget: backdrop-filter over a live WebGL canvas is one of the most
+ * expensive effects on mobile / low-end GPUs. Replace it with a denser solid
+ * surface there; visual result stays nearly identical on the dark scene.
+ */
+@media (max-width: 767px) {
+  .produtora-root .backdrop-blur-sm,
+  .produtora-root .backdrop-blur-md,
+  .produtora-root .backdrop-blur-xl {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background-color: rgba(10, 9, 8, 0.92) !important;
+  }
+}
+
+html.route-produtora[data-perf='low'] .produtora-root .backdrop-blur-sm,
+html.route-produtora[data-perf='low'] .produtora-root .backdrop-blur-md,
+html.route-produtora[data-perf='low'] .produtora-root .backdrop-blur-xl {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-color: rgba(10, 9, 8, 0.92) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .produtora-root .animate-rec-pulse,
+  .produtora-root .animate-scroll-cue,
+  .produtora-root .motion-safe-only {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .produtora-root [data-reveal],
+  .produtora-root [data-reveal='mask'],
+  .produtora-root [data-stagger] {
+    clip-path: none !important;
+    transform: none !important;
+    transition: opacity 450ms ease !important;
+  }
+}
