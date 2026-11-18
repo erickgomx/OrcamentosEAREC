@@ -131,16 +131,16 @@ function SpiralVideoCard({
   const geometry = useMemo(() => {
     if (item.aspect === '16:9') {
       return isMobile
-        ? new THREE.PlaneGeometry(2.15, 1.21, 24, 16)
+        ? new THREE.PlaneGeometry(2.15, 1.21, 10, 8)
         : new THREE.PlaneGeometry(3.2, 1.8, 28, 20);
     }
     if (item.aspect === '3:4') {
       return isMobile
-        ? new THREE.PlaneGeometry(1.5, 2.0, 22, 26)
+        ? new THREE.PlaneGeometry(1.5, 2.0, 10, 12)
         : new THREE.PlaneGeometry(1.92, 2.56, 26, 30);
     }
     return isMobile
-      ? new THREE.PlaneGeometry(1.18, 2.1, 20, 28)
+      ? new THREE.PlaneGeometry(1.18, 2.1, 8, 12)
       : new THREE.PlaneGeometry(1.48, 2.63, 24, 32);
   }, [item.aspect, isMobile]);
 

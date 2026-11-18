@@ -97,8 +97,11 @@ export function PostProductionScrubber() {
 
   useEffect(() => {
     let lastDrawnTimeline = -1;
+    let lastDrawnTimelineLoaded = false;
     let lastDrawnScope1 = -1;
+    let lastDrawnScope1Loaded = false;
     let lastDrawnScope2 = -1;
+    let lastDrawnScope2Loaded = false;
 
     const drawPoolToCanvas = (
       canvas: HTMLCanvasElement | null,
@@ -236,10 +239,8 @@ export function PostProductionScrubber() {
         Math.floor(localProgress * (SCROLL_SEQUENCE_COUNTS.scope2 - 1))
       );
 
-      if (
-        tlIdx !== lastDrawnTimeline ||
-        timelinePoolRef.current.loadedFlags[tlIdx] === 1
-      ) {
+      const tlLoaded = timelinePoolRef.current.loadedFlags[tlIdx] === 1;
+      if (tlIdx !== lastDrawnTimeline || (tlLoaded && !lastDrawnTimelineLoaded)) {
         drawPoolToCanvas(
           timelineCanvasRef.current,
           timelinePoolRef.current,
@@ -248,9 +249,11 @@ export function PostProductionScrubber() {
           localProgress
         );
         lastDrawnTimeline = tlIdx;
+        lastDrawnTimelineLoaded = tlLoaded;
       }
 
-      if (s1Idx !== lastDrawnScope1 || scope1PoolRef.current.loadedFlags[s1Idx] === 1) {
+      const s1Loaded = scope1PoolRef.current.loadedFlags[s1Idx] === 1;
+      if (s1Idx !== lastDrawnScope1 || (s1Loaded && !lastDrawnScope1Loaded)) {
         drawPoolToCanvas(
           scope1CanvasRef.current,
           scope1PoolRef.current,
@@ -259,9 +262,11 @@ export function PostProductionScrubber() {
           localProgress
         );
         lastDrawnScope1 = s1Idx;
+        lastDrawnScope1Loaded = s1Loaded;
       }
 
-      if (s2Idx !== lastDrawnScope2 || scope2PoolRef.current.loadedFlags[s2Idx] === 1) {
+      const s2Loaded = scope2PoolRef.current.loadedFlags[s2Idx] === 1;
+      if (s2Idx !== lastDrawnScope2 || (s2Loaded && !lastDrawnScope2Loaded)) {
         drawPoolToCanvas(
           scope2CanvasRef.current,
           scope2PoolRef.current,
@@ -270,6 +275,7 @@ export function PostProductionScrubber() {
           localProgress
         );
         lastDrawnScope2 = s2Idx;
+        lastDrawnScope2Loaded = s2Loaded;
       }
     };
 

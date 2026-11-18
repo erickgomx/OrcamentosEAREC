@@ -152,6 +152,26 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Pré-carrega as rotas lazy em segundo plano após a splash sair (transições instantâneas)
+  useEffect(() => {
+    if (showSplash) return;
+    const prefetch = () => {
+      import('./src/pages/IntroView');
+      import('./src/pages/WelcomeView');
+      import('./src/pages/QuoteView');
+    };
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(prefetch);
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = setTimeout(prefetch, 400);
+    return () => clearTimeout(id);
+  }, [showSplash]);
+
   // Sincronização com botões Voltar/Avançar do navegador (popstate / hashchange)
   useEffect(() => {
     const handlePopState = () => {
