@@ -47,6 +47,8 @@ function easeInCubic(t: number): number {
  */
 export function TeamShowcaseSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const resetHorizontalOffsetRef = useRef<(() => void) | null>(null);
   const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
   const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
   const textRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -55,6 +57,7 @@ export function TeamShowcaseSection() {
   const activeIndexRef = useRef(0);
 
   const jumpToChapter = (idx: number) => {
+    resetHorizontalOffsetRef.current?.();
     const sec = sectionRef.current;
     if (!sec) return;
     const rect = sec.getBoundingClientRect();
@@ -71,15 +74,82 @@ export function TeamShowcaseSection() {
   };
 
   useEffect(() => {
-    let lastProgress = -1;
+    let smoothedProgress = 0;
+    let lastTargetProgress = -1;
+    let hasRenderedFrame = false;
+    let touchOffsetProgress = 0;
+    let touchVelProgress = 0;
+    let isTouching = false;
+    let isHorizontalSwipe: boolean | null = null;
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+
+    resetHorizontalOffsetRef.current = () => {
+      touchOffsetProgress = 0;
+      touchVelProgress = 0;
+    };
 
     const handleViewportChange = () => {
       refreshSectionAnchors();
-      lastProgress = -1;
+      lastTargetProgress = -1;
+      hasRenderedFrame = false;
     };
 
     const ro = new ResizeObserver(handleViewportChange);
     if (sectionRef.current) ro.observe(sectionRef.current);
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      isTouching = true;
+      isHorizontalSwipe = null;
+      startX = t.clientX;
+      startY = t.clientY;
+      lastX = t.clientX;
+      touchVelProgress = 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isTouching || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const totalDx = t.clientX - startX;
+      const totalDy = t.clientY - startY;
+      if (isHorizontalSwipe === null && Math.hypot(totalDx, totalDy) > 6) {
+        isHorizontalSwipe = Math.abs(totalDx) > Math.abs(totalDy);
+      }
+      if (isHorizontalSwipe) {
+        const dx = t.clientX - lastX;
+        const dragSpan = Math.max(520, (window.innerWidth || 390) * 1.45);
+        const deltaP = -dx / dragSpan;
+        touchOffsetProgress += deltaP;
+        touchVelProgress = deltaP;
+      }
+      lastX = t.clientX;
+    };
+
+    const onTouchEnd = () => {
+      isTouching = false;
+      isHorizontalSwipe = null;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 0.5) {
+        e.preventDefault();
+        const dragSpan = Math.max(520, (window.innerWidth || 390) * 1.45);
+        touchOffsetProgress += e.deltaX / dragSpan;
+        touchVelProgress = 0;
+      }
+    };
+
+    const stageNode = stageRef.current;
+    if (stageNode) {
+      stageNode.addEventListener('touchstart', onTouchStart, { passive: true });
+      stageNode.addEventListener('touchmove', onTouchMove, { passive: true });
+      stageNode.addEventListener('touchend', onTouchEnd, { passive: true });
+      stageNode.addEventListener('touchcancel', onTouchEnd, { passive: true });
+      stageNode.addEventListener('wheel', onWheel, { passive: false });
+    }
 
     const updateChapters = () => {
       if (experienceState.sectionBounds.team.height <= 0) {
@@ -93,13 +163,34 @@ export function TeamShowcaseSection() {
       const rectBottom = rectTop + bounds.height;
       if (rectBottom < -200 || rectTop > innerH + 200) return;
 
-      const scrollable = Math.max(1, bounds.height - innerH);
-      const p = clamp01(-rectTop / scrollable);
+      if (!isTouching && Math.abs(touchVelProgress) > 0.0001) {
+        touchOffsetProgress += touchVelProgress;
+        touchVelProgress *= 0.92;
+      } else if (!isTouching) {
+        touchVelProgress = 0;
+      }
 
-      if (Math.abs(p - lastProgress) < 0.0003) {
+      const scrollable = Math.max(1, bounds.height - innerH);
+      const scrollTargetProgress = clamp01(-rectTop / scrollable);
+      const targetProgress = clamp01(scrollTargetProgress + touchOffsetProgress);
+      touchOffsetProgress = targetProgress - scrollTargetProgress;
+
+      const diff = targetProgress - smoothedProgress;
+      const settled =
+        Math.abs(diff) < 0.0002 &&
+        Math.abs(targetProgress - lastTargetProgress) < 0.0001 &&
+        Math.abs(touchVelProgress) < 0.0001;
+
+      if (settled && hasRenderedFrame) {
         return;
       }
-      lastProgress = p;
+
+      const damping = isTouching && isHorizontalSwipe ? 0.38 : 0.22;
+      smoothedProgress += diff * damping;
+      if (Math.abs(diff) < 0.0002) smoothedProgress = targetProgress;
+      lastTargetProgress = targetProgress;
+      hasRenderedFrame = true;
+      const p = clamp01(smoothedProgress);
 
       if (progressBarRef.current) {
         progressBarRef.current.style.transform = `scaleX(${Math.max(0.02, p)})`;
@@ -187,6 +278,14 @@ export function TeamShowcaseSection() {
     window.addEventListener('resize', handleViewportChange, { passive: true });
 
     return () => {
+      resetHorizontalOffsetRef.current = null;
+      if (stageNode) {
+        stageNode.removeEventListener('touchstart', onTouchStart);
+        stageNode.removeEventListener('touchmove', onTouchMove);
+        stageNode.removeEventListener('touchend', onTouchEnd);
+        stageNode.removeEventListener('touchcancel', onTouchEnd);
+        stageNode.removeEventListener('wheel', onWheel);
+      }
       ro.disconnect();
       gsap.ticker.remove(updateChapters);
       window.removeEventListener('resize', handleViewportChange);
@@ -239,7 +338,10 @@ export function TeamShowcaseSection() {
         </div>
 
         {/* Center Choreography Stage */}
-        <div className="relative z-10 flex-1 min-h-0 w-full max-w-6xl mx-auto my-2 flex items-center justify-center">
+        <div
+          ref={stageRef}
+          className="relative z-10 flex-1 min-h-0 w-full max-w-6xl mx-auto my-2 flex items-center justify-center pointer-events-auto touch-pan-y select-none"
+        >
           {TEAM_CHAPTERS.map((chapter, idx) => {
             const isRightPhoto = chapter.imageSide === 'right';
             const isCutout = chapter.id !== 'company';
