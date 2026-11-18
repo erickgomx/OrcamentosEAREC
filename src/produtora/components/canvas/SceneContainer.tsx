@@ -105,6 +105,11 @@ function VerticalCameraChoreography() {
       experienceState.mousePosition.y,
       mouseLambda
     );
+    experienceState.smoothedPointerActive = THREE.MathUtils.lerp(
+      experienceState.smoothedPointerActive,
+      experienceState.pointerActive,
+      mouseLambda
+    );
 
     const wp = experienceState.cameraWaypoint;
     const parallaxAmp = reducedMotion ? 0 : isMobile ? 0.16 : 0.42;

@@ -5,6 +5,7 @@ import {
   experienceState,
   refreshSectionAnchors,
   setMousePosition,
+  setPointerActive,
   setViewportFlags,
   updateScrollMetrics,
   useExperienceStore,
@@ -25,9 +26,6 @@ export function useSmoothScroll(): void {
 
     const syncFlags = () => {
       setViewportFlags(mediaMobile.matches, mediaMotion.matches);
-      if (mediaMobile.matches) {
-        setMousePosition(0, 0);
-      }
     };
     syncFlags();
 
@@ -95,11 +93,36 @@ export function useSmoothScroll(): void {
       handleNativeScroll();
     }
 
-    const handlePointerMove = (event: PointerEvent) => {
-      if (event.pointerType === 'touch' || experienceState.isMobile) return;
-      const nx = (event.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
-      const ny = -((event.clientY / Math.max(1, window.innerHeight)) * 2 - 1);
-      setMousePosition(nx, ny);
+    const updateNormalizedPointer = (clientX: number, clientY: number) => {
+      const nx = (clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+      const ny = -((clientY / Math.max(1, window.innerHeight)) * 2 - 1);
+      setMousePosition(nx, ny, 1);
+    };
+
+    const handlePointerActive = (event: PointerEvent) => {
+      updateNormalizedPointer(event.clientX, event.clientY);
+    };
+
+    const handlePointerUpOrCancel = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') {
+        setPointerActive(0);
+      }
+    };
+
+    const handlePointerLeave = () => {
+      setPointerActive(0);
+    };
+
+    const handleTouchInput = (event: TouchEvent) => {
+      if (event.touches.length === 0) return;
+      const t = event.touches[0];
+      updateNormalizedPointer(t.clientX, t.clientY);
+    };
+
+    const handleTouchRelease = (event: TouchEvent) => {
+      if (event.touches.length === 0) {
+        setPointerActive(0);
+      }
     };
 
     const handleResize = () => {
@@ -115,7 +138,16 @@ export function useSmoothScroll(): void {
     });
     resizeObserver.observe(document.body);
 
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerdown', handlePointerActive, { passive: true });
+    window.addEventListener('pointermove', handlePointerActive, { passive: true });
+    window.addEventListener('pointerup', handlePointerUpOrCancel, { passive: true });
+    window.addEventListener('pointercancel', handlePointerUpOrCancel, { passive: true });
+    document.documentElement.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+    window.addEventListener('touchstart', handleTouchInput, { passive: true });
+    window.addEventListener('touchmove', handleTouchInput, { passive: true });
+    window.addEventListener('touchend', handleTouchRelease, { passive: true });
+    window.addEventListener('touchcancel', handleTouchRelease, { passive: true });
+    window.addEventListener('blur', handlePointerLeave);
     window.addEventListener('resize', handleResize, { passive: true });
 
     // Initial anchor measurement after first layout paint
@@ -128,7 +160,16 @@ export function useSmoothScroll(): void {
       resizeObserver.disconnect();
       mediaMobile.removeEventListener('change', syncFlags);
       mediaMotion.removeEventListener('change', syncFlags);
-      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerdown', handlePointerActive);
+      window.removeEventListener('pointermove', handlePointerActive);
+      window.removeEventListener('pointerup', handlePointerUpOrCancel);
+      window.removeEventListener('pointercancel', handlePointerUpOrCancel);
+      document.documentElement.removeEventListener('pointerleave', handlePointerLeave);
+      window.removeEventListener('touchstart', handleTouchInput);
+      window.removeEventListener('touchmove', handleTouchInput);
+      window.removeEventListener('touchend', handleTouchRelease);
+      window.removeEventListener('touchcancel', handleTouchRelease);
+      window.removeEventListener('blur', handlePointerLeave);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('scroll', handleNativeScroll);
       experienceState.scrollToProgress = null;

@@ -58,7 +58,7 @@ export function FooterCTA() {
             className="rec-glow-surface w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-[#D6001C] text-white font-mono text-xs sm:text-sm font-bold tracking-[0.18em] uppercase transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-white animate-rec-pulse" />
-            <span>REC ● SOLICITAR ORÇAMENTO AGORA</span>
+            <span>Solicitar Orçamento Agora</span>
             <ArrowUpRight className="w-4 h-4" />
           </a>
 

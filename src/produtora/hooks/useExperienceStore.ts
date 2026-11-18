@@ -273,6 +273,8 @@ export const experienceState = {
   postPhotosLogoProgress: 0, // 0.0 until photos pass; 0.0 -> 1.0 entering final CTA
   mousePosition: { x: 0, y: 0 } as MouseCoords,
   smoothedMouse: { x: 0, y: 0 } as MouseCoords,
+  pointerActive: 0,
+  smoothedPointerActive: 0,
   cameraWaypoint: {
     x: 0,
     y: 0,
@@ -392,9 +394,14 @@ export function updateScrollMetrics(
   }
 }
 
-export function setMousePosition(x: number, y: number): void {
+export function setMousePosition(x: number, y: number, active = 1): void {
   experienceState.mousePosition.x = x;
   experienceState.mousePosition.y = y;
+  experienceState.pointerActive = active;
+}
+
+export function setPointerActive(active: number): void {
+  experienceState.pointerActive = active;
 }
 
 export function setViewportFlags(isMobile: boolean, reducedMotion: boolean): void {

@@ -22,6 +22,8 @@ uniform float uTime;
 uniform float uProgress;
 uniform float uGatherProgress;
 uniform vec2 uMouse;
+uniform vec2 uHalfWorldSize;
+uniform float uPointerActive;
 uniform float uCamY;
 uniform float uLogoWidth;
 uniform float uLogoY;
@@ -86,12 +88,15 @@ void main() {
   // Hard Z-plane clamp when expanded so particles never drift in front of 3D rigs (z ~ 0) or filmstrip (z ~ -2.25)
   pos.z = min(pos.z, mix(uLogoZ + 0.1, -2.6, smoothstep(0.2, 0.75, spread)));
 
-  // Gentle cursor dispersion (like dust in a projector beam)
-  vec2 mouseWorld = vec2(uMouse.x * 4.5, uCamY + uMouse.y * 2.8);
+  // Gentle cursor & touch dispersion (like dust in a projector beam)
+  vec2 mouseWorld = vec2(uMouse.x * uHalfWorldSize.x, uCamY + uMouse.y * uHalfWorldSize.y);
   vec2 delta = pos.xy - mouseWorld;
   float dist = length(delta) + 0.001;
-  float repel = smoothstep(2.4, 0.0, dist) * mix(0.05, 0.42, spread);
+  float repelRadius = mix(1.15, 2.4, spread);
+  float repelFactor = smoothstep(repelRadius, 0.0, dist);
+  float repel = repelFactor * repelFactor * mix(0.62, 0.42, spread) * uPointerActive;
   pos.xy += (delta / dist) * repel;
+  pos.z += repelFactor * 0.25 * vLogoFocus * uPointerActive;
 
   // Slow light sweep travelling across the logo (cinematic "shine")
   float sweep = fract(uTime * 0.085) * 1.8 - 0.9;
@@ -319,6 +324,8 @@ export function ParticlesField() {
       uGatherProgress: { value: 0 },
       uCamY: { value: 0 },
       uMouse: { value: new THREE.Vector2(0, 0) },
+      uHalfWorldSize: { value: new THREE.Vector2(4.5, 2.8) },
+      uPointerActive: { value: 0 },
       uLogoWidth: { value: 5.0 },
       uLogoY: { value: 1.5 },
       uLogoZ: { value: LOGO_Z },
@@ -377,6 +384,8 @@ export function ParticlesField() {
     u.uLogoPointScale.value = logoPointScale;
     u.uHalfBufferH.value = drawSize.y * 0.5;
     u.uMouse.value.set(experienceState.smoothedMouse.x, experienceState.smoothedMouse.y);
+    u.uHalfWorldSize.value.set(visibleW * 0.5, visibleH * 0.5);
+    u.uPointerActive.value = experienceState.smoothedPointerActive;
   });
 
   return (
