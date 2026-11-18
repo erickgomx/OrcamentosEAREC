@@ -301,6 +301,8 @@ const RAW_PHOTOS: Array<[string, PhotoCategory, 'portrait' | 'landscape']> = [
   ['Barbearia (4).webp', 'Barbearia', 'portrait'],
   ['Batizado (1).webp', 'Batizado', 'landscape'],
   ['Batizado (2).webp', 'Batizado', 'portrait'],
+  ['Batizado (3).webp', 'Batizado', 'landscape'],
+  ['Batizado (4).webp', 'Batizado', 'portrait'],
   ['Casamento (1).webp', 'Casamento', 'landscape'],
   ['Casamento (2).webp', 'Casamento', 'landscape'],
   ['Casamento (3).webp', 'Casamento', 'portrait'],
