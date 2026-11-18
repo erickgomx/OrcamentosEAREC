@@ -30,13 +30,13 @@ export const PERF_TIER: PerfTier = detectPerfTier();
 /** Max device pixel ratio allowed per tier. */
 export const PERF_MAX_DPR: Record<PerfTier, number> = {
   low: 1,
-  mid: 1.15,
-  high: 2,
+  mid: 1.1,
+  high: 1.5,
 };
 
 /** Particle budget per tier (1 single GPU draw call with small point sizes). */
 export const PERF_PARTICLES: Record<PerfTier, number> = {
-  low: 900,
-  mid: 1350,
-  high: 4200,
+  low: 850,
+  mid: 1300,
+  high: 3200,
 };

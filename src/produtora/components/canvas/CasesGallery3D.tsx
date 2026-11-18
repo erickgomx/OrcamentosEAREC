@@ -309,10 +309,14 @@ function SpiralVideoCard({
       setVideoActivated(true);
     }
 
-    // Playback & audio sync for spiral cards
+    // Playback & audio sync for spiral cards: decode/play only the active/adjacent card to avoid multi-HD video stalls
     const v = videoRef.current;
     if (v) {
-      const shouldPlay = mesh.visible && !hasModalOpen;
+      const shouldPlay =
+        mesh.visible &&
+        !hasModalOpen &&
+        Math.abs(rel) < 0.68 &&
+        sectionVisibility > 0.25;
       const isCenterFocused = Math.abs(rel) < 0.42 && sectionVisibility > 0.6;
       v.muted = isAudioMuted || !isCenterFocused || hasModalOpen;
 

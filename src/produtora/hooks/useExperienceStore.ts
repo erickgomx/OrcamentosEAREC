@@ -126,7 +126,19 @@ function getElementDocBounds(id: string): { top: number; height: number } | null
 export function refreshSectionAnchors(): void {
   if (typeof window === 'undefined') return;
   const vh = window.innerHeight;
+  const vw = window.innerWidth;
+  experienceState.viewport.width = vw;
+  experienceState.viewport.height = vh;
   const maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+
+  const postB = getElementDocBounds('act-post');
+  if (postB) experienceState.sectionBounds.post = postB;
+  const galleryB = getElementDocBounds('act-gallery');
+  if (galleryB) experienceState.sectionBounds.gallery = galleryB;
+  const photosB = getElementDocBounds('act-photos');
+  if (photosB) experienceState.sectionBounds.photos = photosB;
+  const teamB = getElementDocBounds('act-team');
+  if (teamB) experienceState.sectionBounds.team = teamB;
 
   const resolved: SectionScrollAnchor[] = WAYPOINT_TEMPLATES.map((tpl, idx) => {
     let scrollY = (idx / Math.max(1, WAYPOINT_TEMPLATES.length - 1)) * maxScroll;
@@ -136,38 +148,30 @@ export function refreshSectionAnchors(): void {
     } else if (tpl.key === 'act-cta') {
       scrollY = maxScroll;
     } else if (tpl.key === 'act-post-start') {
-      const b = getElementDocBounds('act-post');
-      if (b) scrollY = b.top;
+      if (postB) scrollY = postB.top;
     } else if (tpl.key === 'act-post-end') {
-      const b = getElementDocBounds('act-post');
-      if (b) scrollY = Math.max(b.top, b.top + b.height - vh);
+      if (postB) scrollY = Math.max(postB.top, postB.top + postB.height - vh);
     } else if (tpl.key === 'act-gallery-start') {
-      const b = getElementDocBounds('act-gallery');
-      if (b) {
-        scrollY = b.top;
-        galleryRange.startY = b.top;
+      if (galleryB) {
+        scrollY = galleryB.top;
+        galleryRange.startY = galleryB.top;
       }
     } else if (tpl.key === 'act-gallery-end') {
-      const b = getElementDocBounds('act-gallery');
-      if (b) {
-        scrollY = Math.max(b.top, b.top + b.height - vh);
+      if (galleryB) {
+        scrollY = Math.max(galleryB.top, galleryB.top + galleryB.height - vh);
         galleryRange.endY = scrollY;
       }
     } else if (tpl.key === 'act-photos-start') {
-      const b = getElementDocBounds('act-photos');
-      if (b) scrollY = b.top;
+      if (photosB) scrollY = photosB.top;
     } else if (tpl.key === 'act-photos-end') {
-      const b = getElementDocBounds('act-photos');
-      if (b) {
-        scrollY = Math.max(b.top, b.top + b.height - vh);
+      if (photosB) {
+        scrollY = Math.max(photosB.top, photosB.top + photosB.height - vh);
       }
     } else if (tpl.key === 'act-team-start') {
-      const b = getElementDocBounds('act-team');
-      if (b) scrollY = b.top;
+      if (teamB) scrollY = teamB.top;
     } else if (tpl.key === 'act-team-end') {
-      const b = getElementDocBounds('act-team');
-      if (b) {
-        scrollY = Math.max(b.top, b.top + b.height - vh);
+      if (teamB) {
+        scrollY = Math.max(teamB.top, teamB.top + teamB.height - vh);
         // Start forming the final CTA logo only after the team section has scrolled
         // past the upper half of the viewport so particles never overlap the founders.
         const clearanceStart = Math.min(maxScroll - 1, scrollY + vh * 0.45);
@@ -288,6 +292,16 @@ export const experienceState = {
     typeof window !== 'undefined'
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
       : false,
+  viewport: {
+    width: typeof window !== 'undefined' ? window.innerWidth : 1280,
+    height: typeof window !== 'undefined' ? window.innerHeight : 900,
+  },
+  sectionBounds: {
+    post: { top: 0, height: 0 },
+    gallery: { top: 0, height: 0 },
+    photos: { top: 0, height: 0 },
+    team: { top: 0, height: 0 },
+  },
   scrollToSection: null as ((sectionId: string) => void) | null,
   scrollToProgress: null as ((progress: number) => void) | null,
   scrollToY: null as ((y: number) => void) | null,

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { ArrowDown, Camera, ChevronDown } from 'lucide-react';
 import { HARDWARE_RIGS } from '../../data/portfolioData';
 import { navigateToSection } from '../../hooks/useExperienceStore';
+import { usePreloaderStore } from '../../utils/assetPreloader';
 
 /**
  * Acts 1 & 2 in natural downward scroll flow:
@@ -10,6 +11,9 @@ import { navigateToSection } from '../../hooks/useExperienceStore';
  *   alternating sides on desktop so each preloaded 3D model has unobstructed screen space.
  */
 export function NarrativeTexts() {
+  const { isReady } = usePreloaderStore();
+  const heroRevealClass = isReady ? 'is-revealed' : '';
+
   return (
     <div className="relative z-10">
       {/* ACT 1: PORTAL REC HERO
@@ -23,14 +27,14 @@ export function NarrativeTexts() {
           <span
             data-reveal="mask"
             style={{ '--reveal-delay': '80ms' } as CSSProperties}
-            className="block"
+            className={`block ${heroRevealClass}`}
           >
             IMAGEM DE CINEMA
           </span>
           <span
             data-reveal="mask"
             style={{ '--reveal-delay': '220ms' } as CSSProperties}
-            className="block text-[#FF0829] drop-shadow-[0_0_28px_rgba(255,8,41,0.4)]"
+            className={`block text-[#FF0829] drop-shadow-[0_0_28px_rgba(255,8,41,0.4)] ${heroRevealClass}`}
           >
             PARA MARCAS E HISTÓRIAS
           </span>
@@ -39,7 +43,7 @@ export function NarrativeTexts() {
         <p
           data-reveal
           style={{ '--reveal-delay': '380ms' } as CSSProperties}
-          className="type-lead mt-6 max-w-[38rem]"
+          className={`type-lead mt-6 max-w-[38rem] ${heroRevealClass}`}
         >
           Filmes comerciais, fotografia editorial e imagens aéreas com drone. Elevamos o nível
           visual da sua empresa e eternizamos seus maiores momentos com acabamento de alto padrão.
@@ -48,7 +52,7 @@ export function NarrativeTexts() {
         <div
           data-reveal
           style={{ '--reveal-delay': '520ms' } as CSSProperties}
-          className="mt-10 sm:mt-12 flex flex-col items-center gap-3"
+          className={`mt-10 sm:mt-12 flex flex-col items-center gap-3 ${heroRevealClass}`}
         >
           <div className="type-eyebrow inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#0E0D0C]/90 border border-[#FF0829]/45 backdrop-blur-md shadow-[0_0_28px_rgba(255,8,41,0.22)] text-[0.72rem] sm:text-[0.8rem] font-semibold text-white">
             <span className="w-2 h-2 rounded-full bg-[#FF0829] animate-rec-pulse" />

@@ -100,7 +100,7 @@ export function useSmoothScroll(): void {
         const preloaderReady = getPreloaderSnapshot().isReady;
         const hasOpenDialog =
           document.body.style.overflow === 'hidden' ||
-          document.querySelector('[role="dialog"]') !== null;
+          getExperienceSnapshot().modalCase !== null;
 
         if (!preloaderReady) {
           lastUserInteractionTime = now;
@@ -177,7 +177,7 @@ export function useSmoothScroll(): void {
         const preloaderReady = getPreloaderSnapshot().isReady;
         const hasOpenDialog =
           document.body.style.overflow === 'hidden' ||
-          document.querySelector('[role="dialog"]') !== null;
+          getExperienceSnapshot().modalCase !== null;
 
         if (!preloaderReady) {
           lastUserInteractionTime = now;

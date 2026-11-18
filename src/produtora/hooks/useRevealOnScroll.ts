@@ -16,6 +16,10 @@ export function useRevealOnScroll(): void {
       document.querySelectorAll<HTMLElement>('[data-reveal]')
     );
 
+    document
+      .querySelectorAll<HTMLElement>('#act-portal [data-reveal]')
+      .forEach((el) => el.classList.add('is-revealed'));
+
     if (typeof IntersectionObserver === 'undefined') {
       elements.forEach((el) => el.classList.add('is-revealed'));
       return;
@@ -33,13 +37,18 @@ export function useRevealOnScroll(): void {
           }
         }
       },
-      { rootMargin: '-12% 0px -12% 0px', threshold: 0.05 }
+      { rootMargin: '-4% 0px -4% 0px', threshold: 0.01 }
     );
 
     const observeAll = () => {
+      const vh = window.innerHeight || 900;
       document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
         if (!observed.has(el)) {
           observed.add(el);
+          const rect = el.getBoundingClientRect();
+          if (rect.top < vh && rect.bottom > 0) {
+            el.classList.add('is-revealed');
+          }
           observer.observe(el);
         }
       });

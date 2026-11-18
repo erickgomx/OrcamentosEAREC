@@ -15,6 +15,7 @@ import {
   SCROLL_SEQUENCE_COUNTS,
   TEXTURE_PATHS,
 } from './assetPaths';
+import { PERF_TIER } from './devicePerf';
 
 export interface SequencePool {
   images: (HTMLImageElement | null)[];
@@ -290,13 +291,7 @@ function preloadImage(url: string, retries = 2): Promise<HTMLImageElement | null
       const img = new Image();
       img.decoding = 'async';
       img.onload = () => {
-        if (typeof img.decode === 'function') {
-          img.decode()
-            .then(() => resolve(img))
-            .catch(() => resolve(img));
-        } else {
-          resolve(img);
-        }
+        resolve(img);
       };
       img.onerror = () => {
         if (remaining > 0) {
@@ -394,8 +389,9 @@ export function startBackgroundSequencePreload(): void {
     url: string;
   }
 
+  const frameStride = PERF_TIER === 'low' ? 3 : PERF_TIER === 'mid' ? 2 : 1;
   const jobs: SequenceJob[] = [];
-  for (let i = 1; i < scrollPools.timeline.count; i++) {
+  for (let i = 1; i < scrollPools.timeline.count; i += frameStride) {
     jobs.push({
       pool: scrollPools.timeline,
       zeroIndex: i,
@@ -403,7 +399,7 @@ export function startBackgroundSequencePreload(): void {
     });
   }
   const maxScopeCount = Math.max(scrollPools.scope1.count, scrollPools.scope2.count);
-  for (let i = 1; i < maxScopeCount; i++) {
+  for (let i = 1; i < maxScopeCount; i += frameStride) {
     if (i < scrollPools.scope1.count) {
       jobs.push({
         pool: scrollPools.scope1,
@@ -480,10 +476,7 @@ export function startAssetPreload(): Promise<void> {
     updateItemStatus('scroll-timeline', 'loading');
     updateItemStatus('scroll-scopes', 'loading');
 
-    const timelineTotal = scrollPools.timeline.count;
-    const scopesTotal = scrollPools.scope1.count + scrollPools.scope2.count;
-    let timelineDone = 0;
-    let scopesDone = 0;
+    const frameStride = PERF_TIER === 'low' ? 3 : PERF_TIER === 'mid' ? 2 : 1;
 
     interface SequenceJob {
       kind: 'timeline' | 'scopes';
@@ -493,7 +486,7 @@ export function startAssetPreload(): Promise<void> {
     }
 
     const timelineJobs: SequenceJob[] = [];
-    for (let i = 0; i < scrollPools.timeline.count; i++) {
+    for (let i = 0; i < scrollPools.timeline.count; i += frameStride) {
       timelineJobs.push({
         kind: 'timeline',
         pool: scrollPools.timeline,
@@ -504,7 +497,7 @@ export function startAssetPreload(): Promise<void> {
 
     const scopeJobs: SequenceJob[] = [];
     const maxScopeCount = Math.max(scrollPools.scope1.count, scrollPools.scope2.count);
-    for (let i = 0; i < maxScopeCount; i++) {
+    for (let i = 0; i < maxScopeCount; i += frameStride) {
       if (i < scrollPools.scope1.count) {
         scopeJobs.push({
           kind: 'scopes',
@@ -522,6 +515,11 @@ export function startAssetPreload(): Promise<void> {
         });
       }
     }
+
+    const timelineTotal = Math.max(1, timelineJobs.length);
+    const scopesTotal = Math.max(1, scopeJobs.length);
+    let timelineDone = 0;
+    let scopesDone = 0;
 
     const runSequenceJob = async (job: SequenceJob) => {
       const img = await preloadImage(job.url, 2);

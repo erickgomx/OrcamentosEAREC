@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { HARDWARE_RIGS } from '../../data/portfolioData';
 import { experienceState, useExperienceStore } from '../../hooks/useExperienceStore';
+import { PERF_TIER } from '../../utils/devicePerf';
 
 const FILMSTRIP_VERTEX_SHADER = /* glsl */ `
 precision highp float;
@@ -138,6 +139,7 @@ void main() {
  */
 export function CentralFilmstrip3D() {
   const { isMobile, reducedMotion } = useExperienceStore();
+  const stripMeshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const connectorsRef = useRef<THREE.Group>(null);
   const stationGroupRefs = useRef<(THREE.Group | null)[]>([]);
@@ -145,7 +147,13 @@ export function CentralFilmstrip3D() {
 
   const stripGeometry = useMemo(() => {
     const width = isMobile ? 0.85 : 1.18;
-    return new THREE.PlaneGeometry(width, 50, 16, 290);
+    const isLightTier = isMobile || PERF_TIER !== 'high';
+    return new THREE.PlaneGeometry(
+      width,
+      50,
+      isLightTier ? 10 : 16,
+      isLightTier ? 160 : 290
+    );
   }, [isMobile]);
 
   const connectorLineGeo = useMemo(() => {
@@ -174,6 +182,16 @@ export function CentralFilmstrip3D() {
   }, [stripGeometry, connectorLineGeo]);
 
   useFrame((state) => {
+    const camY = experienceState.cameraWaypoint.y;
+    const isFilmstripVisible = camY >= -39.5;
+    if (stripMeshRef.current) {
+      stripMeshRef.current.visible = isFilmstripVisible;
+    }
+    if (connectorsRef.current) {
+      connectorsRef.current.visible = !isMobile && isFilmstripVisible;
+    }
+    if (!isFilmstripVisible) return;
+
     const t = reducedMotion ? 0 : state.clock.elapsedTime;
     const vel = experienceState.smoothedVelocity;
     const mouseX = experienceState.smoothedMouse.x;
@@ -182,15 +200,11 @@ export function CentralFilmstrip3D() {
     const mat = materialRef.current;
     if (mat) {
       mat.uniforms.uTime.value = t;
-      mat.uniforms.uCamY.value = experienceState.cameraWaypoint.y;
+      mat.uniforms.uCamY.value = camY;
       mat.uniforms.uProgress.value = experienceState.scrollProgress;
       mat.uniforms.uVelocity.value = vel;
       mat.uniforms.uCurveAmp.value = curveAmp;
       mat.uniforms.uMouse.value.set(mouseX, experienceState.smoothedMouse.y);
-    }
-
-    if (connectorsRef.current) {
-      connectorsRef.current.visible = !isMobile;
     }
 
     if (!isMobile) {
@@ -224,6 +238,7 @@ export function CentralFilmstrip3D() {
     <group>
       {/* Main Vertical 35mm Celluloid Ribbon centered at X=0, Z=-2.25 */}
       <mesh
+        ref={stripMeshRef}
         geometry={stripGeometry}
         position={[0, -21.5, -2.25]}
         frustumCulled={false}

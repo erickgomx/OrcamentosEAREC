@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Activity, Film, SlidersHorizontal } from 'lucide-react';
-import { experienceState, navigateToProgress } from '../../hooks/useExperienceStore';
+import {
+  experienceState,
+  navigateToProgress,
+  refreshSectionAnchors,
+} from '../../hooks/useExperienceStore';
 import {
   getScrollSequencePools,
   type SequencePool,
@@ -152,19 +156,15 @@ export function PostProductionScrubber() {
       );
     }
 
-    let cachedTop = 0;
-    let cachedHeight = 1600;
-    let cachedInnerHeight = window.innerHeight || 900;
-    let cachedInnerWidth = window.innerWidth || 1280;
+    let lastPlayheadProgress = -1;
+    let lastTransformProgress = -1;
+    let lastMouseX = Number.NaN;
+    let lastMouseY = Number.NaN;
+    let lastWasDesktop: boolean | null = null;
 
     const measureSection = () => {
-      const sectionEl = sectionRef.current;
-      if (!sectionEl) return;
-      const rect = sectionEl.getBoundingClientRect();
-      cachedTop = rect.top + window.scrollY;
-      cachedHeight = rect.height;
-      cachedInnerHeight = window.innerHeight || 900;
-      cachedInnerWidth = window.innerWidth || 1280;
+      refreshSectionAnchors();
+      lastTransformProgress = -1;
     };
 
     measureSection();
@@ -172,16 +172,18 @@ export function PostProductionScrubber() {
     if (sectionRef.current) ro.observe(sectionRef.current);
     window.addEventListener('resize', measureSection, { passive: true });
 
-    const tick = (time: number) => {
-      const sectionEl = sectionRef.current;
-      if (!sectionEl) return;
+    const tick = () => {
+      if (experienceState.sectionBounds.post.height <= 0) {
+        refreshSectionAnchors();
+      }
+      const bounds = experienceState.sectionBounds.post;
+      if (bounds.height <= 0) return;
 
-      const rect = sectionEl.getBoundingClientRect();
-      const rectTop = rect.top;
-      const rectBottom = rect.bottom;
-      const innerH = window.innerHeight || cachedInnerHeight;
-      const innerW = window.innerWidth || cachedInnerWidth;
-      const scrollableDistance = Math.max(1, rect.height - innerH);
+      const innerH = experienceState.viewport.height || 900;
+      const innerW = experienceState.viewport.width || 1280;
+      const rectTop = bounds.top - experienceState.scrollY;
+      const rectBottom = rectTop + bounds.height;
+      const scrollableDistance = Math.max(1, bounds.height - innerH);
       const rawProgress = Math.max(
         0,
         Math.min(1, -rectTop / scrollableDistance)
@@ -191,8 +193,12 @@ export function PostProductionScrubber() {
         Math.min(1, (rawProgress - 0.04) / 0.84)
       );
 
-      if (playheadRef.current) {
+      if (
+        playheadRef.current &&
+        Math.abs(localProgress - lastPlayheadProgress) > 0.0005
+      ) {
         playheadRef.current.style.transform = `scaleX(${Math.max(0.01, localProgress)})`;
+        lastPlayheadProgress = localProgress;
       }
 
       // Skip canvas draws and 3D transforms when section is far outside viewport
@@ -205,28 +211,35 @@ export function PostProductionScrubber() {
       const reduced = experienceState.reducedMotion;
       const mx = reduced ? 0 : experienceState.smoothedMouse.x;
       const my = reduced ? 0 : experienceState.smoothedMouse.y;
-      const scrollTilt = (localProgress - 0.5) * 8;
 
-      if (isDesktop) {
-        const floatL = reduced ? 0 : Math.sin(time * 1.15) * 10;
-        const floatR = reduced ? 0 : Math.sin(time * 1.15 + 1.9) * 10;
-        const floatC = reduced ? 0 : Math.cos(time * 0.9) * 4;
-        const rollL = reduced ? 0 : Math.cos(time * 0.85) * 1.8;
-        const rollR = reduced ? 0 : Math.sin(time * 0.85 + 1.2) * 1.8;
+      const transformChanged =
+        isDesktop !== lastWasDesktop ||
+        Math.abs(localProgress - lastTransformProgress) > 0.0005 ||
+        Math.abs(mx - lastMouseX) > 0.001 ||
+        Math.abs(my - lastMouseY) > 0.001;
 
-        if (scope1WrapRef.current) {
-          scope1WrapRef.current.style.transform = `translate3d(${(mx * -10).toFixed(1)}px, ${(floatL + my * -8).toFixed(1)}px, -24px) rotateY(${(22 + mx * 6 - scrollTilt * 0.4).toFixed(2)}deg) rotateX(${(4 - my * 5 + rollL).toFixed(2)}deg) rotateZ(${(-1.5 + rollL * 0.4).toFixed(2)}deg)`;
+      if (transformChanged) {
+        lastWasDesktop = isDesktop;
+        lastTransformProgress = localProgress;
+        lastMouseX = mx;
+        lastMouseY = my;
+
+        if (isDesktop) {
+          const scrollTilt = (localProgress - 0.5) * 8;
+          if (scope1WrapRef.current) {
+            scope1WrapRef.current.style.transform = `translate3d(${(mx * -10).toFixed(1)}px, ${(my * -8).toFixed(1)}px, -24px) rotateY(${(22 + mx * 6 - scrollTilt * 0.4).toFixed(2)}deg) rotateX(${(4 - my * 5).toFixed(2)}deg) rotateZ(-1.5deg)`;
+          }
+          if (timelineWrapRef.current) {
+            timelineWrapRef.current.style.transform = `translate3d(${(mx * 8).toFixed(1)}px, ${(my * 6).toFixed(1)}px, 36px) rotateY(${(mx * 4.5).toFixed(2)}deg) rotateX(${(-my * 3.5).toFixed(2)}deg)`;
+          }
+          if (scope2WrapRef.current) {
+            scope2WrapRef.current.style.transform = `translate3d(${(mx * -10).toFixed(1)}px, ${(my * -8).toFixed(1)}px, -24px) rotateY(${(-22 + mx * 6 + scrollTilt * 0.4).toFixed(2)}deg) rotateX(${(-3 - my * 5).toFixed(2)}deg) rotateZ(1.5deg)`;
+          }
+        } else {
+          if (scope1WrapRef.current) scope1WrapRef.current.style.transform = '';
+          if (timelineWrapRef.current) timelineWrapRef.current.style.transform = '';
+          if (scope2WrapRef.current) scope2WrapRef.current.style.transform = '';
         }
-        if (timelineWrapRef.current) {
-          timelineWrapRef.current.style.transform = `translate3d(${(mx * 8).toFixed(1)}px, ${(floatC + my * 6).toFixed(1)}px, 36px) rotateY(${(mx * 4.5).toFixed(2)}deg) rotateX(${(-my * 3.5).toFixed(2)}deg)`;
-        }
-        if (scope2WrapRef.current) {
-          scope2WrapRef.current.style.transform = `translate3d(${(mx * -10).toFixed(1)}px, ${(floatR + my * -8).toFixed(1)}px, -24px) rotateY(${(-22 + mx * 6 + scrollTilt * 0.4).toFixed(2)}deg) rotateX(${(-3 - my * 5 + rollR).toFixed(2)}deg) rotateZ(${(1.5 + rollR * 0.4).toFixed(2)}deg)`;
-        }
-      } else {
-        if (scope1WrapRef.current) scope1WrapRef.current.style.transform = '';
-        if (timelineWrapRef.current) timelineWrapRef.current.style.transform = '';
-        if (scope2WrapRef.current) scope2WrapRef.current.style.transform = '';
       }
 
       const tlIdx = Math.min(

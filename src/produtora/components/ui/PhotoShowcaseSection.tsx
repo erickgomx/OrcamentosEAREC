@@ -42,6 +42,7 @@ type StreamEntry =
 interface CachedTrackItemMetrics {
   el: HTMLElement;
   center: number;
+  lastU: number;
 }
 
 interface PhotoCardProps {
@@ -228,6 +229,8 @@ export function PhotoShowcaseSection() {
     let smoothedProgress = 0;
     let lastTargetProgress = -1;
     let lastVel = 0;
+    let lastVelSkew1 = Number.NaN;
+    let lastVelSkew2 = Number.NaN;
     let hasRenderedFrame = false;
     let touchOffsetProgress = 0;
     let touchVelProgress = 0;
@@ -238,10 +241,13 @@ export function PhotoShowcaseSection() {
     let lastX = 0;
 
     const measureTracks = () => {
+      refreshSectionAnchors();
       const vpEl = viewportRef.current;
       cachedInnerHeight = window.innerHeight || 900;
       cachedInnerWidth = window.innerWidth || 1200;
       lastTargetProgress = -1;
+      lastVelSkew1 = Number.NaN;
+      lastVelSkew2 = Number.NaN;
       hasRenderedFrame = false;
       if (!vpEl) return;
       vpWidth = Math.max(1, vpEl.clientWidth);
@@ -254,6 +260,7 @@ export function PhotoShowcaseSection() {
           return {
             el,
             center: el.offsetLeft - firstLeft + el.offsetWidth * 0.5,
+            lastU: Number.NaN,
           };
         });
       };
@@ -333,15 +340,22 @@ export function PhotoShowcaseSection() {
       items: CachedTrackItemMetrics[],
       shiftX: number,
       velSkew: number,
+      lastVelSkew: number,
       isCompact: boolean
     ) => {
       const vpCenter = vpWidth * 0.5;
       const halfSpan = Math.max(220, vpWidth * 0.56);
+      const velChanged = Number.isNaN(lastVelSkew) || Math.abs(velSkew - lastVelSkew) >= 0.05;
 
       for (let i = 0; i < items.length; i++) {
-        const { el, center } = items[i];
+        const item = items[i];
+        const { el, center, lastU } = item;
         const screenCenter = center + shiftX;
         const u = Math.max(-1.35, Math.min(1.35, (screenCenter - vpCenter) / halfSpan));
+        if (!Number.isNaN(lastU) && Math.abs(u - lastU) < 0.002 && (isCompact || !velChanged)) {
+          continue;
+        }
+        item.lastU = u;
         const absU = Math.abs(u);
 
         // Keep mobile cards 100% flat-composited (no rotateY/positive Z) to avoid iOS Safari overflow-hidden 3D clipping
@@ -364,16 +378,18 @@ export function PhotoShowcaseSection() {
     };
 
     const tick = () => {
-      const sectionEl = sectionRef.current;
-      if (!sectionEl) return;
+      if (experienceState.sectionBounds.photos.height <= 0) {
+        refreshSectionAnchors();
+      }
+      const bounds = experienceState.sectionBounds.photos;
+      if (bounds.height <= 0) return;
 
-      const rect = sectionEl.getBoundingClientRect();
-      const innerH = window.innerHeight || cachedInnerHeight;
-      const innerW = window.innerWidth || cachedInnerWidth;
+      const innerH = experienceState.viewport.height || cachedInnerHeight;
+      const innerW = experienceState.viewport.width || cachedInnerWidth;
       const vel = experienceState.smoothedVelocity;
-      const rectTop = rect.top;
-      const rectBottom = rect.bottom;
-      const scrollable = Math.max(1, rect.height - innerH);
+      const rectTop = bounds.top - experienceState.scrollY;
+      const rectBottom = rectTop + bounds.height;
+      const scrollable = Math.max(1, bounds.height - innerH);
 
       if (rectBottom < -160 || rectTop > innerH + 160) {
         return;
@@ -444,14 +460,17 @@ export function PhotoShowcaseSection() {
         track1Ref.current.style.transform = isCompact
           ? `translateX(${shift1.toFixed(1)}px)`
           : `translate3d(${shift1.toFixed(1)}px, 0, 0)`;
-        apply3DCurve(metrics1, shift1, velSkew, isCompact);
+        apply3DCurve(metrics1, shift1, velSkew, lastVelSkew1, isCompact);
+        lastVelSkew1 = velSkew;
       }
 
       if (track2Ref.current) {
         track2Ref.current.style.transform = isCompact
           ? `translateX(${shift2.toFixed(1)}px)`
           : `translate3d(${shift2.toFixed(1)}px, 0, 0)`;
-        apply3DCurve(metrics2, shift2, velSkew * 0.8, isCompact);
+        const velSkew2 = velSkew * 0.8;
+        apply3DCurve(metrics2, shift2, velSkew2, lastVelSkew2, isCompact);
+        lastVelSkew2 = velSkew2;
       }
     };
 

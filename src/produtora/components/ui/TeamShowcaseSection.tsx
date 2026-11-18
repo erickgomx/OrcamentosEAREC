@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Users } from 'lucide-react';
 import { TEAM_CHAPTERS } from '../../data/portfolioData';
-import { experienceState } from '../../hooks/useExperienceStore';
+import {
+  experienceState,
+  refreshSectionAnchors,
+} from '../../hooks/useExperienceStore';
 
 interface ChapterWindow {
   enterStart: number;
@@ -68,16 +71,35 @@ export function TeamShowcaseSection() {
   };
 
   useEffect(() => {
+    let lastProgress = -1;
+
+    const handleViewportChange = () => {
+      refreshSectionAnchors();
+      lastProgress = -1;
+    };
+
+    const ro = new ResizeObserver(handleViewportChange);
+    if (sectionRef.current) ro.observe(sectionRef.current);
+
     const updateChapters = () => {
-      const sec = sectionRef.current;
-      if (!sec) return;
+      if (experienceState.sectionBounds.team.height <= 0) {
+        refreshSectionAnchors();
+      }
+      const bounds = experienceState.sectionBounds.team;
+      if (bounds.height <= 0) return;
 
-      const rect = sec.getBoundingClientRect();
-      const innerH = window.innerHeight || 900;
-      if (rect.bottom < -200 || rect.top > innerH + 200) return;
+      const innerH = experienceState.viewport.height || 900;
+      const rectTop = bounds.top - experienceState.scrollY;
+      const rectBottom = rectTop + bounds.height;
+      if (rectBottom < -200 || rectTop > innerH + 200) return;
 
-      const scrollable = Math.max(1, rect.height - innerH);
-      const p = clamp01(-rect.top / scrollable);
+      const scrollable = Math.max(1, bounds.height - innerH);
+      const p = clamp01(-rectTop / scrollable);
+
+      if (Math.abs(p - lastProgress) < 0.0003) {
+        return;
+      }
+      lastProgress = p;
 
       if (progressBarRef.current) {
         progressBarRef.current.style.transform = `scaleX(${Math.max(0.02, p)})`;
@@ -162,11 +184,12 @@ export function TeamShowcaseSection() {
 
     updateChapters();
     gsap.ticker.add(updateChapters);
-    window.addEventListener('resize', updateChapters, { passive: true });
+    window.addEventListener('resize', handleViewportChange, { passive: true });
 
     return () => {
+      ro.disconnect();
       gsap.ticker.remove(updateChapters);
-      window.removeEventListener('resize', updateChapters);
+      window.removeEventListener('resize', handleViewportChange);
     };
   }, []);
 

@@ -112,12 +112,10 @@ html.route-produtora body {
 
 .produtora-root [data-reveal='mask'] {
   opacity: 0;
-  clip-path: inset(0 0 100% 0);
-  transform: translate3d(0, 30px, 0);
+  transform: translate3d(0, 26px, 0);
   transition:
     opacity 420ms var(--ease-cinematic),
-    transform 520ms var(--ease-cinematic),
-    clip-path 520ms var(--ease-cinematic);
+    transform 520ms var(--ease-cinematic);
   transition-delay: 0ms;
 }
 
@@ -134,12 +132,10 @@ html.route-produtora body {
 .produtora-root [data-reveal].is-revealed,
 .produtora-root [data-reveal='mask'].is-revealed {
   opacity: 1;
-  clip-path: inset(0 0 0% 0);
   transform: translate3d(0, 0, 0);
   transition:
     opacity 850ms var(--ease-cinematic),
-    transform 1050ms var(--ease-cinematic),
-    clip-path 1050ms var(--ease-cinematic);
+    transform 1050ms var(--ease-cinematic);
   transition-delay: var(--reveal-delay, 0ms);
 }
 

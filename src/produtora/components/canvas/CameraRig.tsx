@@ -33,16 +33,17 @@ function RigStation({ rig, isMobile, reducedMotion }: RigStationProps) {
   useFrame((state, delta) => {
     // Keep visible during preloader GPU compile, then cull when camera is far away
     const distY = Math.abs(experienceState.cameraWaypoint.y - posY);
-    const shouldRender = !isReady || distY < 7.2;
+    const shouldRender = !isReady || distY < 5.8;
+    const shouldLight = !isReady || distY < 4.5;
 
     if (stationGroupRef.current) {
       stationGroupRef.current.visible = shouldRender;
     }
     if (keyLightRef.current) {
-      keyLightRef.current.visible = shouldRender;
+      keyLightRef.current.visible = shouldLight;
     }
     if (rimLightRef.current) {
-      rimLightRef.current.visible = shouldRender;
+      rimLightRef.current.visible = shouldLight;
     }
 
     if (!shouldRender) return;
