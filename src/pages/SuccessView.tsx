@@ -111,7 +111,6 @@ Podemos agendar uma conversa?`;
         } else {
             // TEMPLATE: ORÇAMENTO PADRÃO (NOVO PADRÃO SOLICITADO)
             const { serviceId, selectionMode, hours, photoQty, videoQty, commercialMode } = quoteDetails;
-            const deviceLabel = quoteDetails.videoDevice === 'camera' ? 'Câmera' : 'Mobile';
 
             // 1. NOME DO PACOTE
             let pacoteLabel = quoteDetails.customOccasionText || "Serviço Selecionado";
@@ -120,7 +119,7 @@ Podemos agendar uma conversa?`;
                 pacoteLabel = `Monte seu Pacote (${typeLabel})`;
             }
 
-            // 2. ESCOPO BASE (Apenas entregáveis inclusos no pacote base)
+            // 2. ESCOPO
             let escopo = "";
             if (quoteDetails.occasion === 'video_production') {
                 const prodItems: string[] = [];
@@ -134,45 +133,11 @@ Podemos agendar uma conversa?`;
                 escopo = prodItems.length > 0 ? prodItems.join(' + ') : 'Personalizado';
 
             } else if (serviceId === 'comm_combo') {
-                escopo = `10 Fotos Tratadas + 1 Vídeo (${deviceLabel}) Incluso`;
-
-            } else if (serviceId === 'comm_video') {
-                escopo = `${photoQty} Vídeo(s) Comercial (${deviceLabel})`;
-
-            } else if (serviceId === 'comm_photo') {
-                escopo = `${photoQty} Fotos Comerciais Tratadas`;
-
-            } else if (serviceId === 'social_video') {
-                escopo = `${photoQty || 1} Vídeo(s) Social (${deviceLabel})`;
-
-            } else if (quoteDetails.occasion === 'wedding') {
-                if (serviceId === 'wedding_essence') {
-                    escopo = `2h de Cobertura + 1 Vídeo ${deviceLabel} Incluso`;
-                } else if (serviceId === 'wedding_base') {
-                    escopo = `2h de Cobertura (Até 80 Fotos Tratadas)`;
-                } else if (serviceId === 'wedding_classic') {
-                    escopo = `Pré-Wedding (10 Fotos) + Cobertura (Até 80 Fotos)`;
-                } else if (serviceId === 'wedding_romance') {
-                    escopo = `Pré-Wedding (10 Fotos) + Making Of (10 Fotos) + Cobertura (Até 80 Fotos)`;
-                } else {
-                    escopo = `2h de Cobertura Base`;
-                }
-
-            } else if (quoteDetails.occasion === 'social') {
-                const baseHours = serviceId === 'graduation' ? 4 : 2;
-                if (selectionMode === 'duration') {
-                    escopo = `${baseHours}h de Cobertura Base`;
-                } else {
-                    escopo = `${photoQty} Fotos Sociais Tratadas`;
-                }
-
-            } else if (serviceId === 'studio_photo') {
-                if (photoQty === 7) escopo = `7 Fotos no Estúdio (Desconto R$ 150)`;
-                else if (photoQty === 13) escopo = `13 Fotos no Estúdio (Promoção R$ 250)`;
-                else escopo = `${photoQty} Fotos Tratadas no Estúdio`;
-
-            } else if (serviceId === 'studio_video') {
-                escopo = `2h de Gravação com Câmera no Estúdio`;
+                escopo = "Combo (10 Fotos + 1 Vídeo)";
+                const extraPhotos = photoQty - 10;
+                const extraVideos = videoQty - 1;
+                if (extraPhotos > 0) escopo += ` + ${extraPhotos} Fotos Extras`;
+                if (extraVideos > 0) escopo += ` + ${extraVideos} Vídeos Extras`;
 
             } else if (serviceId === 'edit_only') {
                 escopo = `${photoQty} Minuto(s) de Edição`;
@@ -181,22 +146,22 @@ Podemos agendar uma conversa?`;
                 escopo = `${photoQty} Bateria(s) de Voo`;
 
             } else if (selectionMode === 'duration') {
-                escopo = `${hours}h de Cobertura Base`;
+                escopo = `${hours} Horas de Cobertura`;
 
             } else {
-                if (serviceId.includes('video')) {
+                if (serviceId.includes('video') || serviceId === 'comm_video' || serviceId === 'studio_video') {
                     escopo = `${photoQty} Vídeos Produzidos`;
                 } else {
                     escopo = `${photoQty} Fotos Tratadas`;
                 }
             }
 
-            // 3. ADICIONAIS CONTRATADOS (Apenas extras reais, sem duplicar com o escopo base)
+            // 3. ADICIONAIS CONTRATADOS (Sem duplicar horas totais nem itens internos de video_production)
             const addonsList: string[] = [];
             if (quoteDetails.addons && quoteDetails.addons.length > 0) {
                 quoteDetails.addons.forEach(addon => {
                     if (!addon) return;
-                    // Para video_production, os itens de produção já compõem o escopo principal
+                    if (addon.startsWith('Horas Extras')) return;
                     if (quoteDetails.occasion === 'video_production') {
                         const isProductionItem = addon.includes('Fotos Tratadas') ||
                             addon.includes('Gravação') ||
@@ -232,12 +197,12 @@ Podemos agendar uma conversa?`;
             }
 
             // 5. MENSAGEM FINAL FORMATADA
-            message = `✨ OLÁ! NOVA PROPOSTA GERADA (Pedido: #${finalOrderId})
+            message = `✨ OLÁ! NOVA PROPOSTA GERADA
 Acabei de configurar meu pacote no site da EAREC. Gostaria de verificar a disponibilidade.
 
 🗓️ AGENDA
 Data: ${formatDate(clientData.date)}
-Local: ${clientData.location}
+Local: ${clientData.location || 'A definir'}
 
 👤 CLIENTE
 Nome: ${finalName}
@@ -262,39 +227,6 @@ Poderiam confirmar a reserva desta data?`;
     }
     
     return `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
-  };
-
-  // --- FUNÇÃO GERADORA DA MENSAGEM OTIMIZADA PARA QR CODE ---
-  // Mantém os dados essenciais para encurtar a URL, permitindo que os módulos/quadradinhos
-  // do padrão interno do QR fiquem bem maiores, legíveis e nunca estourem limite de dados.
-  const generateQrWhatsappUrl = (overrideName?: string) => {
-    const finalName = overrideName || clientData.name || "Cliente";
-    let message = "";
-
-    if (quoteDetails) {
-        const formattedPrice = formatCurrency(totalPrice).replace(/\u00A0/g, ' ');
-
-        let pacoteLabel = quoteDetails.customOccasionText || "Serviço Selecionado";
-        if (quoteDetails.occasion === 'video_production') {
-            const typeLabel = quoteDetails.projectType === 'commercial' ? 'Comercial' : 'Pessoa Física';
-            pacoteLabel = `Monte seu Pacote (${typeLabel})`;
-        }
-
-        const dateStr = formatDate(clientData.date);
-        const locationStr = clientData.location ? ` | ${clientData.location}` : '';
-
-        message = `✨ Olá! Proposta EAREC (Pedido: #${finalOrderId})
-👤 Cliente: ${finalName}
-🎬 Pacote: ${pacoteLabel}
-🗓️ Data: ${dateStr}${locationStr}
-💎 Total: ${formattedPrice}
-
-Gostaria de verificar a disponibilidade e confirmar a reserva!`;
-    } else {
-        message = `✨ Olá! Gostaria de consultar um orçamento na EAREC (Pedido: #${finalOrderId}).\nNome: ${finalName}`;
-    }
-
-    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
   };
 
   // Handler de Clique na Ação (Link ou QR Code)
@@ -532,7 +464,7 @@ Gostaria de verificar a disponibilidade e confirmar a reserva!`;
 
                         <div className="bg-white p-4 rounded-2xl mb-2 border border-stone-200/80 dark:border-transparent shadow-sm">
                             <QRCodeSVG 
-                                value={generateQrWhatsappUrl(clientData.name || tempName)} 
+                                value={generateWhatsappUrl(clientData.name || tempName)} 
                                 size={230}
                                 bgColor={"#ffffff"}
                                 fgColor={"#000000"}
