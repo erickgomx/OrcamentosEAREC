@@ -12,12 +12,16 @@ interface ChapterWindow {
 }
 
 const CHAPTER_WINDOWS: ChapterWindow[] = [
-  // 01 Ary: already visible as section pins, holds cleanly, exits around 0.35
-  { enterStart: -0.05, holdStart: 0.04, holdEnd: 0.25, exitEnd: 0.35 },
-  // 02 Erick: enters as Ary exits, holds in center, exits around 0.69
-  { enterStart: 0.31, holdStart: 0.39, holdEnd: 0.59, exitEnd: 0.69 },
-  // 03 EA REC (Erick & Ary): enters as Erick exits, stays visible to end of section
-  { enterStart: 0.65, holdStart: 0.73, holdEnd: 1.05, exitEnd: 1.15 },
+  // 01 Ary: already visible as section pins, holds cleanly, exits around 0.20
+  { enterStart: -0.05, holdStart: 0.03, holdEnd: 0.14, exitEnd: 0.21 },
+  // 02 Erick: enters as Ary exits, holds in center, exits around 0.41
+  { enterStart: 0.18, holdStart: 0.24, holdEnd: 0.35, exitEnd: 0.42 },
+  // 03 Éricles: enters as Erick exits, holds in center, exits around 0.62
+  { enterStart: 0.39, holdStart: 0.45, holdEnd: 0.56, exitEnd: 0.63 },
+  // 04 Laiz: enters as Éricles exits, holds in center, exits around 0.83
+  { enterStart: 0.60, holdStart: 0.66, holdEnd: 0.77, exitEnd: 0.84 },
+  // 05 EA REC: enters as Laiz exits, stays visible to end of section
+  { enterStart: 0.81, holdStart: 0.87, holdEnd: 1.05, exitEnd: 1.15 },
 ];
 
 function clamp01(v: number): number {
@@ -53,7 +57,7 @@ export function TeamShowcaseSection() {
     const rect = sec.getBoundingClientRect();
     const docTop = rect.top + window.scrollY;
     const scrollable = Math.max(1, sec.offsetHeight - window.innerHeight);
-    const targetProgress = [0.12, 0.49, 0.86][idx] ?? 0.12;
+    const targetProgress = [0.08, 0.29, 0.50, 0.71, 0.92][idx] ?? 0.08;
     const targetY = docTop + targetProgress * scrollable;
 
     if (experienceState.scrollToY) {
@@ -79,7 +83,8 @@ export function TeamShowcaseSection() {
         progressBarRef.current.style.transform = `scaleX(${Math.max(0.02, p)})`;
       }
 
-      const nextIdx = p < 0.33 ? 0 : p < 0.67 ? 1 : 2;
+      const nextIdx =
+        p < 0.20 ? 0 : p < 0.41 ? 1 : p < 0.62 ? 2 : p < 0.83 ? 3 : 4;
       if (nextIdx !== activeIndexRef.current) {
         activeIndexRef.current = nextIdx;
         setActiveIndex(nextIdx);
@@ -95,7 +100,7 @@ export function TeamShowcaseSection() {
 
         const w = CHAPTER_WINDOWS[i];
         const chapter = TEAM_CHAPTERS[i];
-        const isCutout = chapter.id === 'ary' || chapter.id === 'erick';
+        const isCutout = chapter.id !== 'company';
         // Slide direction: Ary's photo slides from/to left (-1), Erick's from/to right (+1)
         const slideSign = chapter.imageSide === 'right' ? 1 : -1;
 
@@ -169,8 +174,8 @@ export function TeamShowcaseSection() {
     <section
       id="act-team"
       ref={sectionRef}
-      aria-label="Fundadores Erick e Ary e a produtora EA REC"
-      className="relative z-10 pointer-events-none min-h-[320vh] md:min-h-[360vh]"
+      aria-label="Fundadores, equipe e a produtora EA REC"
+      className="relative z-10 pointer-events-none min-h-[480vh] md:min-h-[540vh]"
     >
       <div className="sticky top-0 h-[100svh] flex flex-col justify-between pt-14 pb-3 sm:pt-14 sm:pb-5 px-4 sm:px-8 lg:px-16 overflow-hidden pointer-events-none">
         {/* Top Section Header (always visible inside sticky frame; no data-reveal rootMargin clipping) */}
@@ -181,12 +186,12 @@ export function TeamShowcaseSection() {
               <span className="truncate">ATO 06 // QUEM FAZ ACONTECER</span>
             </div>
             <h2 className="type-title mt-0.5 sm:mt-1.5 text-white text-xl sm:text-[clamp(1.6rem,1.1rem+2.2vw,2.75rem)]">
-              Os Fundadores
+              Fundadores & Equipe
             </h2>
           </div>
 
           {/* Interactive Chapter Selector Pills */}
-          <div className="pointer-events-auto inline-flex items-center gap-1 bg-[#0E0D0C]/85 backdrop-blur-md border border-white/10 rounded-xl p-1 font-mono text-[11px]">
+          <div className="pointer-events-auto inline-flex items-center gap-0.5 sm:gap-1 bg-[#0E0D0C]/85 backdrop-blur-md border border-white/10 rounded-xl p-1 font-mono text-[10px] sm:text-[11px]">
             {TEAM_CHAPTERS.map((ch, idx) => {
               const isActive = activeIndex === idx;
               return (
@@ -194,14 +199,14 @@ export function TeamShowcaseSection() {
                   key={ch.id}
                   type="button"
                   onClick={() => jumpToChapter(idx)}
-                  className={`px-3 py-1.5 rounded-lg tracking-wider uppercase transition-colors duration-200 ${
+                  className={`px-2 sm:px-3 py-1.5 rounded-lg tracking-wider uppercase transition-colors duration-200 ${
                     isActive
                       ? 'bg-[#D6001C] text-white font-bold shadow-[0_0_20px_rgba(255,8,41,0.35)]'
                       : 'text-[#B3ADA3] hover:text-white'
                   }`}
                 >
                   {ch.indexLabel}{' '}
-                  <span className="hidden sm:inline">
+                  <span className="hidden md:inline">
                     {ch.id === 'company' ? 'EA REC' : ch.name}
                   </span>
                 </button>
@@ -214,7 +219,7 @@ export function TeamShowcaseSection() {
         <div className="relative z-10 flex-1 min-h-0 w-full max-w-6xl mx-auto my-2 flex items-center justify-center">
           {TEAM_CHAPTERS.map((chapter, idx) => {
             const isRightPhoto = chapter.imageSide === 'right';
-            const isCutout = chapter.id === 'ary' || chapter.id === 'erick';
+            const isCutout = chapter.id !== 'company';
             const isCenteredCompany = chapter.id === 'company';
             return (
               <div
@@ -376,7 +381,8 @@ export function TeamShowcaseSection() {
         {/* Bottom Progress Bar */}
         <div className="relative z-20 max-w-6xl mx-auto w-full flex items-center gap-3 sm:gap-4 shrink-0 pt-1">
           <span className="font-mono text-[10px] tracking-[0.2em] text-[#9E988E] uppercase shrink-0">
-            CAPÍTULO {TEAM_CHAPTERS[activeIndex]?.indexLabel ?? '01'} / 03
+            CAPÍTULO {TEAM_CHAPTERS[activeIndex]?.indexLabel ?? '01'} /{' '}
+            {String(TEAM_CHAPTERS.length).padStart(2, '0')}
           </span>
           <div className="relative flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
             <div

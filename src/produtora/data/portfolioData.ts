@@ -356,7 +356,7 @@ export const PORTFOLIO_PHOTOS: PhotoItem[] = RAW_PHOTOS.map(
 );
 
 export interface TeamChapter {
-  id: 'ary' | 'erick' | 'company';
+  id: 'ary' | 'erick' | 'ericles' | 'laiz' | 'company';
   indexLabel: string;
   eyebrow: string;
   name: string;
@@ -397,14 +397,40 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
     imageSide: 'right',
   },
   {
-    id: 'company',
+    id: 'ericles',
     indexLabel: '03',
-    eyebrow: '03 // A PRODUTORA',
-    name: 'EA REC Mídia',
-    role: 'Erick & Ary • Dois olhares, uma entrega completa',
+    eyebrow: '03 // OPERAÇÃO AÉREA & PERFORMANCE DIGITAL',
+    name: 'Éricles',
+    role: 'Piloto de Drone • Gestor de Tráfego Pago',
     description:
-      'A EA REC nasceu para resolver um problema comum do mercado: contratar foto e vídeo separados e receber materiais que não conversam entre si. Trabalhando em sintonia, entregamos identidade visual unificada, pontualidade e padrão de cinema — do planejamento à entrega final.',
-    highlights: ['Foto e Vídeo Integrados', 'Padrão Cinema', 'Atendimento Direto'],
+      'Une precisão nos céus e estratégia nos bastidores digitais. Na captação aérea, conduz voos cinematográficos que revelam ângulos imponentes de eventos, imóveis e empresas; no tráfego pago, faz com que os criativos produzidos pela EA REC alcancem o público certo e gerem resultado real em vendas e posicionamento.',
+    highlights: ['Voos Cinematográficos', 'Tráfego Pago & Ads', 'Performance & Escala'],
+    imageUrl: getTeamPhotoUrl('éricles.webp'),
+    imageAlt: 'Éricles — Piloto de drone e estrategista de tráfego pago da EA REC',
+    imageSide: 'left',
+  },
+  {
+    id: 'laiz',
+    indexLabel: '04',
+    eyebrow: '04 // PRESENÇA DE CÂMERA & CAMPANHAS',
+    name: 'Laiz',
+    role: 'Modelo Oficial • Casting & Lifestyle',
+    description:
+      'O rosto e a expressividade que dão vida às produções comerciais e editoriais da EA REC. Com presença natural diante das lentes e versatilidade para diferentes estilos de marca, Laiz humaniza campanhas de moda, joias, gastronomia e experiências — conectando o produto ao desejo do público.',
+    highlights: ['Editorial & Moda', 'Campanhas de Marca', 'Expressão & Lifestyle'],
+    imageUrl: getTeamPhotoUrl('Laiz.webp'),
+    imageAlt: 'Laiz — Modelo oficial de campanhas e editoriais da EA REC',
+    imageSide: 'right',
+  },
+  {
+    id: 'company',
+    indexLabel: '05',
+    eyebrow: '05 // A PRODUTORA',
+    name: 'EA REC Mídia',
+    role: 'Equipe Integrada • Da captação à performance',
+    description:
+      'A EA REC nasceu para resolver um problema comum do mercado: contratar profissionais separados e receber materiais que não conversam entre si. Trabalhando em sintonia — direção de fotografia, cinema, drone, casting e tráfego — entregamos identidade visual unificada e padrão de cinema do planejamento à conversão.',
+    highlights: ['Foto e Vídeo Integrados', 'Padrão Cinema', 'Criativo + Performance'],
     imageUrl: getTeamPhotoUrl('erick-e-ary.jpeg'),
     imageAlt: 'Erick e Ary juntos — Sócios-fundadores da produtora EA REC Mídia',
     imageSide: 'left',
