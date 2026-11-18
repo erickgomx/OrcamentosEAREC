@@ -11,7 +11,7 @@ import {
   updateScrollMetrics,
   useExperienceStore,
 } from './useExperienceStore';
-import { usePreloaderStore } from '../utils/assetPreloader';
+import { getPreloaderSnapshot, usePreloaderStore } from '../utils/assetPreloader';
 
 /**
  * Canonical Lenis + GSAP ticker single-loop synchronization.
@@ -71,7 +71,7 @@ export function useSmoothScroll(): void {
       updateScrollMetrics(currentY, progress, vel);
     };
 
-    const IDLE_DELAY_MS = 2800;
+    const IDLE_DELAY_MS = 5000;
 
     if (!mediaMotion.matches) {
       lenis = new Lenis({
@@ -82,10 +82,11 @@ export function useSmoothScroll(): void {
       });
 
       lenis.on('scroll', (e: { scroll: number; progress: number; velocity: number }) => {
+        if (autoScrollY === null) {
+          lastUserInteractionTime = performance.now();
+        }
         updateScrollMetrics(e.scroll ?? window.scrollY, e.progress ?? 0, e.velocity ?? 0);
       });
-
-      window.addEventListener('scroll', handleNativeScroll, { passive: true });
 
       tickerCallback = (time: number) => {
         const now = performance.now();
@@ -96,12 +97,7 @@ export function useSmoothScroll(): void {
 
         if (!lenis) return;
 
-        // Keep experienceState.scrollY synchronized if native touch scroll moved window.scrollY
-        if (Math.abs(window.scrollY - experienceState.scrollY) > 0.5) {
-          handleNativeScroll();
-        }
-
-        const preloaderReady = usePreloaderStore.getState().isReady;
+        const preloaderReady = getPreloaderSnapshot().isReady;
         const hasOpenDialog =
           document.body.style.overflow === 'hidden' ||
           document.querySelector('[role="dialog"]') !== null;
@@ -123,7 +119,6 @@ export function useSmoothScroll(): void {
           !isTouchDown &&
           !hasOpenDialog &&
           !document.hidden &&
-          Math.abs(lenis.velocity) < 0.15 &&
           idleElapsed >= IDLE_DELAY_MS &&
           window.scrollY < maxScroll - 2;
 
@@ -142,9 +137,7 @@ export function useSmoothScroll(): void {
           const stepPx = targetSpeedPxPerSec * easeBlend * dt;
           autoScrollY = Math.min(maxScroll, autoScrollY + stepPx);
 
-          // Advance both native scroll and Lenis internal scroll state smoothly
-          window.scrollTo(0, autoScrollY);
-          lenis.scrollTo(autoScrollY, { immediate: true, force: true });
+          lenis.scrollTo(autoScrollY, { immediate: true });
           const progress = maxScroll > 0 ? autoScrollY / maxScroll : 0;
           updateScrollMetrics(autoScrollY, progress, targetSpeedPxPerSec * easeBlend * 0.016);
         } else if (idleElapsed < IDLE_DELAY_MS) {
@@ -181,7 +174,7 @@ export function useSmoothScroll(): void {
         const now = performance.now();
         const dt = Math.max(0.004, Math.min((now - lastFrameTimestamp) / 1000, 0.05));
         lastFrameTimestamp = now;
-        const preloaderReady = usePreloaderStore.getState().isReady;
+        const preloaderReady = getPreloaderSnapshot().isReady;
         const hasOpenDialog =
           document.body.style.overflow === 'hidden' ||
           document.querySelector('[role="dialog"]') !== null;
