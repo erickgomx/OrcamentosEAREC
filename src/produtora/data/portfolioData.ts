@@ -34,12 +34,13 @@ export interface CaseItem {
 }
 
 export type PhotoCategory =
-  | '15 Anos'
+  | 'Aniversário'
   | 'Barbearia'
   | 'Batizado'
   | 'Casamento'
   | 'Corporativo'
   | 'Esportiva'
+  | 'Gastronomia'
   | 'Joias'
   | 'Turismo & Passeios';
 
@@ -261,6 +262,21 @@ export const PORTFOLIO_CASES: CaseItem[] = [
     synopsis:
       'Vídeos curtos com ritmo acelerado, design sonoro e acabamento visual desenhados para parar o dedo no feed e multiplicar o alcance orgânico da sua marca.',
   },
+  {
+    id: 6,
+    code: 'REEL // 06',
+    title: 'Narrativa Dinâmica & Engajamento',
+    client: 'Produção Social First',
+    category: 'Reels & Performance',
+    aspect: '9:16',
+    videoUrl: getReelVideoUrl(6),
+    duration: '00:35',
+    cameraUsed: 'Sony A6400 + Gimbal',
+    colorProfile: 'EA REC Cinema Grade',
+    deliverable: 'Reel Vertical 9:16 • 60fps',
+    synopsis:
+      'Captação ágil com movimentos precisos, cortes no compasso da trilha e tratamento de cor cinematográfico para destacar marcas, negócios e experiências reais.',
+  },
 ];
 
 /**
@@ -275,25 +291,28 @@ export const PORTFOLIO_CASES: CaseItem[] = [
  * ============================================================================
  */
 const RAW_PHOTOS: Array<[string, PhotoCategory, 'portrait' | 'landscape']> = [
-  ['15 Anos (1).webp', '15 Anos', 'portrait'],
-  ['15 Anos (2).webp', '15 Anos', 'landscape'],
-  ['15 Anos (3).webp', '15 Anos', 'landscape'],
-  ['15 Anos (4).webp', '15 Anos', 'portrait'],
+  ['15 Anos (1).webp', 'Aniversário', 'portrait'],
+  ['15 Anos (2).webp', 'Aniversário', 'landscape'],
+  ['15 Anos (3).webp', 'Aniversário', 'landscape'],
+  ['15 Anos (4).webp', 'Aniversário', 'portrait'],
   ['Barbearia (1).webp', 'Barbearia', 'portrait'],
   ['Barbearia (2).webp', 'Barbearia', 'portrait'],
+  ['Barbearia (3).webp', 'Barbearia', 'portrait'],
+  ['Barbearia (4).webp', 'Barbearia', 'portrait'],
   ['Batizado (1).webp', 'Batizado', 'landscape'],
   ['Batizado (2).webp', 'Batizado', 'portrait'],
   ['Casamento (1).webp', 'Casamento', 'landscape'],
   ['Casamento (2).webp', 'Casamento', 'landscape'],
   ['Casamento (3).webp', 'Casamento', 'portrait'],
   ['Casamento (4).webp', 'Casamento', 'portrait'],
+  ['Comida (1).webp', 'Gastronomia', 'landscape'],
+  ['Comida (5).webp', 'Gastronomia', 'landscape'],
+  ['Comida (6).webp', 'Gastronomia', 'landscape'],
+  ['Comida (7).webp', 'Gastronomia', 'landscape'],
   ['Corporativo (1).webp', 'Corporativo', 'landscape'],
   ['Corporativo (2).webp', 'Corporativo', 'landscape'],
-  ['Corporativo (3).webp', 'Corporativo', 'landscape'],
-  ['Corporativo (4).webp', 'Corporativo', 'landscape'],
-  ['Corporativo (5).webp', 'Corporativo', 'portrait'],
-  ['Corporativo (6).webp', 'Corporativo', 'landscape'],
-  ['Corporativo (7).webp', 'Corporativo', 'portrait'],
+  ['Corporativo (3).webp', 'Corporativo', 'portrait'],
+  ['Corporativo (4).webp', 'Corporativo', 'portrait'],
   ['Esportiva (1).webp', 'Esportiva', 'portrait'],
   ['Esportiva (2).webp', 'Esportiva', 'landscape'],
   ['Esportiva (3).webp', 'Esportiva', 'landscape'],
@@ -305,15 +324,15 @@ const RAW_PHOTOS: Array<[string, PhotoCategory, 'portrait' | 'landscape']> = [
   ['Passeios (1).webp', 'Turismo & Passeios', 'landscape'],
   ['Passeios (2).webp', 'Turismo & Passeios', 'landscape'],
   ['Passeios (3).webp', 'Turismo & Passeios', 'landscape'],
-  ['Passeios (4).webp', 'Turismo & Passeios', 'landscape'],
-  ['Passeios (5).webp', 'Turismo & Passeios', 'portrait'],
+  ['Passeios (4).webp', 'Turismo & Passeios', 'portrait'],
 ];
 
 export const PHOTO_CATEGORIES: PhotoCategory[] = [
   'Corporativo',
   'Casamento',
-  '15 Anos',
+  'Aniversário',
   'Joias',
+  'Gastronomia',
   'Turismo & Passeios',
   'Esportiva',
   'Barbearia',
@@ -326,7 +345,10 @@ export const PORTFOLIO_PHOTOS: PhotoItem[] = RAW_PHOTOS.map(
     filename,
     url: getPortfolioPhotoUrl(filename),
     category,
-    title: filename.replace(/\.webp$/i, ''),
+    title: filename
+      .replace(/\.webp$/i, '')
+      .replace(/^15 Anos/, category)
+      .replace(/^Comida/, category),
     orientation,
   })
 );

@@ -92,11 +92,11 @@ void main() {
   vec2 mouseWorld = vec2(uMouse.x * uHalfWorldSize.x, uCamY + uMouse.y * uHalfWorldSize.y);
   vec2 delta = pos.xy - mouseWorld;
   float dist = length(delta) + 0.001;
-  float repelRadius = mix(1.15, 2.4, spread);
+  float repelRadius = mix(0.48, 1.35, spread);
   float repelFactor = smoothstep(repelRadius, 0.0, dist);
-  float repel = repelFactor * repelFactor * mix(0.62, 0.42, spread) * uPointerActive;
+  float repel = repelFactor * repelFactor * mix(0.28, 0.26, spread) * uPointerActive;
   pos.xy += (delta / dist) * repel;
-  pos.z += repelFactor * 0.25 * vLogoFocus * uPointerActive;
+  pos.z += repelFactor * 0.12 * vLogoFocus * uPointerActive;
 
   // Slow light sweep travelling across the logo (cinematic "shine")
   float sweep = fract(uTime * 0.085) * 1.8 - 0.9;

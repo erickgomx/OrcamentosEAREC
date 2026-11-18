@@ -192,8 +192,9 @@ export function PhotoShowcaseSection() {
       return entries;
     };
 
-    const topCats = PHOTO_CATEGORIES.slice(0, 4); // Corporativo, Casamento, 15 Anos, Joias
-    const botCats = PHOTO_CATEGORIES.slice(4); // Passeios, Esportiva, Barbearia, Batizado
+    const splitIndex = Math.ceil(PHOTO_CATEGORIES.length / 2);
+    const topCats = PHOTO_CATEGORIES.slice(0, splitIndex);
+    const botCats = PHOTO_CATEGORIES.slice(splitIndex);
 
     return {
       stream1: buildStream(topCats, 0),
