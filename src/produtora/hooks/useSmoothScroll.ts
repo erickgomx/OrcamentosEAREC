@@ -34,8 +34,9 @@ export function useSmoothScroll(): void {
     mediaMotion.addEventListener('change', syncFlags);
 
     let lenis: Lenis | null = null;
-    let tickerCallback: ((time: number, deltaTime: number) => void) | null = null;
+    let tickerCallback: ((time: number) => void) | null = null;
     let lastUserInteractionTime = performance.now();
+    let lastFrameTimestamp = performance.now();
     let isTouchDown = false;
     let autoCruiseBlend = 0;
     let autoScrollY: number | null = null;
@@ -48,27 +49,29 @@ export function useSmoothScroll(): void {
 
     const getAutoCruiseSpeedPxPerSec = (act: number): number => {
       // Section-aware pacing so nothing is skipped quickly:
-      // - Act 0/1 (Portal & 3D Camera Rigs): ~68 px/s
-      // - Act 2 (Post-Production Scopes): ~50 px/s
-      // - Act 3 (3D Reels Spiral): ~54 px/s
-      // - Act 4 (Photo Ribbons): ~50 px/s
-      // - Act 5 (Team Chapters): ~46 px/s (extra reading time per member)
-      if (act === 2) return 50;
-      if (act === 3) return 54;
-      if (act === 4) return 50;
-      if (act === 5) return 46;
-      if (act >= 6) return 42;
-      return 68;
+      // - Act 0/1 (Portal & 3D Camera Rigs): ~85 px/s
+      // - Act 2 (Post-Production Scopes): ~65 px/s
+      // - Act 3 (3D Reels Spiral): ~68 px/s
+      // - Act 4 (Photo Ribbons): ~65 px/s
+      // - Act 5 (Team Chapters): ~60 px/s (extra reading time per member)
+      if (act === 2) return 65;
+      if (act === 3) return 68;
+      if (act === 4) return 65;
+      if (act === 5) return 60;
+      if (act >= 6) return 55;
+      return 85;
     };
 
     const handleNativeScroll = () => {
+      const currentY = window.scrollY;
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
-      updateScrollMetrics(window.scrollY, progress, 0);
+      const progress = docHeight > 0 ? currentY / docHeight : 0;
+      const vel = currentY - experienceState.scrollY;
+      updateScrollMetrics(currentY, progress, vel);
     };
 
-    const IDLE_DELAY_MS = 3000;
+    const IDLE_DELAY_MS = 2800;
 
     if (!mediaMotion.matches) {
       lenis = new Lenis({
@@ -82,13 +85,22 @@ export function useSmoothScroll(): void {
         updateScrollMetrics(e.scroll ?? window.scrollY, e.progress ?? 0, e.velocity ?? 0);
       });
 
-      tickerCallback = (time: number, deltaTime: number) => {
-        const dt = Math.min((deltaTime || 16.67) / 1000, 0.05);
+      window.addEventListener('scroll', handleNativeScroll, { passive: true });
+
+      tickerCallback = (time: number) => {
+        const now = performance.now();
+        const dt = Math.max(0.004, Math.min((now - lastFrameTimestamp) / 1000, 0.05));
+        lastFrameTimestamp = now;
+
         lenis?.raf(time * 1000);
 
         if (!lenis) return;
 
-        const now = performance.now();
+        // Keep experienceState.scrollY synchronized if native touch scroll moved window.scrollY
+        if (Math.abs(window.scrollY - experienceState.scrollY) > 0.5) {
+          handleNativeScroll();
+        }
+
         const preloaderReady = usePreloaderStore.getState().isReady;
         const hasOpenDialog =
           document.body.style.overflow === 'hidden' ||
@@ -111,7 +123,7 @@ export function useSmoothScroll(): void {
           !isTouchDown &&
           !hasOpenDialog &&
           !document.hidden &&
-          !lenis.isScrolling &&
+          Math.abs(lenis.velocity) < 0.15 &&
           idleElapsed >= IDLE_DELAY_MS &&
           window.scrollY < maxScroll - 2;
 
@@ -119,8 +131,8 @@ export function useSmoothScroll(): void {
           if (autoScrollY === null) {
             autoScrollY = window.scrollY;
           }
-          // Smooth ~1.6s fade-in into automatic cruise speed
-          autoCruiseBlend = Math.min(1, autoCruiseBlend + dt * 0.65);
+          // Smooth ~1.2s fade-in into automatic cruise speed
+          autoCruiseBlend = Math.min(1, autoCruiseBlend + dt * 0.85);
 
           const act = getExperienceSnapshot().activeSection;
           const targetSpeedPxPerSec = getAutoCruiseSpeedPxPerSec(act);
@@ -130,10 +142,12 @@ export function useSmoothScroll(): void {
           const stepPx = targetSpeedPxPerSec * easeBlend * dt;
           autoScrollY = Math.min(maxScroll, autoScrollY + stepPx);
 
-          // Note: Lenis rounds sub-pixel targets unless immediate: true is passed,
-          // because Animate.advance stops when Math.round(value) === Math.round(to).
-          lenis.scrollTo(autoScrollY, { immediate: true });
-        } else if (!canAutoScroll && idleElapsed < IDLE_DELAY_MS) {
+          // Advance both native scroll and Lenis internal scroll state smoothly
+          window.scrollTo(0, autoScrollY);
+          lenis.scrollTo(autoScrollY, { immediate: true, force: true });
+          const progress = maxScroll > 0 ? autoScrollY / maxScroll : 0;
+          updateScrollMetrics(autoScrollY, progress, targetSpeedPxPerSec * easeBlend * 0.016);
+        } else if (idleElapsed < IDLE_DELAY_MS) {
           autoCruiseBlend = 0;
           autoScrollY = null;
         }
@@ -163,9 +177,10 @@ export function useSmoothScroll(): void {
     } else {
       window.addEventListener('scroll', handleNativeScroll, { passive: true });
 
-      tickerCallback = (_time: number, deltaTime: number) => {
-        const dt = Math.min((deltaTime || 16.67) / 1000, 0.05);
+      tickerCallback = () => {
         const now = performance.now();
+        const dt = Math.max(0.004, Math.min((now - lastFrameTimestamp) / 1000, 0.05));
+        lastFrameTimestamp = now;
         const preloaderReady = usePreloaderStore.getState().isReady;
         const hasOpenDialog =
           document.body.style.overflow === 'hidden' ||

@@ -176,9 +176,12 @@ export function PostProductionScrubber() {
       const sectionEl = sectionRef.current;
       if (!sectionEl) return;
 
-      const rectTop = cachedTop - experienceState.scrollY;
-      const rectBottom = rectTop + cachedHeight;
-      const scrollableDistance = Math.max(1, cachedHeight - cachedInnerHeight);
+      const rect = sectionEl.getBoundingClientRect();
+      const rectTop = rect.top;
+      const rectBottom = rect.bottom;
+      const innerH = window.innerHeight || cachedInnerHeight;
+      const innerW = window.innerWidth || cachedInnerWidth;
+      const scrollableDistance = Math.max(1, rect.height - innerH);
       const rawProgress = Math.max(
         0,
         Math.min(1, -rectTop / scrollableDistance)
@@ -193,12 +196,12 @@ export function PostProductionScrubber() {
       }
 
       // Skip canvas draws and 3D transforms when section is far outside viewport
-      if (rectBottom < -200 || rectTop > cachedInnerHeight + 200) {
+      if (rectBottom < -200 || rectTop > innerH + 200) {
         return;
       }
 
       // 3D floating choreography: Timeline centered, Scopes flying on left & right wings
-      const isDesktop = !experienceState.isMobile && cachedInnerWidth >= 1024;
+      const isDesktop = !experienceState.isMobile && innerW >= 1024;
       const reduced = experienceState.reducedMotion;
       const mx = reduced ? 0 : experienceState.smoothedMouse.x;
       const my = reduced ? 0 : experienceState.smoothedMouse.y;

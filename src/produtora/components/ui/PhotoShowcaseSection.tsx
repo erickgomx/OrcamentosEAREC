@@ -262,7 +262,8 @@ export function PhotoShowcaseSection() {
         if (!trackEl || trackEl.children.length === 0) return 0;
         const first = trackEl.firstElementChild as HTMLElement;
         const last = trackEl.lastElementChild as HTMLElement;
-        return Math.max(0, last.offsetLeft + last.offsetWidth - first.offsetLeft);
+        const measured = Math.max(0, last.offsetLeft + last.offsetWidth - first.offsetLeft);
+        return Math.max(measured, trackEl.scrollWidth);
       };
 
       metrics1 = collect(track1Ref.current);
@@ -274,6 +275,9 @@ export function PhotoShowcaseSection() {
     };
 
     measureTracks();
+    const rafId = requestAnimationFrame(measureTracks);
+    const timer1 = window.setTimeout(measureTracks, 250);
+    const timer2 = window.setTimeout(measureTracks, 900);
     const ro = new ResizeObserver(measureTracks);
     if (viewportRef.current) ro.observe(viewportRef.current);
     if (sectionRef.current) ro.observe(sectionRef.current);
@@ -375,6 +379,10 @@ export function PhotoShowcaseSection() {
         return;
       }
 
+      if (overflow1 <= 0 || overflow2 <= 0 || metrics1.length === 0) {
+        measureTracks();
+      }
+
       const isCompact = innerW < 768;
 
       if (!isTouching && Math.abs(touchVelProgress) > 0.0001) {
@@ -399,16 +407,16 @@ export function PhotoShowcaseSection() {
       // Smoothly damp horizontal travel so fast mobile flicks glide cinematically
       const diff = targetProgress - smoothedProgress;
       const settled =
-        Math.abs(diff) < 0.0004 &&
-        Math.abs(targetProgress - lastTargetProgress) < 0.0002 &&
+        Math.abs(diff) < 0.0002 &&
+        Math.abs(targetProgress - lastTargetProgress) < 0.0001 &&
         Math.abs(vel - lastVel) < 0.05 &&
-        Math.abs(touchVelProgress) < 0.0002;
+        Math.abs(touchVelProgress) < 0.0001;
 
       if (settled && hasRenderedFrame) {
         return;
       }
 
-      const damping = isTouching && isHorizontalSwipe ? 0.35 : isCompact ? 0.1 : 0.14;
+      const damping = isTouching && isHorizontalSwipe ? 0.42 : isCompact ? 0.22 : 0.16;
       smoothedProgress += diff * damping;
       if (Math.abs(diff) < 0.0004) smoothedProgress = targetProgress;
       lastTargetProgress = targetProgress;
@@ -449,6 +457,9 @@ export function PhotoShowcaseSection() {
 
     gsap.ticker.add(tick);
     return () => {
+      cancelAnimationFrame(rafId);
+      window.clearTimeout(timer1);
+      window.clearTimeout(timer2);
       ro.disconnect();
       if (vpNode) {
         vpNode.removeEventListener('touchstart', onTouchStart);
