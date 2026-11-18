@@ -383,7 +383,11 @@ export function PhotoShowcaseSection() {
         touchVelProgress = 0;
       }
 
-      const scrollTargetProgress = Math.max(0, Math.min(1, -rectTop / scrollable));
+      const rawScrollProgress = Math.max(0, Math.min(1, -rectTop / scrollable));
+      const scrollTargetProgress = Math.max(
+        0,
+        Math.min(1, (rawScrollProgress - 0.04) / 0.84)
+      );
       const targetProgress = isCompact
         ? Math.max(0, Math.min(1, scrollTargetProgress + touchOffsetProgress))
         : scrollTargetProgress;
@@ -507,7 +511,7 @@ export function PhotoShowcaseSection() {
       aria-label="Galeria 3D de Fotografia Editorial EA REC"
       className={`relative z-10 pointer-events-none ${
         selectedCategory === 'Todas'
-          ? 'min-h-[380vh] md:min-h-[380vh]'
+          ? 'min-h-[520vh] md:min-h-[520vh]'
           : 'min-h-[100svh] py-24'
       }`}
     >

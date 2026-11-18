@@ -91,7 +91,7 @@ export function ProdutoraApp({ onRequestQuote }: ProdutoraAppProps) {
   }, []);
 
   return (
-    <div className="produtora-root relative bg-[#030303] text-white min-h-screen selection:bg-[#FF0829] selection:text-white overflow-x-hidden">
+    <div className="produtora-root relative bg-[#030303] text-white min-h-screen selection:bg-[#FF0829] selection:text-white">
       {/* Full-screen Preloader Gate waiting for all 3D GLBs before reveal */}
       <PreloaderScreen />
 

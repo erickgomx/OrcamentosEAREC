@@ -58,7 +58,7 @@ export function ReelsShowcaseSection() {
       id="act-gallery"
       aria-label="Galeria em Espiral 3D de Reels"
       className="relative z-10 pointer-events-none"
-      style={{ minHeight: `${Math.max(220, PORTFOLIO_CASES.length * 92)}vh` }}
+      style={{ minHeight: `${Math.max(260, PORTFOLIO_CASES.length * 115)}vh` }}
     >
       <div className="sticky top-0 h-screen flex flex-col justify-between py-20 sm:py-24 px-4 sm:px-8 lg:px-16 pointer-events-none">
         {/* Top Compact Section Header */}

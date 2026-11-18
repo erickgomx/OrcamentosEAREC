@@ -170,7 +170,7 @@ export function TeamShowcaseSection() {
       id="act-team"
       ref={sectionRef}
       aria-label="Fundadores Erick e Ary e a produtora EA REC"
-      className="relative z-10 pointer-events-none min-h-[260vh] md:min-h-[300vh]"
+      className="relative z-10 pointer-events-none min-h-[320vh] md:min-h-[360vh]"
     >
       <div className="sticky top-0 h-[100svh] flex flex-col justify-between pt-14 pb-3 sm:pt-14 sm:pb-5 px-4 sm:px-8 lg:px-16 overflow-hidden pointer-events-none">
         {/* Top Section Header (always visible inside sticky frame; no data-reveal rootMargin clipping) */}

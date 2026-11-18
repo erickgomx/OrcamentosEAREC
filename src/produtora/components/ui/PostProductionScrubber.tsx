@@ -176,9 +176,13 @@ export function PostProductionScrubber() {
       const rectTop = cachedTop - experienceState.scrollY;
       const rectBottom = rectTop + cachedHeight;
       const scrollableDistance = Math.max(1, cachedHeight - cachedInnerHeight);
-      const localProgress = Math.max(
+      const rawProgress = Math.max(
         0,
         Math.min(1, -rectTop / scrollableDistance)
+      );
+      const localProgress = Math.max(
+        0,
+        Math.min(1, (rawProgress - 0.04) / 0.84)
       );
 
       if (playheadRef.current) {
@@ -302,7 +306,7 @@ export function PostProductionScrubber() {
       id="act-post"
       ref={sectionRef}
       aria-label="Engenharia de Pós-Produção e Color Grading"
-      className="relative z-10 min-h-[175vh] px-4 sm:px-8 lg:px-10 py-12"
+      className="relative z-10 min-h-[230vh] px-4 sm:px-8 lg:px-10 py-12"
     >
       <div className="pointer-events-auto sticky top-16 sm:top-20 max-w-[90rem] mx-auto flex flex-col justify-center min-h-[calc(100svh-6rem)]">
         {/* Floating Header — No outer card or border */}

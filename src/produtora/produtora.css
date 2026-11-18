@@ -29,6 +29,7 @@ html.route-produtora body {
   padding: 0;
   background-color: #030303;
   color: #ffffff;
+  overflow-x: clip;
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-feature-settings: 'cv11', 'ss01', 'ss03';
   font-optical-sizing: auto;

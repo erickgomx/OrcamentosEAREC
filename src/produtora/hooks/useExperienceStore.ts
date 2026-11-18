@@ -356,9 +356,13 @@ export function updateScrollMetrics(
   // Compute continuous spiral index (0.0 -> PORTFOLIO_CASES.length - 1) across #act-gallery
   const maxReelIndex = Math.max(0, PORTFOLIO_CASES.length - 1);
   const span = Math.max(1, galleryRange.endY - galleryRange.startY);
-  const rawGallery = Math.max(
+  const rawGalleryLinear = Math.max(
     0,
     Math.min(1, (scrollY - galleryRange.startY) / span)
+  );
+  const rawGallery = Math.max(
+    0,
+    Math.min(1, (rawGalleryLinear - 0.06) / 0.82)
   );
   experienceState.gallerySpiralProgress = rawGallery * maxReelIndex;
 
@@ -444,8 +448,8 @@ export function scrollToReelIndex(index: number): void {
   const maxReelIndex = Math.max(0, PORTFOLIO_CASES.length - 1);
   const clamped = Math.max(0, Math.min(maxReelIndex, index));
   const span = Math.max(0, galleryRange.endY - galleryRange.startY);
-  const targetY =
-    galleryRange.startY + (maxReelIndex > 0 ? (clamped / maxReelIndex) * span : 0);
+  const normalizedRatio = maxReelIndex > 0 ? 0.06 + (clamped / maxReelIndex) * 0.82 : 0;
+  const targetY = galleryRange.startY + normalizedRatio * span;
   if (experienceState.scrollToY) {
     experienceState.scrollToY(targetY);
   }
