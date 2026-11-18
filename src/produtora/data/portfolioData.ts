@@ -24,7 +24,7 @@ export interface CaseItem {
   title: string;
   client: string;
   category: string;
-  aspect: '16:9' | '9:16';
+  aspect: '16:9' | '9:16' | '3:4';
   videoUrl: string;
   duration: string;
   cameraUsed: string;
@@ -276,6 +276,21 @@ export const PORTFOLIO_CASES: CaseItem[] = [
     deliverable: 'Reel Vertical 9:16 • 60fps',
     synopsis:
       'Captação ágil com movimentos precisos, cortes no compasso da trilha e tratamento de cor cinematográfico para destacar marcas, negócios e experiências reais.',
+  },
+  {
+    id: 7,
+    code: 'REEL // 07',
+    title: 'Formato Editorial & Presença no Feed',
+    client: 'Campanha Criativa 3:4',
+    category: 'Editorial & Feed',
+    aspect: '3:4',
+    videoUrl: getReelVideoUrl(7),
+    duration: '00:10',
+    cameraUsed: 'Sony A6400 • Enquadramento 3:4',
+    colorProfile: 'EA REC Film Tone',
+    deliverable: 'Master Editorial 3:4 • 30fps',
+    synopsis:
+      'Proporção 3:4 pensada para ocupar o máximo de área nobre no feed e em anúncios patrocinados, unindo impacto visual imediato e enquadramento de revista.',
   },
 ];
 

@@ -102,7 +102,11 @@ export function ReelsShowcaseSection() {
               <span>{currentCase.code}</span>
               <span className="text-[#8A847A]">•</span>
               <span className="text-[#F5F3F1]">
-                {currentCase.aspect === '16:9' ? '16:9 HORIZONTAL' : '9:16 VERTICAL'}
+                {currentCase.aspect === '16:9'
+                  ? '16:9 HORIZONTAL'
+                  : currentCase.aspect === '3:4'
+                    ? '3:4 EDITORIAL'
+                    : '9:16 VERTICAL'}
               </span>
             </div>
             <h3 className="mt-0.5 font-display text-base sm:text-xl font-bold text-white truncate">

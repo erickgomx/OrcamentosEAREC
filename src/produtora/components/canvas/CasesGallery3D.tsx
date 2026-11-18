@@ -127,12 +127,17 @@ function SpiralVideoCard({
     [item.title, item.category, item.code]
   );
 
-  // Exact aspect-ratio geometry: 16:9 widescreen for Reel (1), 9:16 vertical for Reels (2..5)
+  // Exact aspect-ratio geometry: 16:9 widescreen, 3:4 editorial portrait, or 9:16 vertical
   const geometry = useMemo(() => {
     if (item.aspect === '16:9') {
       return isMobile
         ? new THREE.PlaneGeometry(2.15, 1.21, 24, 16)
         : new THREE.PlaneGeometry(3.2, 1.8, 28, 20);
+    }
+    if (item.aspect === '3:4') {
+      return isMobile
+        ? new THREE.PlaneGeometry(1.5, 2.0, 22, 26)
+        : new THREE.PlaneGeometry(1.92, 2.56, 26, 30);
     }
     return isMobile
       ? new THREE.PlaneGeometry(1.18, 2.1, 20, 28)

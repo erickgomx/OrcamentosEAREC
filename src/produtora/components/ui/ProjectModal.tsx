@@ -65,6 +65,17 @@ export function ProjectModal() {
   if (!modalCase) return null;
 
   const isHorizontal = modalCase.aspect === '16:9';
+  const isThreeFour = modalCase.aspect === '3:4';
+  const aspectClass = isHorizontal
+    ? 'w-full aspect-video max-h-[75vh]'
+    : isThreeFour
+      ? 'h-full max-h-[76vh] aspect-[3/4]'
+      : 'h-full max-h-[78vh] aspect-[9/16]';
+  const fallbackAspectClass = isHorizontal
+    ? 'w-full aspect-video'
+    : isThreeFour
+      ? 'aspect-[3/4] h-full max-h-[70vh]'
+      : 'aspect-[9/16] h-full max-h-[70vh]';
 
   return (
     <div
@@ -89,19 +100,15 @@ export function ProjectModal() {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Video Container: adapts between 16:9 widescreen and 9:16 vertical */}
+        {/* Video Container: adapts between 16:9 widescreen, 3:4 editorial and 9:16 vertical */}
         <div
           className={`${
-            isHorizontal ? 'md:col-span-7' : 'md:col-span-5'
+            isHorizontal ? 'md:col-span-7' : isThreeFour ? 'md:col-span-6' : 'md:col-span-5'
           } bg-[#030303] flex items-center justify-center relative min-h-[260px] sm:min-h-[380px] max-h-[62vh] md:max-h-[88vh] p-4 border-b md:border-b-0 md:border-r border-white/10`}
         >
           {!videoError ? (
             <div
-              className={`relative ${
-                isHorizontal
-                  ? 'w-full aspect-video max-h-[75vh]'
-                  : 'h-full max-h-[78vh] aspect-[9/16]'
-              } rounded-xl overflow-hidden border border-white/10 bg-black`}
+              className={`relative ${aspectClass} rounded-xl overflow-hidden border border-white/10 bg-black`}
             >
               <video
                 ref={videoRef}
@@ -147,9 +154,7 @@ export function ProjectModal() {
             </div>
           ) : (
             <div
-              className={`${
-                isHorizontal ? 'w-full aspect-video' : 'aspect-[9/16] h-full max-h-[70vh]'
-              } rounded-xl border border-[#FF0829]/40 bg-gradient-to-b from-[#160508] to-[#050505] flex flex-col items-center justify-center p-6 text-center`}
+              className={`${fallbackAspectClass} rounded-xl border border-[#FF0829]/40 bg-gradient-to-b from-[#160508] to-[#050505] flex flex-col items-center justify-center p-6 text-center`}
             >
               <span className="w-3 h-3 rounded-full bg-[#FF0829] animate-rec-pulse mb-3" />
               <p className="font-mono text-xs tracking-widest text-[#FF0829] uppercase">
@@ -168,7 +173,7 @@ export function ProjectModal() {
         {/* Metadata & Conversion */}
         <div
           className={`${
-            isHorizontal ? 'md:col-span-5' : 'md:col-span-7'
+            isHorizontal ? 'md:col-span-5' : isThreeFour ? 'md:col-span-6' : 'md:col-span-7'
           } p-6 sm:p-8 flex flex-col justify-between overflow-y-auto`}
         >
           <div>
