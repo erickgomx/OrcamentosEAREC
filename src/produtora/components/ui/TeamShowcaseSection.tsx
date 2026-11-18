@@ -270,13 +270,12 @@ export function TeamShowcaseSection() {
                           decoding="async"
                           className="relative h-full w-auto max-w-none object-contain select-none drop-shadow-[0_24px_45px_rgba(0,0,0,0.85)]"
                           style={{
-                            transform:
-                              chapter.id === 'ary' ? 'scale(1.15)' : 'scale(1.08)',
+                            transform: 'scale(1.08)',
                             transformOrigin: 'bottom center',
                             WebkitMaskImage:
-                              'linear-gradient(to bottom, black 84%, transparent 100%)',
+                              'linear-gradient(to bottom, black 78%, transparent 100%)',
                             maskImage:
-                              'linear-gradient(to bottom, black 84%, transparent 100%)',
+                              'linear-gradient(to bottom, black 78%, transparent 100%)',
                           }}
                         />
                       </div>
