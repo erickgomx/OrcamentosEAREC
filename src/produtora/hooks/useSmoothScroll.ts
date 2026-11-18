@@ -38,10 +38,27 @@ export function useSmoothScroll(): void {
     let lastUserInteractionTime = performance.now();
     let isTouchDown = false;
     let autoCruiseBlend = 0;
+    let autoScrollY: number | null = null;
 
     const markUserInteraction = () => {
       lastUserInteractionTime = performance.now();
       autoCruiseBlend = 0;
+      autoScrollY = null;
+    };
+
+    const getAutoCruiseSpeedPxPerSec = (act: number): number => {
+      // Section-aware pacing so nothing is skipped quickly:
+      // - Act 0/1 (Portal & 3D Camera Rigs): ~68 px/s
+      // - Act 2 (Post-Production Scopes): ~50 px/s
+      // - Act 3 (3D Reels Spiral): ~54 px/s
+      // - Act 4 (Photo Ribbons): ~50 px/s
+      // - Act 5 (Team Chapters): ~46 px/s (extra reading time per member)
+      if (act === 2) return 50;
+      if (act === 3) return 54;
+      if (act === 4) return 50;
+      if (act === 5) return 46;
+      if (act >= 6) return 42;
+      return 68;
     };
 
     const handleNativeScroll = () => {
@@ -50,6 +67,8 @@ export function useSmoothScroll(): void {
       const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
       updateScrollMetrics(window.scrollY, progress, 0);
     };
+
+    const IDLE_DELAY_MS = 3000;
 
     if (!mediaMotion.matches) {
       lenis = new Lenis({
@@ -62,8 +81,6 @@ export function useSmoothScroll(): void {
       lenis.on('scroll', (e: { scroll: number; progress: number; velocity: number }) => {
         updateScrollMetrics(e.scroll ?? window.scrollY, e.progress ?? 0, e.velocity ?? 0);
       });
-
-      const IDLE_DELAY_MS = 3500;
 
       tickerCallback = (time: number, deltaTime: number) => {
         const dt = Math.min((deltaTime || 16.67) / 1000, 0.05);
@@ -80,6 +97,7 @@ export function useSmoothScroll(): void {
         if (!preloaderReady) {
           lastUserInteractionTime = now;
           autoCruiseBlend = 0;
+          autoScrollY = null;
           return;
         }
 
@@ -93,35 +111,31 @@ export function useSmoothScroll(): void {
           !isTouchDown &&
           !hasOpenDialog &&
           !document.hidden &&
+          !lenis.isScrolling &&
           idleElapsed >= IDLE_DELAY_MS &&
-          experienceState.scrollY < maxScroll - 2;
+          window.scrollY < maxScroll - 2;
 
         if (canAutoScroll) {
-          // Smooth 2.2s fade-in into automatic cruise speed
-          autoCruiseBlend = Math.min(1, autoCruiseBlend + dt * 0.45);
+          if (autoScrollY === null) {
+            autoScrollY = window.scrollY;
+          }
+          // Smooth ~1.6s fade-in into automatic cruise speed
+          autoCruiseBlend = Math.min(1, autoCruiseBlend + dt * 0.65);
 
-          // Section-aware pacing so nothing is skipped quickly:
-          // - Act 0/1 (Portal & 3D Camera Rigs): ~42 px/s
-          // - Act 2 (Post-Production Scopes): ~30 px/s
-          // - Act 3 (3D Reels Spiral): ~32 px/s
-          // - Act 4 (Photo Ribbons): ~30 px/s
-          // - Act 5 (Team Chapters): ~28 px/s (extra reading time per member)
           const act = getExperienceSnapshot().activeSection;
-          let targetSpeedPxPerSec = 42;
-          if (act === 2) targetSpeedPxPerSec = 30;
-          else if (act === 3) targetSpeedPxPerSec = 32;
-          else if (act === 4) targetSpeedPxPerSec = 30;
-          else if (act === 5) targetSpeedPxPerSec = 28;
-          else if (act >= 6) targetSpeedPxPerSec = 26;
+          const targetSpeedPxPerSec = getAutoCruiseSpeedPxPerSec(act);
 
           const easeBlend =
             autoCruiseBlend * autoCruiseBlend * (3 - 2 * autoCruiseBlend);
           const stepPx = targetSpeedPxPerSec * easeBlend * dt;
-          const nextY = Math.min(maxScroll, lenis.targetScroll + stepPx);
+          autoScrollY = Math.min(maxScroll, autoScrollY + stepPx);
 
-          lenis.scrollTo(nextY, { immediate: false });
-        } else {
+          // Note: Lenis rounds sub-pixel targets unless immediate: true is passed,
+          // because Animate.advance stops when Math.round(value) === Math.round(to).
+          lenis.scrollTo(autoScrollY, { immediate: true });
+        } else if (!canAutoScroll && idleElapsed < IDLE_DELAY_MS) {
           autoCruiseBlend = 0;
+          autoScrollY = null;
         }
       };
 
@@ -148,16 +162,70 @@ export function useSmoothScroll(): void {
       };
     } else {
       window.addEventListener('scroll', handleNativeScroll, { passive: true });
+
+      tickerCallback = (_time: number, deltaTime: number) => {
+        const dt = Math.min((deltaTime || 16.67) / 1000, 0.05);
+        const now = performance.now();
+        const preloaderReady = usePreloaderStore.getState().isReady;
+        const hasOpenDialog =
+          document.body.style.overflow === 'hidden' ||
+          document.querySelector('[role="dialog"]') !== null;
+
+        if (!preloaderReady) {
+          lastUserInteractionTime = now;
+          autoCruiseBlend = 0;
+          autoScrollY = null;
+          return;
+        }
+
+        const idleElapsed = now - lastUserInteractionTime;
+        const maxScroll = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight
+        );
+
+        const canAutoScroll =
+          !isTouchDown &&
+          !hasOpenDialog &&
+          !document.hidden &&
+          idleElapsed >= IDLE_DELAY_MS &&
+          window.scrollY < maxScroll - 2;
+
+        if (canAutoScroll) {
+          if (autoScrollY === null) {
+            autoScrollY = window.scrollY;
+          }
+          autoCruiseBlend = Math.min(1, autoCruiseBlend + dt * 0.65);
+          const act = getExperienceSnapshot().activeSection;
+          const targetSpeedPxPerSec = getAutoCruiseSpeedPxPerSec(act);
+          const easeBlend =
+            autoCruiseBlend * autoCruiseBlend * (3 - 2 * autoCruiseBlend);
+          autoScrollY = Math.min(
+            maxScroll,
+            autoScrollY + targetSpeedPxPerSec * easeBlend * dt
+          );
+          window.scrollTo({ top: autoScrollY, behavior: 'auto' });
+        } else {
+          autoCruiseBlend = 0;
+          autoScrollY = null;
+        }
+      };
+
+      gsap.ticker.add(tickerCallback);
+
       experienceState.scrollToProgress = (targetProgress: number) => {
+        markUserInteraction();
         const docHeight =
           document.documentElement.scrollHeight - window.innerHeight;
         const targetY = Math.max(0, Math.min(1, targetProgress)) * docHeight;
         window.scrollTo({ top: targetY, behavior: 'auto' });
       };
       experienceState.scrollToSection = (sectionId: string) => {
+        markUserInteraction();
         document.getElementById(sectionId)?.scrollIntoView({ behavior: 'auto' });
       };
       experienceState.scrollToY = (targetY: number) => {
+        markUserInteraction();
         window.scrollTo({ top: targetY, behavior: 'auto' });
       };
       handleNativeScroll();
