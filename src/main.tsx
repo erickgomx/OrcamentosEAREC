@@ -1,5 +1,5 @@
 // ============================================================================
-// EAREC AUDIOVISUAL - ENTRY POINT DO REACT (index.tsx)
+// EAREC AUDIOVISUAL - ENTRY POINT DO REACT (src/main.tsx)
 // ============================================================================
 // Olá, dev! 👋
 // Ponto de entrada oficial da aplicação React 18:
@@ -11,7 +11,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import { ThemeProvider } from './src/context/ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

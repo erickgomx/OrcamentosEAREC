@@ -1,301 +1,115 @@
-# 🔴 EAREC | Orçamento Facilitado
+# EAREC | Plataforma Audiovisual & Simulador de Orçamentos
 
-[![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-007ACC?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-000000?style=for-the-badge&logo=framer)](https://www.framer.com/motion/)
+[![React](https://img.shields.io/badge/React-18.3-20232A?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-007ACC?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-0055FF?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
+[![Three.js](https://img.shields.io/badge/Three.js_%2F_R3F-WebGL-000000?style=for-the-badge&logo=threedotjs)](https://threejs.org/)
 
----
-
-### **"High-End Audiovisual Experience"**
-Uma plataforma de orçamentos projetada para encantar clientes premium. Muito além de uma calculadora, o sistema oferece uma **experiência imersiva e cinematográfica** desde o primeiro contato, refletindo a qualidade visual das produções da EAREC.
-
----
-
-## ✨ Features Principais
-
-*   **🎬 Cinematic UX:** Fundo dinâmico com FilmStrips, transições de estado, feedback tátil e animações suaves.
-*   **⚡ Modo Rápido:** Opção de "Orçamento Flash" para usuários que desejam pular a introdução e ir direto aos valores.
-*   **💰 Precificação Dinâmica:** Motor de cálculo (`PricingEngine`) em tempo real que considera tipo de evento, horas, quantidade de mídia e adicionais.
-*   **🗺️ Logística Inteligente:** Integração com OpenStreetMap (Nominatim) para cálculo automático de frete baseado na distância real de condução. Ajustado para ser responsivo e bem apresentado em dispositivos móveis.
-*   **📅 Validação de Agenda:** Integração segura com Google Calendar (suporte a .env).
-*   **⚡ Aprovação Imediata:** Confirmação direta do orçamento com geração instantânea do ticket e despacho para WhatsApp, eliminando atritos de assinatura.
-*   **🔐 Painel Administrativo:** Área segura para ajuste de preços base sem necessidade de deploy.
-*   **✨ Cards Cinematográficos & Badges Perfeitos:** Cards com cantos perfeitamente recortados (`overflow-hidden`), botão de informações à esquerda e selo **Popular** (`Sparkles`) posicionado exclusivamente à direita, sem sobreposições ou vazamentos.
-*   **🔴 Logomarca EAREC Fluida:** Animação de pulso e *ripple* com ciclo de opacidade fechado (`[0, 0.38, 0]`), eliminando qualquer corte ou piscada (*flicker*) no reinício do loop.
-*   **🔄 Reinício Limpo de Orçamento:** O botão "Configurar novo pedido" redefine o formulário para o Passo 0, gera um novo código de pedido e direciona a rota para `/orcamento` instantaneamente via React State, sem recarregar a página ou reabrir propostas antigas.
-*   **📱 Mobile First:** Design responsivo e otimizado para qualquer dispositivo.
+Aplicação web SPA da **EA REC Mídia** que reúne o **Simulador Interativo de Orçamentos**, a **Experiência 3D da Produtora** (`/produtora`) e a **Vitrine de Portfólio** (`/portfolio`) em uma interface responsiva com alternância de tema Claro/Escuro.
 
 ---
 
-## 🏗 Arquitetura do Projeto
+## Principais Módulos
 
-O projeto segue uma arquitetura **SPA (Single Page Application)** leve com separação clara de responsabilidades (SOLID).
+- **Simulador Interativo de Orçamentos (`/orcamento`):** Configurador em etapas para seleção de categorias, pacotes, adicionais e forma de pagamento, com cálculo em tempo real (`PricingEngine`), estimativa de deslocamento via OpenStreetMap/Nominatim + mapa interativo (`Leaflet`) e despacho direto da proposta para o WhatsApp com suporte a QR Code.
+- **Experiência 3D da Produtora (`/produtora`):** Página interativa carregada sob demanda (`React.lazy`) com cenas WebGL (`@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing`), scroll suave (`GSAP` + `Lenis`), showcase de equipamentos 3D, scrubber de pós-produção, galeria de reels, galeria fotográfica e apresentação da equipe.
+- **Vitrine de Portfólio (`/portfolio`):** Apresentação de produções e categorias com acesso direto ao simulador.
+- **Suporte a Tema Claro/Escuro:** Detecção inicial sem flash de tema (`index.html`) com persistência local via `ThemeContext`.
 
-### 📂 Estrutura de Diretórios
+---
 
-```bash
-src/
-├── components/           # Blocos de Construção da UI
-│   ├── quote/            # Componentes de Negócio (Lógica de Venda)
-│   │   ├── UpsellList    # Seletor visual de serviços e adicionais
-│   │   ├── StickyFooter  # Barra de totalização e ação
-│   │   └── Moodboard     # Galeria visual (Parallax)
-│   └── ui/               # Design System (Botões, Inputs, Logos, FilmStrips)
-│
-├── config/               # Configurações Estáticas
-│   └── AppConfig.ts      # Singleton com textos, branding e tabelas de preço
-│
-├── core/                 # Lógica de Negócio Pura
-│   └── PricingEngine.ts  # Motor de cálculo de preços (Strategy Pattern)
-│
-├── data/                 # Camada de Dados
-│   └── mock.ts           # Configurações iniciais e placeholders
-│
-├── lib/                  # Utilitários
-│   ├── animations.ts     # Variantes do Framer Motion centralizadas
-│   └── utils.ts          # Formatadores e helpers
-│
-├── pages/                # Telas Principais (Views)
-│   ├── IntroView.tsx     # Landing page com botões sólidos e minimalistas (Iniciar Orçamento / Instagram EAREC)
-│   ├── WelcomeView.tsx   # Wizard de captação de dados
-│   ├── QuoteView.tsx     # Configurador de Orçamento
-│   ├── SummaryView.tsx   # Resumo do Pedido e Pagamento
-│   ├── SuccessView.tsx   # Mensagem final e link WhatsApp
-│   └── AdminDashboard.tsx# Painel de controle protegido
-│
-├── services/             # Serviços Externos
-│   ├── AuthService.ts    # Autenticação Admin
-│   ├── CalendarService.ts# Google Calendar API
-│   └── LocationService.ts# OpenStreetMap / Nominatim API
-│
-└── types/                # Definições de Tipo (TypeScript)
-    └── index.ts          # Interfaces centrais (ClientData, QuoteData)
+## Rotas da Aplicação
+
+| Rota | Descrição |
+| :--- | :--- |
+| `/` | Tela inicial de boas-vindas (*Como funciona*) |
+| `/inicio` | Hub principal com acesso ao simulador e à produtora |
+| `/orcamento` | Configurador interativo de orçamento, resumo e envio |
+| `/portfolio` | Vitrine audiovisual de produções |
+| `/produtora` | Experiência WebGL 3D da produtora |
+
+---
+
+## Estrutura de Diretórios
+
+```text
+├── public/                 # Assets estáticos (3D .glb, vídeos, fotos, texturas, favicon, _redirects, .htaccess)
+├── src/
+│   ├── main.tsx            # Ponto de entrada da aplicação React
+│   ├── App.tsx             # Orquestrador de rotas SPA, splash screen e lazy loading
+│   ├── index.css           # Estilos globais e diretivas Tailwind CSS
+│   ├── pages/              # Telas principais (Confirmation, Intro, Welcome, Quote, Summary, Success, Portfolio)
+│   ├── components/
+│   │   ├── quote/          # Componentes do configurador (UpsellList, StickyFooter)
+│   │   └── ui/             # Design system reutilizável (Logo, Button, Loading, LocationMapModal, ThemeToggle, etc.)
+│   ├── produtora/          # Módulo isolado da experiência 3D (/produtora)
+│   ├── core/               # Motor de cálculo de orçamentos (PricingEngine)
+│   ├── services/           # Integrações externas (CalendarService, LocationService)
+│   ├── config/             # Configurações de UI/catálogo (AppConfig) e leitura segura de env (EnvConfig)
+│   ├── hooks/              # Hooks de estado e lógica do orçamento (useQuoteLogic)
+│   ├── context/            # Contexto global de tema (ThemeContext)
+│   ├── lib/                # Variantes de animação (Framer Motion) e utilitários
+│   ├── data/               # Estrutura inicial padrão de proposta
+│   └── types/              # Definições TypeScript de domínio
+├── index.html              # Documento HTML base, fontes e metadados
+├── vercel.json             # Rewrites SPA e cabeçalhos de segurança HTTP
+└── vite.config.ts          # Configuração Vite, chunk splitting e otimização de CSS
 ```
 
 ---
 
-## 🔄 Sistema de Rotas SPA Modular & Extensibilidade de Novas Páginas
-
-A aplicação adota um **Roteador SPA Nativo de alta performance** ([`useRouter`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/hooks/useRouter.ts)), operando via HTML5 History API (`pushState` e `popstate`). 
-
-### ⚡ O roteamento deixa o site mais lento?
-**Não! Pelo contrário:**
-1. **0ms de Latência de Rede:** Não há recarregamento completo da página (full page reload). Ao mudar de rota, apenas o componente React alvo é renderizado em memória.
-2. **Code-Splitting Inteligente (`React.lazy` + `Suspense`):** Cada página gera um chunk JavaScript separado. O visitante baixa apenas o que precisa, deixando a carga inicial até mais rápida do que ter tudo em uma única URL monolítica.
-3. **Deep Linking & Compartilhamento:** Permite enviar links diretos pelo WhatsApp ou redes sociais (ex: `site.com.br/portfolio` ou `site.com.br/orcamento`).
-4. **Histórico Nativo do Navegador:** Os botões nativos de "Voltar" e "Avançar" do navegador e do celular funcionam perfeitamente sem perder o estado.
-
-### 🌐 Rotas Disponíveis
-
-* **`/inicio`** (aliases `/`, `/home`): Landing page cinematográfica com efeito typewriter, botões de ação e acesso rápido.
-* **`/orcamento`** (aliases `/quote`): Configurador interativo com cálculo em tempo real de horas, diárias, fotos e vídeos.
-* **`/resumo`**: Tela de revisão com detalhamento financeiro, cálculo de frete e seleção de pagamento.
-* **`/sucesso`**: Tela de confirmação e geração de código de pedido único com despacho para WhatsApp.
-* **`/portfolio`**: Vitrine audiovisual cinematográfica demonstrando produções, depoimentos e métricas.
-* **`/admin`**: Painel seguro para ajuste dinâmico de tabelas de preços e KM.
-
-### 🧩 Como criar novas páginas no futuro (3 passos simples):
-1. Crie a tela em `src/pages/SuaPagina.tsx`.
-2. Em [`src/hooks/useRouter.ts`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/hooks/useRouter.ts), adicione o identificador da rota no tipo `AppRoute` e no mapeamento de pathnames.
-3. Em [`src/App.tsx`](file:///e:/Pessoal/2025/12%20-%20DEZ/EAREC%20OR%C3%87AMENTOS/src/App.tsx), importe via `lazy(() => import('./pages/SuaPagina'))` e adicione o bloco condicional dentro do `<AnimatePresence>`.
-
-> **Suporte a Refresh / F5 e Hospedagem:**
-> O arquivo `vercel.json` garante reescrita para a raiz em qualquer rota, e o comando `npm run build` gera automaticamente fallbacks estáticos (`404.html`, `inicio.html`, `orcamento.html`, `orcamentos.html`, `resumo.html`, `sucesso.html`, `portfolio.html`).
-
----
-
-## ⚙️ Configuração e Instalação
+## Como Executar Localmente
 
 ### Pré-requisitos
-*   Node.js 18+
-*   NPM ou Yarn
+- Node.js 18+
+- npm
 
-### Instalação
+### Instalação e Desenvolvimento
 
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/earec-proposals.git
+# 1. Clone o repositório
+git clone https://github.com/erickgomx/OrcamentosEAREC.git
+cd OrcamentosEAREC
 
-# Instale as dependências
+# 2. Instale as dependências
 npm install
 
-# Inicie o servidor de desenvolvimento
+# 3. Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-### Configuração de APIs (Segurança)
+### Build de Produção e Preview
 
-Nunca insira chaves de API diretamente no código fonte. Para habilitar recursos reais, utilize variáveis de ambiente.
-Crie um arquivo `.env` na raiz do projeto (se utilizar Vite ou similar):
+```bash
+# Gera o bundle otimizado em dist/ e cria os fallbacks estáticos das rotas
+npm run build
 
-```env
-VITE_GOOGLE_API_KEY=SuaChaveAqui
-VITE_GOOGLE_CALENDAR_ID=SeuIDDeCalendario
+# Visualiza localmente o build de produção
+npm run preview
 ```
 
-*   **Google Calendar:** Se as chaves acima não forem fornecidas, o sistema rodará em **Modo Simulação** (Mock), permitindo o uso da interface sem integração real.
-*   **Mapas:** O sistema utiliza OpenStreetMap (Nominatim), que é gratuito e não requer chave para uso moderado.
+---
+
+## Variáveis de Ambiente (Opcional)
+
+Não armazene chaves ou credenciais no código-fonte. Caso deseje habilitar a verificação real de datas via Google Calendar, copie o arquivo `.env.example` para `.env.local` e preencha as variáveis abaixo:
+
+```env
+VITE_GOOGLE_API_KEY=
+VITE_GOOGLE_CALENDAR_ID=
+```
+
+> Sem essas variáveis configuradas, o serviço de agenda opera automaticamente em modo de simulação para que o simulador funcione normalmente em ambiente local ou preview.
 
 ---
 
-## 🚀 Deploy / Atualizações Online
+## Deploy
 
-Quando usar uma plataforma de preview/deploy automático (como Google AI Studio Build ou Vercel):
-* O **Preview** reflete o ambiente de desenvolvimento em tempo real.
-* O **Link Compartilhado (Produção)** precisa ser atualizado manualmente em alguns casos. Para refletir as novas alterações em produção, vá na opção de **Share / Export** (ou Deploy) da plataforma novamente para forçar um novo build e distribuição.
-
----
-
-## 🔒 Segurança e Admin
-
-O painel administrativo (`/admin` acessível via ícone de cadeado na tela de Welcome) permite alterar os preços base (Km, Taxa de Estúdio, etc.) em tempo de execução.
-
-> **Nota:** A senha padrão está definida no arquivo `src/services/AuthService.ts`. Recomenda-se alterá-la para produção.
+- **Vercel:** Configurado via `vercel.json` com rewrite SPA (`/(.*) -> /`) e headers de segurança (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`).
+- **Hospedagem Estática / Apache / Netlify / Cloudflare Pages:** O script `npm run build` gera `404.html` e páginas HTML estáticas para as rotas principais em `dist/`, além de incluir `public/.htaccess` e `public/_redirects` no pacote final.
 
 ---
 
-## 🎨 Identidade Visual
-
-*   **Tipografia:**
-    *   *Playfair Display*: Títulos e Ênfases (Elegância).
-    *   *Inter*: Interface, Botões e Textos Correntes.
-    *   *Plus Jakarta Sans* (`font-price`): Tipografia dedicada de alta legibilidade para valores monetários (R$), contadores numéricos (horas, fotos, vídeos) e badges de preço, configurada com `tabular-nums lining-nums` para eliminar irregularidades de numerais antigos.
-*   **Cores:**
-    *   🌑 Fundo: `Neutral-950` (#0a0a0a) - "Deep Black"
-    *   🔴 Marca: `Brand-Red` (#DC2626) - Acentos e Calls-to-Action.
-
----
-*Desenvolvido com excelência para EAREC Mídia.*
-
-## 📅 Últimas Atualizações
-
-### [04/10/2026] Otimização Mobile do Teclado, Interação da Logo & Código Aleatório de Pedido
-* **Resolução do Teclado Mobile no Input (`WelcomeView.tsx` & `index.html`):**
-  * Adicionado `interactive-widget=resizes-content` na meta tag `viewport` para gerenciamento nativo do espaço com o teclado virtual no celular.
-  * Removido `overflow-hidden` rígido e centralização forçada que empurrava o input para fora do viewport. Container agora possui rolagem vertical natural (`overflow-y-auto`) e alinhamento inteligente `my-auto`.
-  * Auto-rolagem suave (`scrollIntoView`) ao focar no campo de digitação para garantir visibilidade e centralização imediata acima do teclado.
-  * Padding e espaçamentos do formulário calibrados para telas móveis.
-* **Comportamento Puro no Clique da Logo (`Logo.tsx` & `QuoteView.tsx`):**
-  * Removido o botão de navegação que envolvia a Logo no cabeçalho do configurador.
-  * O clique sobre o logotipo agora executa estritamente a animação de brilho e revela a assinatura *"Revelando seu melhor"*, sem navegar para a home ou reiniciar o estado do usuário.
-### [04/10/2026] Otimização da Animação da Logo & Remoção da Página de Assinatura
-* **Ajuste da Animação de Pulsar da Logomarca (`Logo.tsx`):**
-  * Reduzida a escala máxima do anel de expansão/pulso de `2.5x` para `1.7x`, criando um efeito de pulso luminoso mais sofisticado, contido e cinematográfico.
-  * Adicionado `transformOrigin: "135px 33px"` garantindo expansão perfeitamente concêntrica a partir do centro do círculo REC.
-  * O `viewBox` do SVG foi ampliado para `60 -10 240 85` e recebeu `overflow-visible`, garantindo margem inferior confortável para que a animação e o brilho nunca sejam cortados ou truncados.
-* **Remoção da Página de Assinatura (`QuoteView.tsx`, `SummaryView.tsx`, `useQuoteLogic.ts`):**
-  * Removido o modal e canvas de desenho de assinatura manuscrita (`SignatureModal.tsx`), eliminando fricção e etapas burocráticas no funil de contratação.
-  * O botão no resumo (`SummaryView`) agora confirma o orçamento diretamente via `onConfirm`/`handleConfirmQuote`, conduzindo o usuário imediatamente ao ticket final (`SuccessView`) com o link pronto para envio no WhatsApp.
-  * Bundle final otimizado com redução de tamanho graças ao tree-shaking das dependências de assinatura.
-
-### [04/10/2026] Tipografia Typewriter, Alinhamento de Botões, Limpeza Visual e Cards em Cascata
-* **Remoção de Badge Superior por Excesso (`IntroView.tsx`):** Removido o badge "Cinema & Produção Audiovisual" acima do logotipo, simplificando a composição da página inicial e destacando a logomarca da EAREC.
-* **Centralização Matemática dos Textos dos Botões (`IntroView.tsx`):** Os botões "Iniciar Orçamento" e "Instagram EAREC" agora possuem elementos laterais com larguras perfeitamente idênticas (`w-11 h-11 sm:w-12 sm:h-12`) para o ícone da esquerda e a seta da direita, garantindo que o texto central (`flex-1 text-center`) fique rigorosamente no centro físico do botão em qualquer resolução.
-* **Efeito de Digitação Cinematográfico (`TypewriterText` em `IntroView.tsx`):** O texto *"Você já conhece nosso trabalho ou deseja fazer um orçamento?"* agora surge dinamicamente como se estivesse sendo digitado em tempo real (~36ms por caractere), acompanhado de um cursor pulsante vermelho que se apaga suavemente ao término da digitação, com altura mínima garantida para evitar layout shifts.
-* **Resolução Definitiva do Conflito de Animação dos Cards (`UpsellList.tsx` & `animations.ts`):**
-  * **Compatibilidade Total de Variantes:** `cardItemVariants` agora responde nativamente tanto a `hidden`/`visible` quanto a `enter`/`center`, eliminando conflitos de propagação originados pelo `wizardStepVariants` do configurador.
-  * **Cálculo de Delay por Índice (`custom={index}`):** Todos os cards de categorias (`CategoryCard`), serviços (`ServiceCard`), adicionais (`AddonCard`) e pacotes customizados (`ProductionControlItem`) agora recebem índices ordinais explícitos (0, 1, 2, 3...) com delay incremental de 80ms (`delay: i * 0.08`), surgindo em cascata cinematográfica suave e orgânica independente de re-layouts do DOM.
-  * **Chaveamento Dinâmico de Grid (`services-grid-${category}`):** O container de grid foi chaveado com a categoria ativa, garantindo que a animação gradativa seja disparada novamente a cada troca de categoria.
-
-### [04/10/2026] Rodapé sem Sobreposição, Pacotes Comerciais (Mobile/Câmera), Descontos Estúdio e Ícone Oficial
-* **Visibilidade Natural do Valor Estimado (Sem Bloqueio de Conteúdo):**
-  * O rodapé com o "Valor Estimado" e o botão de ação foi transformado de uma barra fixa flutuante (`fixed bottom-0`) para um módulo integrado ao fluxo natural ao final da tela (`w-full relative mt-8 pb-10`).
-  * O usuário não precisa mais "puxar" ou lutar contra o overscroll elástico do celular para ler os cards de adicionais e logística: ao rolar até o final da tela, o valor estimado e o botão surgem limpos e sem obstruir nenhum texto.
-* **Transição de "Combo" para "Pacote (Foto + Vídeo)" & Seletor de Câmera:**
-  * Substituído o termo "Combo" por **"Pacote (Foto + Vídeo)"**, com preço de vitrine **"A partir de R$ 600"**.
-  * Chaveamento dinâmico entre gravação **Mobile (R$ 600 base)** e **Câmera Profissional (R$ 850 base)** disponível tanto no card quanto na etapa de configuração de quantidades.
-  * Fotos adicionais calculadas a R$ 20/foto e vídeos adicionais ajustados de acordo com o dispositivo (R$ 350 para Mobile, R$ 600 para Câmera).
-* **Descontos Progressivos em Estúdio (Fotos e Vídeo com Câmera):**
-  * Tabela de fotos de estúdio com preços promocionais explícitos: **R$ 150,00 para 7 fotos** e **R$ 250,00 para 13 fotos**, com badges de destaque de "Desconto" e "Promoção".
-  * Especificação clara de que o serviço de vídeo de estúdio inclui **2h de gravação profissional com câmera** (R$ 350 base / R$ 175h extra).
-* **Ícone do Site Idêntico à Logomarca (Favicon Oficial EA ● REC):**
-  * Criado o arquivo vetorial `public/favicon.svg` e atualizados os links `<link rel="icon">` e `<link rel="apple-touch-icon">` em `index.html` com a tipografia estendida **EA**, o ponto de gravação vermelho centralizado (**●**) e a sigla **REC** em vermelho.
-
-### [04/10/2026] Otimização Mobile, Remoção de Lag na Home & Seletor de Câmera Comercial
-* **Ajuste Fino de Cards Mobile (Sem Sobreposição de Badge):**
-  * O selo **Popular** (`Sparkles`) foi miniaturizado em telas móveis (`text-[8px] sm:text-[10px] px-2 py-0.5`), mantendo posição estrita no canto superior direito.
-  * O espaçamento superior interno dos cards (`ServiceCard`) em dispositivos móveis foi aumentado para `pt-7`, garantindo que o ícone centralizado e o conteúdo comecem bem abaixo da tag, eliminando qualquer colisão visual.
-* **Remoção da Animação de Digitação (Zero Lag / 60 FPS):**
-  * Substituído o componente de efeito typewriter da tela inicial (`IntroView`) por tipografia semântica limpa (`h2`) com animação única de entrada (`fadeInUp`), erradicando re-renderizações por caractere via `setInterval` que causavam travamentos em smartphones.
-* **Comércio - Apenas Vídeo (Mobile vs Câmera):**
-  * Especificação clara de que o pacote base de vídeo comercial é **Mobile (R$ 350 por vídeo entregue)**.
-  * Adicionado seletor interativo tanto no próprio card do serviço quanto na etapa de configuração de quantidade (Passo 2), permitindo alternar instantaneamente entre **Mobile (R$ 350)** e **Câmera Profissional (R$ 600)**.
-  * Integração completa no `PricingEngine`, no cálculo de incrementos (`getIncrementPrice`), no detalhamento da proposta (`breakdown`) e nas mensagens de checkout do WhatsApp.
-
-### [04/10/2026] Correções de UX: Teclado Virtual Mobile, Isolamento de Logo e Código de Pedido Dinâmico
-* **Eliminação de Container Fixo e Degradê Conflitante:** Removida a antiga caixa fixa (`fixed bottom-[170px]`) e o degradê de fundo de 450px em `UpsellList.tsx`, que colidia e ficava sobreposto aos cards das fileiras inferiores (ex: Casamento, Social, Comercial) em telas móveis e ao rolar a página.
-* **Painel Integrado no Fluxo Natural do Layout:** Os detalhes e a descrição completa do pacote selecionado agora são renderizados em um painel dedicado logo abaixo do grid de cards (`mt-4 sm:mt-6`), garantindo que os cards nunca mais sobreponham o texto explicativo.
-* **Aprimoramento Estrutural em `ServiceCard`:**
-  * Estrutura flex interna em `justify-between` com altura proporcional (`min-h-[160px] sm:min-h-[190px] md:min-h-[220px]`).
-  * Inclusão de botão discreto com ícone de ajuda (`HelpCircle`) para consulta rápida dos detalhes completos do pacote via modal popup.
-* **Harmonização do Container em `QuoteView.tsx`:** Otimização dos paddings laterais e inferiores (`px-4 sm:px-6 md:px-8 pb-32 sm:pb-36`) para respiro visual impecável acima do `StickyFooter`.
-
-### [04/10/2026] Harmonização e Equilíbrio Visual: Textos, Cards e Botões
-* **Eliminação de Textos Microscópicos:** Remoção de tamanhos ilegíveis em telas menores (`text-[8px]`, `text-[9px]`, `text-[10px]`), substituídos por tamanhos confortáveis e responsivos (`text-xs sm:text-sm` e `text-sm sm:text-base`).
-* **Cards e Módulos Proporcionais (`UpsellList.tsx`):**
-  * `CategoryCard`: Altura mínima balanceada (`min-h-[145px] sm:min-h-[175px] md:min-h-[200px]`), ícones ampliados com fundo contrastante suave e descrições perfeitamente legíveis.
-  * `ServiceCard` & `AddonCard`: Hierarquia clara entre título do pacote, descrição da composição e badges de preço (`font-price`) e destaque ("Popular").
-  * `ProductionControlItem`: Contadores de horas, fotos e vídeos com tipografia generosa e botões de incremento/decremento com áreas de toque acessíveis.
-* **Harmonização de Botões e CTAs (`Button.tsx`, `StickyFooter.tsx`, `IntroView.tsx`):**
-  * Ajuste em todos os tamanhos (`sm`, `md`, `lg`) com tipografia nítida e padding equilibrado.
-  * Botões principais da página inicial ("Iniciar Orçamento" e "Instagram EAREC") com hierarquia nobre e ícones alinhados.
-  * Rodapé Fixo (`StickyFooter`): Destaque elegante para o "Valor Estimado", tipografia de valor total de alto impacto (`text-2xl sm:text-3xl md:text-4xl font-price`) e botão de ação rápido.
-* **Resumo e Checkout Elegantes (`SummaryView.tsx`):** Textos descritivos, discriminador de itens e CTA de confirmação reescalonados para clareza máxima de entendimento pelo cliente.
-
-### [04/10/2026] Tabela de Fotos do Estúdio: R$ 25/foto com Desconto em 7 e 13 Fotos
-* **Regra de Precificação Estúdio:** Cada foto custa R$ 25 (`qty * 25`), e o desconto é ativado estritamente nos pacotes de **7 fotos (R$ 150)** e **13 fotos (R$ 250)** (e R$ 25 por foto adicional acima de 13).
-* **Eliminação de Curvas Arbitrárias:** Removidas interpolações artificiais (como R$ 170 para 8, R$ 190 para 9, etc.), garantindo coerência matemática total: 1 a 6 fotos = R$ 25/cada; 7 fotos = R$ 150; 8 a 12 fotos = R$ 25/cada (R$ 200 a R$ 300); 13 fotos = R$ 250; 14+ fotos = R$ 250 + R$ 25 por foto extra.
-* **Badge Dinâmico e Tooltip em Tempo Real:** Atualizado o tooltip para indicar incremento fixo de `+ R$ 25` e badge no seletor que destaca visualmente quando os descontos de 7 e 13 fotos estão ativos.
-
-### [04/10/2026] Botão do Próximo Passo Sempre Visível na Tela
-* **Barra Fixa com Botão de Próximo Passo Permanente:** O rodapé de navegação (`StickyFooter`) agora está fixado no rodapé da viewport (`fixed bottom-0 left-0 right-0 z-40`), mantendo o botão do próximo passo permanentemente acessível durante todas as etapas do configurador (`Passo 1: Categoria`, `Passo 2: Serviço`, `Passo 3: Detalhes`). O usuário nunca mais precisa rolar até o fim da página para avançar.
-* **Layout Compacto e Ergonômico:** Reformulado em linha horizontal (`flex items-center justify-between`) para smartphones com apenas ~65px de altura e suporte a safe area (`env(safe-area-inset-bottom)`), deixando a visualização do conteúdo desobstruída.
-* **Espaçamento Inferior Seguro:** Adicionado `pb-32 sm:pb-40` no contêiner principal para que todos os textos, cartões e disclaimers rolem completamente acima do rodapé flutuante, sem qualquer sobreposição.
-* **Rótulos e Estados Informativos:** No Passo 1, o botão orienta "Selecione uma Categoria" e, ao clicar, transforma-se instantaneamente em "Escolher Serviço" com o gradiente e brilho ativados.
-
-### [04/10/2026] Sistema de Rotas Completo, Opção de Vídeo no Social (Mobile/Câmera) e Correção de Rolagem
-* **Sistema de Rotas Universal (Multi-ambiente):**
-  * Roteamento SPA completo e independente para todas as páginas: `/inicio`, `/orcamento`, `/resumo`, `/sucesso`, `/portfolio`, `/admin`.
-  * Criação de regras de reescrita Apache (`.htaccess` e `public/.htaccess`) e Netlify/Cloudflare (`_redirects`).
-  * Geração automática no `npm run build` de diretórios físicos estáticos em `dist/` (`dist/inicio/index.html`, `dist/orcamento/index.html`, `dist/resumo/index.html`, `dist/sucesso/index.html`, etc.) garantindo carregamento direto e recarregamento (F5) sem erro 404 em qualquer servidor web.
-  * Suporte híbrido no hook `useRouter` tanto para HTML5 History API (`pushState`/`popState`) quanto para fallback hash (`#/orcamento`).
-* **Categoria Social: Opção de Vídeo (Mobile vs Câmera) & Base de 10 Fotos:**
-  * Nos cards de eventos sociais por unidade, o texto foi atualizado de "R$ 25/unidade" para **"A partir de R$ 250"**, referente ao pack base mínimo de 10 fotos (com fotos extras a R$ 25 cada).
-  * Adicionada a opção para o cliente incluir **Vídeo Social**: seletor inteligente entre **Sem Vídeo**, **📱 Mobile (+R$ 350)** e **📷 Câmera (+R$ 600)** com controle de quantidade.
-  * Card dedicado de "Vídeo Social" no Step 2 e seletor intuitivo no Step 3 de configuração.
-  * Integração no motor de cálculo (`PricingEngine`), etiquetas do resumo (`SummaryView`) e escopo gerado para o WhatsApp (`SuccessView`).
-* **Correção do Bug de Informações ao Rolar a Tela:**
-  * Eliminado o estado e listener de `onScroll` que disparavam re-renderizações a cada pixel rolado.
-  * Estabilização de `clientData` e `tempData` com fallbacks persistentes ao `localStorage`, impedindo que nome, data ou localização pisquem ou sumam ao rolar a página.
-
-### [04/10/2026] API Gratuita do Google, Saída Individual Orgânica & Otimização de Performance
-* **API Gratuita do Google (Google Maps Tiles):** Integração restaurada e otimizada da camada de mapa oficial do Google Maps Roadmap (`https://{s}.google.com/vt/lyrs=m...` via subdomínios `mt0` a `mt3`), 100% gratuita, sem necessidade de chave paga ou fatura, com `preconnect` no `index.html` para latência zero e fallback dinâmico para OpenStreetMap.
-* **Saída Individual Orgânica por Elemento (Sem Bloco Rígido):** A página não sai mais como um bloco retangular estático. Cada componente filho (Badge, Logotipo, Título, Botões de Ação, Cards de Serviços, Divisores, Inputs e Rodapé) possui sua própria animação física com aceleração orgânica (`CINE_EASE_ORGANIC [0.32, 0, 0.67, 0]`) e desfoque óptico, saindo em efeito cascata escalonado (`staggerChildren: 0.045, staggerDirection: -1`).
-* **Entrada Cinematográfica Suave:** Os elementos entram em cascata física natural (`[0.16, 1, 0.3, 1]`), proporcionando uma experiência de movimento contínuo e vivo.
-* **Otimização Extrema de Performance & Leveza:**
-  * **Code Splitting Inteligente no Vite (`manualChunks`):** Separação em chunks dedicados (`vendor-react`, `vendor-motion`, `vendor-map`, `vendor-icons`), reduzindo o tempo de carregamento inicial e otimizando o cache de navegador via HTTP/2.
-  * **Aceleração por Hardware (GPU):** Regras de aceleração via `.gpu-accelerated` e aceleração composicional no CSS (`translate3d(0,0,0)`, `will-change`).
-  * **Cache em Memória de Logística:** `LocationService` agora guarda consultas de geolocalização e distâncias em cache (`Map`), eliminando requisições duplicadas e tornando cálculos repetidos instantâneos.
-
-### [04/10/2026] Renovação Visual & Sistema de Animações Fluidas Deslizantes
-* **Física Cinematográfica e Curva Bezier (`CINE_EASE [0.16, 1, 0.3, 1]`):** Novo motor de animações com curvas de desaceleração suave, física elástica (Spring) e desfoque óptico (`filter: blur`) coordenado em entradas e saídas.
-* **Transição Bidirecional Deslizante entre Rotas (`/inicio` <-> `/orcamento`):** Navegação fluida que detecta avanço ou retorno, deslizando as telas para a esquerda ao avançar e para a direita ao voltar (`pageSlideVariants` com `routeDirection`).
-* **Etapas do Configurador Deslizantes (`wizardStepVariants`):** Deslizamento direcional nos passos de `QuoteView` e `WelcomeView`, corrigindo e refinando o fluxo de troca de etapas.
-* **Modais com Slide Vertical & Backdrop Blur:** `SignatureModal`, `AddonUpsellModal` e menus flutuantes agora abrem deslizando suavemente de baixo para cima com desfoque de fundo profundo.
-* **Refinamento Estético e Micro-interações:** Cards e botões atualizados com glassmorphism (`backdrop-blur-md`), bordas com iluminação sutil, feedback tátil com molas responsivas e botões de controle otimizados.
-
-### [04/10/2026] Sistema de Rotas (/inicio e /orcamento) & Tipografia de Valores
-* **Roteamento SPA Nativo (`/inicio` e `/orcamento`):** Implementado hook de roteamento leve `useRouter` integrado à History API (`pushState`/`popState`), permitindo URLs diretas `/inicio` e `/orcamento` sem recarregar a página, além de suporte de retorno suave (`← Início` no topo e logo clicável).
-* **Servidor e Deploy Sem Erro 404:** Adicionado `vercel.json` com regra de rewrite e automação no `package.json` para gerar cópias estáticas de fallback (`404.html`, `inicio.html`, `orcamento.html`, `orcamentos.html`).
-* **Nova Fonte para Valores (`font-price`):** Substituídos todos os valores monetários e contadores numéricos que usavam `font-serif` pela nova classe `font-price` baseada em *Plus Jakarta Sans* com numerais alinhados e tabulares.
-* **Botões da Página Inicial Sólidos:** Botões "Iniciar Orçamento" e "Instagram EAREC" com fundo sólido escuro sem degradês ou brilhos exagerados.
-* **Otimização de Splash Screen:** Exibição inteligente apenas na primeira carga da sessão (`sessionStorage`), acelerando instantaneamente a navegação entre rotas.
-
-### [14/08/2026] Refinamento Lógico e Visual
-* **Painel de Comercial vs Pessoal:** A lógica de cálculo do motor de preços (`PricingEngine`) foi corrigida para aplicar corretamente os valores extras baseados na escolha do tipo de projeto (Comercial vs Pessoa Física).
-* **Tooltips de Preço:** O componente `PriceTooltip` nos botões de soma agora exibe o valor correto do acréscimo de serviços (ex: H/Extra de estúdio para R$ 175) de forma dinâmica ao invés de ficar travado em R$ 0.
-* **Layout Adaptativo (Estúdio):** Quando o usuário seleciona a categoria Estúdio e a visualização é de "Tempo de Cobertura", a caixa de "Quantidade" foi removida para simplificar a visualização, evitando redundância.
-* **Textos de Pagamento:** Os textos explicativos para os métodos de pagamento **Pix** e **Espécie** foram atualizados no SummaryView para: "Pagamento de 50% para marcar e 50% até a data de realização do serviço."
-* **Card Personalizado:** Adicionado o card "Personalizado" na seção "Comercial".
-* **Promoção de Fotos Estúdio:** Mínimo de fotos alterado para 7. Ao atingir 13 ou mais fotos, o valor da 13ª fica cravado em 250 (preço promocional) com um selo "Promoção" aparecendo no seletor de quantidade.
+*Desenvolvido para EA REC Mídia.*

@@ -138,17 +138,6 @@ export interface QuoteData {
   moodboardImages: string[];
 }
 
-/**
- * Propriedades compartilhadas para o componente estilizado de Checkbox.
- */
-// Props para componentes de UI
-export interface CheckboxProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  label?: string;
-  price?: number;
-}
-
 // --- NOVOS TIPOS PARA A FASE 2 (POO) ---
 
 /**
