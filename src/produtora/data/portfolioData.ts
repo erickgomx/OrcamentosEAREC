@@ -407,7 +407,7 @@ export const TEAM_CHAPTERS: TeamChapter[] = [
     description:
       'Responsável pela direção de vídeo, operação de câmeras, voos de drone e finalização de cor. Erick conduz cada projeto desde o roteiro visual até o corte final, combinando ritmo, áudio e estética cinematográfica para transformar vídeos em ferramentas reais de posicionamento e venda.',
     highlights: ['Filmes & Reels', 'Captação Aérea', 'Edição & Cor'],
-    imageUrl: getTeamPhotoUrl('erick.png'),
+    imageUrl: getTeamPhotoUrl('erick.webp'),
     imageAlt: 'Erick — Sócio-fundador, filmmaker e editor da EA REC',
     imageSide: 'right',
   },
