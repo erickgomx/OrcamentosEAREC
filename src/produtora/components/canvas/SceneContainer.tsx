@@ -43,33 +43,39 @@ function StudioEnvironment() {
  * while the Preloader curtain is still covering the viewport, avoiding first-scroll hitches.
  */
 function GpuPrecompiler() {
-  const { gl, scene, camera } = useThree();
+  const { gl, scene, camera, invalidate } = useThree();
   const { assetsLoaded } = usePreloaderStore();
   const compiledRef = useRef(false);
 
   useEffect(() => {
     if (!assetsLoaded || compiledRef.current) return;
-    compiledRef.current = true;
 
     let raf1 = 0;
     let raf2 = 0;
+    let raf3 = 0;
     raf1 = requestAnimationFrame(() => {
       raf2 = requestAnimationFrame(() => {
+        compiledRef.current = true;
         try {
           gl.compile(scene, camera);
         } catch {
           // Ignore edge cases if context is not yet active
-        } finally {
-          notifyGpuReady();
         }
+        // Trigger a warm-up render pass (including EffectComposer) while the curtain is closed
+        invalidate();
+        raf3 = requestAnimationFrame(() => {
+          invalidate();
+          notifyGpuReady();
+        });
       });
     });
 
     return () => {
       cancelAnimationFrame(raf1);
       cancelAnimationFrame(raf2);
+      cancelAnimationFrame(raf3);
     };
-  }, [assetsLoaded, gl, scene, camera]);
+  }, [assetsLoaded, gl, scene, camera, invalidate]);
 
   return null;
 }
@@ -177,7 +183,34 @@ function VerticalCameraChoreography() {
   );
 }
 
-function SoftwareGlInvalidator({ active }: { active: boolean }) {
+function FrameloopKicker({ active }: { active: boolean }) {
+  const invalidate = useThree((s) => s.invalidate);
+  const frameloop = useThree((s) => s.frameloop);
+
+  useEffect(() => {
+    if (!active || frameloop !== 'always') return;
+    invalidate();
+    const raf = requestAnimationFrame(() => invalidate());
+    const onVisible = () => {
+      if (!document.hidden) invalidate();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [active, frameloop, invalidate]);
+
+  return null;
+}
+
+function SoftwareGlInvalidator({
+  active,
+  isReady,
+}: {
+  active: boolean;
+  isReady: boolean;
+}) {
   const { invalidate } = useThree();
 
   useEffect(() => {
@@ -190,7 +223,7 @@ function SoftwareGlInvalidator({ active }: { active: boolean }) {
       window.removeEventListener('scroll', onInput);
       window.removeEventListener('pointermove', onInput);
     };
-  }, [active, invalidate]);
+  }, [active, isReady, invalidate]);
 
   return null;
 }
@@ -201,7 +234,7 @@ export function SceneContainer() {
   const dprRef = useRef(maxDpr);
   const [postFx, setPostFx] = useState(PERF_TIER === 'high');
   const [isSoftwareGl, setIsSoftwareGl] = useState(false);
-  const { isReady } = usePreloaderStore();
+  const { isReady, assetsLoaded } = usePreloaderStore();
 
   const { isMobile } = useExperienceStore();
 
@@ -277,8 +310,9 @@ export function SceneContainer() {
         <CameraRig />
         <CasesGallery3D />
         <GpuPrecompiler />
-        <SoftwareGlInvalidator active={isSoftwareGl} />
-        {postFx && isReady && <PostProcessing />}
+        <FrameloopKicker active={isReady && !isSoftwareGl} />
+        <SoftwareGlInvalidator active={isSoftwareGl} isReady={isReady} />
+        {postFx && assetsLoaded && <PostProcessing />}
       </Canvas>
     </div>
   );

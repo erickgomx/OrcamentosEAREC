@@ -16,12 +16,11 @@ export function useRevealOnScroll(): void {
       document.querySelectorAll<HTMLElement>('[data-reveal]')
     );
 
-    document
-      .querySelectorAll<HTMLElement>('#act-portal [data-reveal]')
-      .forEach((el) => el.classList.add('is-revealed'));
-
     if (typeof IntersectionObserver === 'undefined') {
-      elements.forEach((el) => el.classList.add('is-revealed'));
+      elements.forEach((el) => {
+        if (el.closest('#act-portal')) return;
+        el.classList.add('is-revealed');
+      });
       return;
     }
 
@@ -43,6 +42,7 @@ export function useRevealOnScroll(): void {
     const observeAll = () => {
       const vh = window.innerHeight || 900;
       document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+        if (el.closest('#act-portal')) return;
         if (!observed.has(el)) {
           observed.add(el);
           const rect = el.getBoundingClientRect();

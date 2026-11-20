@@ -150,7 +150,7 @@ function CategorySequencePlaque({
  * from 3D depth on entry and recede smoothly on exit as the user scrolls.
  */
 export function PhotoShowcaseSection() {
-  const { isReady } = usePreloaderStore();
+  const { isReady, assetsLoaded } = usePreloaderStore();
   const [selectedCategory, setSelectedCategory] = useState<'Todas' | PhotoCategory>(
     'Todas'
   );
@@ -637,7 +637,7 @@ export function PhotoShowcaseSection() {
                   <PhotoCard
                     key={entry.id}
                     photo={entry.photo}
-                    isReady={isReady}
+                    isReady={assetsLoaded || isReady}
                     onSelect={handlePhotoSelect}
                   />
                 )
@@ -660,7 +660,7 @@ export function PhotoShowcaseSection() {
                   <PhotoCard
                     key={entry.id}
                     photo={entry.photo}
-                    isReady={isReady}
+                    isReady={assetsLoaded || isReady}
                     onSelect={handlePhotoSelect}
                   />
                 )
@@ -674,7 +674,7 @@ export function PhotoShowcaseSection() {
               <PhotoCard
                 key={photo.id}
                 photo={photo}
-                isReady={isReady}
+                isReady={assetsLoaded || isReady}
                 onSelect={setActivePhoto}
                 sizeMode="grid"
               />

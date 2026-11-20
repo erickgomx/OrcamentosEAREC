@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import {
@@ -20,6 +20,7 @@ import { getPreloaderSnapshot, usePreloaderStore } from '../utils/assetPreloader
 export function useSmoothScroll(): void {
   const { modalCase } = useExperienceStore();
   const { isReady } = usePreloaderStore();
+  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     const mediaMobile = window.matchMedia('(max-width: 767px)');
@@ -80,6 +81,10 @@ export function useSmoothScroll(): void {
         wheelMultiplier: 0.95,
         touchMultiplier: 1.35,
       });
+      lenisRef.current = lenis;
+      if (!getPreloaderSnapshot().isReady) {
+        lenis.stop();
+      }
 
       lenis.on('scroll', (e: { scroll: number; progress: number; velocity: number }) => {
         if (autoScrollY === null) {
@@ -353,26 +358,48 @@ export function useSmoothScroll(): void {
         gsap.ticker.remove(tickerCallback);
       }
       lenis?.destroy();
+      lenisRef.current = null;
     };
   }, []);
 
-  // Re-measure anchors once Preloader lifts
+  // Re-measure anchors and cleanly unlock Lenis once Preloader lifts
   useEffect(() => {
-    if (isReady) {
-      refreshSectionAnchors();
+    if (!isReady) return;
+
+    if (!getExperienceSnapshot().modalCase) {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
+
+    window.scrollTo(0, 0);
+    lenisRef.current?.start();
+    lenisRef.current?.scrollTo(0, { immediate: true, force: true });
+    lenisRef.current?.resize();
+    refreshSectionAnchors();
+    updateScrollMetrics(0, 0, 0);
+
+    const rafId = requestAnimationFrame(() => {
+      refreshSectionAnchors();
+      lenisRef.current?.resize();
+    });
+
+    return () => cancelAnimationFrame(rafId);
   }, [isReady]);
 
   // Freeze background scroll when project modal is open
   useEffect(() => {
     if (modalCase) {
       document.body.style.overflow = 'hidden';
+      lenisRef.current?.stop();
     } else if (isReady) {
       document.body.style.overflow = '';
+      lenisRef.current?.start();
+      lenisRef.current?.resize();
     }
     return () => {
       if (isReady) {
         document.body.style.overflow = '';
+        lenisRef.current?.start();
       }
     };
   }, [modalCase, isReady]);

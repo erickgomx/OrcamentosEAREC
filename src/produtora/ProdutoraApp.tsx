@@ -66,6 +66,14 @@ export function ProdutoraApp({ onRequestQuote }: ProdutoraAppProps) {
   useEffect(() => {
     const html = document.documentElement;
     const prevTitle = document.title;
+    const prevScrollRestoration =
+      'scrollRestoration' in window.history
+        ? window.history.scrollRestoration
+        : null;
+
+    if (prevScrollRestoration !== null) {
+      window.history.scrollRestoration = 'manual';
+    }
 
     html.dataset.perf = PERF_TIER;
     html.classList.add('route-produtora');
@@ -81,6 +89,9 @@ export function ProdutoraApp({ onRequestQuote }: ProdutoraAppProps) {
     }
 
     return () => {
+      if (prevScrollRestoration !== null) {
+        window.history.scrollRestoration = prevScrollRestoration;
+      }
       html.classList.remove('route-produtora');
       delete html.dataset.perf;
       document.title = prevTitle;

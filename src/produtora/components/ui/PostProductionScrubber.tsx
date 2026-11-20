@@ -97,7 +97,7 @@ export function PostProductionScrubber() {
   const scope1PoolRef = useRef<SequencePool>(sharedPools.scope1);
   const scope2PoolRef = useRef<SequencePool>(sharedPools.scope2);
 
-  const { isReady } = usePreloaderStore();
+  const { isReady, assetsLoaded } = usePreloaderStore();
 
   useEffect(() => {
     let lastDrawnTimeline = -1;
@@ -132,7 +132,7 @@ export function PostProductionScrubber() {
       }
     };
 
-    if (isReady) {
+    if (assetsLoaded || isReady) {
       drawPoolToCanvas(
         timelineCanvasRef.current,
         timelinePoolRef.current,
@@ -301,7 +301,7 @@ export function PostProductionScrubber() {
       window.removeEventListener('resize', measureSection);
       gsap.ticker.remove(tick);
     };
-  }, [isReady]);
+  }, [assetsLoaded, isReady]);
 
   const handleScrubBarClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {

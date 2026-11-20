@@ -426,15 +426,18 @@ export function startBackgroundSequencePreload(): void {
   });
 }
 
+const MIN_OPENING_MS = 7500;
+
 /**
  * Preloads all 3D GLB assets, base WebGL textures, ALL Timeline/Scope scroll
  * sequences, portfolio photos, and fonts, then waits for GPU shader
- * compilation before lifting the Preloader curtain.
+ * compilation and the minimum 3-phrase opening cadence before lifting the curtain.
  */
 export function startAssetPreload(): Promise<void> {
   if (bootPromise) return bootPromise;
 
   bootPromise = (async () => {
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const rigProgress = new Map<string, number>();
     const totalWeight = HARDWARE_RIGS.length + 5;
 
@@ -628,6 +631,20 @@ export function startAssetPreload(): Promise<void> {
         resolve();
       };
     });
+
+    // Guarantee the 3-phrase opening sequence (3 x 2.5s = 7.5s) even on fast connections
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const remainingMs = Math.max(0, MIN_OPENING_MS - (now - startedAt));
+    if (remainingMs > 0) {
+      await new Promise<void>((resolve) => window.setTimeout(resolve, remainingMs));
+    }
+
+    // Allow 2 compositor frames so pre-mounted photos, canvases, and WebGL warm-up commit before curtain opens
+    if (typeof requestAnimationFrame !== 'undefined') {
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      );
+    }
 
     state = {
       ...state,

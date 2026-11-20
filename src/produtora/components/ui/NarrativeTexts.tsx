@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowDown, Camera, ChevronDown } from 'lucide-react';
 import { HARDWARE_RIGS } from '../../data/portfolioData';
 import { navigateToSection } from '../../hooks/useExperienceStore';
@@ -12,7 +12,34 @@ import { usePreloaderStore } from '../../utils/assetPreloader';
  */
 export function NarrativeTexts() {
   const { isReady } = usePreloaderStore();
-  const heroRevealClass = isReady ? 'is-revealed' : '';
+  const wasReadyOnMountRef = useRef(isReady);
+  const [heroRevealed, setHeroRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!isReady) {
+      setHeroRevealed(false);
+      return;
+    }
+
+    // Returning via SPA route (no preloader curtain): yield 2 frames so CSS enter transition plays cleanly
+    if (wasReadyOnMountRef.current) {
+      let raf1 = 0;
+      let raf2 = 0;
+      raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => setHeroRevealed(true));
+      });
+      return () => {
+        cancelAnimationFrame(raf1);
+        cancelAnimationFrame(raf2);
+      };
+    }
+
+    // Fresh load: wait until the rising curtain clears the upper hero band (~440ms) before triggering entrance
+    const timer = window.setTimeout(() => setHeroRevealed(true), 440);
+    return () => window.clearTimeout(timer);
+  }, [isReady]);
+
+  const heroRevealClass = heroRevealed ? 'is-revealed' : '';
 
   return (
     <div className="relative z-10">
@@ -26,14 +53,14 @@ export function NarrativeTexts() {
         <h1 className="type-hero text-white max-w-[15ch] sm:max-w-5xl">
           <span
             data-reveal="mask"
-            style={{ '--reveal-delay': '80ms' } as CSSProperties}
+            style={{ '--reveal-delay': '60ms' } as CSSProperties}
             className={`block ${heroRevealClass}`}
           >
             IMAGEM DE CINEMA
           </span>
           <span
             data-reveal="mask"
-            style={{ '--reveal-delay': '220ms' } as CSSProperties}
+            style={{ '--reveal-delay': '200ms' } as CSSProperties}
             className={`block text-[#FF0829] drop-shadow-[0_0_28px_rgba(255,8,41,0.4)] ${heroRevealClass}`}
           >
             PARA MARCAS E HISTÓRIAS
@@ -42,7 +69,7 @@ export function NarrativeTexts() {
 
         <p
           data-reveal
-          style={{ '--reveal-delay': '380ms' } as CSSProperties}
+          style={{ '--reveal-delay': '360ms' } as CSSProperties}
           className={`type-lead mt-6 max-w-[38rem] ${heroRevealClass}`}
         >
           Filmes comerciais, fotografia editorial e imagens aéreas com drone. Elevamos o nível
@@ -51,7 +78,7 @@ export function NarrativeTexts() {
 
         <div
           data-reveal
-          style={{ '--reveal-delay': '520ms' } as CSSProperties}
+          style={{ '--reveal-delay': '500ms' } as CSSProperties}
           className={`mt-10 sm:mt-12 flex flex-col items-center gap-3 ${heroRevealClass}`}
         >
           <div className="type-eyebrow inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#0E0D0C]/90 border border-[#FF0829]/45 backdrop-blur-md shadow-[0_0_28px_rgba(255,8,41,0.22)] text-[0.72rem] sm:text-[0.8rem] font-semibold text-white">
