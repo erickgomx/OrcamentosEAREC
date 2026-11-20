@@ -196,6 +196,68 @@ html.route-produtora body {
   animation: scrollCue 1.8s var(--ease-cinematic) infinite;
 }
 
+/* Preloader editorial phrase & rising-curtain reveal (compositor-only) */
+@keyframes preloaderPhraseEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes preloaderPhraseExit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+}
+
+@keyframes preloaderFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes preloaderFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.produtora-root .preloader-phrase-enter {
+  animation: preloaderPhraseEnter 460ms var(--ease-cinematic) both;
+}
+
+.produtora-root .preloader-phrase-exit {
+  animation: preloaderPhraseExit 400ms cubic-bezier(0.7, 0, 0.84, 0) both;
+}
+
+.produtora-root .preloader-curtain {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 720ms cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 320ms ease;
+  will-change: transform, opacity;
+}
+
+.produtora-root .preloader-curtain.is-exiting {
+  transform: translate3d(0, -100%, 0);
+  pointer-events: none;
+}
+
 .produtora-root .hud-grid-bg {
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
@@ -249,5 +311,22 @@ html.route-produtora[data-perf='low'] .produtora-root .backdrop-blur-xl {
     clip-path: none !important;
     transform: none !important;
     transition: opacity 450ms ease !important;
+  }
+
+  .produtora-root .preloader-phrase-enter {
+    animation: preloaderFadeIn 320ms ease both !important;
+  }
+
+  .produtora-root .preloader-phrase-exit {
+    animation: preloaderFadeOut 280ms ease both !important;
+  }
+
+  .produtora-root .preloader-curtain {
+    transition: opacity 420ms ease !important;
+  }
+
+  .produtora-root .preloader-curtain.is-exiting {
+    transform: none !important;
+    opacity: 0 !important;
   }
 }
