@@ -11,7 +11,7 @@ const MANIFESTO_PHRASES = [
 
 const MIN_OPENING_MS = 7500;
 const PHRASE_INTERVAL_MS = 2500;
-const PHRASE_EXIT_DURATION_MS = 480;
+const PHRASE_EXIT_DURATION_MS = 300;
 
 /**
  * Full-screen pure-black editorial cinema opening displaying a minimum 3-phrase
@@ -195,7 +195,7 @@ export function PreloaderScreen() {
             <p
               key={`exit-${prevPhraseIndex}`}
               aria-hidden="true"
-              className="preloader-phrase-exit absolute inset-x-0 font-display font-light text-center text-[clamp(1.65rem,1.05rem+3vw,3.5rem)] leading-[1.12] tracking-[-0.02em] text-white/60"
+              className="preloader-phrase-exit absolute inset-x-2 font-display font-light text-center text-[clamp(1.65rem,1.05rem+3vw,3.5rem)] leading-[1.12] tracking-[-0.02em] text-white/60"
             >
               {exitingPhrase.lead}{' '}
               <span className="font-serif italic font-normal text-white">
@@ -207,6 +207,7 @@ export function PreloaderScreen() {
 
           <p
             key={`enter-${phraseIndex}`}
+            style={phraseIndex > 0 ? { animationDelay: '200ms' } : undefined}
             className="preloader-phrase-enter font-display font-light text-center text-[clamp(1.65rem,1.05rem+3vw,3.5rem)] leading-[1.12] tracking-[-0.02em] text-white/60"
           >
             {activePhrase.lead}{' '}
